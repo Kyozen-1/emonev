@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVisisTable extends Migration
+class CreatePivotPerubahanMisisTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class CreateVisisTable extends Migration
      */
     public function up()
     {
-        Schema::create('visis', function (Blueprint $table) {
+        Schema::create('pivot_perubahan_misis', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('misi_id')->nullable();
             $table->longText('deskripsi')->nullable();
             $table->timestamps();
         });
@@ -27,6 +28,6 @@ class CreateVisisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('visis');
+        Schema::dropIfExists('pivot_perubahan_misis');
     }
 }

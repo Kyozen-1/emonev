@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVisisTable extends Migration
+class CreateProgramRpjmdsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,13 @@ class CreateVisisTable extends Migration
      */
     public function up()
     {
-        Schema::create('visis', function (Blueprint $table) {
+        Schema::create('program_rpjmds', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('program_id')->nullable();
+            $table->foreignId('sasaran_id')->nullable();
+            $table->string('pagu')->nullable();
             $table->longText('deskripsi')->nullable();
+            $table->enum('status_program', ['program_prioritas', 'program_pendukung']);
             $table->timestamps();
         });
     }
@@ -27,6 +31,6 @@ class CreateVisisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('visis');
+        Schema::dropIfExists('program_rpjmds');
     }
 }

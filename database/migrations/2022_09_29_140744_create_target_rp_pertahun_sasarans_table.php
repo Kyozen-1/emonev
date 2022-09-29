@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVisisTable extends Migration
+class CreateTargetRpPertahunSasaransTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class CreateVisisTable extends Migration
      */
     public function up()
     {
-        Schema::create('visis', function (Blueprint $table) {
+        Schema::create('target_rp_pertahun_sasarans', function (Blueprint $table) {
             $table->id();
-            $table->longText('deskripsi')->nullable();
+            $table->foreignId('pivot_sasaran_indikator_id')->nullable();
+            $table->string('target')->nullable();
+            $table->string('rp')->nullable();
+            $table->string('tahun')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ class CreateVisisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('visis');
+        Schema::dropIfExists('target_rp_pertahun_sasarans');
     }
 }
