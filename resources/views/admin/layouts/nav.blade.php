@@ -251,7 +251,8 @@
             <li>
                 @if (request()->routeIs('admin.visi.index') ||
                 request()->routeIs('admin.misi.index') ||
-                request()->routeIs('admin.tujuan.index'))
+                request()->routeIs('admin.tujuan.index') ||
+                request()->routeIs('admin.sasaran.index'))
                     <a href="#rpjmd" class="active">
                 @else
                     <a href="#rpjmd">
@@ -287,12 +288,22 @@
                             <span class="label">Tujuan</span>
                         </a>
                     </li>
+                    <li>
+                        @if (request()->routeIs('admin.sasaran.index'))
+                            <a href="{{ route('admin.sasaran.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.sasaran.index') }}">
+                        @endif
+                            <span class="label">Sasaran</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
             <li>
                 @if (request()->routeIs('admin.kecamatan.index') ||
                 request()->routeIs('admin.kelurahan.index') ||
-                request()->routeIs('admin.jenis-opd.index'))
+                request()->routeIs('admin.jenis-opd.index') ||
+                request()->routeIs('admin.master-opd.index'))
                     <a href="#master_data" class="active">
                 @else
                     <a href="#master_data">
@@ -326,6 +337,15 @@
                             <a href="{{ route('admin.jenis-opd.index') }}">
                         @endif
                             <span class="label">Jenis OPD</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.master-opd.index'))
+                            <a href="{{ route('admin.master-opd.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.master-opd.index') }}">
+                        @endif
+                            <span class="label">Master OPD</span>
                         </a>
                     </li>
                 </ul>

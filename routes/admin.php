@@ -2,6 +2,7 @@
 Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/dashboard', 'Admin\DashboardController@index')->name('admin.dashboard.index');
     Route::post('/admin/dashboard/change', 'Admin\DashboardController@change')->name('admin.dashboard.change');
+    Route::get('/normalisasi-opd', 'Admin\DashboardController@normalisasi_opd');
 
     //Kecamatan
     Route::get('/admin/kecamatan', 'Admin\KecamatanController@index')->name('admin.kecamatan.index');
@@ -26,6 +27,14 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/jenis-opd/edit/{id}','Admin\JenisOpdController@edit');
     Route::post('/admin/jenis-opd/update','Admin\JenisOpdController@update')->name('admin.jenis-opd.update');
     Route::get('/admin/jenis-opd/destroy/{id}','Admin\JenisOpdController@destroy');
+
+    //Master OPD
+    Route::get('/admin/master-opd', 'Admin\MasterOpdController@index')->name('admin.master-opd.index');
+    Route::get('/admin/master-opd/detail/{id}', 'Admin\MasterOpdController@show');
+    Route::post('/admin/master-opd','Admin\MasterOpdController@store')->name('admin.master-opd.store');
+    Route::get('/admin/master-opd/edit/{id}','Admin\MasterOpdController@edit');
+    Route::post('/admin/master-opd/update','Admin\MasterOpdController@update')->name('admin.master-opd.update');
+    Route::get('/admin/master-opd/destroy/{id}','Admin\MasterOpdController@destroy');
 
     //Manajemen Akun Opd
     Route::get('/admin/manajemen-akun/opd', 'Admin\ManajemenAkun\OpdController@index')->name('admin.manajemen-akun.opd.index');
@@ -135,4 +144,44 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/tujuan/indikator/update','Admin\TujuanIndikatorController@update');
     Route::get('/admin/tujuan/indikator/destroy/{id}','Admin\TujuanIndikatorController@destroy');
     Route::post('/admin/tujuan/indikator/impor', 'Admin\TujuanIndikatorController@impor')->name('admin.tujuan.indikator.impor');
+
+    //Sasaran
+    Route::get('/admin/sasaran', 'Admin\SasaranController@index')->name('admin.sasaran.index');
+    Route::get('/admin/sasaran/detail/{id}', 'Admin\SasaranController@show');
+    Route::post('/admin/sasaran/get-misi', 'Admin\SasaranController@get_misi')->name('admin.sasaran.get-misi');
+    Route::post('/admin/sasaran/get-tujuan', 'Admin\SasaranController@get_tujuan')->name('admin.sasaran.get-tujuan');
+    Route::post('/admin/sasaran','Admin\SasaranController@store')->name('admin.sasaran.store');
+    Route::get('/admin/sasaran/edit/{id}','Admin\SasaranController@edit');
+    Route::post('/admin/sasaran/update','Admin\SasaranController@update')->name('admin.sasaran.update');
+    Route::get('/admin/sasaran/destroy/{id}','Admin\SasaranController@destroy');
+    Route::post('/admin/sasaran/destroy/impor', 'Admin\SasaranController@impor')->name('admin.sasaran.impor');
+
+    //Sasaran - Indikator
+    Route::get('/admin/sasaran/{sasaran_id}/indikator', 'Admin\SasaranIndikatorController@index');
+    Route::get('/admin/sasaran/indikator/detail/{id}', 'Admin\SasaranIndikatorController@show');
+    Route::post('/admin/sasaran/indikator','Admin\SasaranIndikatorController@store');
+    Route::get('/admin/sasaran/indikator/edit/{id}','Admin\SasaranIndikatorController@edit');
+    Route::post('/admin/sasaran/indikator/update','Admin\SasaranIndikatorController@update');
+    Route::get('/admin/sasaran/indikator/destroy/{id}','Admin\SasaranIndikatorController@destroy');
+    Route::post('/admin/sasaran/indikator/impor', 'Admin\SasaranIndikatorController@impor')->name('admin.sasaran.indikator.impor');
+
+    //Program RPJMD
+    Route::get('/admin/program-rpjmd', 'Admin\ProgramRpjmdController@index')->name('admin.program-rpjmd.index');
+    Route::get('/admin/program-rpjmd/detail/{id}', 'Admin\ProgramRpjmdController@show');
+    Route::post('/admin/program-rpjmd/get-misi', 'Admin\ProgramRpjmdController@get_misi')->name('admin.program-rpjmd.get-misi');
+    Route::post('/admin/program-rpjmd/get-tujuan', 'Admin\ProgramRpjmdController@get_tujuan')->name('admin.program-rpjmd.get-tujuan');
+    Route::post('/admin/program-rpjmd','Admin\ProgramRpjmdController@store')->name('admin.program-rpjmd.store');
+    Route::get('/admin/program-rpjmd/edit/{id}','Admin\ProgramRpjmdController@edit');
+    Route::post('/admin/program-rpjmd/update','Admin\ProgramRpjmdController@update')->name('admin.program-rpjmd.update');
+    Route::get('/admin/program-rpjmd/destroy/{id}','Admin\ProgramRpjmdController@destroy');
+    Route::post('/admin/program-rpjmd/destroy/impor', 'Admin\ProgramRpjmdController@impor')->name('admin.program-rpjmd.impor');
+
+    //Program RPJMD - Indikator
+    Route::get('/admin/program-rpjmd/{program_rpjmd_id}/indikator', 'Admin\ProgramRpjmdIndikatorController@index');
+    Route::get('/admin/program-rpjmd/indikator/detail/{id}', 'Admin\ProgramRpjmdIndikatorController@show');
+    Route::post('/admin/program-rpjmd/indikator','Admin\ProgramRpjmdIndikatorController@store');
+    Route::get('/admin/program-rpjmd/indikator/edit/{id}','Admin\ProgramRpjmdIndikatorController@edit');
+    Route::post('/admin/program-rpjmd/indikator/update','Admin\ProgramRpjmdIndikatorController@update');
+    Route::get('/admin/program-rpjmd/indikator/destroy/{id}','Admin\ProgramRpjmdIndikatorController@destroy');
+    Route::post('/admin/program-rpjmd/indikator/impor', 'Admin\ProgramRpjmdIndikatorController@impor')->name('admin.program-rpjmd.indikator.impor');
 });

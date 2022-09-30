@@ -21,6 +21,9 @@
         .select2-selection__arrow {
             height: 36px !important;
         }
+        .select2-container{
+            z-index:100000;
+        }
     </style>
 @endsection
 
@@ -58,6 +61,7 @@
                 <thead>
                     <tr>
                         <th class="text-muted text-small text-uppercase">No</th>
+                        <th class="text-muted text-small text-uppercase">OPD</th>
                         <th class="text-muted text-small text-uppercase">Name</th>
                         <th class="text-muted text-small text-uppercase">Email</th>
                         <th class="text-muted text-small text-uppercase">Telp</th>
@@ -84,6 +88,15 @@
                     @csrf
                     <div class="row">
                         <div class="col-12 col-md-7">
+                            <div class="mb-3">
+                                <label for="" class="form-label">OPD</label>
+                                <select name="opd_id" id="opd_id" class="form-control">
+                                    <option value="">--- Pilih OPD ---</option>
+                                    @foreach ($master_opd as $id => $nama)
+                                        <option value="{{$id}}">{{$nama}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">Nama</label>
                                 <input name="nama" id="nama" type="text" class="form-control" required/>
@@ -131,6 +144,10 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-12 col-md-7">
+                        <div class="mb-3">
+                            <label class="form-label">OPD</label>
+                            <input id="detail_master_opd" type="text" class="form-control" disabled/>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">Nama</label>
                             <input id="detail_nama" type="text" class="form-control" disabled/>
@@ -192,7 +209,7 @@
         $(document).ready(function(){
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');
-
+            $('#opd_id').select2();
             var dataTables = $('#opd_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -204,6 +221,10 @@
                         data: 'DT_RowIndex',
                         searchable: false,
                         orderable: false
+                    },
+                    {
+                        data: 'opd_id',
+                        name: 'opd_id'
                     },
                     {
                         data: 'name',
@@ -232,6 +253,7 @@
 
         $('#create').click(function(){
             $('#opd_form')[0].reset();
+            $("[name='opd_id']").val('').trigger('change');
             $('.dropify-clear').click();
             $('#aksi_button').text('Save');
             $('#aksi_button').prop('disabled', false);
@@ -265,6 +287,7 @@
                         {
                             $('#aksi_button').prop('disabled', false);
                             $('#opd_form')[0].reset();
+                            $("[name='opd_id']").val('').trigger('change');
                             $('.dropify-clear').click();
                             $('#aksi_button').text('Save');
                             $('#opd_table').DataTable().ajax.reload();
@@ -278,6 +301,7 @@
                         {
                             $('#aksi_button').prop('disabled', false);
                             $('#opd_form')[0].reset();
+                            $("[name='opd_id']").val('').trigger('change');
                             $('.dropify-clear').click();
                             $('#aksi_button').text('Save');
                             $('#opd_table').DataTable().ajax.reload();
@@ -304,6 +328,7 @@
                     $('#detail-title').text('Detail Data');
                     $('#detail_provinsi').val(data.result.provinsi);
                     $('#detail_kabupaten').val(data.result.kabupaten);
+                    $('#detail_master_opd').val(data.result.master_opd);
                     $('#detail_nama').val(data.result.nama);
                     $('#detail_email').val(data.result.email);
                     $('#detail_no_hp').val(data.result.no_hp);

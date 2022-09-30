@@ -38,4 +38,9 @@ class Opd extends Model
     {
         return $this->belongsTo('App\Models\Kelurahan', 'kelurahan_id');
     }
+
+    public function master_opd()
+    {
+        return $this->belongsTo('App\Models\MasterOpd', 'opd_id');
+    }
 }

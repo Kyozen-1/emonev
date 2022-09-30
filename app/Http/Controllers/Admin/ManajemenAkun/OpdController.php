@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use App\AkunOpd;
 use App\Models\Opd;
 use Illuminate\Support\Facades\Hash;
+use App\Models\MasterOpd;
 
 class OpdController extends Controller
 {
@@ -40,15 +41,25 @@ class OpdController extends Controller
                 ->editColumn('foto', function($data){
                     return '<img src="'.asset('images/opd/'.$data->opd->foto).'" style="width:5rem;">';
                 })
+                ->addColumn('opd_id', function($data){
+                    if($data->opd->opd_id)
+                    {
+                        return $data->opd->master_opd->nama;
+                    }
+                })
                 ->rawColumns(['aksi', 'foto'])
                 ->make(true);
         }
-        return view('admin.manajemen-akun.opd.index');
+        $master_opd = MasterOpd::pluck('nama', 'id');
+        return view('admin.manajemen-akun.opd.index', [
+            'master_opd' => $master_opd
+        ]);
     }
 
     public function store(Request $request)
     {
         $errors = Validator::make($request->all(), [
+            'opd_id' => 'required',
             'nama' => 'required',
             'no_hp' => 'required',
             'alamat' => 'required',
@@ -75,6 +86,7 @@ class OpdController extends Controller
         $opd->negara_id = 62;
         $opd->provinsi_id = 5;
         $opd->kabupaten_id = 62;
+        $opd->opd_id = $request->opd_id;
         $opd->foto = $fotoName;
         $opd->save();
 
@@ -92,6 +104,7 @@ class OpdController extends Controller
     {
         $data = AkunOpd::find($id);
         $array = [
+            'maste_opd' => $data->opd->opd_id?$data->opd->master_opd->nama : '',
             'nama' => $data->name,
             'email' => $data->email,
             'provinsi' => $data->opd->provinsi->nama,

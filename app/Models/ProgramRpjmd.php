@@ -23,4 +23,9 @@ class ProgramRpjmd extends Model
     {
         return $this->hasMany('App\Models\PivotPerubahanProgramRpjmd', 'program_rpjmd_id');
     }
+
+    public function master_opd()
+    {
+        return $this->belongsTo('App\Models\MasterOpd', 'opd_id');
+    }
 }

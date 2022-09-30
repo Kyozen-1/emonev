@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Admin | Tujuan | Indikator')
+@section('title', 'Admin | Sasaran | Indikator')
 @section('css')
     <link rel="stylesheet" href="{{ asset('acorn/acorn-elearning-portal/css/vendor/datatables.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('acorn/acorn-elearning-portal/css/vendor/select2.min.css') }}" />
@@ -54,8 +54,10 @@
         use App\Models\PivotPerubahanMisi;
         use App\Models\Tujuan;
         use App\Models\PivotPerubahanTujuan;
-        use App\Models\PivotTujuanIndikator;
-        use App\Imports\TujuanImport;
+        use App\Models\Sasaran;
+        use App\Models\PivotPerubahanSasaran;
+        use App\Models\PivotSasaranIndikator;
+        use App\Imports\SasaranImport;
     @endphp
     <div class="container">
         <!-- Title and Top Buttons Start -->
@@ -63,12 +65,12 @@
             <div class="row">
             <!-- Title Start -->
             <div class="col-12 col-md-7">
-                <h1 class="mb-0 pb-0 display-4" id="title">Tujuan</h1>
+                <h1 class="mb-0 pb-0 display-4" id="title">Sasaran</h1>
                 <nav class="breadcrumb-container d-inline-block" aria-label="breadcrumb">
                     <ul class="breadcrumb pt-0">
                         <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.index') }}">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="#">RPJMD</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('admin.tujuan.index') }}">Tujuan</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.sasaran.index') }}">Sasaran</a></li>
                         <li class="breadcrumb-item"><a href="#">Indikator</a></li>
                     </ul>
                 </nav>
@@ -81,7 +83,19 @@
         <div class="card mb-5">
             <div class="card-body">
                 @php
-                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $tujuan->misi_id)->latest()->first();
+                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $sasaran->tujuan_id)->latest()->first();
+                    if($cek_perubahan_tujuan)
+                    {
+                        $kode_tujuan = $cek_perubahan_tujuan->kode;
+                        $deskripsi_tujuan = $cek_perubahan_tujuan->deskripsi;
+                        $misi_id = $cek_perubahan_tujuan->misi_id;
+                    } else {
+                        $tujuan = Tujuan::find($sasaran->tujuan_id);
+                        $kode_tujuan = $tujuan->kode;
+                        $deskripsi_tujuan = $tujuan->deskripsi;
+                        $misi_id = $tujuan->misi_id;
+                    }
+                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $misi_id)->latest()->first();
                     if($cek_perubahan_misi)
                     {
                         $kode_misi = $cek_perubahan_misi->kode;
@@ -111,8 +125,11 @@
                     Kode Misi: {{$kode_misi}}<br>
                     Misi: {{$deskripsi_misi}}<br>
                     <br>
-                    Kode Tujuan: {{$tujuan->kode}}<br>
-                    Tujuan: {{$tujuan->deskripsi}}<br>
+                    Kode Tujuan: {{$kode_tujuan}}<br>
+                    Tujuan: {{$deskripsi_tujuan}}<br>
+                    <br>
+                    Kode Sasaran: {{$sasaran->kode}}<br>
+                    Sasaran: {{$sasaran->deskripsi}}<br>
                 </p>
             </div>
         </div>
@@ -120,7 +137,7 @@
         <div class="row mb-3">
             <div class="col-12" style="text-align: right">
                 <button class="btn btn-outline-primary waves-effect waves-light mr-2" id="create" type="button" data-bs-toggle="modal" data-bs-target="#addEditModal" title="Tambah Data"><i class="fas fa-plus"></i></button>
-                <a class="btn btn-outline-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_tujuan_indikator.xlsx') }}" title="Download Template Import Data"><i class="fas fa-file-excel"></i></a>
+                <a class="btn btn-outline-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_sasaran_indikator.xlsx') }}" title="Download Template Import Data"><i class="fas fa-file-excel"></i></a>
                 <button class="btn btn-outline-info waves-effect waves-light" title="Import Data" id="btn_impor_template" type="button"><i class="fas fa-file-import"></i></button>
             </div>
         </div>
@@ -128,7 +145,7 @@
         <div class="data-table-rows slim">
             <!-- Table Start -->
             <div class="data-table-responsive-wrapper">
-                <table id="tujuan_indikator_table" class="data-table w-100">
+                <table id="sasaran_indikator_table" class="data-table w-100">
                     <thead>
                         <tr>
                             <th class="text-muted text-small text-uppercase">No</th>
@@ -153,9 +170,9 @@
                 </div>
                 <div class="modal-body">
                     <span id="form_result"></span>
-                    <form id="tujuan_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                    <form id="sasaran_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="tujuan_id" value="{{$tujuan->tujuan_id?$tujuan->tujuan_id:$tujuan->id}}">
+                        <input type="hidden" name="sasaran_id" value="{{$sasaran->sasaran_id?$sasaran->sasaran_id:$sasaran->id}}">
                         <div class="row">
                             <div class="mb-3">
                                 <label for="" class="form-label">Indikator</label>
@@ -218,11 +235,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.tujuan.indikator.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.sasaran.indikator.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="tujuan_id" value="{{$tujuan->tujuan_id?$tujuan->tujuan_id:$tujuan->id}}">
+                        <input type="hidden" name="sasaran_id" value="{{$sasaran->sasaran_id?$sasaran->sasaran_id:$sasaran->id}}">
                         <div class="mb-3 position-relative form-group">
-                            <input type="file" class="dropify" id="impor_tujuan_indikator" name="impor_tujuan_indikator" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
+                            <input type="file" class="dropify" id="impor_sasaran_indikator" name="impor_sasaran_indikator" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
                         </div>
                         <div class="mb-3 position-relative form-group">
                             <button class="btn btn-success waves-effect waves-light">Impor</button>
@@ -252,18 +269,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        var tujuan_id = "{{$tujuan->tujuan_id?$tujuan->tujuan_id:$tujuan->id}}";
+        var sasaran_id = "{{$sasaran->sasaran_id?$sasaran->sasaran_id:$sasaran->id}}";
         $(document).ready(function(){
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');
 
-            var dataTables = $('#tujuan_indikator_table').DataTable({
+            var dataTables = $('#sasaran_indikator_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('/admin/tujuan/"+tujuan_id+"/indikator') }}",
+                    url: "{{ url('/admin/sasaran/"+sasaran_id+"/indikator') }}",
                     data: {
-                        id : tujuan_id
+                        id : sasaran_id
                     }
                 },
                 columns:[
@@ -294,7 +311,7 @@
         $(document).on('click', '.detail', function(){
             var id = $(this).attr('id');
             $.ajax({
-                url: "{{ url('/admin/tujuan/indikator/detail') }}"+'/'+id,
+                url: "{{ url('/admin/sasaran/indikator/detail') }}"+'/'+id,
                 dataType: "json",
                 success: function(data)
                 {
@@ -307,7 +324,7 @@
             });
         });
         $('#create').click(function(){
-            $('#tujuan_form')[0].reset();
+            $('#sasaran_form')[0].reset();
             $('#aksi_button').text('Save');
             $('#aksi_button').prop('disabled', false);
             $('.modal-title').text('Add Data');
@@ -315,12 +332,12 @@
             $('#aksi').val('Save');
             $('#form_result').html('');
         });
-        $('#tujuan_form').on('submit', function(e){
+        $('#sasaran_form').on('submit', function(e){
             e.preventDefault();
             if($('#aksi').val() == 'Save')
             {
                 $.ajax({
-                    url: "{{ url('/admin/tujuan/indikator') }}",
+                    url: "{{ url('/admin/sasaran/indikator') }}",
                     method: "POST",
                     data: $(this).serialize(),
                     dataType: "json",
@@ -336,17 +353,17 @@
                         {
                             html = '<div class="alert alert-danger">'+data.errors+'</div>';
                             $('#aksi_button').prop('disabled', false);
-                            $('#tujuan_form')[0].reset();
+                            $('#sasaran_form')[0].reset();
                             $('#aksi_button').text('Save');
-                            $('#tujuan_indikator_table').DataTable().ajax.reload();
+                            $('#sasaran_indikator_table').DataTable().ajax.reload();
                         }
                         if(data.success)
                         {
                             html = '<div class="alert alert-success">'+data.success+'</div>';
                             $('#aksi_button').prop('disabled', false);
-                            $('#tujuan_form')[0].reset();
+                            $('#sasaran_form')[0].reset();
                             $('#aksi_button').text('Save');
-                            $('#tujuan_indikator_table').DataTable().ajax.reload();
+                            $('#sasaran_indikator_table').DataTable().ajax.reload();
                         }
 
                         $('#form_result').html(html);
@@ -356,7 +373,7 @@
             if($('#aksi').val() == 'Edit')
             {
                 $.ajax({
-                    url: "{{ url('/admin/tujuan/indikator/update') }}",
+                    url: "{{ url('/admin/sasaran/indikator/update') }}",
                     method: "POST",
                     data: $(this).serialize(),
                     dataType: "json",
@@ -375,10 +392,10 @@
                         if(data.success)
                         {
                             // html = '<div class="alert alert-success">'+ data.success +'</div>';
-                            $('#tujuan_form')[0].reset();
+                            $('#sasaran_form')[0].reset();
                             $('#aksi_button').prop('disabled', false);
                             $('#aksi_button').text('Save');
-                            $('#tujuan_indikator_table').DataTable().ajax.reload();
+                            $('#sasaran_indikator_table').DataTable().ajax.reload();
                             $('#addEditModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
@@ -396,7 +413,7 @@
             var id = $(this).attr('id');
             $('#form_result').html('');
             $.ajax({
-                url: "{{ url('/admin/tujuan/indikator/edit') }}"+'/'+id,
+                url: "{{ url('/admin/sasaran/indikator/edit') }}"+'/'+id,
                 dataType: "json",
                 success: function(data)
                 {
@@ -426,7 +443,7 @@
                 if(result.value)
                 {
                     $.ajax({
-                        url: "{{ url('/admin/tujuan/indikator/destroy') }}" + '/' + id,
+                        url: "{{ url('/admin/sasaran/indikator/destroy') }}" + '/' + id,
                         dataType: "json",
                         beforeSend: function()
                         {
@@ -450,7 +467,7 @@
                             }
                             if(data.success)
                             {
-                                $('#tujuan_indikator_table').DataTable().ajax.reload();
+                                $('#sasaran_indikator_table').DataTable().ajax.reload();
                                 Swal.fire({
                                     icon: 'success',
                                     title: data.success,
