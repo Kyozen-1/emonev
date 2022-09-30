@@ -108,4 +108,31 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/visi/edit/{id}','Admin\VisiController@edit');
     Route::post('/admin/visi/update','Admin\VisiController@update')->name('admin.visi.update');
     Route::get('/admin/visi/destroy/{id}','Admin\VisiController@destroy');
+
+    //Misi
+    Route::get('/admin/misi', 'Admin\MisiController@index')->name('admin.misi.index');
+    Route::get('/admin/misi/detail/{id}', 'Admin\MisiController@show');
+    Route::post('/admin/misi','Admin\MisiController@store')->name('admin.misi.store');
+    Route::get('/admin/misi/edit/{id}','Admin\MisiController@edit');
+    Route::post('/admin/misi/update','Admin\MisiController@update')->name('admin.misi.update');
+    Route::get('/admin/misi/destroy/{id}','Admin\MisiController@destroy');
+
+    //Tujuan
+    Route::get('/admin/tujuan', 'Admin\TujuanController@index')->name('admin.tujuan.index');
+    Route::get('/admin/tujuan/detail/{id}', 'Admin\TujuanController@show');
+    Route::post('/admin/tujuan/get-misi', 'Admin\TujuanController@get_misi')->name('admin.tujuan.get-misi');
+    Route::post('/admin/tujuan','Admin\TujuanController@store')->name('admin.tujuan.store');
+    Route::get('/admin/tujuan/edit/{id}','Admin\TujuanController@edit');
+    Route::post('/admin/tujuan/update','Admin\TujuanController@update')->name('admin.tujuan.update');
+    Route::get('/admin/tujuan/destroy/{id}','Admin\TujuanController@destroy');
+    Route::post('/admin/tujuan/destroy/impor', 'Admin\TujuanController@impor')->name('admin.tujuan.impor');
+
+    //Tujuan - Indikator
+    Route::get('/admin/tujuan/{tujuan_id}/indikator', 'Admin\TujuanIndikatorController@index');
+    Route::get('/admin/tujuan/indikator/detail/{id}', 'Admin\TujuanIndikatorController@show');
+    Route::post('/admin/tujuan/indikator','Admin\TujuanIndikatorController@store');
+    Route::get('/admin/tujuan/indikator/edit/{id}','Admin\TujuanIndikatorController@edit');
+    Route::post('/admin/tujuan/indikator/update','Admin\TujuanIndikatorController@update');
+    Route::get('/admin/tujuan/indikator/destroy/{id}','Admin\TujuanIndikatorController@destroy');
+    Route::post('/admin/tujuan/indikator/impor', 'Admin\TujuanIndikatorController@impor')->name('admin.tujuan.indikator.impor');
 });

@@ -16,6 +16,8 @@ class CreateMisisTable extends Migration
         Schema::create('misis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('visi_id')->nullable();
+            $table->foreignId('kabupaten_id')->nullable();
+            $table->string('kode')->nullable();
             $table->longText('deskripsi')->nullable();
             $table->timestamps();
         });

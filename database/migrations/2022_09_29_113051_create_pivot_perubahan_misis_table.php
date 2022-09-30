@@ -15,8 +15,11 @@ class CreatePivotPerubahanMisisTable extends Migration
     {
         Schema::create('pivot_perubahan_misis', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('visi_id')->nullable();
             $table->foreignId('misi_id')->nullable();
+            $table->string('kode')->nullable();
             $table->longText('deskripsi')->nullable();
+            $table->foreignId('kabupaten_id')->nullable();
             $table->timestamps();
         });
     }

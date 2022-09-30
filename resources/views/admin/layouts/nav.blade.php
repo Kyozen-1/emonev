@@ -249,7 +249,9 @@
                 </ul>
             </li>
             <li>
-                @if (request()->routeIs('admin.urusan.index'))
+                @if (request()->routeIs('admin.visi.index') ||
+                request()->routeIs('admin.misi.index') ||
+                request()->routeIs('admin.tujuan.index'))
                     <a href="#rpjmd" class="active">
                 @else
                     <a href="#rpjmd">
@@ -265,6 +267,24 @@
                             <a href="{{ route('admin.visi.index') }}">
                         @endif
                             <span class="label">Visi</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.misi.index'))
+                            <a href="{{ route('admin.misi.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.misi.index') }}">
+                        @endif
+                            <span class="label">Misi</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.tujuan.index'))
+                            <a href="{{ route('admin.tujuan.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.tujuan.index') }}">
+                        @endif
+                            <span class="label">Tujuan</span>
                         </a>
                     </li>
                 </ul>
