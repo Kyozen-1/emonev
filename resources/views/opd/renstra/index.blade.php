@@ -77,6 +77,66 @@
             </div>
         </div>
         <!-- Title and Top Buttons End -->
+
+        <div class="card mb-5">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 justify-content-center align-self-center">
+                        <label for="" class="form-label">Tambah Item Renstra</label>
+                    </div>
+                    <div class="col-6" style="text-align: right">
+                        <button class="btn btn-icon btn-primary waves-effect waves-light tambah-itme-renstra" type="button" data-bs-toggle="modal" data-bs-target="#addEditItemRenstraModal"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addEditItemRenstraModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.tambah-item-renstra') }}" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group position-relative mb-3">
+                            <label class="form-label">Misi</label>
+                            <select name="misi_id" id="misi_id" class="form-control" required>
+                                <option value="">--- Pilih Misi ---</option>
+                                @foreach ($misis as $misi)
+                                    <option value="{{$misi['id']}}">{{$misi['deskripsi']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label class="form-label">Tujuan</label>
+                            <select name="tujuan_id" id="tujuan_id" class="form-control" disabled required>
+                                <option value="">--- Pilih Tujuan ---</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label class="form-label">Sasaran</label>
+                            <select name="sasaran_id" id="sasaran_id" class="form-controlf" disabled required>
+                                <option value="">--- Pilih Sasaran --- </option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label class="form-label">Program</label>
+                            <select name="program_id" id="program_id" class="form-controlf" disabled required>
+                                <option value="">--- Pilih Program --- </option>
+                            </select>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" name="aksi_button" id="aksi_button">Tambah</button>
+                </div>
+            </form>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -97,4 +157,79 @@
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('#misi_id').select2();
+            $('#tujuan_id').select2();
+            $('#sasaran_id').select2();
+            $('#program_id').select2();
+        });
+
+        $('#misi_id').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#tujuan_id').empty();
+                        $('#tujuan_id').prop('disabled', false);
+                        $('#tujuan_id').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#tujuan_id').append(new Option(value.deskripsi, value.id));
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#tujuan_id').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#sasaran_id').empty();
+                        $('#sasaran_id').prop('disabled', false);
+                        $('#sasaran_id').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#sasaran_id').append(new Option(value.deskripsi, value.id));
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#sasaran_id').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.get-program-rpjmd') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#program_id').empty();
+                        $('#program_id').prop('disabled', false);
+                        $('#program_id').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(){
+                            $('#program_id').append(new Option(response.deskripsi, response.id));
+                        });
+                    }
+                });
+            }
+        });
+    </script>
 @endsection
