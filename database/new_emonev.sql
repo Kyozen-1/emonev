@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 04 Okt 2022 pada 06.42
+-- Waktu pembuatan: 04 Okt 2022 pada 07.34
 -- Versi server: 5.7.33
 -- Versi PHP: 8.0.2
 
@@ -505,9 +505,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (20, '2022_09_29_105646_create_visis_table', 5),
 (21, '2022_09_29_110217_create_pivot_perubahan_visis_table', 5),
 (26, '2022_09_29_132826_create_pivot_tujuan_indikators_table', 5),
-(27, '2022_09_29_135423_create_target_rp_pertahun_tujuans_table', 5),
 (30, '2022_09_29_140452_create_pivot_sasaran_indikators_table', 5),
-(31, '2022_09_29_140744_create_target_rp_pertahun_sasarans_table', 5),
 (36, '2022_09_29_112452_create_misis_table', 6),
 (37, '2022_09_29_112829_create_pivot_perubahan_tujuans_table', 6),
 (38, '2022_09_29_113051_create_pivot_perubahan_misis_table', 6),
@@ -517,8 +515,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (42, '2022_09_30_143811_create_master_opds_table', 7),
 (43, '2022_09_29_141006_create_program_rpjmds_table', 8),
 (44, '2022_09_29_142546_create_pivot_perubahan_program_rpjmds_table', 8),
-(45, '2022_09_30_195901_create_target_rp_pertahun_programs_table', 8),
-(46, '2022_10_03_041043_create_tahun_periodes_table', 9);
+(46, '2022_10_03_041043_create_tahun_periodes_table', 9),
+(47, '2022_10_04_140759_create_renstras_table', 10),
+(48, '2022_10_04_141402_create_target_rp_pertahun_programs_table', 10),
+(49, '2022_10_04_142114_create_target_rp_pertahun_tujuans_table', 10),
+(50, '2022_10_04_143049_create_target_rp_pertahun_sasarans_table', 10);
 
 -- --------------------------------------------------------
 
@@ -1013,6 +1014,23 @@ INSERT INTO `provinsis` (`id`, `negara_id`, `nama`, `created_at`, `updated_at`) 
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `renstras`
+--
+
+CREATE TABLE `renstras` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `misi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tujuan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `sasaran_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `program_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `opd_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `sasarans`
 --
 
@@ -1090,6 +1108,8 @@ INSERT INTO `tahun_periodes` (`id`, `tahun_awal`, `tahun_akhir`, `status`, `crea
 
 CREATE TABLE `target_rp_pertahun_programs` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `renstra_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `program_id` bigint(20) UNSIGNED DEFAULT NULL,
   `pivot_program_indikator_id` bigint(20) UNSIGNED DEFAULT NULL,
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1106,20 +1126,9 @@ CREATE TABLE `target_rp_pertahun_programs` (
 
 CREATE TABLE `target_rp_pertahun_sasarans` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `pivot_sasaran_indikator_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data untuk tabel `target_rp_pertahun_sasarans`
---
-
-INSERT INTO `target_rp_pertahun_sasarans` (`id`, `pivot_sasaran_indikator_id`, `target`, `rp`, `tahun`, `created_at`, `updated_at`) VALUES
-(1, 4, 'Persen', '80', '2019', '2022-10-04 02:51:05', '2022-10-04 03:30:00');
 
 -- --------------------------------------------------------
 
@@ -1129,6 +1138,8 @@ INSERT INTO `target_rp_pertahun_sasarans` (`id`, `pivot_sasaran_indikator_id`, `
 
 CREATE TABLE `target_rp_pertahun_tujuans` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `renstra_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tujuan_id` bigint(20) UNSIGNED DEFAULT NULL,
   `pivot_tujuan_indikator_id` bigint(20) UNSIGNED DEFAULT NULL,
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1462,6 +1473,12 @@ ALTER TABLE `provinsis`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `renstras`
+--
+ALTER TABLE `renstras`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `sasarans`
 --
 ALTER TABLE `sasarans`
@@ -1578,7 +1595,7 @@ ALTER TABLE `master_opds`
 -- AUTO_INCREMENT untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT untuk tabel `misis`
@@ -1701,6 +1718,12 @@ ALTER TABLE `provinsis`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT untuk tabel `renstras`
+--
+ALTER TABLE `renstras`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `sasarans`
 --
 ALTER TABLE `sasarans`
@@ -1728,7 +1751,7 @@ ALTER TABLE `target_rp_pertahun_programs`
 -- AUTO_INCREMENT untuk tabel `target_rp_pertahun_sasarans`
 --
 ALTER TABLE `target_rp_pertahun_sasarans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `target_rp_pertahun_tujuans`

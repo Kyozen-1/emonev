@@ -28,4 +28,14 @@ class Tujuan extends Model
     {
         return $this->belongsTo('App\Models\Misi', 'misi_id');
     }
+
+    public function renstra()
+    {
+        return $this->hasMany('App\Models\Renstra', 'tujuan_id');
+    }
+
+    public function target_rp_pertahun_tujuan()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunTujuan', 'tujuan_id');
+    }
 }

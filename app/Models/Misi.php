@@ -23,4 +23,9 @@ class Misi extends Model
     {
         return $this->hasMany('App\Models\Tujuan', 'misi_id');
     }
+
+    public function renstra()
+    {
+        return $this->hasMany('App\Models\Renstra', 'misi_id');
+    }
 }

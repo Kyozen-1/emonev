@@ -9,6 +9,16 @@ class TargetRpPertahunSasaran extends Model
     protected $table = 'target_rp_pertahun_sasarans';
     protected $guarded = 'id';
 
+    public function renstra()
+    {
+        return $this->belongsTo('App\Models\Renstra', 'renstra_id');
+    }
+
+    public function sasaran()
+    {
+        return $this->belongsTo('App\Models\Sasaran', 'sasaran_id');
+    }
+
     public function pivot_sasaran_indikator()
     {
         return $this->belongsTo('App\Models\PivotSasaranIndikator', 'pivot_sasaran_indikator_id');

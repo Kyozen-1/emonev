@@ -28,4 +28,14 @@ class Sasaran extends Model
     {
         return $this->hasMany('App\Models\ProgramRpjmd', 'sasaran_id');
     }
+
+    public function renstra()
+    {
+        return $this->hasMany('App\Models\Renstra', 'sasaran_id');
+    }
+
+    public function target_rp_pertahun_sasaran()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunSasaran', 'sasaran_id');
+    }
 }

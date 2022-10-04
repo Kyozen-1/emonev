@@ -28,4 +28,14 @@ class Program extends Model
     {
         return $this->hasMany('App\Models\Kegiatan', 'program_id');
     }
+
+    public function renstra()
+    {
+        return $this->hasMany('App\Models\Renstra', 'program_id');
+    }
+
+    public function target_rp_pertahun_program()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunProgram', 'program_id');
+    }
 }

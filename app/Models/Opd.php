@@ -43,4 +43,9 @@ class Opd extends Model
     {
         return $this->belongsTo('App\Models\MasterOpd', 'opd_id');
     }
+
+    public function renstra()
+    {
+        return $this->hasMany('App\Models\Renstra', 'opd_id');
+    }
 }
