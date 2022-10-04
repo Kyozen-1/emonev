@@ -167,21 +167,26 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     //Program RPJMD
     Route::get('/admin/program-rpjmd', 'Admin\ProgramRpjmdController@index')->name('admin.program-rpjmd.index');
-    Route::get('/admin/program-rpjmd/detail/{id}', 'Admin\ProgramRpjmdController@show');
-    Route::post('/admin/program-rpjmd/get-misi', 'Admin\ProgramRpjmdController@get_misi')->name('admin.program-rpjmd.get-misi');
-    Route::post('/admin/program-rpjmd/get-tujuan', 'Admin\ProgramRpjmdController@get_tujuan')->name('admin.program-rpjmd.get-tujuan');
+    Route::post('/admin/program-rpjmd/get-program', 'Admin\ProgramRpjmdController@get_program')->name('admin.program-rpjmd.get-program');
+    Route::get('/admin/program-rpjmd/get-sasaran/{id}', 'Admin\ProgramRpjmdController@get_sasaran');
     Route::post('/admin/program-rpjmd','Admin\ProgramRpjmdController@store')->name('admin.program-rpjmd.store');
     Route::get('/admin/program-rpjmd/edit/{id}','Admin\ProgramRpjmdController@edit');
     Route::post('/admin/program-rpjmd/update','Admin\ProgramRpjmdController@update')->name('admin.program-rpjmd.update');
     Route::get('/admin/program-rpjmd/destroy/{id}','Admin\ProgramRpjmdController@destroy');
-    Route::post('/admin/program-rpjmd/destroy/impor', 'Admin\ProgramRpjmdController@impor')->name('admin.program-rpjmd.impor');
 
-    //Program RPJMD - Indikator
-    Route::get('/admin/program-rpjmd/{program_rpjmd_id}/indikator', 'Admin\ProgramRpjmdIndikatorController@index');
-    Route::get('/admin/program-rpjmd/indikator/detail/{id}', 'Admin\ProgramRpjmdIndikatorController@show');
-    Route::post('/admin/program-rpjmd/indikator','Admin\ProgramRpjmdIndikatorController@store');
-    Route::get('/admin/program-rpjmd/indikator/edit/{id}','Admin\ProgramRpjmdIndikatorController@edit');
-    Route::post('/admin/program-rpjmd/indikator/update','Admin\ProgramRpjmdIndikatorController@update');
-    Route::get('/admin/program-rpjmd/indikator/destroy/{id}','Admin\ProgramRpjmdIndikatorController@destroy');
-    Route::post('/admin/program-rpjmd/indikator/impor', 'Admin\ProgramRpjmdIndikatorController@impor')->name('admin.program-rpjmd.indikator.impor');
+    //Tahun Periode
+    Route::get('/admin/tahun-periode', 'Admin\TahunPeriodeController@index')->name('admin.tahun-periode.index');
+    Route::post('/admin/tahun-periode','Admin\TahunPeriodeController@store')->name('admin.tahun-periode.store');
+    Route::get('/admin/tahun-periode/edit/{id}','Admin\TahunPeriodeController@edit');
+    Route::post('/admin/tahun-periode/update','Admin\TahunPeriodeController@update')->name('admin.tahun-periode.update');
+    Route::get('/admin/tahun-periode/destroy/{id}','Admin\TahunPeriodeController@destroy');
+
+    //RKPD
+    Route::get('/admin/rpkd', 'Admin\RkpdController@index')->name('admin.rkpd.index');
+
+    //Laporan
+    Route::get('/admin/laporan/tc-14', 'Admin\Laporan\Tc14Controller@index')->name('admin.laporan.tc-14.index');
+    Route::get('/admin/laporan/tc-19', 'Admin\Laporan\Tc19Controller@index')->name('admin.laporan.tc-19.index');
+    Route::get('/admin/laporan/e-79', 'Admin\Laporan\E79Controller@index')->name('admin.laporan.e-79.index');
+    Route::get('/admin/laporan/e-78', 'Admin\Laporan\E78Controller@index')->name('admin.laporan.e-78.index');
 });

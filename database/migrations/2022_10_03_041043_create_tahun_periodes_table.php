@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePivotProgramRpjmdIndikatorsTable extends Migration
+class CreateTahunPeriodesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreatePivotProgramRpjmdIndikatorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('pivot_program_rpjmd_indikators', function (Blueprint $table) {
+        Schema::create('tahun_periodes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('program_rpjmd_id')->nullable();
-            $table->longText('indikator')->nullable();
-            $table->string('target')->nullable();
-            $table->string('satuan')->nullable();
+            $table->string('tahun_awal')->nullable();
+            $table->string('tahun_akhir')->nullable();
+            $table->enum('status', ['Aktif', 'Tidak Aktif']);
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ class CreatePivotProgramRpjmdIndikatorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pivot_program_rpjmd_indikators');
+        Schema::dropIfExists('tahun_periodes');
     }
 }

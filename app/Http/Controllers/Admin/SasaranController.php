@@ -63,7 +63,8 @@ class SasaranController extends Controller
                         {
                             $misi_id = $cek_perubahan_tujuan->misi_id;
                         } else {
-                            $misi_id = $data->misi_id;
+                            $tujuan = Tujuan::find($tujuan_id);
+                            $misi_id = $tujuan->misi_id;
                         }
                         $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $misi_id)->latest()->first();
                         if($cek_perubahan_misi)
@@ -71,7 +72,7 @@ class SasaranController extends Controller
                             return $cek_perubahan_misi->kode;
                         } else {
                             $misi = Misi::find($misi_id);
-                            return $misi->kode;
+                            return $misi_id->kode;
                         }
                     } else {
                         return 'Segera Edit Data!';

@@ -25,7 +25,7 @@
             </div>
             <div class="mb-5">
             <h2 class="cta-1 mb-0 text-primary">Selamat Datang</h2>
-            <h2 class="cta-1 text-primary">Emonev Kota Madiun</h2>
+            <h2 class="cta-1 text-primary">Sistem Pengendalian dan Evaluasi Kabupaten Madiun</h2>
             </div>
             <div class="mb-5">
             {{-- <p class="h6">

@@ -252,7 +252,8 @@
                 @if (request()->routeIs('admin.visi.index') ||
                 request()->routeIs('admin.misi.index') ||
                 request()->routeIs('admin.tujuan.index') ||
-                request()->routeIs('admin.sasaran.index'))
+                request()->routeIs('admin.sasaran.index') ||
+                request()->routeIs('admin.program-rpjmd.index'))
                     <a href="#rpjmd" class="active">
                 @else
                     <a href="#rpjmd">
@@ -297,13 +298,83 @@
                             <span class="label">Sasaran</span>
                         </a>
                     </li>
+                    <li>
+                        @if (request()->routeIs('admin.program-rpjmd.index'))
+                            <a href="{{ route('admin.program-rpjmd.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.program-rpjmd.index') }}">
+                        @endif
+                            <span class="label">Program RPJMD</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                @if (request()->routeIs('admin.rkpd.index'))
+                    <a href="{{ route('admin.rkpd.index') }}" class="active">
+                @else
+                    <a href="{{ route('admin.rkpd.index') }}">
+                @endif
+                    <i data-acorn-icon="file-data" class="icon" data-acorn-size="18"></i>
+                    <span class="label">RKPD</span>
+                </a>
+            </li>
+            <li>
+                @if (request()->routeIs('admin.laporan.tc-14.index') ||
+                request()->routeIs('admin.laporan.tc-19.index') ||
+                request()->routeIs('admin.laporan.e-79.index'))
+                    <a href="#laporan" class="active">
+                @else
+                    <a href="#laporan">
+                @endif
+                    <i data-acorn-icon="align-justify" class="icon" data-acorn-size="18"></i>
+                    <span class="label">Laporan</span>
+                </a>
+                <ul id="laporan">
+                    <li>
+                        @if (request()->routeIs('admin.laporan.tc-14.index'))
+                            <a href="{{ route('admin.laporan.tc-14.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.laporan.tc-14.index') }}">
+                        @endif
+                            <span class="label">TC 14</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.laporan.tc-19.index'))
+                            <a href="{{ route('admin.laporan.tc-19.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.laporan.tc-19.index') }}">
+                        @endif
+                            <span class="label">TC 19</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.laporan.e-79.index'))
+                            <a href="{{ route('admin.laporan.e-79.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.laporan.e-79.index') }}">
+                        @endif
+                            <span class="label">E 79</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.laporan.e-78.index'))
+                            <a href="{{ route('admin.laporan.e-78.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.laporan.e-78.index') }}">
+                        @endif
+                            <span class="label">E 78</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
             <li>
                 @if (request()->routeIs('admin.kecamatan.index') ||
                 request()->routeIs('admin.kelurahan.index') ||
                 request()->routeIs('admin.jenis-opd.index') ||
-                request()->routeIs('admin.master-opd.index'))
+                request()->routeIs('admin.master-opd.index') ||
+                request()->routeIs('admin.tahun-periode.index'))
                     <a href="#master_data" class="active">
                 @else
                     <a href="#master_data">
@@ -346,6 +417,15 @@
                             <a href="{{ route('admin.master-opd.index') }}">
                         @endif
                             <span class="label">Master OPD</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.tahun-periode.index'))
+                            <a href="{{ route('admin.tahun-periode.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.tahun-periode.index') }}">
+                        @endif
+                            <span class="label">Tahun Periode</span>
                         </a>
                     </li>
                 </ul>

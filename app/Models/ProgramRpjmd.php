@@ -19,11 +19,6 @@ class ProgramRpjmd extends Model
         return $this->belongsTo('App\Models\Sasaran', 'sasaran_id');
     }
 
-    public function pivot_perubahan_program_rpjmd()
-    {
-        return $this->hasMany('App\Models\PivotPerubahanProgramRpjmd', 'program_rpjmd_id');
-    }
-
     public function master_opd()
     {
         return $this->belongsTo('App\Models\MasterOpd', 'opd_id');

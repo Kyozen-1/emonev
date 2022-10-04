@@ -13,4 +13,9 @@ class PivotProgramIndikator extends Model
     {
         return $this->belongsTo('App\Models\Program', 'program_id');
     }
+
+    public function target_rp_pertahun_program()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunProgram', 'pivot_program_indikator_id');
+    }
 }

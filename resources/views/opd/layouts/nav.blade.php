@@ -7,7 +7,7 @@
         {{-- <img src="ass" alt="logo" /> --}}
 
         <!-- Or added via css to provide different ones for different color themes -->
-        <div class="img"></div>
+        {{-- <div class="img"></div> --}}
         </a>
     </div>
     <!-- Logo End -->
@@ -188,9 +188,23 @@
     <div class="menu-container flex-grow-1">
         <ul id="menu" class="menu">
             <li>
-                <a href="{{ route('admin.dashboard.index') }}">
+                @if (request()->routeIs('opd.dashboard.index'))
+                <a href="{{ route('opd.dashboard.index') }}" class="active">
+                @else
+                <a href="{{ route('opd.dashboard.index') }}">
+                @endif
                     <i data-acorn-icon="home-garage" class="icon" data-acorn-size="18"></i>
                     <span class="label">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                @if (request()->routeIs('opd.renstra.index'))
+                    <a href="{{ route('opd.renstra.index') }}" class="active">
+                @else
+                    <a href="{{ route('opd.renstra.index') }}">
+                @endif
+                    <i data-acorn-icon="file-data" class="icon" data-acorn-size="18"></i>
+                    <span class="label">Renstra</span>
                 </a>
             </li>
             {{-- <li>

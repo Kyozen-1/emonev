@@ -11,11 +11,11 @@
 <link rel="apple-touch-icon-precomposed" sizes="120x120" href="{{ asset('acorn/acorn-elearning-portal/img/favicon/apple-touch-icon-120x120.png') }}" />
 <link rel="apple-touch-icon-precomposed" sizes="76x76" href="{{ asset('acorn/acorn-elearning-portal/img/favicon/apple-touch-icon-76x76.png') }}" />
 <link rel="apple-touch-icon-precomposed" sizes="152x152" href="{{ asset('acorn/acorn-elearning-portal/img/favicon/apple-touch-icon-152x152.png') }}" />
-<link rel="icon" type="image/png" href="{{ asset('acorn/acorn-elearning-portal/img/favicon/favicon-196x196.png') }}" sizes="196x196" />
-<link rel="icon" type="image/png" href="{{ asset('acorn/acorn-elearning-portal/img/favicon/favicon-96x96.png') }}" sizes="96x96" />
-<link rel="icon" type="image/png" href="{{ asset('acorn/acorn-elearning-portal/img/favicon/favicon-32x32.png') }}" sizes="32x32" />
-<link rel="icon" type="image/png" href="{{ asset('acorn/acorn-elearning-portal/img/favicon/favicon-16x16.png') }}" sizes="16x16" />
-<link rel="icon" type="image/png" href="{{ asset('acorn/acorn-elearning-portal/img/favicon/favicon-128.png') }}" sizes="128x128" />
+<link rel="icon" type="image/png" href="https://3.bp.blogspot.com/-84AZcdvvo6k/XxcAS-ve2mI/AAAAAAAAatg/MsweQPwt57oqf95KhA5Qg-Y2GUnqeqp4gCLcBGAsYHQ/s1600/Lambang-Kabupaten-Madiun_237-design.png" sizes="196x196" />
+<link rel="icon" type="image/png" href="https://3.bp.blogspot.com/-84AZcdvvo6k/XxcAS-ve2mI/AAAAAAAAatg/MsweQPwt57oqf95KhA5Qg-Y2GUnqeqp4gCLcBGAsYHQ/s1600/Lambang-Kabupaten-Madiun_237-design.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="https://3.bp.blogspot.com/-84AZcdvvo6k/XxcAS-ve2mI/AAAAAAAAatg/MsweQPwt57oqf95KhA5Qg-Y2GUnqeqp4gCLcBGAsYHQ/s1600/Lambang-Kabupaten-Madiun_237-design.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="https://3.bp.blogspot.com/-84AZcdvvo6k/XxcAS-ve2mI/AAAAAAAAatg/MsweQPwt57oqf95KhA5Qg-Y2GUnqeqp4gCLcBGAsYHQ/s1600/Lambang-Kabupaten-Madiun_237-design.png" sizes="16x16" />
+<link rel="icon" type="image/png" href="https://3.bp.blogspot.com/-84AZcdvvo6k/XxcAS-ve2mI/AAAAAAAAatg/MsweQPwt57oqf95KhA5Qg-Y2GUnqeqp4gCLcBGAsYHQ/s1600/Lambang-Kabupaten-Madiun_237-design.png" sizes="128x128" />
 <meta name="application-name" content="&nbsp;" />
 <meta name="msapplication-TileColor" content="#FFFFFF" />
 <meta name="msapplication-TileImage" content="{{ asset('acorn/acorn-elearning-portal/img/favicon/mstile-144x144.png') }}" />

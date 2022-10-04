@@ -18,9 +18,8 @@ class CreatePivotPerubahanProgramRpjmdsTable extends Migration
             $table->foreignId('program_rpjmd_id')->nullable();
             $table->foreignId('program_id')->nullable();
             $table->foreignId('sasaran_id')->nullable();
-            $table->string('pagu')->nullable();
-            $table->longText('deskripsi')->nullable();
             $table->enum('status_program', ['program_prioritas', 'program_pendukung']);
+            $table->foreignId('opd_id')->nullable();
             $table->timestamps();
         });
     }
