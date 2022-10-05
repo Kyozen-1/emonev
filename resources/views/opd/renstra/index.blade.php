@@ -517,8 +517,8 @@
                             <label class="form-label">Misi</label>
                             <select name="misi_id" id="misi_id" class="form-control" required>
                                 <option value="">--- Pilih Misi ---</option>
-                                @foreach ($misis as $misi)
-                                    <option value="{{$misi['id']}}">{{$misi['deskripsi']}}</option>
+                                @foreach ($option_misis as $option_misi)
+                                    <option value="{{$option_misi['id']}}">{{$option_misi['deskripsi']}}</option>
                                 @endforeach
                             </select>
                         </div>

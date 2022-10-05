@@ -52,7 +52,7 @@
                     <h1>Kabupaten {{ Auth::user()->kabupaten->nama }}</h1>
                 </div>
                 <div class="text-left">
-                    <label for="" class="control-label">(*) = Program Prioritas, (**) = Program Pendukung</label>
+                    {{-- <label for="" class="control-label">(*) = Program Prioritas, (**) = Program Pendukung</label> --}}
                 </div>
                 <!-- Table Start -->
                 <div class="data-table-responsive-wrapper">

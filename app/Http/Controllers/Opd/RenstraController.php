@@ -56,8 +56,29 @@ class RenstraController extends Controller
                 ];
             }
         }
+
+        $get_misis = Misi::all();
+        $option_misis = [];
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->latest()->first();
+            if($cek_perubahan_misi)
+            {
+                $option_misis[] = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi
+                ];
+            } else {
+                $option_misis[] = [
+                    'id'=> $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi
+                ];
+            }
+        }
         return view('opd.renstra.index', [
-            'misis' => $misis
+            'misis' => $misis,
+            'option_misis' => $option_misis
         ]);
     }
 
