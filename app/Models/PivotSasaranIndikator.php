@@ -16,6 +16,6 @@ class PivotSasaranIndikator extends Model
 
     public function target_rp_pertahun_sasaran()
     {
-        return $this->hasMany('App\Models\TargetRpPertahunSasaran', 'pivot_sasara_indikator_id');
+        return $this->hasMany('App\Models\TargetRpPertahunSasaran', 'pivot_sasaran_indikator_id');
     }
 }

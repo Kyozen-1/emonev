@@ -255,23 +255,104 @@ class Tc14Controller extends Controller
                             $html .= '<td>'.$sasaran['kode'].'</td>';
                             $html .= '<td>'.$sasaran['deskripsi'].'</td>';
                             $b = 0;
-                            $get_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                            foreach ($get_sasaran_indikators as $get_sasaran_indikator) {
-                                if($b == 0)
-                                {
-                                        $html .= '<td>'.$get_sasaran_indikator->indikator.'</td>';
-                                    $html .= '</tr>';
-                                } else {
-                                    $html .= '<tr>';
-                                        $html .= '<td></td>';
-                                        $html .= '<td></td>';
-                                        $html .= '<td></td>';
-                                        $html .= '<td></td>';
-                                        $html .= '<td>'.$get_sasaran_indikator->indikator.'</td>';
-                                    $html .= '</tr>';
+                            $get_opds = TargetRpPertahunTujuan::select('opd_id')->distinct()->get();
+                            foreach ($get_opds as $get_opd) {
+                                $get_sasaran_indikators = PivotSasaranIndikator::whereHas('target_rp_pertahun_sasaran', function($q) use ($get_opd){
+                                    $q->where('opd_id', $get_opd->opd_id);
+                                })->where('sasaran_id', $sasaran['id'])->get();
+                                foreach ($get_sasaran_indikators as $get_sasaran_indikator) {
+                                    $last_target = '';
+                                    $last_rp = '';
+                                    $nama_opd = '';
+                                    $indikator_b = 0;
+                                    $len = count($tahuns);
+                                    if($b == 0)
+                                    {
+                                            $html .= '<td>'.$get_sasaran_indikator->indikator.'</td>';
+                                            $html .= '<td></td>';
+                                            foreach ($tahuns as $tahun) {
+                                                $target_rp_pertahun_sasaran = TargetRpPertahunSasaran::where('pivot_sasaran_indikator_id', $get_sasaran_indikator->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->where('opd_id', $get_opd->opd_id)
+                                                                                ->first();
+                                                if($target_rp_pertahun_sasaran)
+                                                {
+                                                    if ($indikator_b == 0) {
+                                                        $nama_opd = $target_rp_pertahun_sasaran->opd->nama;
+                                                    }
+
+                                                    $html .= '<td>'.$target_rp_pertahun_sasaran->target.'</td>';
+                                                    $html .= '<td>'.$target_rp_pertahun_sasaran->rp.'</td>';
+
+                                                    if($indikator_b == $len - 1)
+                                                    {
+                                                        $last_target = $target_rp_pertahun_sasaran->target;
+                                                        $last_rp = $target_rp_pertahun_sasaran->rp;
+
+                                                        $html .= '<td>'.$last_target.'</td>';
+                                                        $html .= '<td>'.$last_rp.'</td>';
+                                                    }
+                                                } else {
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    if($indikator_b == $len - 1)
+                                                    {
+                                                        $html .= '<td></td>';
+                                                        $html .= '<td></td>';
+                                                    }
+                                                }
+                                                $indikator_b++;
+                                            }
+                                            $html .= '<td>'.$nama_opd.'</td>';
+                                        $html .= '</tr>';
+                                    } else {
+                                        $html .= '<tr>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$get_sasaran_indikator->indikator.'</td>';
+                                            $html .= '<td></td>';
+                                            foreach ($tahuns as $tahun) {
+                                                $target_rp_pertahun_sasaran = TargetRpPertahunSasaran::where('pivot_sasaran_indikator_id', $get_sasaran_indikator->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->where('opd_id', $get_opd->opd_id)
+                                                                                ->first();
+                                                if($target_rp_pertahun_sasaran)
+                                                {
+                                                    if ($indikator_b == 0) {
+                                                        $nama_opd = $target_rp_pertahun_sasaran->opd->nama;
+                                                    }
+
+                                                    $html .= '<td>'.$target_rp_pertahun_sasaran->target.'</td>';
+                                                    $html .= '<td>'.$target_rp_pertahun_sasaran->rp.'</td>';
+
+                                                    if($indikator_b == $len - 1)
+                                                    {
+                                                        $last_target = $target_rp_pertahun_sasaran->target;
+                                                        $last_rp = $target_rp_pertahun_sasaran->rp;
+
+                                                        $html .= '<td>'.$last_target.'</td>';
+                                                        $html .= '<td>'.$last_rp.'</td>';
+                                                    }
+                                                } else {
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    if($indikator_b == $len - 1)
+                                                    {
+                                                        $html .= '<td></td>';
+                                                        $html .= '<td></td>';
+                                                    }
+                                                }
+                                                $indikator_b++;
+                                            }
+                                            $html .= '<td>'.$nama_opd.'</td>';
+                                        $html .= '</tr>';
+                                    }
+                                    $b++;
                                 }
-                                $b++;
                             }
+
                             // Program Prioritas
                             $get_program_rpjmd_prioritases = ProgramRpjmd::where('sasaran_id', $sasaran['id'])
                                                                 ->where('status_program', 'Program Prioritas')
