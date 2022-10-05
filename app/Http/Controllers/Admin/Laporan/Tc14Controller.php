@@ -181,8 +181,10 @@ class Tc14Controller extends Controller
                                 }
                                 $b++;
                             }
-
-
+                            $get_program_rpjmd_prioritases = ProgramRpjmd::where('sasaran_id', $sasaran['id'])
+                                                                ->where('status_program', 'Program Prioritas')
+                                                                ->get();
+                            dd($get_program_rpjmd_prioritases);
                     }
                 }
             }

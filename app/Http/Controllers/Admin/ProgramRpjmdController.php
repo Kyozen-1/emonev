@@ -99,7 +99,7 @@ class ProgramRpjmdController extends Controller
             $kode_sasaran = $cek_perubahan_sasaran->kode;
             $deskripsi_sasaran = $cek_perubahan_sasaran->deskripsi;
         } else {
-            $sasaran = Sasasaran::find($id);
+            $sasaran = Sasaran::find($id);
             $tujuan_id = $sasaran->tujuan_id;
             $kode_sasaran = $sasaran->kode;
             $deskripsi_sasaran = $sasaran->deskripsi;
@@ -173,7 +173,7 @@ class ProgramRpjmdController extends Controller
             $kode_sasaran = $cek_perubahan_sasaran->kode;
             $deskripsi_sasaran = $cek_perubahan_sasaran->deskripsi;
         } else {
-            $sasaran = Sasasaran::find($id);
+            $sasaran = Sasaran::find($id);
             $tujuan_id = $sasaran->tujuan_id;
             $kode_sasaran = $sasaran->kode;
             $deskripsi_sasaran = $sasaran->deskripsi;
