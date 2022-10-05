@@ -255,7 +255,7 @@ class Tc14Controller extends Controller
                             $html .= '<td>'.$sasaran['kode'].'</td>';
                             $html .= '<td>'.$sasaran['deskripsi'].'</td>';
                             $b = 0;
-                            $get_opds = TargetRpPertahunTujuan::select('opd_id')->distinct()->get();
+                            $get_opds = TargetRpPertahunSasaran::select('opd_id')->distinct()->get();
                             foreach ($get_opds as $get_opd) {
                                 $get_sasaran_indikators = PivotSasaranIndikator::whereHas('target_rp_pertahun_sasaran', function($q) use ($get_opd){
                                     $q->where('opd_id', $get_opd->opd_id);
@@ -398,24 +398,103 @@ class Tc14Controller extends Controller
                                     $html .= '<td>'.$tujuan['kode'].'</td>';
                                     $html .= '<td>'.$sasaran['kode'].'</td>';
                                     $html .= '<td>'.$program_prioritas['deskripsi'].'</td>';
-
-                                    $get_program_indikators = PivotProgramIndikator::where('program_id', $program_prioritas['id'])->get();
                                     $c = 0;
-                                    foreach ($get_program_indikators as $get_program_indikator) {
-                                        if($c == 0)
-                                        {
-                                                $html .= '<td>'.$get_program_indikator->indikator.'</td>';
-                                            $html .= '</tr>';
-                                        } else {
-                                            $html .= '<tr>';
-                                                $html .= '<td></td>';
-                                                $html .= '<td></td>';
-                                                $html .= '<td></td>';
-                                                $html .= '<td></td>';
-                                                $html .= '<td>'.$get_program_indikator->indikator.'</td>';
-                                            $html .= '</tr>';
+                                    $get_opds = TargetRpPertahunProgram::select('opd_id')->distinct()->get();
+                                    foreach ($get_opds as $get_opd) {
+                                        $get_program_indikators = PivotProgramIndikator::whereHas('target_rp_pertahun_program', function($q) use ($get_opd){
+                                            $q->where('opd_id', $get_opd->opd_id);
+                                        })->where('program_id', $program_prioritas['id'])->get();
+                                        foreach ($get_program_indikators as $get_program_indikator) {
+                                            $last_target = '';
+                                            $last_rp = '';
+                                            $nama_opd = '';
+                                            $indikator_c = 0;
+                                            $len = count($tahuns);
+                                            if($c == 0)
+                                            {
+                                                    $html .= '<td>'.$get_program_indikator->indikator.'</td>';
+                                                    $html .= '<td></td>';
+                                                    foreach ($tahuns as $tahun) {
+                                                        $target_rp_pertahun_program = TargetRpPertahunProgram::where('pivot_program_indikator_id', $get_program_indikator->id)
+                                                                                        ->where('tahun', $tahun)
+                                                                                        ->where('opd_id', $get_opd->opd_id)
+                                                                                        ->first();
+                                                        if($target_rp_pertahun_program)
+                                                        {
+                                                            if ($indikator_c == 0) {
+                                                                $nama_opd = $target_rp_pertahun_program->opd->nama;
+                                                            }
+
+                                                            $html .= '<td>'.$target_rp_pertahun_program->target.'</td>';
+                                                            $html .= '<td>'.$target_rp_pertahun_program->rp.'</td>';
+
+                                                            if($indikator_c == $len - 1)
+                                                            {
+                                                                $last_target = $target_rp_pertahun_program->target;
+                                                                $last_rp = $target_rp_pertahun_program->rp;
+
+                                                                $html .= '<td>'.$last_target.'</td>';
+                                                                $html .= '<td>'.$last_rp.'</td>';
+                                                            }
+                                                        } else {
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            if($indikator_c == $len - 1)
+                                                            {
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                            }
+                                                        }
+                                                        $indikator_c++;
+                                                    }
+                                                    $html .= '<td>'.$nama_opd.'</td>';
+                                                $html .= '</tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td>'.$get_program_indikator->indikator.'</td>';
+                                                    $html .= '<td></td>';
+                                                    foreach ($tahuns as $tahun) {
+                                                        $target_rp_pertahun_program = TargetRpPertahunProgram::where('pivot_program_indikator_id', $get_program_indikator->id)
+                                                                                        ->where('tahun', $tahun)
+                                                                                        ->where('opd_id', $get_opd->opd_id)
+                                                                                        ->first();
+                                                        if($target_rp_pertahun_program)
+                                                        {
+                                                            if ($indikator_c == 0) {
+                                                                $nama_opd = $target_rp_pertahun_program->opd->nama;
+                                                            }
+
+                                                            $html .= '<td>'.$target_rp_pertahun_program->target.'</td>';
+                                                            $html .= '<td>'.$target_rp_pertahun_program->rp.'</td>';
+
+                                                            if($indikator_c == $len - 1)
+                                                            {
+                                                                $last_target = $target_rp_pertahun_program->target;
+                                                                $last_rp = $target_rp_pertahun_program->rp;
+
+                                                                $html .= '<td>'.$last_target.'</td>';
+                                                                $html .= '<td>'.$last_rp.'</td>';
+                                                            }
+                                                        } else {
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            if($indikator_c == $len - 1)
+                                                            {
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                            }
+                                                        }
+                                                        $indikator_c++;
+                                                    }
+                                                    $html .= '<td>'.$nama_opd.'</td>';
+                                                $html .= '</tr>';
+                                            }
+                                            $c++;
                                         }
-                                        $c++;
                                     }
                             }
                             // Program Pendukung
@@ -463,24 +542,104 @@ class Tc14Controller extends Controller
                                     $html .= '<td>'.$tujuan['kode'].'</td>';
                                     $html .= '<td>'.$sasaran['kode'].'</td>';
                                     $html .= '<td>'.$program_pendukung['deskripsi'].'</td>';
-
-                                    $get_program_indikators = PivotProgramIndikator::where('program_id', $program_pendukung['id'])->get();
                                     $d = 0;
-                                    foreach ($get_program_indikators as $get_program_indikator) {
-                                        if($d == 0)
-                                        {
-                                                $html .= '<td>'.$get_program_indikator->indikator.'</td>';
-                                            $html .= '</tr>';
-                                        } else {
-                                            $html .= '<tr>';
-                                                $html .= '<td></td>';
-                                                $html .= '<td></td>';
-                                                $html .= '<td></td>';
-                                                $html .= '<td></td>';
-                                                $html .= '<td>'.$get_program_indikator->indikator.'</td>';
-                                            $html .= '</tr>';
+                                    $get_opds = TargetRpPertahunProgram::select('opd_id')->distinct()->get();
+                                    foreach ($get_opds as $get_opd) {
+                                        $get_program_indikators = PivotProgramIndikator::whereHas('target_rp_pertahun_program', function($q) use ($get_opd){
+                                            $q->where('opd_id', $get_opd->opd_id);
+                                        })->where('program_id', $program_pendukung['id'])->get();
+                                        foreach ($get_program_indikators as $get_program_indikator) {
+                                            $last_target = '';
+                                            $last_rp = '';
+                                            $nama_opd = '';
+                                            $indikator_d = 0;
+                                            $len = count($tahuns);
+
+                                            if($d == 0)
+                                            {
+                                                    $html .= '<td>'.$get_program_indikator->indikator.'</td>';
+                                                    $html .= '<td></td>';
+                                                    foreach ($tahuns as $tahun) {
+                                                        $target_rp_pertahun_program = TargetRpPertahunProgram::where('pivot_program_indikator_id', $get_program_indikator->id)
+                                                                                        ->where('tahun', $tahun)
+                                                                                        ->where('opd_id', $get_opd->opd_id)
+                                                                                        ->first();
+                                                        if($target_rp_pertahun_program)
+                                                        {
+                                                            if ($indikator_d == 0) {
+                                                                $nama_opd = $target_rp_pertahun_program->opd->nama;
+                                                            }
+
+                                                            $html .= '<td>'.$target_rp_pertahun_program->target.'</td>';
+                                                            $html .= '<td>'.$target_rp_pertahun_program->rp.'</td>';
+
+                                                            if($indikator_d == $len - 1)
+                                                            {
+                                                                $last_target = $target_rp_pertahun_program->target;
+                                                                $last_rp = $target_rp_pertahun_program->rp;
+
+                                                                $html .= '<td>'.$last_target.'</td>';
+                                                                $html .= '<td>'.$last_rp.'</td>';
+                                                            }
+                                                        } else {
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            if($indikator_d == $len - 1)
+                                                            {
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                            }
+                                                        }
+                                                        $indikator_d++;
+                                                    }
+                                                    $html .= '<td>'.$nama_opd.'</td>';
+                                                $html .= '</tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td>'.$get_program_indikator->indikator.'</td>';
+                                                    $html .= '<td></td>';
+                                                    foreach ($tahuns as $tahun) {
+                                                        $target_rp_pertahun_program = TargetRpPertahunProgram::where('pivot_program_indikator_id', $get_program_indikator->id)
+                                                                                        ->where('tahun', $tahun)
+                                                                                        ->where('opd_id', $get_opd->opd_id)
+                                                                                        ->first();
+                                                        if($target_rp_pertahun_program)
+                                                        {
+                                                            if ($indikator_d == 0) {
+                                                                $nama_opd = $target_rp_pertahun_program->opd->nama;
+                                                            }
+
+                                                            $html .= '<td>'.$target_rp_pertahun_program->target.'</td>';
+                                                            $html .= '<td>'.$target_rp_pertahun_program->rp.'</td>';
+
+                                                            if($indikator_d == $len - 1)
+                                                            {
+                                                                $last_target = $target_rp_pertahun_program->target;
+                                                                $last_rp = $target_rp_pertahun_program->rp;
+
+                                                                $html .= '<td>'.$last_target.'</td>';
+                                                                $html .= '<td>'.$last_rp.'</td>';
+                                                            }
+                                                        } else {
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            if($indikator_d == $len - 1)
+                                                            {
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                            }
+                                                        }
+                                                        $indikator_d++;
+                                                    }
+                                                    $html .= '<td>'.$nama_opd.'</td>';
+                                                $html .= '</tr>';
+                                            }
+                                            $d++;
                                         }
-                                        $d++;
                                     }
                             }
                     }
