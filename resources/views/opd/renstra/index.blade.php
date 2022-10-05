@@ -117,7 +117,7 @@
                             $get_tujuans = Tujuan::select('id', 'deskripsi', 'kode')->wherehas('renstra', function($q) use ($misi){
                                 $q->where('misi_id', $misi['id']);
                                 $q->whereHas('tujuan');
-                                $q->where('opd_id', Auth::user()->opd_id);
+                                $q->where('opd_id', Auth::user()->opd->opd_id);
                             })->where('misi_id', $misi['id'])->groupBy('id')->get();
                             $tujuans = [];
                             foreach ($get_tujuans as $get_tujuan) {
@@ -204,7 +204,7 @@
                                                                                                 @php
                                                                                                     $target_rp_pertahun_tujuan = TargetRpPertahunTujuan::where('tahun', $tahun)
                                                                                                                                     ->where('pivot_tujuan_indikator_id', $tujuan_indikator['id'])
-                                                                                                                                    ->where('opd_id', Auth::user()->opd_id)
+                                                                                                                                    ->where('opd_id', Auth::user()->opd->opd_id)
                                                                                                                                     ->first();
                                                                                                 @endphp
                                                                                                 <tr>
@@ -237,7 +237,7 @@
                                                                                 $q->where('misi_id', $misi['id']);
                                                                                 $q->where('tujuan_id', $tujuan['id']);
                                                                                 $q->whereHas('sasaran');
-                                                                                $q->where('opd_id', Auth::user()->opd_id);
+                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
                                                                             })
                                                                             ->where('tujuan_id', $tujuan['id'])
                                                                             ->groupBy('id')
@@ -326,7 +326,7 @@
                                                                                                                         @php
                                                                                                                             $target_rp_pertahun_sasaran = TargetRpPertahunSasaran::where('tahun', $tahun)
                                                                                                                                                             ->where('pivot_sasaran_indikator_id', $sasaran_indikator['id'])
-                                                                                                                                                            ->where('opd_id', Auth::user()->opd_id)
+                                                                                                                                                            ->where('opd_id', Auth::user()->opd->opd_id)
                                                                                                                                                             ->first();
                                                                                                                         @endphp
                                                                                                                         <tr>
@@ -360,7 +360,7 @@
                                                                                                         $q->where('tujuan_id', $tujuan['id']);
                                                                                                         $q->where('sasaran_id', $sasaran['id']);
                                                                                                         $q->whereHas('program');
-                                                                                                        $q->where('opd_id', Auth::user()->opd_id);
+                                                                                                        $q->where('opd_id', Auth::user()->opd->opd_id);
                                                                                                     })
                                                                                                     ->whereHas('program_rpjmd', function($q) use ($sasaran){
                                                                                                         $q->where('sasaran_id', $sasaran['id']);
@@ -450,7 +450,7 @@
                                                                                                                                                     @php
                                                                                                                                                         $target_rp_pertahun_program = TargetRpPertahunProgram::where('tahun', $tahun)
                                                                                                                                                                                         ->where('pivot_program_indikator_id', $program_indikator['id'])
-                                                                                                                                                                                        ->where('opd_id', Auth::user()->opd_id)
+                                                                                                                                                                                        ->where('opd_id', Auth::user()->opd->opd_id)
                                                                                                                                                                                         ->first();
                                                                                                                                                     @endphp
                                                                                                                                                     <tr>

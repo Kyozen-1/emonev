@@ -164,7 +164,7 @@ class Tc14Controller extends Controller
                             $html .= '<td>'.$sasaran['kode'].'</td>';
                             $html .= '<td>'.$sasaran['deskripsi'].'</td>';
                             $b = 0;
-                            $get_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->latest()->get();
+                            $get_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
                             foreach ($get_sasaran_indikators as $get_sasaran_indikator) {
                                 if($b == 0)
                                 {
@@ -181,6 +181,8 @@ class Tc14Controller extends Controller
                                 }
                                 $b++;
                             }
+
+
                     }
                 }
             }

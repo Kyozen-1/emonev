@@ -16,6 +16,6 @@ class TargetRpPertahunProgram extends Model
 
     public function opd()
     {
-        return $this->belongsTo('App\Models\Opd', 'opd_id');
+        return $this->belongsTo('App\Models\MasterOpd', 'opd_id');
     }
 }

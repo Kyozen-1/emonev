@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 05 Okt 2022 pada 02.32
+-- Waktu pembuatan: 05 Okt 2022 pada 11.13
 -- Versi server: 5.7.33
 -- Versi PHP: 8.0.2
 
@@ -594,7 +594,7 @@ CREATE TABLE `opds` (
 --
 
 INSERT INTO `opds` (`id`, `nama`, `no_hp`, `alamat`, `negara_id`, `provinsi_id`, `kabupaten_id`, `kecamatan_id`, `kelurahan_id`, `foto`, `opd_id`, `created_at`, `updated_at`) VALUES
-(1, 'Dinas Pendidikan dan Kebudayaan', '123456789012', 'Jl. Raya Tiron No.87, Tiron, Kec. Madiun, Kabupaten Madiun, Jawa Timur 63151', 62, 5, 62, NULL, NULL, '6332c8c48503a-220927.png', NULL, '2022-09-27 09:56:20', '2022-09-27 09:56:20');
+(1, 'Dinas Pendidikan dan Kebudayaan', '123456789012', 'Jl. Raya Tiron No.87, Tiron, Kec. Madiun, Kabupaten Madiun, Jawa Timur 63151', 62, 5, 62, NULL, NULL, '6332c8c48503a-220927.png', 16, '2022-09-27 09:56:20', '2022-09-27 09:56:20');
 
 -- --------------------------------------------------------
 
@@ -862,7 +862,8 @@ CREATE TABLE `pivot_program_indikators` (
 --
 
 INSERT INTO `pivot_program_indikators` (`id`, `program_id`, `indikator`, `target`, `satuan`, `created_at`, `updated_at`) VALUES
-(3, 1, 'Persentase administrasi perkantoran yang terpenuhi', '100', 'persen', '2022-09-28 07:44:31', '2022-09-28 07:44:31');
+(3, 1, 'Persentase administrasi perkantoran yang terpenuhi', '100', 'persen', '2022-09-28 07:44:31', '2022-09-28 07:44:31'),
+(4, 2, 'asfasfd', '121', 'sasd', '2022-10-05 06:46:43', '2022-10-05 06:46:43');
 
 -- --------------------------------------------------------
 
@@ -887,7 +888,8 @@ CREATE TABLE `pivot_sasaran_indikators` (
 INSERT INTO `pivot_sasaran_indikators` (`id`, `sasaran_id`, `indikator`, `target`, `satuan`, `created_at`, `updated_at`) VALUES
 (2, 2, 'Indeks Stabilitas', '77,09', 'Indeks', '2022-09-30 06:58:41', '2022-09-30 06:58:41'),
 (3, 4, 'sasa', '100', 'persen', '2022-10-03 22:32:20', '2022-10-03 22:32:20'),
-(4, 1, 'minum', '1', 'orang', '2022-10-03 22:33:49', '2022-10-03 22:33:49');
+(4, 1, 'minum', '1', 'orang', '2022-10-03 22:33:49', '2022-10-03 22:33:49'),
+(5, 4, 'sdfasf', 'asdfdsa', 'asdfasdf', '2022-10-05 11:05:37', '2022-10-05 11:05:37');
 
 -- --------------------------------------------------------
 
@@ -991,7 +993,9 @@ CREATE TABLE `program_rpjmds` (
 INSERT INTO `program_rpjmds` (`id`, `program_id`, `sasaran_id`, `status_program`, `opd_id`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 'Program Prioritas', 2, '2022-10-03 21:51:16', '2022-10-03 21:51:16'),
 (3, 1, 1, 'Program Pendukung', 2, '2022-10-03 21:51:44', '2022-10-03 21:51:44'),
-(4, 2, 1, 'Program Pendukung', 5, '2022-10-03 22:12:42', '2022-10-03 22:12:42');
+(4, 2, 1, 'Program Pendukung', 5, '2022-10-03 22:12:42', '2022-10-03 22:12:42'),
+(5, 3, 2, 'Program Prioritas', 16, '2022-10-05 03:44:15', '2022-10-05 03:44:15'),
+(6, 1, 2, 'Program Pendukung', 2, '2022-10-05 03:52:51', '2022-10-05 03:52:51');
 
 -- --------------------------------------------------------
 
@@ -1692,13 +1696,13 @@ ALTER TABLE `pivot_perubahan_visis`
 -- AUTO_INCREMENT untuk tabel `pivot_program_indikators`
 --
 ALTER TABLE `pivot_program_indikators`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `pivot_sasaran_indikators`
 --
 ALTER TABLE `pivot_sasaran_indikators`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `pivot_sub_kegiatan_indikators`
@@ -1722,7 +1726,7 @@ ALTER TABLE `programs`
 -- AUTO_INCREMENT untuk tabel `program_rpjmds`
 --
 ALTER TABLE `program_rpjmds`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `provinsis`
@@ -1758,19 +1762,19 @@ ALTER TABLE `tahun_periodes`
 -- AUTO_INCREMENT untuk tabel `target_rp_pertahun_programs`
 --
 ALTER TABLE `target_rp_pertahun_programs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `target_rp_pertahun_sasarans`
 --
 ALTER TABLE `target_rp_pertahun_sasarans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `target_rp_pertahun_tujuans`
 --
 ALTER TABLE `target_rp_pertahun_tujuans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `tujuans`

@@ -37,7 +37,7 @@ class RenstraController extends Controller
 {
     public function index()
     {
-        $get_renstras = Renstra::select('id', 'misi_id')->where('opd_id', Auth::user()->opd_id)->groupBy('misi_id')->get();
+        $get_renstras = Renstra::select('id', 'misi_id')->where('opd_id', Auth::user()->opd->opd_id)->groupBy('misi_id')->get();
         $misis = [];
         foreach ($get_renstras as $get_renstra) {
             $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_renstra->misi_id)->latest()->first();
@@ -161,7 +161,7 @@ class RenstraController extends Controller
                             ->where('tujuan_id', $request->tujuan_id)
                             ->where('sasaran_id', $request->sasaran_id)
                             ->where('program_id', $request->program_id)
-                            ->where('opd_id', Auth::user()->opd_id)
+                            ->where('opd_id', Auth::user()->opd->opd_id)
                             ->first();
         if(!$cek_renstra)
         {
@@ -170,7 +170,7 @@ class RenstraController extends Controller
             $renstra->tujuan_id = $request->tujuan_id;
             $renstra->sasaran_id = $request->sasaran_id;
             $renstra->program_id = $request->program_id;
-            $renstra->opd_id = Auth::user()->opd_id;
+            $renstra->opd_id = Auth::user()->opd->opd_id;
             $renstra->save();
         }
 
@@ -197,7 +197,7 @@ class RenstraController extends Controller
         $target_rp_pertahun_tujuan->target = $request->target_rp_pertahun_tujuan_target;
         $target_rp_pertahun_tujuan->rp = $request->target_rp_pertahun_tujuan_rp;
         $target_rp_pertahun_tujuan->tahun = $request->target_rp_pertahun_tujuan_tahun;
-        $target_rp_pertahun_tujuan->opd_id = Auth::user()->opd_id;
+        $target_rp_pertahun_tujuan->opd_id = Auth::user()->opd->opd_id;
         $target_rp_pertahun_tujuan->save();
 
         return response()->json(['success' => 'Berhasil']);
@@ -248,7 +248,7 @@ class RenstraController extends Controller
         $target_rp_pertahun_sasaran->target = $request->target_rp_pertahun_sasaran_target;
         $target_rp_pertahun_sasaran->rp = $request->target_rp_pertahun_sasaran_rp;
         $target_rp_pertahun_sasaran->tahun = $request->target_rp_pertahun_sasaran_tahun;
-        $target_rp_pertahun_sasaran->opd_id = Auth::user()->opd_id;
+        $target_rp_pertahun_sasaran->opd_id = Auth::user()->opd->opd_id;
         $target_rp_pertahun_sasaran->save();
 
         return response()->json(['success' => 'Berhasil']);
@@ -299,7 +299,7 @@ class RenstraController extends Controller
         $target_rp_pertahun_program->target = $request->target_rp_pertahun_program_target;
         $target_rp_pertahun_program->rp = $request->target_rp_pertahun_program_rp;
         $target_rp_pertahun_program->tahun = $request->target_rp_pertahun_program_tahun;
-        $target_rp_pertahun_program->opd_id = Auth::user()->opd_id;
+        $target_rp_pertahun_program->opd_id = Auth::user()->opd->opd_id;
         $target_rp_pertahun_program->save();
 
         return response()->json(['success' => 'Berhasil']);
