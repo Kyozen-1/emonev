@@ -38,4 +38,9 @@ class Program extends Model
     {
         return $this->hasMany('App\Models\TargetRpPertahunProgram', 'program_id');
     }
+
+    public function program_rpjmd()
+    {
+        return $this->hasMany('App\Models\ProgramRpjmd', 'program_id');
+    }
 }

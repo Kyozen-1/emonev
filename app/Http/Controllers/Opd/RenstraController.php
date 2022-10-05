@@ -43,7 +43,6 @@ class RenstraController extends Controller
             $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_renstra->misi_id)->latest()->first();
             if ($cek_perubahan_misi) {
                 $misis[] = [
-                    'renstra_id' => $get_renstra->id,
                     'id' => $cek_perubahan_misi->misi_id,
                     'kode' => $cek_perubahan_misi->kode,
                     'deskripsi' => $cek_perubahan_misi->deskripsi
@@ -51,7 +50,6 @@ class RenstraController extends Controller
             } else {
                 $misi = Misi::find($get_renstra->misi_id);
                 $misis[] = [
-                    'renstra_id' => $get_renstra->id,
                     'id' => $misi->id,
                     'kode' => $misi->kode,
                     'deskripsi' => $misi->deskripsi
@@ -129,13 +127,13 @@ class RenstraController extends Controller
             $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $program_rpjmd['program_id'])->latest()->first();
             if($cek_perubahan_program)
             {
-                $programs = [
+                $programs[] = [
                     'id' => $cek_perubahan_program->program_id,
                     'deskripsi' => $cek_perubahan_program->deskripsi
                 ];
             } else {
                 $program = Program::find($program_rpjmd['program_id']);
-                $programs = [
+                $programs[] = [
                     'id' => $program->id,
                     'deskripsi' => $program->deskripsi
                 ];
@@ -178,5 +176,158 @@ class RenstraController extends Controller
 
         Alert::success('Berhasil', 'Item Renstra Berhasil Tersimpan');
         return redirect()->route('opd.renstra.index');
+    }
+
+    public function tambah_target_rp_pertahun_tujuan(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'target_rp_pertahun_tujuan_tahun' => 'required',
+            'target_rp_pertahun_tujuan_tujuan_indikator_id' => 'required',
+            'target_rp_pertahun_tujuan_target' => 'required',
+            'target_rp_pertahun_tujuan_rp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $target_rp_pertahun_tujuan = new TargetRpPertahunTujuan;
+        $target_rp_pertahun_tujuan->pivot_tujuan_indikator_id = $request->target_rp_pertahun_tujuan_tujuan_indikator_id;
+        $target_rp_pertahun_tujuan->target = $request->target_rp_pertahun_tujuan_target;
+        $target_rp_pertahun_tujuan->rp = $request->target_rp_pertahun_tujuan_rp;
+        $target_rp_pertahun_tujuan->tahun = $request->target_rp_pertahun_tujuan_tahun;
+        $target_rp_pertahun_tujuan->opd_id = Auth::user()->opd_id;
+        $target_rp_pertahun_tujuan->save();
+
+        return response()->json(['success' => 'Berhasil']);
+    }
+
+    public function edit_target_rp_pertahun_tujuan($id)
+    {
+        $data = TargetRpPertahunTujuan::find($id);
+        return response()->json(['result' => $data]);
+    }
+
+    public function update_target_rp_pertahun_tujuan(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'target_rp_pertahun_tujuan_target' => 'required',
+            'target_rp_pertahun_tujuan_rp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $target_rp_pertahun_tujuan = TargetRpPertahunTujuan::find($request->target_rp_pertahun_tujuan_hidden_id);
+        $target_rp_pertahun_tujuan->target = $request->target_rp_pertahun_tujuan_target;
+        $target_rp_pertahun_tujuan->rp = $request->target_rp_pertahun_tujuan_rp;
+        $target_rp_pertahun_tujuan->save();
+
+        return response()->json(['success' => 'Berhasil']);
+    }
+
+    public function tambah_target_rp_pertahun_sasaran(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'target_rp_pertahun_sasaran_tahun' => 'required',
+            'target_rp_pertahun_sasaran_sasaran_indikator_id' => 'required',
+            'target_rp_pertahun_sasaran_target' => 'required',
+            'target_rp_pertahun_sasaran_rp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $target_rp_pertahun_sasaran = new TargetRpPertahunSasaran;
+        $target_rp_pertahun_sasaran->pivot_sasaran_indikator_id = $request->target_rp_pertahun_sasaran_sasaran_indikator_id;
+        $target_rp_pertahun_sasaran->target = $request->target_rp_pertahun_sasaran_target;
+        $target_rp_pertahun_sasaran->rp = $request->target_rp_pertahun_sasaran_rp;
+        $target_rp_pertahun_sasaran->tahun = $request->target_rp_pertahun_sasaran_tahun;
+        $target_rp_pertahun_sasaran->opd_id = Auth::user()->opd_id;
+        $target_rp_pertahun_sasaran->save();
+
+        return response()->json(['success' => 'Berhasil']);
+    }
+
+    public function edit_target_rp_pertahun_sasaran($id)
+    {
+        $data = TargetRpPertahunSasaran::find($id);
+        return response()->json(['result' => $data]);
+    }
+
+    public function update_target_rp_pertahun_sasaran(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'target_rp_pertahun_sasaran_target' => 'required',
+            'target_rp_pertahun_sasaran_rp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $target_rp_pertahun_sasaran = TargetRpPertahunSasaran::find($request->target_rp_pertahun_sasaran_hidden_id);
+        $target_rp_pertahun_sasaran->target = $request->target_rp_pertahun_sasaran_target;
+        $target_rp_pertahun_sasaran->rp = $request->target_rp_pertahun_sasaran_rp;
+        $target_rp_pertahun_sasaran->save();
+
+        return response()->json(['success' => 'Berhasil']);
+    }
+
+    public function tambah_target_rp_pertahun_program(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'target_rp_pertahun_program_tahun' => 'required',
+            'target_rp_pertahun_program_program_indikator_id' => 'required',
+            'target_rp_pertahun_program_target' => 'required',
+            'target_rp_pertahun_program_rp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $target_rp_pertahun_program = new TargetRpPertahunProgram;
+        $target_rp_pertahun_program->pivot_program_indikator_id = $request->target_rp_pertahun_program_program_indikator_id;
+        $target_rp_pertahun_program->target = $request->target_rp_pertahun_program_target;
+        $target_rp_pertahun_program->rp = $request->target_rp_pertahun_program_rp;
+        $target_rp_pertahun_program->tahun = $request->target_rp_pertahun_program_tahun;
+        $target_rp_pertahun_program->opd_id = Auth::user()->opd_id;
+        $target_rp_pertahun_program->save();
+
+        return response()->json(['success' => 'Berhasil']);
+    }
+
+    public function edit_target_rp_pertahun_program($id)
+    {
+        $data = TargetRpPertahunProgram::find($id);
+        return response()->json(['result' => $data]);
+    }
+
+    public function update_target_rp_pertahun_program(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'target_rp_pertahun_program_target' => 'required',
+            'target_rp_pertahun_program_rp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $target_rp_pertahun_program = TargetRpPertahunProgram::find($request->target_rp_pertahun_program_hidden_id);
+        $target_rp_pertahun_program->target = $request->target_rp_pertahun_program_target;
+        $target_rp_pertahun_program->rp = $request->target_rp_pertahun_program_rp;
+        $target_rp_pertahun_program->save();
+
+        return response()->json(['success' => 'Berhasil']);
     }
 }

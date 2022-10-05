@@ -52,6 +52,7 @@
     use App\Models\TargetRpPertahunProgram;
     use App\Models\PivotTujuanIndikator;
     use App\Models\Renstra;
+    use App\Models\PivotProgramIndikator;
 
     $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
     $tahun_awal = $get_periode->tahun_awal;
@@ -113,13 +114,14 @@
                     <div class="collapse" id="collapseMisi{{$misi['id']}}" data-bs-parent="#accordionMisi{{$misi['id']}}">
                         {{-- Tujuan --}}
                         @php
-                            $get_tujuans = Tujuan::wherehas('renstra', function($q) use ($misi){
+                            $get_tujuans = Tujuan::select('id', 'deskripsi', 'kode')->wherehas('renstra', function($q) use ($misi){
                                 $q->where('misi_id', $misi['id']);
+                                $q->whereHas('tujuan');
                                 $q->where('opd_id', Auth::user()->opd_id);
-                            })->where('misi_id', $misi['id'])->get();
+                            })->where('misi_id', $misi['id'])->groupBy('id')->get();
                             $tujuans = [];
                             foreach ($get_tujuans as $get_tujuan) {
-                                $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->tujuan_id)->latest()->first();
+                                $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->latest()->first();
                                 if($cek_perubahan_tujuan)
                                 {
                                     $tujuans[] = [
@@ -129,7 +131,7 @@
                                     ];
                                 } else {
                                     $tujuans[] = [
-                                        'id' => $get_tujuan->tujuan_id,
+                                        'id' => $get_tujuan->id,
                                         'deskripsi' => $get_tujuan->deskripsi,
                                         'kode' => $get_tujuan->kode
                                     ];
@@ -168,7 +170,7 @@
                                                                                     {{$a++}}. Indikator: {{$tujuan_indikator->indikator}}
                                                                                 </button>
                                                                             </div>
-                                                                            <div id="flush-collapseTujuanIndikator{{$tujuan_indikator['id']}}" class="accordion-collapse collapse" aria-labelledby="flush-tujuan-indikator{{$tujuan_indikator['id']}}" data-bs-parent="#accordionTujuanIndikator{{$tujuan['id']}}">
+                                                                            <div id="flush-collapseTujuanIndikator{{$tujuan_indikator['id']}}" class="accordion-collapse collapse" aria-labelledby="flush-tujuan-indikator{{$tujuan_indikator['id']}}" data-bs-parent="#accordionTujuanIndikator{{$tujuan_indikator['id']}}">
                                                                                 <div class="accordion-body">
                                                                                     <table class="table table-borderless">
                                                                                         <thead>
@@ -202,8 +204,7 @@
                                                                                                 @php
                                                                                                     $target_rp_pertahun_tujuan = TargetRpPertahunTujuan::where('tahun', $tahun)
                                                                                                                                     ->where('pivot_tujuan_indikator_id', $tujuan_indikator['id'])
-                                                                                                                                    ->where('renstra_id', $misi['renstra_id'])
-                                                                                                                                    ->where('tujuan_id', $tujuan['id'])
+                                                                                                                                    ->where('opd_id', Auth::user()->opd_id)
                                                                                                                                     ->first();
                                                                                                 @endphp
                                                                                                 <tr>
@@ -215,7 +216,7 @@
                                                                                                     @else
                                                                                                         <td style="text-align: center"></td>
                                                                                                         <td style="text-align: center"></td>
-                                                                                                        <td style="text-align: center"><button class="btn btn-primary waves-effect waves-light tambah-rp-pertahun-tujuan" type="button" data-tujuan-indikator-id="{{$tujuan_indikator['id']}}" data-tahun="{{$tahun}}" data-renstra-id="{{$misi['renstra_id']}}" data-tujuan-id="{{$tujuan['id']}}"><i class="fas fa-plus"></i></button></td>
+                                                                                                        <td style="text-align: center"><button class="btn btn-primary waves-effect waves-light tambah-rp-pertahun-tujuan" type="button" data-tujuan-indikator-id="{{$tujuan_indikator['id']}}" data-tahun="{{$tahun}}" ><i class="fas fa-plus"></i></button></td>
                                                                                                     @endif
                                                                                                 </tr>
                                                                                             @endforeach
@@ -229,8 +230,18 @@
                                                             </div>
                                                         </section>
                                                         <hr>
-                                                        {{-- @php
-                                                            $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+                                                        {{-- Sasaran --}}
+                                                        @php
+                                                            $get_sasarans = Sasaran::select('id', 'deskripsi', 'kode')
+                                                                            ->wherehas('renstra', function($q) use ($misi, $tujuan){
+                                                                                $q->where('misi_id', $misi['id']);
+                                                                                $q->where('tujuan_id', $tujuan['id']);
+                                                                                $q->whereHas('sasaran');
+                                                                                $q->where('opd_id', Auth::user()->opd_id);
+                                                                            })
+                                                                            ->where('tujuan_id', $tujuan['id'])
+                                                                            ->groupBy('id')
+                                                                            ->get();
                                                             $sasarans = [];
                                                             foreach ($get_sasarans as $get_sasaran) {
                                                                 $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
@@ -238,16 +249,14 @@
                                                                 {
                                                                     $sasarans[] = [
                                                                         'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                        'program_id' => $cek_perubahan_sasaran->program_id,
-                                                                        'sasaran_id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                        'status_program' => $cek_perubahan_sasaran->status_program,
+                                                                        'kode' => $cek_perubahan_sasaran->kode,
+                                                                        'deskripsi' => $cek_perubahan_sasaran->deskripsi
                                                                     ];
                                                                 } else {
                                                                     $sasarans[] = [
                                                                         'id' => $get_sasaran->id,
-                                                                        'program_id' => $get_sasaran->program_id,
-                                                                        'sasaran_id' => $get_sasaran->sasaran_id,
-                                                                        'status_program' => $get_sasaran->status_program
+                                                                        'kode' => $get_sasaran->kode,
+                                                                        'deskripsi' => $get_sasaran->deskripsi
                                                                     ];
                                                                 }
                                                             }
@@ -257,34 +266,229 @@
                                                                 @foreach ($sasarans as $sasaran)
                                                                     <div class="accordion" id="accordionSasaran{{$sasaran['id']}}">
                                                                         <div class="accordion-item">
-                                                                            <div class="accordion-header" id="flush-program-rjpmd{{$sasaran['id']}}">
+                                                                            <div class="accordion-header" id="flush-sasaran{{$sasaran['id']}}">
                                                                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSasaran{{$sasaran['id']}}" aria-expanded="false" aria-controls="flush-collapseSasaran{{$sasaran['id']}}">
-                                                                                    @php
-                                                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $sasaran['program_id'])->latest()->first();
-                                                                                        if($cek_perubahan_program)
-                                                                                        {
-                                                                                            $kode_program = $cek_perubahan_program->kode;
-                                                                                            $deskripsi_program = $cek_perubahan_program->deskripsi;
-                                                                                        } else {
-                                                                                            $program = Program::find($sasaran['program_id']);
-                                                                                            $kode_program = $program->kode;
-                                                                                            $deskripsi_program = $program->deskripsi;
-                                                                                        }
-                                                                                    @endphp
-                                                                                    Program <br>
-                                                                                    Kode: {{$kode_program}}. {{$deskripsi_program}}
+                                                                                    Sasaran <br>
+                                                                                    Kode: {{$sasaran['kode']}}. {{$sasaran['deskripsi']}}
                                                                                 </button>
                                                                             </div>
-                                                                            <div id="flush-collapseSasaran{{$sasaran['id']}}" class="accordion-collapse collapse" aria-labelledby="flush-program-rjpmd{{$sasaran['id']}}" data-bs-parent="#accordionSasaran{{$tujuan['id']}}">
+                                                                            <div id="flush-collapseSasaran{{$sasaran['id']}}" class="accordion-collapse collapse" aria-labelledby="flush-sasaran{{$sasaran['id']}}" data-bs-parent="#accordionSasaran{{$sasaran['id']}}">
                                                                                 <div class="accordion-body">
-
+                                                                                    {{-- Sasaran Indikator --}}
+                                                                                @php
+                                                                                    $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                @endphp
+                                                                                <section class="scroll-section">
+                                                                                    <div class="mb-5">
+                                                                                        @php
+                                                                                            $a = 1;
+                                                                                        @endphp
+                                                                                        @foreach ($sasaran_indikators as $sasaran_indikator)
+                                                                                            <div class="accordion" id="accordionSasaranIndikator{{$sasaran_indikator['id']}}">
+                                                                                                <div class="accordion-item">
+                                                                                                    <div class="accordion-header" id="flush-sasaran-indikator{{$sasaran_indikator['id']}}">
+                                                                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSasaranIndikator{{$sasaran_indikator['id']}}" aria-expanded="false" aria-controls="flush-collapseSasaranIndikator{{$sasaran_indikator['id']}}">
+                                                                                                            Sasaran Indikator <br>
+                                                                                                            {{$a++}}. Indikator: {{$sasaran_indikator->indikator}}
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                    <div id="flush-collapseSasaranIndikator{{$sasaran_indikator['id']}}" class="accordion-collapse collapse" aria-labelledby="flush-sasaran-indikator{{$sasaran_indikator['id']}}" data-bs-parent="#accordionSasaranIndikator{{$sasaran_indikator['id']}}">
+                                                                                                        <div class="accordion-body">
+                                                                                                            <table class="table table-borderless">
+                                                                                                                <thead>
+                                                                                                                    <tr>
+                                                                                                                        <th width="70%">Indikator</th>
+                                                                                                                        <th width="15%">Target</th>
+                                                                                                                        <th width="15%">Satuan</th>
+                                                                                                                    </tr>
+                                                                                                                </thead>
+                                                                                                                <tbody>
+                                                                                                                    <tr>
+                                                                                                                        <td>{{$sasaran_indikator->indikator}}</td>
+                                                                                                                        <td>{{$sasaran_indikator->target}}</td>
+                                                                                                                        <td>{{$sasaran_indikator->satuan}}</td>
+                                                                                                                    </tr>
+                                                                                                                </tbody>
+                                                                                                            </table>
+                                                                                                            <hr>
+                                                                                                            <h2 class="small-title text-left">Atur Target Sasaran Indikator</h2>
+                                                                                                            <table class="table table-borderless">
+                                                                                                                <thead>
+                                                                                                                    <tr>
+                                                                                                                        <th style="text-align: center">Tahun</th>
+                                                                                                                        <th style="text-align: center">Target</th>
+                                                                                                                        <th style="text-align: center">RP</th>
+                                                                                                                        <th style="text-align: center">Aksi</th>
+                                                                                                                    </tr>
+                                                                                                                </thead>
+                                                                                                                <tbody>
+                                                                                                                    @foreach ($tahuns as $tahun)
+                                                                                                                        @php
+                                                                                                                            $target_rp_pertahun_sasaran = TargetRpPertahunSasaran::where('tahun', $tahun)
+                                                                                                                                                            ->where('pivot_sasaran_indikator_id', $sasaran_indikator['id'])
+                                                                                                                                                            ->where('opd_id', Auth::user()->opd_id)
+                                                                                                                                                            ->first();
+                                                                                                                        @endphp
+                                                                                                                        <tr>
+                                                                                                                            <td style="text-align: center">{{$tahun}}</td>
+                                                                                                                            @if ($target_rp_pertahun_sasaran)
+                                                                                                                                <td style="text-align: center">{{$target_rp_pertahun_sasaran->target}}</td>
+                                                                                                                                <td style="text-align: center">{{$target_rp_pertahun_sasaran->rp}}</td>
+                                                                                                                                <td style="text-align: center"><button class="btn btn-warning waves-effect waves-light edit-rp-pertahun-sasaran" type="button" data-id="{{$target_rp_pertahun_sasaran->id}}"><i class="fas fa-edit"></i></button></td>
+                                                                                                                            @else
+                                                                                                                                <td style="text-align: center"></td>
+                                                                                                                                <td style="text-align: center"></td>
+                                                                                                                                <td style="text-align: center"><button class="btn btn-primary waves-effect waves-light tambah-rp-pertahun-sasaran" type="button" data-sasaran-indikator-id="{{$sasaran_indikator['id']}}" data-tahun="{{$tahun}}" ><i class="fas fa-plus"></i></button></td>
+                                                                                                                            @endif
+                                                                                                                        </tr>
+                                                                                                                    @endforeach
+                                                                                                                </tbody>
+                                                                                                            </table>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                </section>
+                                                                                <hr>
+                                                                                {{-- Program --}}
+                                                                                @php
+                                                                                    $get_programs = Program::select('id', 'deskripsi', 'kode')
+                                                                                                    ->wherehas('renstra', function($q) use ($misi, $tujuan, $sasaran){
+                                                                                                        $q->where('misi_id', $misi['id']);
+                                                                                                        $q->where('tujuan_id', $tujuan['id']);
+                                                                                                        $q->where('sasaran_id', $sasaran['id']);
+                                                                                                        $q->whereHas('program');
+                                                                                                        $q->where('opd_id', Auth::user()->opd_id);
+                                                                                                    })
+                                                                                                    ->whereHas('program_rpjmd', function($q) use ($sasaran){
+                                                                                                        $q->where('sasaran_id', $sasaran['id']);
+                                                                                                    })
+                                                                                                    ->groupBy('id')
+                                                                                                    ->get();
+                                                                                    $programs = [];
+                                                                                    foreach ($get_programs as $get_program) {
+                                                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
+                                                                                        if($cek_perubahan_program)
+                                                                                        {
+                                                                                            $programs[] = [
+                                                                                                'id' => $cek_perubahan_program->program_id,
+                                                                                                'kode' => $cek_perubahan_program->kode,
+                                                                                                'deskripsi' => $cek_perubahan_program->deskripsi
+                                                                                            ];
+                                                                                        } else {
+                                                                                            $programs[] = [
+                                                                                                'id' => $get_program->id,
+                                                                                                'kode' => $get_program->kode,
+                                                                                                'deskripsi' => $get_program->deskripsi
+                                                                                            ];
+                                                                                        }
+                                                                                    }
+                                                                                @endphp
+                                                                                <section class="scroll-section">
+                                                                                    <div class="mb-5">
+                                                                                        @foreach ($programs as $program)
+                                                                                            <div class="accordion" id="accordionProgram{{$program['id']}}">
+                                                                                                <div class="accordion-item">
+                                                                                                    <div class="accordion-header" id="flush-program{{$program['id']}}">
+                                                                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseProgram{{$program['id']}}" aria-expanded="false" aria-controls="flush-collapseProgram{{$program['id']}}">
+                                                                                                            Program <br>
+                                                                                                            Kode: {{$program['kode']}}. {{$program['deskripsi']}}
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                    <div id="flush-collapseProgram{{$program['id']}}" class="accordion-collapse collapse" aria-labelledby="flush-program{{$program['id']}}" data-bs-parent="#accordionProgram{{$program['id']}}">
+                                                                                                        <div class="accordion-body">
+                                                                                                            @php
+                                                                                                                $program_indikators = PivotProgramIndikator::where('program_id', $program['id'])->get();
+                                                                                                            @endphp
+                                                                                                            <section class="scroll-section">
+                                                                                                                <div class="mb-5">
+                                                                                                                    @php
+                                                                                                                        $a = 1;
+                                                                                                                    @endphp
+                                                                                                                    @foreach ($program_indikators as $program_indikator)
+                                                                                                                        <div class="accordion" id="accordionProgramIndikator{{$program_indikator['id']}}">
+                                                                                                                            <div class="accordion-item">
+                                                                                                                                <div class="accordion-header" id="flush-program-indikator{{$program_indikator['id']}}">
+                                                                                                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseProgramIndikator{{$program_indikator['id']}}" aria-expanded="false" aria-controls="flush-collapseProgramIndikator{{$program_indikator['id']}}">
+                                                                                                                                        Program Indikator <br>
+                                                                                                                                        {{$a++}}. Indikator: {{$program_indikator->indikator}}
+                                                                                                                                    </button>
+                                                                                                                                </div>
+                                                                                                                                <div id="flush-collapseProgramIndikator{{$program_indikator['id']}}" class="accordion-collapse collapse" aria-labelledby="flush-program-indikator{{$program_indikator['id']}}" data-bs-parent="#accordionProgramIndikator{{$program_indikator['id']}}">
+                                                                                                                                    <div class="accordion-body">
+                                                                                                                                        <table class="table table-borderless">
+                                                                                                                                            <thead>
+                                                                                                                                                <tr>
+                                                                                                                                                    <th width="70%">Indikator</th>
+                                                                                                                                                    <th width="15%">Target</th>
+                                                                                                                                                    <th width="15%">Satuan</th>
+                                                                                                                                                </tr>
+                                                                                                                                            </thead>
+                                                                                                                                            <tbody>
+                                                                                                                                                <tr>
+                                                                                                                                                    <td>{{$program_indikator->indikator}}</td>
+                                                                                                                                                    <td>{{$program_indikator->target}}</td>
+                                                                                                                                                    <td>{{$program_indikator->satuan}}</td>
+                                                                                                                                                </tr>
+                                                                                                                                            </tbody>
+                                                                                                                                        </table>
+                                                                                                                                        <hr>
+                                                                                                                                        <h2 class="small-title text-left">Atur Target Program Indikator</h2>
+                                                                                                                                        <table class="table table-borderless">
+                                                                                                                                            <thead>
+                                                                                                                                                <tr>
+                                                                                                                                                    <th style="text-align: center">Tahun</th>
+                                                                                                                                                    <th style="text-align: center">Target</th>
+                                                                                                                                                    <th style="text-align: center">RP</th>
+                                                                                                                                                    <th style="text-align: center">Aksi</th>
+                                                                                                                                                </tr>
+                                                                                                                                            </thead>
+                                                                                                                                            <tbody>
+                                                                                                                                                @foreach ($tahuns as $tahun)
+                                                                                                                                                    @php
+                                                                                                                                                        $target_rp_pertahun_program = TargetRpPertahunProgram::where('tahun', $tahun)
+                                                                                                                                                                                        ->where('pivot_program_indikator_id', $program_indikator['id'])
+                                                                                                                                                                                        ->where('opd_id', Auth::user()->opd_id)
+                                                                                                                                                                                        ->first();
+                                                                                                                                                    @endphp
+                                                                                                                                                    <tr>
+                                                                                                                                                        <td style="text-align: center">{{$tahun}}</td>
+                                                                                                                                                        @if ($target_rp_pertahun_program)
+                                                                                                                                                            <td style="text-align: center">{{$target_rp_pertahun_program->target}}</td>
+                                                                                                                                                            <td style="text-align: center">{{$target_rp_pertahun_program->rp}}</td>
+                                                                                                                                                            <td style="text-align: center"><button class="btn btn-warning waves-effect waves-light edit-rp-pertahun-program" type="button" data-id="{{$target_rp_pertahun_program->id}}"><i class="fas fa-edit"></i></button></td>
+                                                                                                                                                        @else
+                                                                                                                                                            <td style="text-align: center"></td>
+                                                                                                                                                            <td style="text-align: center"></td>
+                                                                                                                                                            <td style="text-align: center"><button class="btn btn-primary waves-effect waves-light tambah-rp-pertahun-program" type="button" data-program-indikator-id="{{$program_indikator['id']}}" data-tahun="{{$tahun}}" ><i class="fas fa-plus"></i></button></td>
+                                                                                                                                                        @endif
+                                                                                                                                                    </tr>
+                                                                                                                                                @endforeach
+                                                                                                                                            </tbody>
+                                                                                                                                        </table>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    @endforeach
+                                                                                                                </div>
+                                                                                                            </section>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                </section>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 @endforeach
                                                             </div>
-                                                        </section> --}}
+                                                        </section>
                                                     </div>
                                                 </div>
                                             </div>
@@ -346,20 +550,19 @@
         </div>
     </div>
 
-    <div class="modal fade" id="addEditTargetRpPertahunRentraModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal fade" id="addEditTargetRpPertahunTujuanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle">Atur Target</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <span id="target_rp_pertahun_tujuan_form_result"></span>
                 <div class="modal-body">
                     <form id="target_rp_pertahun_tujuan_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="target_rp_pertahun_tujuan_tahun" id="target_rp_pertahun_tujuan_tahun">
                         <input type="hidden" name="target_rp_pertahun_tujuan_tujuan_indikator_id" id="target_rp_pertahun_tujuan_tujuan_indikator_id">
-                        <input type="hidden" name="target_rp_pertahun_tujuan_renstra_id" id="target_rp_pertahun_tujuan_renstra_id">
-                        <input type="hidden" name="target_rp_pertahun_tujuan_tujuan_id" id="target_rp_pertahun_tujuan_tujuan_id">
                         <div class="mb-3">
                             <label class="form-label">Target</label>
                             <input name="target_rp_pertahun_tujuan_target" id="target_rp_pertahun_tujuan_target" type="text" class="form-control" required/>
@@ -374,6 +577,72 @@
                     <input type="hidden" name="target_rp_pertahun_tujuan_aksi" id="target_rp_pertahun_tujuan_aksi" value="Save">
                     <input type="hidden" name="target_rp_pertahun_tujuan_hidden_id" id="target_rp_pertahun_tujuan_hidden_id">
                     <button type="submit" class="btn btn-primary" name="target_rp_pertahun_tujuan_aksi_button" id="target_rp_pertahun_tujuan_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addEditTargetRpPertahunSasaranModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Atur Target</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <span id="target_rp_pertahun_sasaran_form_result"></span>
+                <div class="modal-body">
+                    <form id="target_rp_pertahun_sasaran_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="target_rp_pertahun_sasaran_tahun" id="target_rp_pertahun_sasaran_tahun">
+                        <input type="hidden" name="target_rp_pertahun_sasaran_sasaran_indikator_id" id="target_rp_pertahun_sasaran_sasaran_indikator_id">
+                        <div class="mb-3">
+                            <label class="form-label">Target</label>
+                            <input name="target_rp_pertahun_sasaran_target" id="target_rp_pertahun_sasaran_target" type="text" class="form-control" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="" class="form-label">Rp</label>
+                            <input type="text" class="form-control" id="target_rp_pertahun_sasaran_rp" name="target_rp_pertahun_sasaran_rp" required>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="target_rp_pertahun_sasaran_aksi" id="target_rp_pertahun_sasaran_aksi" value="Save">
+                    <input type="hidden" name="target_rp_pertahun_sasaran_hidden_id" id="target_rp_pertahun_sasaran_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="target_rp_pertahun_sasaran_aksi_button" id="target_rp_pertahun_sasaran_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addEditTargetRpPertahunProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Atur Target</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <span id="target_rp_pertahun_program_form_result"></span>
+                <div class="modal-body">
+                    <form id="target_rp_pertahun_program_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="target_rp_pertahun_program_tahun" id="target_rp_pertahun_program_tahun">
+                        <input type="hidden" name="target_rp_pertahun_program_program_indikator_id" id="target_rp_pertahun_program_program_indikator_id">
+                        <div class="mb-3">
+                            <label class="form-label">Target</label>
+                            <input name="target_rp_pertahun_program_target" id="target_rp_pertahun_program_target" type="text" class="form-control" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="" class="form-label">Rp</label>
+                            <input type="text" class="form-control" id="target_rp_pertahun_program_rp" name="target_rp_pertahun_program_rp" required>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="target_rp_pertahun_program_aksi" id="target_rp_pertahun_program_aksi" value="Save">
+                    <input type="hidden" name="target_rp_pertahun_program_hidden_id" id="target_rp_pertahun_program_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="target_rp_pertahun_program_aksi_button" id="target_rp_pertahun_program_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -465,12 +734,303 @@
                         $('#program_id').empty();
                         $('#program_id').prop('disabled', false);
                         $('#program_id').append('<option value="">--- Pilih Program ---</option>');
-                        $.each(response, function(){
-                            $('#program_id').append(new Option(response.deskripsi, response.id));
+                        $.each(response, function(key, value){
+                            $('#program_id').append(new Option(value.deskripsi, value.id));
                         });
                     }
                 });
             }
+        });
+
+        $('.tambah-rp-pertahun-tujuan').click(function(){
+            var tujuan_indikator_id = $(this).attr('data-tujuan-indikator-id');
+            var tahun = $(this).attr('data-tahun');
+            $('#target_rp_pertahun_tujuan_tahun').val(tahun);
+            $('#target_rp_pertahun_tujuan_tujuan_indikator_id').val(tujuan_indikator_id);
+            $('#target_rp_pertahun_tujuan_form_result').html('');
+            $('.modal-title').text('Tambah Data');
+            $('#target_rp_pertahun_tujuan_aksi_button').text('Save');
+            $('#target_rp_pertahun_tujuan_aksi_button').prop('disabled', false);
+            $('#target_rp_pertahun_tujuan_aksi_button').val('Save');
+            $('#target_rp_pertahun_tujuan_aksi').val('Save');
+            $('#target_rp_pertahun_tujuan_form')[0].reset();
+            $('#addEditTargetRpPertahunTujuanModal').modal('show');
+        });
+
+        $('#target_rp_pertahun_tujuan_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#target_rp_pertahun_tujuan_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.target-rp-pertahun-tujuan.tambah') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#target_rp_pertahun_tujuan_aksi_button').text('Menyimpan...');
+                        $('#target_rp_pertahun_tujuan_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#target_rp_pertahun_tujuan_aksi_button').prop('disabled', false);
+                            $('#target_rp_pertahun_tujuan_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            window.location.reload();
+                        }
+
+                        $('#target_rp_pertahun_tujuan_form_result').html(html);
+                    }
+                });
+            }
+            if($('#target_rp_pertahun_tujuan_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.target-rp-pertahun-tujuan.update') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function(){
+                        $('#target_rp_pertahun_tujuan_aksi_button').text('Mengubah...');
+                        $('#target_rp_pertahun_tujuan_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#target_rp_pertahun_tujuan_aksi_button').prop('disabled', false);
+                            $('#target_rp_pertahun_tujuan_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            window.location.reload();
+                        }
+                        $('#target_rp_pertahun_tujuan_form_result').html(html);
+                    }
+                });
+            }
+        });
+
+        $('.edit-rp-pertahun-tujuan').click(function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{{ url('/opd/renstra/target-rp-pertahun-tujuan/edit') }}" + '/' + id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#target_rp_pertahun_tujuan_target').val(data.result.target);
+                    $('#target_rp_pertahun_tujuan_rp').val(data.result.rp);
+                    $('#target_rp_pertahun_tujuan_hidden_id').val(id);
+                    $('.modal-title').text('Edit Data');
+                    $('#target_rp_pertahun_tujuan_aksi_button').text('Edit');
+                    $('#target_rp_pertahun_tujuan_aksi_button').prop('disabled', false);
+                    $('#target_rp_pertahun_tujuan_aksi_button').val('Edit');
+                    $('#target_rp_pertahun_tujuan_aksi').val('Edit');
+                    $('#addEditTargetRpPertahunTujuanModal').modal('show');
+                }
+            });
+        });
+
+        $('.tambah-rp-pertahun-sasaran').click(function(){
+            var sasaran_indikator_id = $(this).attr('data-sasaran-indikator-id');
+            var tahun = $(this).attr('data-tahun');
+            $('#target_rp_pertahun_sasaran_tahun').val(tahun);
+            $('#target_rp_pertahun_sasaran_sasaran_indikator_id').val(sasaran_indikator_id);
+            $('#target_rp_pertahun_sasaran_form_result').html('');
+            $('.modal-title').text('Tambah Data');
+            $('#target_rp_pertahun_sasaran_aksi_button').text('Save');
+            $('#target_rp_pertahun_sasaran_aksi_button').prop('disabled', false);
+            $('#target_rp_pertahun_sasaran_aksi_button').val('Save');
+            $('#target_rp_pertahun_sasaran_aksi').val('Save');
+            $('#target_rp_pertahun_sasaran_form')[0].reset();
+            $('#addEditTargetRpPertahunSasaranModal').modal('show');
+        });
+
+        $('#target_rp_pertahun_sasaran_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#target_rp_pertahun_sasaran_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.target-rp-pertahun-sasaran.tambah') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#target_rp_pertahun_sasaran_aksi_button').text('Menyimpan...');
+                        $('#target_rp_pertahun_sasaran_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#target_rp_pertahun_sasaran_aksi_button').prop('disabled', false);
+                            $('#target_rp_pertahun_sasaran_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            window.location.reload();
+                        }
+
+                        $('#target_rp_pertahun_sasaran_form_result').html(html);
+                    }
+                });
+            }
+            if($('#target_rp_pertahun_sasaran_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.target-rp-pertahun-sasaran.update') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function(){
+                        $('#target_rp_pertahun_sasaran_aksi_button').text('Mengubah...');
+                        $('#target_rp_pertahun_sasaran_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#target_rp_pertahun_sasaran_aksi_button').prop('disabled', false);
+                            $('#target_rp_pertahun_sasaran_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            window.location.reload();
+                        }
+                        $('#target_rp_pertahun_sasaran_form_result').html(html);
+                    }
+                });
+            }
+        });
+
+        $('.edit-rp-pertahun-sasaran').click(function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{{ url('/opd/renstra/target-rp-pertahun-sasaran/edit') }}" + '/' + id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#target_rp_pertahun_sasaran_target').val(data.result.target);
+                    $('#target_rp_pertahun_sasaran_rp').val(data.result.rp);
+                    $('#target_rp_pertahun_sasaran_hidden_id').val(id);
+                    $('.modal-title').text('Edit Data');
+                    $('#target_rp_pertahun_sasaran_aksi_button').text('Edit');
+                    $('#target_rp_pertahun_sasaran_aksi_button').prop('disabled', false);
+                    $('#target_rp_pertahun_sasaran_aksi_button').val('Edit');
+                    $('#target_rp_pertahun_sasaran_aksi').val('Edit');
+                    $('#addEditTargetRpPertahunSasaranModal').modal('show');
+                }
+            });
+        });
+
+        $('.tambah-rp-pertahun-program').click(function(){
+            var program_indikator_id = $(this).attr('data-program-indikator-id');
+            var tahun = $(this).attr('data-tahun');
+            $('#target_rp_pertahun_program_tahun').val(tahun);
+            $('#target_rp_pertahun_program_program_indikator_id').val(program_indikator_id);
+            $('#target_rp_pertahun_program_form_result').html('');
+            $('.modal-title').text('Tambah Data');
+            $('#target_rp_pertahun_program_aksi_button').text('Save');
+            $('#target_rp_pertahun_program_aksi_button').prop('disabled', false);
+            $('#target_rp_pertahun_program_aksi_button').val('Save');
+            $('#target_rp_pertahun_program_aksi').val('Save');
+            $('#target_rp_pertahun_program_form')[0].reset();
+            $('#addEditTargetRpPertahunProgramModal').modal('show');
+        });
+
+        $('#target_rp_pertahun_program_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#target_rp_pertahun_program_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.target-rp-pertahun-program.tambah') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#target_rp_pertahun_program_aksi_button').text('Menyimpan...');
+                        $('#target_rp_pertahun_program_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#target_rp_pertahun_program_aksi_button').prop('disabled', false);
+                            $('#target_rp_pertahun_program_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            window.location.reload();
+                        }
+
+                        $('#target_rp_pertahun_program_form_result').html(html);
+                    }
+                });
+            }
+            if($('#target_rp_pertahun_program_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.target-rp-pertahun-program.update') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function(){
+                        $('#target_rp_pertahun_program_aksi_button').text('Mengubah...');
+                        $('#target_rp_pertahun_program_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#target_rp_pertahun_program_aksi_button').prop('disabled', false);
+                            $('#target_rp_pertahun_program_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            window.location.reload();
+                        }
+                        $('#target_rp_pertahun_program_form_result').html(html);
+                    }
+                });
+            }
+        });
+
+        $('.edit-rp-pertahun-program').click(function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{{ url('/opd/renstra/target-rp-pertahun-program/edit') }}" + '/' + id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#target_rp_pertahun_program_target').val(data.result.target);
+                    $('#target_rp_pertahun_program_rp').val(data.result.rp);
+                    $('#target_rp_pertahun_program_hidden_id').val(id);
+                    $('.modal-title').text('Edit Data');
+                    $('#target_rp_pertahun_program_aksi_button').text('Edit');
+                    $('#target_rp_pertahun_program_aksi_button').prop('disabled', false);
+                    $('#target_rp_pertahun_program_aksi_button').val('Edit');
+                    $('#target_rp_pertahun_program_aksi').val('Edit');
+                    $('#addEditTargetRpPertahunProgramModal').modal('show');
+                }
+            });
         });
     </script>
 @endsection

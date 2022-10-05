@@ -23,4 +23,9 @@ class Kabupaten extends Model
     {
         return $this->hasMany('App\Models\Opd', 'kabupaten_id');
     }
+
+    public function user()
+    {
+        return $this->hasMany('App\User', 'kabupaten_id');
+    }
 }
