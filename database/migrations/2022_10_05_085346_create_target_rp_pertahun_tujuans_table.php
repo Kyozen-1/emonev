@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTargetRpPertahunProgramsTable extends Migration
+class CreateTargetRpPertahunTujuansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class CreateTargetRpPertahunProgramsTable extends Migration
      */
     public function up()
     {
-        Schema::create('target_rp_pertahun_programs', function (Blueprint $table) {
+        Schema::create('target_rp_pertahun_tujuans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('renstra_id')->nullable();
-            $table->foreignId('program_id')->nullable();
-            $table->foreignId('pivot_program_indikator_id')->nullable();
+            $table->foreignId('pivot_tujuan_indikator_id')->nullable();
             $table->string('target')->nullable();
             $table->string('rp')->nullable();
             $table->string('tahun')->nullable();
+            $table->foreignId('opd_id')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +31,6 @@ class CreateTargetRpPertahunProgramsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('target_rp_pertahun_programs');
+        Schema::dropIfExists('target_rp_pertahun_tujuans');
     }
 }

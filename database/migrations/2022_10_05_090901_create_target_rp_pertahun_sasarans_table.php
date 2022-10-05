@@ -15,6 +15,11 @@ class CreateTargetRpPertahunSasaransTable extends Migration
     {
         Schema::create('target_rp_pertahun_sasarans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('pivot_sasaran_indikator_id')->nullable();
+            $table->string('target')->nullable();
+            $table->string('rp')->nullable();
+            $table->string('tahun')->nullable();
+            $table->foreignId('opd_id')->nullable();
             $table->timestamps();
         });
     }

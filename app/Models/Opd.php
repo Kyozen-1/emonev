@@ -48,4 +48,19 @@ class Opd extends Model
     {
         return $this->hasMany('App\Models\Renstra', 'opd_id');
     }
+
+    public function target_rp_pertahun_tujuan()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunTujuan', 'opd_id');
+    }
+
+    public function target_rp_pertahun_sasaran()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunSasaran', 'opd_id');
+    }
+
+    public function target_rp_pertahun_program()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunProgram', 'opd_id');
+    }
 }

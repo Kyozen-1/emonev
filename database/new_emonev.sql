@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 04 Okt 2022 pada 07.34
+-- Waktu pembuatan: 05 Okt 2022 pada 02.32
 -- Versi server: 5.7.33
 -- Versi PHP: 8.0.2
 
@@ -50,7 +50,7 @@ CREATE TABLE `akun_opds` (
 --
 
 INSERT INTO `akun_opds` (`id`, `name`, `email`, `email_verified_at`, `password`, `opd_id`, `remember_token`, `created_at`, `updated_at`, `color_layout`, `nav_color`, `placement`, `behaviour`, `layout`, `radius`) VALUES
-(1, 'Dinas Pendidikan dan Kebudayaan', 'disdik_madiun@email.com', NULL, '$2y$10$Iht10.dzrzW.tHnlPdyCtOgjzoNvNB.NuajxeTKNl10MP2aPbMiBK', 1, NULL, '2022-09-27 09:56:20', '2022-10-03 08:11:11', 'light-blue', 'default', 'horizontal', 'pinned', 'fluid', 'rounded');
+(1, 'Dinas Pendidikan dan Kebudayaan', 'disdik_madiun@email.com', NULL, '$2y$10$Iht10.dzrzW.tHnlPdyCtOgjzoNvNB.NuajxeTKNl10MP2aPbMiBK', 1, NULL, '2022-09-27 09:56:20', '2022-10-04 08:32:29', 'light-purple', 'light', 'vertical', 'pinned', 'fluid', 'flat');
 
 -- --------------------------------------------------------
 
@@ -519,7 +519,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (47, '2022_10_04_140759_create_renstras_table', 10),
 (48, '2022_10_04_141402_create_target_rp_pertahun_programs_table', 10),
 (49, '2022_10_04_142114_create_target_rp_pertahun_tujuans_table', 10),
-(50, '2022_10_04_143049_create_target_rp_pertahun_sasarans_table', 10);
+(50, '2022_10_04_143049_create_target_rp_pertahun_sasarans_table', 10),
+(51, '2022_10_05_085346_create_target_rp_pertahun_tujuans_table', 11),
+(52, '2022_10_05_090901_create_target_rp_pertahun_sasarans_table', 11),
+(53, '2022_10_05_091722_create_target_rp_pertahun_programs_table', 11);
 
 -- --------------------------------------------------------
 
@@ -1028,6 +1031,13 @@ CREATE TABLE `renstras` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data untuk tabel `renstras`
+--
+
+INSERT INTO `renstras` (`id`, `misi_id`, `tujuan_id`, `sasaran_id`, `program_id`, `opd_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, 2, 1, '2022-10-04 20:44:53', '2022-10-04 20:44:53');
+
 -- --------------------------------------------------------
 
 --
@@ -1108,12 +1118,11 @@ INSERT INTO `tahun_periodes` (`id`, `tahun_awal`, `tahun_akhir`, `status`, `crea
 
 CREATE TABLE `target_rp_pertahun_programs` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `renstra_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `program_id` bigint(20) UNSIGNED DEFAULT NULL,
   `pivot_program_indikator_id` bigint(20) UNSIGNED DEFAULT NULL,
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `opd_id` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1126,6 +1135,11 @@ CREATE TABLE `target_rp_pertahun_programs` (
 
 CREATE TABLE `target_rp_pertahun_sasarans` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `pivot_sasaran_indikator_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `opd_id` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1138,12 +1152,11 @@ CREATE TABLE `target_rp_pertahun_sasarans` (
 
 CREATE TABLE `target_rp_pertahun_tujuans` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `renstra_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `tujuan_id` bigint(20) UNSIGNED DEFAULT NULL,
   `pivot_tujuan_indikator_id` bigint(20) UNSIGNED DEFAULT NULL,
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `opd_id` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1595,7 +1608,7 @@ ALTER TABLE `master_opds`
 -- AUTO_INCREMENT untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT untuk tabel `misis`
@@ -1721,7 +1734,7 @@ ALTER TABLE `provinsis`
 -- AUTO_INCREMENT untuk tabel `renstras`
 --
 ALTER TABLE `renstras`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `sasarans`

@@ -33,19 +33,4 @@ class Renstra extends Model
     {
         return $this->belongsTo('App\Models\Opd', 'opd_id');
     }
-
-    public function target_rp_pertahun_program()
-    {
-        return $this->hasMany('App\Models\TargetRpPertahunProgram','renstra_id');
-    }
-
-    public function target_rp_pertahun_tujuan()
-    {
-        return $this->hasMany('App\Models\TargetRpPertahunTujuan', 'renstra_id');
-    }
-
-    public function target_rp_pertahun_sasaran()
-    {
-        return $this->hasMany('App\Models\TargetRpPertahunSasaran', 'renstra_id');
-    }
 }
