@@ -187,6 +187,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     //Laporan
     Route::get('/admin/laporan/tc-14', 'Admin\Laporan\Tc14Controller@index')->name('admin.laporan.tc-14.index');
     Route::get('/admin/laporan/tc-19', 'Admin\Laporan\Tc19Controller@index')->name('admin.laporan.tc-19.index');
+    Route::get('/admin/laporan/tc-19/{tahun}', 'Admin\Laporan\Tc19Controller@detail');
     Route::get('/admin/laporan/e-79', 'Admin\Laporan\E79Controller@index')->name('admin.laporan.e-79.index');
+    Route::get('/admin/laporan/e-79/{tahun}', 'Admin\Laporan\E79Controller@detail');
     Route::get('/admin/laporan/e-78', 'Admin\Laporan\E78Controller@index')->name('admin.laporan.e-78.index');
 });

@@ -25,6 +25,17 @@
 @endsection
 
 @section('content')
+@php
+    use App\Models\TahunPeriode;
+
+    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+    $tahun_awal = $get_periode->tahun_awal;
+    $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+    $tahuns = [];
+    for ($i=0; $i < $jarak_tahun + 1; $i++) {
+        $tahuns[] = $tahun_awal + $i;
+    }
+@endphp
     <div class="container">
         <!-- Title and Top Buttons Start -->
         <div class="page-title-container">
@@ -44,62 +55,21 @@
             </div>
         </div>
         <!-- Title and Top Buttons End -->
-        <div class="card mb-5">
-            <div class="card-body">
-                <!-- Table Start -->
-                <div class="data-table-responsive-wrapper">
-                    <table class="table table-striped table-bordered text-center">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th colspan="4">Kode</th>
-                                <th>Urusan / Bidang Urusan Pemerintah Daerah dan Program / Kegiatan</th>
-                                <th>Inidikator Kinerja Program (outcome) / Kegiatan (output)</th>
-                                <th colspan="2">Capaian Kinerja RPJMD pada Tahun Akhir Periode RPJMD</th>
-                                <th colspan="2">Realisasi Capaian Kinerja RKPD s/d Tahun Lalu (n-2)</th>
-                                <th colspan="2">Target Kinerja dan Anggaran RKPD Tahun Berjalan yang dievaluasi (Tahun n-1)</th>
-                                <th colspan="2">Realisasi Capaian Kinerja dan Anggaran RKPD yang dievaluasi (tahun n-1)</th>
-                                <th colspan="2">Tingkat Capaian Kinerja dan Realisasi Anggaran RKPD (%)</th>
-                                <th colspan="2">Realisasi Kinerja dan Anggaran RKPD s/d Tahun n-1</th>
-                                <th colspan="2">Tingkat Capaian Kinerja dan Realisasi Anggaran RPJMD s/d Tahun n-1 (%)</th>
-                                <th>Perangkat Daerah Penanggung Jawab</th>
-                                <th>Ket.</th>
-                            </tr>
-                            <tr>
-                                <th rowspan="2">1</th>
-                                <th colspan="4" rowspan="2">2</th>
-                                <th rowspan="2">3</th>
-                                <th rowspan="2">4</th>
-                                <th colspan="2">5</th>
-                                <th colspan="2">6</th>
-                                <th colspan="2">7</th>
-                                <th colspan="2">8</th>
-                                <th colspan="2">9 = 8/7 x 100%</th>
-                                <th colspan="2">10 = 6 + 8</th>
-                                <th colspan="2">11 = 10/5 x 100%</th>
-                                <th rowspan="2">12</th>
-                                <th rowspan="2">13</th>
-                            </tr>
-                            <tr>
-                                <th>K</th>
-                                <th>Rp</th>
-                                <th>K</th>
-                                <th>Rp</th>
-                                <th>K</th>
-                                <th>Rp</th>
-                                <th>K</th>
-                                <th>Rp</th>
-                                <th>K</th>
-                                <th>Rp</th>
-                                <th>K</th>
-                                <th>Rp</th>
-                                <th>K</th>
-                                <th>Rp</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-                <!-- Table End -->
+        <div class="mb-5">
+            <div class="row g-2">
+                @foreach ($tahuns as $tahun)
+                    <div class="col">
+                        <a href="{{ url('/admin/laporan/tc-19/'.$tahun) }}" class="text-decoration-none">
+                            <div class="card hover-scale-up cursor-pointer sh-19">
+                                <div class="h-100 d-flex flex-column justify-content-center card-body align-items-center">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <h1>{{$tahun}}</h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
