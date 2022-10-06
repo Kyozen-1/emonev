@@ -78,30 +78,86 @@ class E79Controller extends Controller
                 $html .= '<tr>';
                     $html .= '<td>'.$a++.'</td>';
                     $html .= '<td>'.$sasaran['deskripsi'].'</td>';
-                $html .='</tr>';
-
-                $get_program_rpjmds = ProgramRpjmd::where('sasaran_id', $sasaran['id'])
-                                        ->where('opd_id', $opd->opd_id)
-                                        ->get();
-                $program_rpjmds = [];
-                foreach ($get_program_rpjmds as $get_program_rpjmd) {
-                    $cek_perubahan_program_rpjmd = PivotPerubahanProgramRpjmd::where('program_rpjmd_id', $get_program_rpjmd->id)
-                                                    ->latest()->first();
-                    if($cek_perubahan_program_rpjmd)
-                    {
-                        $program_rpjmds[] = [
-                            'program_id' => $cek_perubahan_program_rpjmd->program_id
-                        ];
-                    } else {
-                        $program_rpjmds[] = [
-                            'program_id' => $get_program_rpjmd->program_id
-                        ];
+                    $get_urusans = Urusan::whereHas('program', function($q) use ($sasaran){
+                        $q->whereHas('program_rpjmd', function($q) use ($sasaran){
+                            $q->where('sasaran_id', $sasaran['id']);
+                        });
+                    })->get();
+                    $urusans = [];
+                    foreach ($get_urusans as $get_urusan) {
+                        $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
+                        if($cek_perubahan_urusan)
+                        {
+                            $urusans[] = [
+                                'id' => $cek_perubahan_urusan->urusan_id,
+                                'kode' => $cek_perubahan_urusan->kode,
+                                'deskripsi' => $cek_perubahban_urusan->deskripsi
+                            ];
+                        } else {
+                            $urusans[] = [
+                                'id' => $get_urusan->id,
+                                'kode' => $get_urusan->kode,
+                                'deskripsi' => $get_urusan->deskripsi
+                            ];
+                        }
                     }
-                }
+                    $b = 0;
+                    foreach ($urusans as $urusan) {
+                        if($b == 0)
+                        {
+                                $html .= '<td>'.$urusan['kode'].'</td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td>'.$urusan['deskripsi'].'</td>';
+                            $html .='</tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td>'.$urusan['kode'].'</td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td>'.$urusan['deskripsi'].'</td>';
+                            $html .='</tr>';
+                        }
+                        $b++;
 
-                foreach ($program_rpjmds as $program_rpjmd) {
-                    // $get_program =
-                }
+                        $get_programs = Program::where('urusan_id', $urusan['id'])
+                                        ->whereHas('program_rpjmd', function($q) use ($sasaran) {
+                                            $q->where('sasaran_id', $sasaran['id']);
+                                        })->get();
+                        $programs = [];
+                        foreach ($get_programs as $get_program) {
+                            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
+                            if($cek_perubahan_program)
+                            {
+                                $programs[] = [
+                                    'id' => $cek_perubahan_program->program_id,
+                                    'kode' =>$cek_perubahan_program->kode,
+                                    'deskripsi' => $cek_perubahan_program->deskripsi
+                                ];
+                            } else {
+                                $programs[] = [
+                                    'id' => $get_program->id,
+                                    'kode' => $get_program->kode,
+                                    'deskripsi' => $get_program->deskripsi
+                                ];
+                            }
+                        }
+                        foreach ($programs as $program) {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td>'.$urusan['kode'].'</td>';
+                                $html .= '<td>'.$program['kode'].'</td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td>'.$program['deskripsi'].'</td>';
+                            $html .='</tr>';
+                        }
+                    }
             }
         }
         return view('admin.laporan.e-79.detail.index', [

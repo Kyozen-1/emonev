@@ -16,6 +16,6 @@ class Urusan extends Model
 
     public function program()
     {
-        return $this->hasMany('App\Models\Program', 'program_id');
+        return $this->hasMany('App\Models\Program', 'urusan_id');
     }
 }
