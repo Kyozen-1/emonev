@@ -56,6 +56,7 @@ class UrusanImport implements ToCollection,WithStartRow
                     $urusan = new Urusan;
                     $urusan->kode = $row[1];
                     $urusan->deskripsi = $row[2];
+                    $urusan->tahun_perubahan = $row[3];
                     $urusan->kabupaten_id = 62;
                     $urusan->save();
                 }

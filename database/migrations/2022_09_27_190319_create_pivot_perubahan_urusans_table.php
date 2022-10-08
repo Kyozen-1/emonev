@@ -18,6 +18,7 @@ class CreatePivotPerubahanUrusansTable extends Migration
             $table->foreignId('urusan_id')->nullable();
             $table->longText('deskripsi')->nullable();
             $table->date('tanggal')->nullable();
+            $table->string('tahun_perubahan')->nullable();
             $table->timestamps();
         });
     }

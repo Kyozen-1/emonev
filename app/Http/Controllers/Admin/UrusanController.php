@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use App\Models\Urusan;
 use App\Models\PivotPerubahanUrusan;
 use App\Imports\UrusanImport;
+use App\Models\TahunPeriode;
 
 class UrusanController extends Controller
 {
@@ -47,14 +48,26 @@ class UrusanController extends Controller
                 ->rawColumns(['aksi'])
                 ->make(true);
         }
-        return view('admin.urusan.index');
+
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
+        return view('admin.urusan.index', [
+            'tahuns' => $tahuns
+        ]);
     }
 
     public function store(Request $request)
     {
         $errors = Validator::make($request->all(), [
             'kode' => 'required',
-            'deskripsi' => 'required'
+            'deskripsi' => 'required',
+            'tahun_perubahan' => 'required',
         ]);
 
         if($errors -> fails())
@@ -65,6 +78,7 @@ class UrusanController extends Controller
         $urusan = new Urusan;
         $urusan->kode = $request->kode;
         $urusan->deskripsi = $request->deskripsi;
+        $urusan->tahun_perubahan = $request->tahun_perubahan;
         $urusan->kabupaten_id = 62;
         $urusan->save();
 
@@ -97,6 +111,7 @@ class UrusanController extends Controller
         $array = [
             'kode' => $data->kode,
             'deskripsi' => $data->deskripsi,
+            'tahun_perubahan' => $data->tahun_perubahan,
             'pivot_perubahan_urusan' => $html
         ];
 
@@ -117,7 +132,8 @@ class UrusanController extends Controller
         $array = [
             'id' => $data->id,
             'kode' => $data->kode,
-            'deskripsi' => $deskripsi
+            'deskripsi' => $deskripsi,
+            'tahun_perubahan' => $tahun_perubahan
         ];
 
         return response()->json(['result' => $array]);
@@ -127,7 +143,8 @@ class UrusanController extends Controller
     {
         $errors = Validator::make($request->all(), [
             'kode' => 'required',
-            'deskripsi' => 'required'
+            'deskripsi' => 'required',
+            'tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
@@ -138,6 +155,7 @@ class UrusanController extends Controller
         $pivot = new PivotPerubahanUrusan;
         $pivot->urusan_id = $request->hidden_id;
         $pivot->deskripsi = $request->deskripsi;
+        $pivot->tahun_perubahan = $request->tahun_perubahan;
         $pivot->tanggal = Carbon::now();
         $urusan->kabupaten_id = 62;
         $pivot->save();

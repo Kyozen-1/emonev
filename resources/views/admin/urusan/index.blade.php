@@ -61,7 +61,8 @@
                     <tr>
                         <th class="text-muted text-small text-uppercase" width="15%">No</th>
                         <th class="text-muted text-small text-uppercase" width="15%">Kode</th>
-                        <th class="text-muted text-small text-uppercase" width="55%">Deskripsi</th>
+                        <th class="text-muted text-small text-uppercase" width="40%">Deskripsi</th>
+                        <th class="text-muted text-small text-uppercase" widht="15%">Tahun Perubahan</th>
                         <th class="text-muted text-small text-uppercase" width="15%">Aksi</th>
                     </tr>
                 </thead>
@@ -90,6 +91,15 @@
                         <div class="mb-3">
                             <label for="" class="form-label">Deskripsi</label>
                             <textarea name="deskripsi" id="deskripsi" rows="5" class="form-control"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tahun_perubahan" class="form-label">Tahun Perubahan</label>
+                            <select name="tahun_perubahan" id="tahun_perubahan" class="form-control" required>
+                                <option value="">--- Pilih Tahun Perubahan ---</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
             </div>
@@ -121,6 +131,10 @@
                         <div class="mb-3">
                             <label for="" class="form-label">Deskripsi</label>
                             <textarea name="detail_deskripsi" id="detail_deskripsi" rows="5" class="form-control" disabled></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="" class="form-label">Tahun Perubahan</label>
+                            <input type="text" class="form-control" id="detail_tahun_perubahan" disabled>
                         </div>
                         <div class="mb-3">
                             <label for="" class="form-label">Perubahan Urusan</label>
@@ -200,6 +214,10 @@
                         name: 'deskripsi'
                     },
                     {
+                        data: 'tahun_perubahan',
+                        name: 'tahun_perubahan'
+                    },
+                    {
                         data: 'aksi',
                         name: 'aksi',
                         orderable: false
@@ -219,6 +237,7 @@
                     $('#detail-title').text('Detail Data');
                     $('#detail_kode').val(data.result.kode);
                     $('#detail_deskripsi').val(data.result.deskripsi);
+                    $('#detail_tahun_perubahan').val(data.result.tahun_perubahan);
                     $('#pivot_perubahan_urusan').append(data.result.pivot_perubahan_urusan);
                     $('#detailModal').modal('show');
                 }
@@ -320,6 +339,7 @@
                 {
                     $('#kode').val(data.result.kode);
                     $('#deskripsi').val(data.result.deskripsi);
+                    $("[name='tahun_perubahan']").val(data.result.tahun_perubahan).trigger('change');
                     $('#hidden_id').val(id);
                     $('.modal-title').text('Edit Data');
                     $('#aksi_button').text('Edit');
