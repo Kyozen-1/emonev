@@ -24,7 +24,7 @@ class UrusanController extends Controller
     {
         if(request()->ajax())
         {
-            $data = Urusan::latest()->get();
+            $data = Urusan::orderBy('id', 'desc')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
@@ -36,6 +36,15 @@ class UrusanController extends Controller
                     $button = $button_show . ' ' . $button_edit;
                     return $button;
                 })
+                ->editColumn('kode', function($data){
+                    $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $data->id)->latest()->first();
+                    if($cek_perubahan_urusan)
+                    {
+                        return $cek_perubahan_urusan->kode;
+                    } else {
+                        return $data->kode;
+                    }
+                })
                 ->editColumn('deskripsi', function($data){
                     $cek_perubahan = PivotPerubahanUrusan::where('urusan_id',$data->id)->latest()->first();
                     if($cek_perubahan)
@@ -43,6 +52,15 @@ class UrusanController extends Controller
                         return $cek_perubahan->deskripsi;
                     } else {
                         return $data->deskripsi;
+                    }
+                })
+                ->editColumn('tahun_perubahan', function($data){
+                    $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $data->id)->latest()->first();
+                    if($cek_perubahan_urusan)
+                    {
+                        return $cek_perubahan_urusan->tahun_perubahan;
+                    } else {
+                        return $data->tahun_perubahan;
                     }
                 })
                 ->rawColumns(['aksi'])
@@ -96,14 +114,22 @@ class UrusanController extends Controller
         {
             $get_perubahans = PivotPerubahanUrusan::where('urusan_id', $id)->get();
             $html .= '<ul>';
-            $html .= '<li>'.$data->deskripsi.' (Sebelum Perubahan)</li>';
+            $html .= '<li>'.$data->deskripsi.', Tahun Perubahan '.$data->tahun_perubahan.' (Sebelum Perubahan)</li>';
             $a = 1;
             foreach ($get_perubahans as $get_perubahan) {
-                $html .= '<li>'.$get_perubahan->deskripsi.' (Perubahan '.$a++.'), '.$get_perubahan->tanggal.'</li>';
+                $html .= '<li>'.$get_perubahan->deskripsi.', Tahun Perubahan '.$get_perubahan->tahun_perubahan.' (Perubahan '.$a++.'), '.$get_perubahan->tanggal.'</li>';
             }
             $html .= '</ul>';
         } else {
             $html .= '<p>Tidak ada</p>';
+        }
+
+        $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $data->id)->latest()->first();
+        if($cek_perubahan_urusan)
+        {
+            $tahun_perubahan = $cek_perubahan_urusan->tahun_perubahan;
+        } else {
+            $tahun_perubahan = $data->tahun_perubahan;
         }
 
         $html .='</div>';
@@ -111,7 +137,7 @@ class UrusanController extends Controller
         $array = [
             'kode' => $data->kode,
             'deskripsi' => $data->deskripsi,
-            'tahun_perubahan' => $data->tahun_perubahan,
+            'tahun_perubahan' => $tahun_perubahan,
             'pivot_perubahan_urusan' => $html
         ];
 
@@ -127,6 +153,14 @@ class UrusanController extends Controller
             $deskripsi = $cek_perubahan->deskripsi;
         } else {
             $deskripsi = $data->deskripsi;
+        }
+
+        $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $data->id)->latest()->first();
+        if($cek_perubahan_urusan)
+        {
+            $tahun_perubahan = $cek_perubahan_urusan->tahun_perubahan;
+        } else {
+            $tahun_perubahan = $data->tahun_perubahan;
         }
 
         $array = [
@@ -154,10 +188,10 @@ class UrusanController extends Controller
 
         $pivot = new PivotPerubahanUrusan;
         $pivot->urusan_id = $request->hidden_id;
+        $pivot->kode = $request->kode;
         $pivot->deskripsi = $request->deskripsi;
         $pivot->tahun_perubahan = $request->tahun_perubahan;
         $pivot->tanggal = Carbon::now();
-        $urusan->kabupaten_id = 62;
         $pivot->save();
 
         return response()->json(['success' => 'Berhasil Merubah Data']);
