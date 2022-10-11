@@ -11,7 +11,7 @@ class Urusan extends Model
 
     public function pivot_perubahan_urusan()
     {
-        return $this->hasMany('App\Models\PivotPerubahanUrusan', 'urusan_id');
+        return $this->hasMany('App\Models\Urusan', 'urusan_id');
     }
 
     public function program()

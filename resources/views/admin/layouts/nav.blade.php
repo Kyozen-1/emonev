@@ -198,6 +198,16 @@
                 </a>
             </li>
             <li>
+                @if (request()->routeIs('admin.nomenklatur.index'))
+                    <a href="{{ route('admin.nomenklatur.index') }}" class="active">
+                @else
+                    <a href="{{ route('admin.nomenklatur.index') }}">
+                @endif
+                    <i data-acorn-icon="file-text" class="icon" data-acorn-size="18"></i>
+                    <span class="label"> Nomenklatur</span>
+                </a>
+            </li>
+            {{-- <li>
                 @if (request()->routeIs('admin.urusan.index') ||
                 request()->routeIs('admin.program.index') ||
                 request()->routeIs('admin.kegiatan.index') ||
@@ -247,7 +257,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li> --}}
             <li>
                 @if (request()->routeIs('admin.visi.index') ||
                 request()->routeIs('admin.misi.index') ||

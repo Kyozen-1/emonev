@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use DB;
 use App\Models\Urusan;
+use App\Models\PivotPerubahanUrusan;
 
 class UrusanImport implements ToCollection,WithStartRow
 {
@@ -53,13 +54,46 @@ class UrusanImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
-                    $urusan = new Urusan;
-                    $urusan->kode = $row[1];
-                    $urusan->deskripsi = $row[2];
-                    // $urusan->tahun_perubahan = $row[3];
-                    $urusan->kabupaten_id = 62;
-                    $urusan->save();
+                    if($row[3] == null)
+                    {
+                        $response['import_status'] = false;
+                        $response['import_message'] = 'Tahun Perubahan Harus Diisi';
+                        session(['import_status' => $response['import_status']]);
+                        session(['import_message' => $response['import_message']]);
+                        return false;
+                    }
+                    $cek_urusan =  Urusan::where('kode', $row[1])->first();
+                    if($cek_urusan)
+                    {
+                        $pivot = new PivotPerubahanUrusan;
+                        $pivot->urusan_id = $cek_urusan->id;
+                        $pivot->kode = $row[1];
+                        $pivot->deskripsi = $row[2];
+                        $pivot->tahun_perubahan = $row[3];
+                        if($row[3] > 2020)
+                        {
+                            $pivot->status_aturan = 'Sesudah Perubahan';
+                        } else {
+                            $pivot->status_aturan = 'Sebelum Perubahan';
+                        }
+                        $pivot->kabupaten_id = 62;
+                        $pivot->save();
+                    } else {
+                        $urusan = new Urusan;
+                        $urusan->kode = $row[1];
+                        $urusan->deskripsi = $row[2];
+                        $urusan->tahun_perubahan = $row[3];
+                        if($row[3] > 2020)
+                        {
+                            $urusan->status_aturan = 'Sesudah Perubahan';
+                        } else {
+                            $urusan->status_aturan = 'Sebelum Perubahan';
+                        }
+                        $urusan->kabupaten_id = 62;
+                        $urusan->save();
+                    }
                 }
+                $n++;
             }
             $time_elapsed_secs = microtime(true) - $start;
             $response['import_message'] = $n. ' data telah diimport dalam '. $time_elapsed_secs.' Second';

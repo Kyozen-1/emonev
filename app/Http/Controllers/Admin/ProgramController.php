@@ -14,9 +14,10 @@ use DataTables;
 use Excel;
 use Carbon\Carbon;
 use App\Models\Urusan;
+use App\Models\PivotPerubahanUrusan;
 use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
-use App\Models\PivotProgramIndikator;
+// use App\Models\PivotProgramIndikator;
 use App\Imports\ProgramImport;
 
 class ProgramController extends Controller
@@ -112,10 +113,10 @@ class ProgramController extends Controller
     public function store(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'urusan_id' => 'required',
-            'kode' => 'required',
-            'deskripsi' => 'required',
-            'pagu' => 'required'
+            'program_urusan_id' => 'required',
+            'program_kode' => 'required',
+            'program_deskripsi' => 'required',
+            'program_tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
@@ -123,14 +124,46 @@ class ProgramController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $program = new Program;
-        $program->urusan_id = $request->urusan_id;
-        $program->kode = $request->kode;
-        $program->deskripsi = $request->deskripsi;
-        $program->pagu = $request->pagu;
-        $program->tanggal = Carbon::now();
-        $program->kabupaten_id = 62;
-        $program->save();
+        $cek_perubahan_urusan = PivotPerubahanUrusan::where('id', $request->program_urusan_id)->latest()->first();
+        if($cek_perubahan_urusan)
+        {
+            $urusan_id = $cek_perubahan_urusan->urusan_id;
+        } else {
+            $urusan_id = $request->program_urusan_id;
+        }
+
+        $cek_program = Program::where('kode', $request->kode)->first();
+        if($cek_program)
+        {
+            $pivot = new PivotPerubahanProgram;
+            $pivot->program_id = $cek_program->id;
+            $pivot->urusan_id = $urusan_id;
+            $pivot->kode = $request->program_kode;
+            $pivot->deskripsi = $request->program_deskripsi;
+            $pivot->tahun_perubahan = $request->program_tahun_perubahan;
+            if($request->status_perubahan > 2020)
+            {
+                $pivot->status_aturan = 'Sesudah Perubahan';
+            } else {
+                $pivot->status_aturan = 'Sebelum Perubahan';
+            }
+            $pivot->kabupaten_id = 62;
+            $pivot->save();
+        } else {
+            $program = new Program;
+            $program->urusan_id = $urusan_id;
+            $program->kode = $request->program_kode;
+            $program->deskripsi = $request->program_deskripsi;
+            $program->tahun_perubahan = $request->program_tahun_perubahan;
+            if($request->status_perubahan > 2020)
+            {
+                $program->status_aturan = 'Sesudah Perubahan';
+            } else {
+                $program->status_aturan = 'Sebelum Perubahan';
+            }
+            $program->kabupaten_id = 62;
+            $program->save();
+        }
 
         return response()->json(['success' => 'Berhasil Menambahkan Program']);
     }
@@ -145,7 +178,7 @@ class ProgramController extends Controller
     {
         $data = Program::find($id);
 
-        $cek_perubahan = PivotPerubahanProgram::where('program_id', $id)->latest()->first();
+        $cek_perubahan = PivotPerubahanProgram::where('program_id', $id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
         $html = '<div>';
 
         if($cek_perubahan)
@@ -156,7 +189,7 @@ class ProgramController extends Controller
                             Kode Urusan: '.$data->urusan->kode.' <br>
                             Kode: '.$data->kode.'<br>
                             Deskripsi: '.$data->deskripsi.'<br>
-                            Pagu: Rp. '.number_format($data->pagu, 2).'<br>
+                            Tahun Perubahan: '.$data->tahun_perubahan.'<br>
                             Status: <span class="text-primary">Sebelum Perubahan</span>
                         </p></li>';
             $a = 1;
@@ -165,39 +198,73 @@ class ProgramController extends Controller
                             Kode Urusan: '.$get_perubahan->program->urusan->kode.' <br>
                             Kode: '.$get_perubahan->kode.'<br>
                             Deskripsi: '.$get_perubahan->deskripsi.'<br>
-                            Pagu: Rp. '.number_format($get_perubahan->pagu, 2).'<br>
+                            Tahun Perubahan: '.$get_perubahan->tahun_perubahan.'<br>
                             Status: <span class="text-warning">Perubahan '.$a++.'</span>
                         </p></li>';
             }
             $html .= '</ul>';
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $cek_perubahan->urusan_id)
+                                        ->orderBy('tahun_perubahan', 'desc')
+                                        ->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $program_urusan = $cek_perubahan_urusan->deskripsi;
+            } else {
+                $urusan = Urusan::find($cek_perubahan->urusan_id);
+                $program_urusan = $urusan->deskripsi;
+            }
+            $program_deskripsi = $cek_perubahan->deskripsi;
+            $program_kode = $cek_perubahan->kode;
+            $program_tahun_perubahan = $cek_perubahan->tahun_perubahan;
         } else {
             $html .= '<p>Tidak ada</p>';
-        }
-
-        $html .='</div>';
-
-        $cek_indikator = PivotProgramIndikator::where('program_id', $id)->first();
-        $indikator = '<div>';
-
-        if($cek_indikator){
-            $get_indikators = PivotProgramIndikator::where('program_id', $id)->get();
-            $indikator .= '<ul>';
-            foreach ($get_indikators as $get_indikator) {
-                $indikator .= '<li>'.$get_indikator->indikator.'</li>';
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $data->urusan_id)
+                                        ->orderBy('tahun_perubahan', 'desc')
+                                        ->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $program_urusan = $cek_perubahan_urusan->deskripsi;
+            } else {
+                $urusan = Urusan::find($data->urusan_id);
+                $program_urusan = $urusan->deskripsi;
             }
-            $indikator .= '</ul>';
-        } else {
-            $indikator .= '<p>Tidak ada</p>';
+            $program_deskripsi = $data->deskripsi;
+            $program_kode = $data->kode;
+            $program_tahun_perubahan = $data->tahun_perubahan;
         }
 
-        $indikator .='</div>';
+        // $html .='</div>';
+
+        // $cek_indikator = PivotProgramIndikator::where('program_id', $id)->first();
+        // $indikator = '<div>';
+
+        // if($cek_indikator){
+        //     $get_indikators = PivotProgramIndikator::where('program_id', $id)->get();
+        //     $indikator .= '<ul>';
+        //     foreach ($get_indikators as $get_indikator) {
+        //         $indikator .= '<li>'.$get_indikator->indikator.'</li>';
+        //     }
+        //     $indikator .= '</ul>';
+        // } else {
+        //     $indikator .= '<p>Tidak ada</p>';
+        // }
+
+        // $indikator .='</div>';
+
+        // $array = [
+        //     'urusan' => $data->urusan->deskripsi,
+        //     'kode' => $data->kode,
+        //     'deskripsi' => $data->deskripsi,
+        //     'pagu' => 'Rp. '.number_format($data->pagu, 2),
+        //     'pivot_program_indikator' => $indikator,
+        //     'pivot_perubahan_program' => $html
+        // ];
 
         $array = [
-            'urusan' => $data->urusan->deskripsi,
-            'kode' => $data->kode,
-            'deskripsi' => $data->deskripsi,
-            'pagu' => 'Rp. '.number_format($data->pagu, 2),
-            'pivot_program_indikator' => $indikator,
+            'urusan' => $program_urusan,
+            'kode' => $program_kode,
+            'deskripsi' => $program_deskripsi,
+            'tahun_perubahan' => $program_tahun_perubahan,
             'pivot_perubahan_program' => $html
         ];
 
@@ -221,7 +288,7 @@ class ProgramController extends Controller
                 'urusan_id' => $cek_perubahan->urusan_id,
                 'kode' => $cek_perubahan->kode,
                 'deskripsi' => $cek_perubahan->deskripsi,
-                'pagu' => $cek_perubahan->pagu,
+                'tahun_perubahan' => $cek_perubahan->tahun_perubahan
             ];
         } else {
             $array = [
@@ -229,7 +296,7 @@ class ProgramController extends Controller
                 'urusan_id' => $data->urusan_id,
                 'kode' => $data->kode,
                 'deskripsi' => $data->deskripsi,
-                'pagu' => $data->pagu,
+                'tahun_perubahan' => $cek_perubahan->tahun_perubahan
             ];
         }
 
@@ -246,10 +313,9 @@ class ProgramController extends Controller
     public function update(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'urusan_id' => 'required',
-            'kode' => 'required',
-            'deskripsi' => 'required',
-            'pagu' => 'required'
+            'program_kode' => 'required',
+            'program_deskripsi' => 'required',
+            'program_tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
@@ -258,13 +324,18 @@ class ProgramController extends Controller
         }
 
         $pivot = new PivotPerubahanProgram;
-        $pivot->program_id = $request->hidden_id;
-        $pivot->urusan_id = $request->urusan_id;
-        $pivot->kode = $request->kode;
-        $pivot->deskripsi = $request->deskripsi;
-        $pivot->pagu = $request->pagu;
-        $pivot->tanggal = Carbon::now();
+        $pivot->program_id = $request->program_hidden_id;
+        $pivot->urusan_id = $request->program_urusan_id;
+        $pivot->kode = $request->program_kode;
+        $pivot->deskripsi = $request->program_deskripsi;
+        $pivot->tahun_perubahan = $request->program_tahun_perubahan;
         $pivot->kabupaten_id = 62;
+        if($request->status_perubahan > 2020)
+        {
+            $pivot->status_aturan = 'Sesudah Perubahan';
+        } else {
+            $pivot->status_aturan = 'Sebelum Perubahan';
+        }
         $pivot->save();
 
         return response()->json(['success' => 'Berhasil Merubah Program']);
@@ -283,8 +354,9 @@ class ProgramController extends Controller
 
     public function impor(Request $request)
     {
+        $urusan_id = $request->program_impor_urusan_id;
         $file = $request->file('impor_program');
-        Excel::import(new ProgramImport, $file->store('temp'));
+        Excel::import(new ProgramImport($urusan_id), $file->store('temp'));
         $msg = [session('import_status'), session('import_message')];
         if ($msg[0]) {
             Alert::success('Berhasil', $msg[1]);

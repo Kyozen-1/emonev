@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUrusansTable extends Migration
+class CreateProgramsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateUrusansTable extends Migration
      */
     public function up()
     {
-        Schema::create('urusans', function (Blueprint $table) {
+        Schema::create('programs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('urusan_id')->nullable();
             $table->string('kode')->nullable();
             $table->longText('deskripsi')->nullable();
-            $table->date('tanggal')->nullable();
             $table->string('tahun_perubahan')->nullable();
+            $table->enum('status_aturan', ['Sebelum Perubahan', 'Sesudah Perubahan'])->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ class CreateUrusansTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('urusans');
+        Schema::dropIfExists('programs');
     }
 }

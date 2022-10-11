@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePivotSubKegiatanIndikatorsTable extends Migration
+class CreateUrusansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreatePivotSubKegiatanIndikatorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('pivot_sub_kegiatan_indikators', function (Blueprint $table) {
+        Schema::create('urusans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sub_kegiatan_id')->nullable();
-            $table->longText('indikator')->nullable();
-            $table->string('target')->nullable();
-            $table->string('satuan')->nullable();
+            $table->string('kode')->nullable();
+            $table->longText('deskripsi')->nullable();
+            $table->string('tahun_perubahan')->nullable();
+            $table->enum('status_aturan', ['Sebelum Perubahan', 'Sesudah Perubahan'])->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreatePivotSubKegiatanIndikatorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pivot_sub_kegiatan_indikators');
+        Schema::dropIfExists('urusans');
     }
 }

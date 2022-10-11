@@ -28,9 +28,9 @@ class UrusanController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
-                    $button_show = '<button type="button" name="detail" id="'.$data->id.'" class="detail btn btn-icon waves-effect btn-success" title="Detail Data"><i class="fas fa-eye"></i></button>';
-                    $button_edit = '<button type="button" name="edit" id="'.$data->id.'"
-                    class="edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
+                    $button_show = '<button type="button" name="urusan_detail" id="'.$data->id.'" class="urusan_detail btn btn-icon waves-effect btn-success" title="Detail Data"><i class="fas fa-eye"></i></button>';
+                    $button_edit = '<button type="button" name="urusan_edit" id="'.$data->id.'"
+                    class="urusan_edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
                     // $button_delete = '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-icon waves-effect btn-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
                     // $button = $button_show . ' ' . $button_edit . ' ' . $button_delete;
                     $button = $button_show . ' ' . $button_edit;
@@ -83,9 +83,9 @@ class UrusanController extends Controller
     public function store(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'kode' => 'required',
-            'deskripsi' => 'required',
-            'tahun_perubahan' => 'required',
+            'urusan_kode' => 'required',
+            'urusan_deskripsi' => 'required',
+            'urusan_tahun_perubahan' => 'required',
         ]);
 
         if($errors -> fails())
@@ -93,12 +93,36 @@ class UrusanController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $urusan = new Urusan;
-        $urusan->kode = $request->kode;
-        $urusan->deskripsi = $request->deskripsi;
-        $urusan->tahun_perubahan = $request->tahun_perubahan;
-        $urusan->kabupaten_id = 62;
-        $urusan->save();
+        $cek_urusan =  Urusan::where('kode', $request->urusan_kode)->first();
+        if($cek_urusan)
+        {
+            $pivot = new PivotPerubahanUrusan;
+            $pivot->urusan_id = $cek_urusan->id;
+            $pivot->kode = $request->urusan_kode;
+            $pivot->deskripsi = $request->urusan_deskripsi;
+            $pivot->tahun_perubahan = $request->urusan_tahun_perubahan;
+            if($request->urusan_tahun_perubahan > 2020)
+            {
+                $pivot->status_aturan = 'Sesudah Perubahan';
+            } else {
+                $pivot->status_aturan = 'Sebelum Perubahan';
+            }
+            $pivot->kabupaten_id = 62;
+            $pivot->save();
+        } else {
+            $urusan = new Urusan;
+            $urusan->kode = $request->urusan_kode;
+            $urusan->deskripsi = $request->urusan_deskripsi;
+            $urusan->tahun_perubahan = $request->urusan_tahun_perubahan;
+            if($request->urusan_tahun_perubahan > 2020)
+            {
+                $urusan->status_aturan = 'Sesudah Perubahan';
+            } else {
+                $urusan->status_aturan = 'Sebelum Perubahan';
+            }
+            $urusan->kabupaten_id = 62;
+            $urusan->save();
+        }
 
         return response()->json(['success' => 'Berhasil Menambahkan Urusan']);
     }
@@ -117,7 +141,7 @@ class UrusanController extends Controller
             $html .= '<li>'.$data->deskripsi.', Tahun Perubahan '.$data->tahun_perubahan.' (Sebelum Perubahan)</li>';
             $a = 1;
             foreach ($get_perubahans as $get_perubahan) {
-                $html .= '<li>'.$get_perubahan->deskripsi.', Tahun Perubahan '.$get_perubahan->tahun_perubahan.' (Perubahan '.$a++.'), '.$get_perubahan->tanggal.'</li>';
+                $html .= '<li>'.$get_perubahan->deskripsi.', Tahun Perubahan '.$get_perubahan->tahun_perubahan.' (Perubahan '.$a++.'), '.$get_perubahan->created_at.'</li>';
             }
             $html .= '</ul>';
         } else {
@@ -176,9 +200,9 @@ class UrusanController extends Controller
     public function update(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'kode' => 'required',
-            'deskripsi' => 'required',
-            'tahun_perubahan' => 'required'
+            'urusan_kode' => 'required',
+            'urusan_deskripsi' => 'required',
+            'urusan_tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
@@ -187,11 +211,17 @@ class UrusanController extends Controller
         }
 
         $pivot = new PivotPerubahanUrusan;
-        $pivot->urusan_id = $request->hidden_id;
-        $pivot->kode = $request->kode;
-        $pivot->deskripsi = $request->deskripsi;
-        $pivot->tahun_perubahan = $request->tahun_perubahan;
-        $pivot->tanggal = Carbon::now();
+        $pivot->urusan_id = $request->urusan_hidden_id;
+        $pivot->kode = $request->urusan_kode;
+        $pivot->deskripsi = $request->urusan_deskripsi;
+        $pivot->tahun_perubahan = $request->urusan_tahun_perubahan;
+        if($request->urusan_tahun_perubahan > 2020)
+        {
+            $pivot->status_aturan = 'Sesudah Perubahan';
+        } else {
+            $pivot->status_aturan = 'Sebelum Perubahan';
+        }
+        $pivot->kabupaten_id = 62;
         $pivot->save();
 
         return response()->json(['success' => 'Berhasil Merubah Data']);

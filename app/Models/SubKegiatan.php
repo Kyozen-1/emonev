@@ -18,9 +18,4 @@ class SubKegiatan extends Model
     {
         return $this->hasMany('App\Models\PivotPerubahanSubKegiatan', 'sub_kegiatan_id');
     }
-
-    public function pivot_sub_kegiatan_indikator()
-    {
-        return $this->hasMany('App\Models\PivotSubKegiatanIndikator', 'sub_kegiatan_id');
-    }
 }

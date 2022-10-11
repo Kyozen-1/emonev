@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRenstrasTable extends Migration
+class CreateKegiatansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateRenstrasTable extends Migration
      */
     public function up()
     {
-        Schema::create('renstras', function (Blueprint $table) {
+        Schema::create('kegiatans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('misi_id')->nullable();
-            $table->foreignId('tujuan_id')->nullable();
-            $table->foreignId('sasaran_id')->nullable();
             $table->foreignId('program_id')->nullable();
-            $table->foreignId('opd_id')->nullable();
+            $table->string('kode')->nullable();
+            $table->longText('deskripsi')->nullable();
+            $table->string('tahun_perubahan')->nullable();
+            $table->enum('status_aturan', ['Sebelum Perubahan', 'Sesudah Perubahan'])->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ class CreateRenstrasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('renstras');
+        Schema::dropIfExists('kegiatans');
     }
 }

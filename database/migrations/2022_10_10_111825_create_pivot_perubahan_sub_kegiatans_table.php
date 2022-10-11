@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePivotPerubahanProgramsTable extends Migration
+class CreatePivotPerubahanSubKegiatansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreatePivotPerubahanProgramsTable extends Migration
      */
     public function up()
     {
-        Schema::create('pivot_perubahan_programs', function (Blueprint $table) {
+        Schema::create('pivot_perubahan_sub_kegiatans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('program_id')->nullable();
+            $table->foreignId('sub_kegiatan_id')->nullable();
+            $table->foreignId('kegiatan_id')->nullable();
             $table->string('kode')->nullable();
             $table->longText('deskripsi')->nullable();
-            $table->string('pagu')->nullable();
-            $table->date('tanggal')->nullable();
+            $table->string('tahun_perubahan')->nullable();
+            $table->enum('status_perubahan', ['Sebelum Perubahan', 'Sesudah Perubahan'])->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ class CreatePivotPerubahanProgramsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pivot_perubahan_programs');
+        Schema::dropIfExists('pivot_perubahan_sub_kegiatans');
     }
 }

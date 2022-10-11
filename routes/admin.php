@@ -44,6 +44,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/manajemen-akun/opd/destroy','Admin\ManajemenAkun\OpdController@destroy')->name('admin.manajemen-akun.opd.destroy');
 
     //Nomenklatur
+    Route::get('/admin/nomenklatur', 'Admin\NomenklaturController@index')->name('admin.nomenklatur.index');
+
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');
     Route::get('/admin/urusan/detail/{id}', 'Admin\UrusanController@show');

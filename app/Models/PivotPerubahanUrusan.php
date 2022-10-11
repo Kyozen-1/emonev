@@ -11,6 +11,6 @@ class PivotPerubahanUrusan extends Model
 
     public function urusan()
     {
-        return $this->belongsTo('App\Models\Urusan', 'urusan_id');
+        return $this->belongsTo('App\Models\PivotPerubahanUrusan', 'urusan_id');
     }
 }

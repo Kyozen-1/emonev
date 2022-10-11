@@ -10,11 +10,20 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use DB;
 use App\Models\Urusan;
+use App\Models\PivotPerubahanUrusan;
 use App\Models\Program;
+use App\Models\PivotPerubahanProgram;
 use Carbon\Carbon;
 
 class ProgramImport implements ToCollection,WithStartRow
 {
+    protected $urusan_id;
+
+    public function __construct($urusan_id)
+    {
+        $this->urusan_id = $urusan_id;
+    }
+
     public function startRow(): int
     {
         return 2;
@@ -38,7 +47,7 @@ class ProgramImport implements ToCollection,WithStartRow
                     if($row[1] == null)
                     {
                         $response['import_status'] = false;
-                        $response['import_message'] = 'Kode Urusan Harus Diisi';
+                        $response['import_message'] = 'Kode Program Harus Diisi';
                         session(['import_status' => $response['import_status']]);
                         session(['import_message' => $response['import_message']]);
                         return false;
@@ -46,7 +55,7 @@ class ProgramImport implements ToCollection,WithStartRow
                     if($row[2] == null)
                     {
                         $response['import_status'] = false;
-                        $response['import_message'] = 'Kode Harus Diisi';
+                        $response['import_message'] = 'Program Harus Diisi';
                         session(['import_status' => $response['import_status']]);
                         session(['import_message' => $response['import_message']]);
                         return false;
@@ -54,35 +63,45 @@ class ProgramImport implements ToCollection,WithStartRow
                     if($row[3] == null)
                     {
                         $response['import_status'] = false;
-                        $response['import_message'] = 'Program Harus Diisi';
+                        $response['import_message'] = 'Tahun Perubahan Harus Diisi';
                         session(['import_status' => $response['import_status']]);
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
-                    if($row[4] == null)
+                    $cek_program = Program::where('kode', $row[1])->where('urusan_id', $this->urusan_id)->first();
+                    if($cek_program)
                     {
-                        $response['import_status'] = false;
-                        $response['import_message'] = 'Pagu Harus Diisi';
-                        session(['import_status' => $response['import_status']]);
-                        session(['import_message' => $response['import_message']]);
-                        return false;
-                    }
-
-                    $cek_urusan = Urusan::where('kode', $row[1])->first();
-                    $program = new Program;
-                    if($cek_urusan)
-                    {
-                        $program->urusan_id = $cek_urusan->id;
+                        $pivot = new PivotPerubahanProgram;
+                        $pivot->program_id = $cek_program->id;
+                        $pivot->urusan_id = $this->urusan_id;
+                        $pivot->kode = $row[1];
+                        $pivot->deskripsi = $row[2];
+                        $pivot->tahun_perubahan = $row[3];
+                        $pivot->kabupaten_id = 62;
+                        if($row[3] > 2020)
+                        {
+                            $pivot->status_aturan = 'Sesudah Perubahan';
+                        } else {
+                            $pivot->status_aturan = 'Sebelum Perubahan';
+                        }
+                        $pivot->save();
                     } else {
-                        $program->urusan_id = null;
+                        $program = new Program;
+                        $program->urusan_id = $this->urusan_id;
+                        $program->kode = $row[1];
+                        $program->deskripsi = $row[2];
+                        $program->tahun_perubahan = $row[3];
+                        $program->kabupaten_id = 62;
+                        if($row[3] > 2020)
+                        {
+                            $program->status_aturan = 'Sesudah Perubahan';
+                        } else {
+                            $program->status_aturan = 'Sebelum Perubahan';
+                        }
+                        $program->save();
                     }
-                    $program->kode = $row[2];
-                    $program->deskripsi = $row[3];
-                    $program->pagu = $row[4];
-                    $program->tanggal = Carbon::now();
-                    $program->kabupaten_id = 62;
-                    $program->save();
                 }
+                $n++;
             }
             $time_elapsed_secs = microtime(true) - $start;
             $response['import_message'] = $n. ' data telah diimport dalam '. $time_elapsed_secs.' Second';
