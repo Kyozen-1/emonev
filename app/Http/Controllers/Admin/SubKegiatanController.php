@@ -198,23 +198,50 @@ class SubKegiatanController extends Controller
     public function store(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'kegiatan_id' => 'required',
-            'kode' => 'required',
-            'deskripsi' => 'required',
+            'sub_kegiatan_kegiatan_id' => 'required',
+            'sub_kegiatan_kode' => 'required',
+            'sub_kegiatan_deskripsi' => 'required',
+            'sub_kegiatan_tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
-
-        $sub_kegiatan = new SubKegiatan;
-        $sub_kegiatan->kegiatan_id = $request->kegiatan_id;
-        $sub_kegiatan->kode = $request->kode;
-        $sub_kegiatan->deskripsi = $request->deskripsi;
-        $sub_kegiatan->tanggal = Carbon::now();
-        $sub_kegiatan->kabupaten_id = 62;
-        $sub_kegiatan->save();
+        $cek_sub_kegiatan = SubKegiatan::where('kode', $request->sub_kegiatan_kode)
+                                ->where('kegiatan_id', $request->sub_kegiatan_kegiatan_id)
+                                ->first();
+        if($cek_sub_kegiatan)
+        {
+            $pivot = new PivotPerubahanSubKegiatan;
+            $pivot->sub_kegiatan_id = $cek_sub_kegiatan->id;
+            $pivot->kegiatan_id = $request->sub_kegiatan_kegiatan_id;
+            $pivot->kode = $request->sub_kegiatan_kode;
+            $pivot->deskripsi = $request->sub_kegiatan_deskripsi;
+            $pivot->tahun_perubahan = $request->sub_kegiatan_tahun_perubahan;
+            if($request->sub_kegiatan_tahun_perubahan > 2020)
+            {
+                $pivot->status_aturan = 'Sesudah Perubahan';
+            } else {
+                $pivot->status_aturan = 'Sebelum Perubahan';
+            }
+            $pivot->kabupaten_id = 62;
+            $pivot->save();
+        } else {
+            $sub_kegiatan = new SubKegiatan;
+            $sub_kegiatan->kegiatan_id = $request->sub_kegiatan_kegiatan_id;
+            $sub_kegiatan->kode = $request->sub_kegiatan_kode;
+            $sub_kegiatan->deskripsi = $request->sub_kegiatan_deskripsi;
+            $sub_kegiatan->tahun_perubahan = $request->sub_kegiatan_tahun_perubahan;
+            if($request->sub_kegiatan_tahun_perubahan > 2020)
+            {
+                $sub_kegiatan->status_aturan = 'Sesudah Perubahan';
+            } else {
+                $sub_kegiatan->status_aturan = 'Sebelum Perubahan';
+            }
+            $sub_kegiatan->kabupaten_id = 62;
+            $sub_kegiatan->save();
+        }
 
         return response()->json(['success' => 'Berhasil Menambahkan Kegiatan']);
     }
@@ -258,7 +285,8 @@ class SubKegiatanController extends Controller
                 $get_urusan = Urusan::find($urusan_id);
                 $kode_urusan = $get_urusan->kode;
             }
-            $get_perubahans = PivotPerubahanSubKegiatan::where('kegiatan_id', $id)->get();
+            $get_perubahans = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $id)
+                                ->where('kegiatan_id', $cek_perubahan->kegiatan_id)->get();
             $html .= '<ul>';
             $html .= '<li><p>
                             Kode Urusan: '.$kode_urusan.' <br>
@@ -266,6 +294,7 @@ class SubKegiatanController extends Controller
                             Kode Kegiatan: '.$kode_kegiatan.' <br>
                             Kode: '.$data->kode.'<br>
                             Deskripsi: '.$data->deskripsi.'<br>
+                            Tahun Perubahan: '.$data->tahun_perubahan.'<br>
                             Status: <span class="text-primary">Sebelum Perubahan</span>
                         </p></li>';
             $a = 1;
@@ -310,6 +339,7 @@ class SubKegiatanController extends Controller
                             Kode Kegiatan: '.$kode_kegiatan.' <br>
                             Kode: '.$get_perubahan->kode.'<br>
                             Deskripsi: '.$get_perubahan->deskripsi.'<br>
+                            Tahun Perubahan: '.$get_perubahan->tahun_perubahan.'<br>
                             Status: <span class="text-warning">Perubahan '.$a++.'</span>
                         </p></li>';
             }
@@ -346,23 +376,23 @@ class SubKegiatanController extends Controller
             }
         }
 
-        $html .='</div>';
+        // $html .='</div>';
 
-        $cek_indikator = PivotSubKegiatanIndikator::where('sub_kegiatan_id', $id)->first();
-        $indikator = '<div>';
+        // $cek_indikator = PivotSubKegiatanIndikator::where('sub_kegiatan_id', $id)->first();
+        // $indikator = '<div>';
 
-        if($cek_indikator){
-            $get_indikators = PivotSubKegiatanIndikator::where('sub_kegiatan_id', $id)->get();
-            $indikator .= '<ul>';
-            foreach ($get_indikators as $get_indikator) {
-                $indikator .= '<li>'.$get_indikator->indikator.'</li>';
-            }
-            $indikator .= '</ul>';
-        } else {
-            $indikator .= '<p>Tidak ada</p>';
-        }
+        // if($cek_indikator){
+        //     $get_indikators = PivotSubKegiatanIndikator::where('sub_kegiatan_id', $id)->get();
+        //     $indikator .= '<ul>';
+        //     foreach ($get_indikators as $get_indikator) {
+        //         $indikator .= '<li>'.$get_indikator->indikator.'</li>';
+        //     }
+        //     $indikator .= '</ul>';
+        // } else {
+        //     $indikator .= '<p>Tidak ada</p>';
+        // }
 
-        $indikator .='</div>';
+        // $indikator .='</div>';
 
         $array = [
             'urusan' => $deskripsi_urusan,
@@ -370,7 +400,7 @@ class SubKegiatanController extends Controller
             'kegiatan' => $deskripsi_kegiatan,
             'kode' => $data->kode,
             'deskripsi' => $data->deskripsi,
-            'pivot_sub_kegiatan_indikator' => $indikator,
+            'tahun_perubahan' => $data->tahun_perubahan,
             'pivot_perubahan_sub_kegiatan' => $html
         ];
 
@@ -408,7 +438,8 @@ class SubKegiatanController extends Controller
                 'program_id' => $program_id,
                 'kegiatan_id' => $kegiatan_id,
                 'kode' => $cek_perubahan_sub_kegiatan->kode,
-                'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi
+                'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi,
+                'tahun_perubahan' => $cek_perubahan_sub_kegiatan->tahun_perubahan,
             ];
         } else {
             $kegiatan_id = $data->kegiatan_id;
@@ -436,7 +467,8 @@ class SubKegiatanController extends Controller
                 'program_id' => $program_id,
                 'kegiatan_id' => $kegiatan_id,
                 'kode' => $data->kode,
-                'deskripsi' => $data->deskripsi
+                'deskripsi' => $data->deskripsi,
+                'tahun_perubahan' => $data->tahun_perubahan
             ];
         }
 
@@ -446,9 +478,10 @@ class SubKegiatanController extends Controller
     public function update(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'kegiatan_id' => 'required',
-            'kode' => 'required',
-            'deskripsi' => 'required',
+            'sub_kegiatan_kegiatan_id' => 'required',
+            'sub_kegiatan_kode' => 'required',
+            'sub_kegiatan_deskripsi' => 'required',
+            'sub_kegiatan_tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
@@ -457,12 +490,18 @@ class SubKegiatanController extends Controller
         }
 
         $pivot_perubahan_sub_kegiatan = new PivotPerubahanSubKegiatan;
-        $pivot_perubahan_sub_kegiatan->sub_kegiatan_id = $request->hidden_id;
-        $pivot_perubahan_sub_kegiatan->kegiatan_id = $request->kegiatan_id;
-        $pivot_perubahan_sub_kegiatan->kode = $request->kode;
-        $pivot_perubahan_sub_kegiatan->deskripsi = $request->deskripsi;
-        $pivot_perubahan_sub_kegiatan->tanggal = Carbon::now();
+        $pivot_perubahan_sub_kegiatan->sub_kegiatan_id = $request->sub_kegiatan_hidden_id;
+        $pivot_perubahan_sub_kegiatan->kegiatan_id = $request->sub_kegiatan_kegiatan_id;
+        $pivot_perubahan_sub_kegiatan->kode = $request->sub_kegiatan_kode;
+        $pivot_perubahan_sub_kegiatan->deskripsi = $request->sub_kegiatan_deskripsi;
+        $pivot_perubahan_sub_kegiatan->tahun_perubahan = $request->sub_kegiatan_tahun_perubahan;
         $pivot_perubahan_sub_kegiatan->kabupaten_id = 62;
+        if($request->sub_kegiatan_tahun_perubahan > 2020)
+        {
+            $pivot_perubahan_sub_kegiatan->status_aturan = 'Sesudah Perubahan';
+        } else {
+            $pivot_perubahan_sub_kegiatan->status_aturan = 'Sebelum Perubahan';
+        }
         $pivot_perubahan_sub_kegiatan->save();
 
         return response()->json(['success' => 'Berhasil Merubah Sub Kegiatan']);
@@ -470,8 +509,9 @@ class SubKegiatanController extends Controller
 
     public function impor(Request $request)
     {
+        $kegiatan_id = $request->sub_kegiatan_impor_kegiatan_id;
         $file = $request->file('impor_sub_kegiatan');
-        Excel::import(new SubKegiatanImport, $file->store('temp'));
+        Excel::import(new SubKegiatanImport($kegiatan_id), $file->store('temp'));
         $msg = [session('import_status'), session('import_message')];
         if ($msg[0]) {
             Alert::success('Berhasil', $msg[1]);

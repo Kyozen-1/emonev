@@ -54,6 +54,8 @@
         use App\Models\PivotPerubahanProgram;
         use App\Models\Kegiatan;
         use App\Models\PivotPerubahanKegiatan;
+        use App\Models\SubKegiatan;
+        use App\Models\PivotPerubahanSubKegiatan;
 
         $get_urusans = Urusan::all();
         $urusans = [];
@@ -112,8 +114,13 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#kegiatan" role="tab" type="button" aria-selected="false">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#kegiatan" role="tab" type="button" aria-selected="false">
                                 Kegiatan
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#sub_kegiatan" role="tab" type="button" aria-selected="false">
+                                Sub Kegiatan
                             </button>
                         </li>
                     </ul>
@@ -191,15 +198,15 @@
                                                     }
                                                 @endphp
                                                 <tr>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#program_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['kode']}}
                                                     </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#program_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['deskripsi']}}
                                                         <br>
                                                         <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
                                                     </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#program_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['tahun_perubahan']}}
                                                     </td>
                                                     <td>
@@ -210,7 +217,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td colspan="4" class="hiddenRow">
-                                                        <div class="accordian-body collapse" id="urusan{{$urusan['id']}}">
+                                                        <div class="accordian-body collapse" id="program_urusan{{$urusan['id']}}">
                                                             <table class="table table-striped">
                                                                 {{-- <thead>
                                                                     <tr>
@@ -251,7 +258,7 @@
                         {{-- Program End --}}
 
                         {{-- Kegiatan Start --}}
-                        <div class="tab-pane fade active show" id="kegiatan" role="tabpanel">
+                        <div class="tab-pane fade" id="kegiatan" role="tabpanel">
                             <div class="data-table-rows slim">
                                 <div class="data-table-responsive-wrapper">
                                     <table class="table table-condensed table-striped">
@@ -290,21 +297,21 @@
                                                     }
                                                 @endphp
                                                 <tr>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['kode']}}
                                                     </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['deskripsi']}}
                                                         <br>
                                                         <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
                                                     </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['tahun_perubahan']}}
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="3" class="hiddenRow">
-                                                        <div class="accordian-body collapse" id="urusan{{$urusan['id']}}">
+                                                        <div class="accordian-body collapse" id="kegiatan_urusan{{$urusan['id']}}">
                                                             <table class="table table-striped">
                                                                 {{-- <thead>
                                                                     <tr>
@@ -317,14 +324,14 @@
                                                                 <tbody>
                                                                     @foreach ($programs as $program)
                                                                         <tr>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#program{{$program['id']}}" class="accordion-toggle" width="15%">{{$program['kode']}}</td>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#program{{$program['id']}}" class="accordion-toggle" width="50%">
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%">{{$program['kode']}}</td>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="50%">
                                                                                 {{$program['deskripsi']}}
                                                                                 <br>
                                                                                 <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
                                                                                 <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
                                                                             </td>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#program{{$program['id']}}" class="accordion-toggle" width="15%"> {{$program['tahun_perubahan']}}</td>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%"> {{$program['tahun_perubahan']}}</td>
                                                                             <td width="20%">
                                                                                 <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="{{$program['id']}}"><i class="fas fa-plus"></i></button>
                                                                                 <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_kegiatan.xlsx') }}" title="Download Template Import Data Kegiatan"><i class="fas fa-file-excel"></i></a>
@@ -333,7 +340,7 @@
                                                                         </tr>
                                                                         <tr>
                                                                             <td colspan="12" class="hiddenRow">
-                                                                                <div class="accordian-body collapse" id="program{{$program['id']}}">
+                                                                                <div class="accordian-body collapse" id="kegiatan_program{{$program['id']}}">
                                                                                     <table class="table table-striped">
                                                                                         {{-- <thead>
                                                                                             <tr></tr>
@@ -406,6 +413,219 @@
                             </div>
                         </div>
                         {{-- Kegiatan End --}}
+
+                        {{-- Sub Kegiatan Start --}}
+                        <div class="tab-pane fade active show" id="sub_kegiatan" role="tabpanel">
+                            <div class="data-table-rows slim">
+                                <div class="data-table-responsive-wrapper">
+                                    <table class="table table-condensed table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th width="15%">Kode</th>
+                                                <th width="70%">Urusan</th>
+                                                <th width="15%">Tahun Perubahan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($urusans as $urusan)
+                                                @php
+                                                    $get_programs = Program::where('urusan_id', $urusan['id'])->get();
+                                                    $programs = [];
+                                                    foreach ($get_programs as $get_program) {
+                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                        if($cek_perubahan_program)
+                                                        {
+                                                            $programs[] = [
+                                                                'id' => $cek_perubahan_program->program_id,
+                                                                'kode' => $cek_perubahan_program->kode,
+                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
+                                                                'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
+                                                                'status_aturan' => $cek_perubahan_program->status_aturan,
+                                                            ];
+                                                        } else {
+                                                            $programs[] = [
+                                                                'id' => $get_program->id,
+                                                                'kode' => $get_program->kode,
+                                                                'deskripsi' => $get_program->deskripsi,
+                                                                'tahun_perubahan' => $get_program->tahun_perubahan,
+                                                                'status_aturan' => $get_program->status_aturan,
+                                                            ];
+                                                        }
+                                                    }
+                                                @endphp
+                                                <tr>
+                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                        {{$urusan['kode']}}
+                                                    </td>
+                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                        {{$urusan['deskripsi']}}
+                                                        <br>
+                                                        <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
+                                                    </td>
+                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
+                                                        {{$urusan['tahun_perubahan']}}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3" class="hiddenRow">
+                                                        <div class="accordian-body collapse" id="sub_kegiatan_urusan{{$urusan['id']}}">
+                                                            <table class="table table-striped">
+                                                                {{-- <thead>
+                                                                    <tr>
+                                                                        <th width="15%">Kode</th>
+                                                                        <th width="50%">Program</th>
+                                                                        <th width="15%">Tahun Perubahan</th>
+                                                                        <th width="20%">Aksi</th>
+                                                                    </tr>
+                                                                </thead> --}}
+                                                                <tbody>
+                                                                    @foreach ($programs as $program)
+                                                                        <tr>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%">{{$program['kode']}}</td>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="70%">
+                                                                                {{$program['deskripsi']}}
+                                                                                <br>
+                                                                                <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
+                                                                                <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
+                                                                            </td>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%"> {{$program['tahun_perubahan']}}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colspan="12" class="hiddenRow">
+                                                                                <div class="accordian-body collapse" id="sub_kegiatan_program{{$program['id']}}">
+                                                                                    <table class="table table-striped">
+                                                                                        {{-- <thead>
+                                                                                            <tr></tr>
+                                                                                                <th>Kode</th>
+                                                                                                <th>Kegiatan</th>
+                                                                                                <th>Tahun Perubahan</th>
+                                                                                                <th>Aksi</th>
+                                                                                            </tr>
+                                                                                        </thead> --}}
+                                                                                        <tbody>
+                                                                                            @php
+                                                                                                $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
+                                                                                                $kegiatans = [];
+                                                                                                foreach ($get_kegiatans as $get_kegiatan) {
+                                                                                                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                                    if($cek_perubahan_kegiatan)
+                                                                                                    {
+                                                                                                        $kegiatans[] = [
+                                                                                                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                                                                            'program_id' => $cek_perubahan_kegiatan->program_id,
+                                                                                                            'kode' => $cek_perubahan_kegiatan->kode,
+                                                                                                            'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                                                                                                            'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
+                                                                                                            'status_aturan' => $cek_perubahan_kegiatan->status_aturan
+                                                                                                        ];
+                                                                                                    } else {
+                                                                                                        $kegiatans[] = [
+                                                                                                            'id' => $get_kegiatan->id,
+                                                                                                            'program_id' => $get_kegiatan->program_id,
+                                                                                                            'kode' => $get_kegiatan->kode,
+                                                                                                            'deskripsi' => $get_kegiatan->deskripsi,
+                                                                                                            'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
+                                                                                                            'status_aturan' => $get_kegiatan->status_aturan
+                                                                                                        ];
+                                                                                                    }
+                                                                                                }
+                                                                                            @endphp
+                                                                                            @php
+                                                                                                $a = 1;
+                                                                                            @endphp
+                                                                                            @foreach ($kegiatans as $kegiatan)
+                                                                                                <tr>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="15%">{{$kegiatan['kode']}}</td>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="50%">
+                                                                                                        {{$kegiatan['deskripsi']}}
+                                                                                                        <br>
+                                                                                                        <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
+                                                                                                        <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
+                                                                                                        <span class="badge bg-danger text-uppercase">{{$kegiatan['kode']}} Kegiatan</span>
+                                                                                                    </td>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="15%">{{$kegiatan['tahun_perubahan']}}</td>
+                                                                                                    <td width="20%">
+                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="{{$kegiatan['id']}}"><i class="fas fa-plus"></i></button>
+                                                                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_sub_kegiatan.xlsx') }}" title="Download Template Import Data Sub Kegiatan"><i class="fas fa-file-excel"></i></a>
+                                                                                                        <button class="btn btn-info waves-effect waves-light sub_kegiatan_btn_impor_template" title="Import Data Sub Kegiatan" type="button" data-kegiatan-id="{{$kegiatan['id']}}"><i class="fas fa-file-import"></i></button>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td colspan="12" class="hiddenRow">
+                                                                                                        <div class="accordian-body collapse" id="sub_kegiatan_kegiatan{{$kegiatan['id']}}">
+                                                                                                            <table class="table table-striped">
+                                                                                                                <tbody>
+                                                                                                                    @php
+                                                                                                                        $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                                                                        $sub_kegiatans = [];
+                                                                                                                        foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
+                                                                                                                            $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                                                            if($cek_perubahan_sub_kegiatan)
+                                                                                                                            {
+                                                                                                                                $sub_kegiatans[] = [
+                                                                                                                                    'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
+                                                                                                                                    'kegiatan_id' => $cek_perubahan_sub_kegiatan->kegiatan_id,
+                                                                                                                                    'kode' => $cek_perubahan_sub_kegiatan->kode,
+                                                                                                                                    'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi,
+                                                                                                                                    'tahun_perubahan' => $cek_perubahan_sub_kegiatan->tahun_perubahan,
+                                                                                                                                    'status_aturan' => $cek_perubahan_sub_kegiatan->status_aturan
+                                                                                                                                ];
+                                                                                                                            } else {
+                                                                                                                                $sub_kegiatans[] = [
+                                                                                                                                    'id' => $get_sub_kegiatan->id,
+                                                                                                                                    'kegiatan_id' => $get_sub_kegiatan->kegiatan_id,
+                                                                                                                                    'kode' => $get_sub_kegiatan->kode,
+                                                                                                                                    'deskripsi' => $get_sub_kegiatan->deskripsi,
+                                                                                                                                    'tahun_perubahan' => $get_sub_kegiatan->tahun_perubahan,
+                                                                                                                                    'status_aturan' => $get_sub_kegiatan->status_aturan
+                                                                                                                                ];
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    @endphp
+                                                                                                                    @foreach ($sub_kegiatans as $sub_kegiatan)
+                                                                                                                        <tr>
+                                                                                                                            <td width="15%">
+                                                                                                                                {{$sub_kegiatan['kode']}}
+                                                                                                                            </td>
+                                                                                                                            <td width="50%">
+                                                                                                                                {{$sub_kegiatan['deskripsi']}}
+                                                                                                                                <br>
+                                                                                                                                <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
+                                                                                                                                <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
+                                                                                                                                <span class="badge bg-danger text-uppercase">{{$kegiatan['kode']}} Kegiatan</span>
+                                                                                                                                <span class="badge bg-info text-uppercase">{{$sub_kegiatan['kode']}} Sub Kegiatan</span>
+                                                                                                                            </td>
+                                                                                                                            <td width="15%">{{$sub_kegiatan['tahun_perubahan']}}</td>
+                                                                                                                            <td width="20%">
+                                                                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sub-kegiatan" data-sub-kegiatan-id="{{$sub_kegiatan['id']}}" type="button" title="Detail Sub Kegiatan"><i class="fas fa-eye"></i></button>
+                                                                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="{{$sub_kegiatan['id']}}" data-kegiatan-id="{{$kegiatan['id']}}" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                            </td>
+                                                                                                                        </tr>
+                                                                                                                    @endforeach
+                                                                                                                </tbody>
+                                                                                                            </table>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            @endforeach
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Sub Kegiatan End --}}
                     </div>
                 </div>
             </div>
@@ -737,6 +957,124 @@
         </div>
     </div>
     {{-- Modal Kegiatan End --}}
+
+    {{-- Modal Sub Kegiatan Start --}}
+    <div class="modal fade" id="addEditSubKegiatanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="sub_kegiatan_form_result"></span>
+                    <form id="sub_kegiatan_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sub_kegiatan_kegiatan_id" id="sub_kegiatan_kegiatan_id">
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Kode</label>
+                                <input name="sub_kegiatan_kode" id="sub_kegiatan_kode" type="number" class="form-control" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Deskripsi</label>
+                                <textarea name="sub_kegiatan_deskripsi" id="sub_kegiatan_deskripsi" rows="5" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="sub_kegiatan_tahun_perubahan" class="form-label">Tahun Perubahan</label>
+                                <select name="sub_kegiatan_tahun_perubahan" id="sub_kegiatan_tahun_perubahan" class="form-control" required>
+                                    <option value="">--- Pilih Tahun Perubahan ---</option>
+                                    @foreach ($tahuns as $tahun)
+                                        <option value="{{$tahun}}">{{$tahun}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="sub_kegiatan_aksi" id="sub_kegiatan_aksi" value="Save">
+                    <input type="hidden" name="sub_kegiatan_hidden_id" id="sub_kegiatan_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="sub_kegiatan_aksi_button" id="sub_kegiatan_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailSubKegiatanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Detail Modal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Urusan</label>
+                                <textarea id="sub_kegiatan_detail_urusan" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Program</label>
+                                <textarea id="sub_kegiatan_detail_program" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Kegiatan</label>
+                                <textarea id="sub_kegiatan_detail_kegiatan" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kode</label>
+                                <input id="sub_kegiatan_detail_kode" type="text" class="form-control" disabled/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Deskripsi</label>
+                                <textarea id="sub_kegiatan_detail_deskripsi" rows="5" class="form-control" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tahun Perubahan</label>
+                                <input id="sub_kegiatan_detail_tahun_perubahan" type="text" class="form-control" disabled/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Perubahan SubKegiatan</label>
+                                <div id="div_pivot_perubahan_sub_kegiatan" class="scrollBarPagination"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Oke</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="importSubKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importSubKegiatanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Import Data</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.sub-kegiatan.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sub_kegiatan_impor_kegiatan_id" id="sub_kegiatan_impor_kegiatan_id">
+                        <div class="mb-3 position-relative form-group">
+                            <input type="file" class="dropify" id="impor_sub_kegiatan" name="impor_sub_kegiatan" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <button class="btn btn-success waves-effect waves-light">Impor</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Modal Sub Kegiatan End --}}
 @endsection
 
 @section('js')
@@ -1229,5 +1567,134 @@
         $('#importKegiatanModal').modal('show');
     });
     // Kegiatan End
+
+    // Sub Kegiatan Start
+    $('.sub_kegiatan_create').click(function(){
+        $('#sub_kegiatan_kegiatan_id').val($(this).attr('data-kegiatan-id'));
+        $('#sub_kegiatan_form')[0].reset();
+        $('#sub_kegiatan_aksi_button').text('Save');
+        $('#sub_kegiatan_aksi_button').prop('disabled', false);
+        $('.modal-title').text('Add Data Sub Kegiatan');
+        $('#sub_kegiatan_aksi_button').val('Save');
+        $('#sub_kegiatan_aksi').val('Save');
+        $('#sub_kegiatan_form_result').html('');
+    });
+
+    $('#sub_kegiatan_form').on('submit', function(e){
+        e.preventDefault();
+        if($('#sub_kegiatan_aksi').val() == 'Save')
+        {
+            $.ajax({
+                url: "{{ route('admin.sub-kegiatan.store') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#sub_kegiatan_aksi_button').text('Menyimpan...');
+                    $('#sub_kegiatan_aksi_button').prop('disabled', true);
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                        $('#sub_kegiatan_aksi_button').prop('disabled', false);
+                        $('#sub_kegiatan_form')[0].reset();
+                        $('#sub_kegiatan_aksi_button').text('Save');
+                    }
+                    if(data.success)
+                    {
+                        window.location.reload();
+                    }
+
+                    $('#sub_kegiatan_form_result').html(html);
+                }
+            });
+        }
+
+        if($('#sub_kegiatan_aksi').val() == 'Edit')
+        {
+            $.ajax({
+                url: "{{ route('admin.sub-kegiatan.update') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#sub_kegiatan_aksi_button').text('Menyimpan...');
+                    $('#sub_kegiatan_aksi_button').prop('disabled', true);
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                        $('#sub_kegiatan_aksi_button').prop('disabled', false);
+                        $('#sub_kegiatan_aksi_button').text('Edit');
+                    }
+                    if(data.success)
+                    {
+                        window.location.reload();
+                    }
+
+                    $('#sub_kegiatan_form_result').html(html);
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.detail-sub-kegiatan', function(){
+        var id = $(this).attr('data-sub-kegiatan-id');
+        $.ajax({
+            url: "{{ url('/admin/sub-kegiatan/detail') }}"+'/'+id,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#pivot_perubahan_sub_kegiatan').remove();
+                $('#div_pivot_perubahan_sub_kegiatan').append('<div id="pivot_perubahan_sub_kegiatan"></div>');
+                $('#detail-title').text('Detail Data');
+                $('#sub_kegiatan_detail_urusan').val(data.result.urusan);
+                $('#sub_kegiatan_detail_program').val(data.result.program);
+                $('#sub_kegiatan_detail_kode').val(data.result.kode);
+                $('#sub_kegiatan_detail_deskripsi').val(data.result.deskripsi);
+                $('#pivot_perubahan_sub_kegiatan').append(data.result.pivot_perubahan_sub_kegiatan);
+                $('#sub_kegiatan_detail_tahun_perubahan').val(data.result.tahun_perubahan);
+                $('#sub_kegiatan_detail_kegiatan').val(data.result.kegiatan);
+                $('#detailSubKegiatanModal').modal('show');
+            }
+        });
+    });
+
+    $(document).on('click', '.edit-sub-kegiatan', function(){
+        var id = $(this).attr('data-sub-kegiatan-id');
+        $('#sub_kegiatan_kegiatan_id').val($(this).attr('data-kegiatan-id'));
+        $('#sub_kegiatan_form_result').html('');
+        $.ajax({
+            url: "{{ url('/admin/sub-kegiatan/edit') }}"+'/'+id,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#sub_kegiatan_kode').val(data.result.kode);
+                $('#sub_kegiatan_deskripsi').val(data.result.deskripsi);
+                $("[name='sub_kegiatan_tahun_perubahan']").val(data.result.tahun_perubahan).trigger('change');
+                $('#sub_kegiatan_hidden_id').val(id);
+                $('.modal-title').text('Edit Data');
+                $('#sub_kegiatan_aksi_button').text('Edit');
+                $('#sub_kegiatan_aksi_button').prop('disabled', false);
+                $('#sub_kegiatan_aksi_button').val('Edit');
+                $('#sub_kegiatan_aksi').val('Edit');
+                $('#addEditSubKegiatanModal').modal('show');
+            }
+        });
+    });
+
+    $('.sub_kegiatan_btn_impor_template').click(function(){
+        $('#sub_kegiatan_impor_kegiatan_id').val($(this).attr('data-kegiatan-id'));
+        $('#importSubKegiatanModal').modal('show');
+    });
+    // Sub Kegiatan End
 </script>
 @endsection
