@@ -52,14 +52,9 @@
         use App\Models\PivotPerubahanUrusan;
         use App\Models\Program;
         use App\Models\PivotPerubahanProgram;
+        use App\Models\Kegiatan;
+        use App\Models\PivotPerubahanKegiatan;
 
-        // $get_kodes = Urusan::select('kode')->distinct('kode')->get();
-        // $urusans = [];
-        // $a = 1;
-        // foreach ($get_kodes as $kode) {
-        //     $latest_urusan = Urusan::where('kode', $kode->kode)->orderBy('tahun_perubahan', 'desc')->first();
-        //     $urusans[] = $latest_urusan;
-        // }
         $get_urusans = Urusan::all();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
@@ -320,58 +315,80 @@
                                                                     </tr>
                                                                 </thead> --}}
                                                                 <tbody>
-                                                                    @php
-                                                                        $a = 1;
-                                                                    @endphp
                                                                     @foreach ($programs as $program)
-                                                                        @php
-                                                                            $id_a = $a++;
-                                                                        @endphp
-                                                                        <tr data-bs-toggle="collapse" data-bs-target="#demo{{$id_a}}" class="accordion-toggle">
-                                                                            <td width="15%">{{$program['kode']}}</td>
-                                                                            <td width="50%">
+                                                                        <tr>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#program{{$program['id']}}" class="accordion-toggle" width="15%">{{$program['kode']}}</td>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#program{{$program['id']}}" class="accordion-toggle" width="50%">
                                                                                 {{$program['deskripsi']}}
                                                                                 <br>
                                                                                 <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
                                                                                 <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
                                                                             </td>
-                                                                            <td width="15%"> {{$program['tahun_perubahan']}}</td>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#program{{$program['id']}}" class="accordion-toggle" width="15%"> {{$program['tahun_perubahan']}}</td>
                                                                             <td width="20%">
-                                                                                <button class="btn btn-primary waves-effect waves-light mr-2 program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program" data-urusan-id="{{$urusan['id']}}"><i class="fas fa-plus"></i></button>
-                                                                                <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_program.xlsx') }}" title="Download Template Import Data Program"><i class="fas fa-file-excel"></i></a>
-                                                                                <button class="btn btn-info waves-effect waves-light program_btn_impor_template" title="Import Data Program" type="button" data-urusan-id="{{$urusan['id']}}"><i class="fas fa-file-import"></i></button>
+                                                                                <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="{{$program['id']}}"><i class="fas fa-plus"></i></button>
+                                                                                <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_kegiatan.xlsx') }}" title="Download Template Import Data Kegiatan"><i class="fas fa-file-excel"></i></a>
+                                                                                <button class="btn btn-info waves-effect waves-light kegiatan_btn_impor_template" title="Import Data Kegiatan" type="button" data-program-id="{{$program['id']}}"><i class="fas fa-file-import"></i></button>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td colspan="12" class="hiddenRow">
-                                                                                <div class="accordian-body collapse" id="demo{{$id_a}}">
+                                                                                <div class="accordian-body collapse" id="program{{$program['id']}}">
                                                                                     <table class="table table-striped">
-                                                                                    <thead>
-                                                                                        <tr class="info">
-                                                                                        <th>Job</th>
-                                                                                        <th>Company</th>
-                                                                                        <th>Salary</th>
-                                                                                        <th>Date On</th>
-                                                                                        <th>Date off</th>
-                                                                                        <th>Action</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td data-bs-toggle="collapse" data-bs-target="#demo10" class="accordion-toggle">
-                                                                                                <a href="#">Enginner Software</a>
-                                                                                            </td>
-                                                                                            <td>Google</td>
-                                                                                            <td>U$8.00000 </td>
-                                                                                            <td> 2016/09/27</td>
-                                                                                            <td> 2017/09/27</td>
-                                                                                            <td>
-                                                                                                <a href="#" class="btn btn-default btn-sm">
-                                                                                                    <i class="fas fa-edit text-dark"></i>
-                                                                                                </a>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
+                                                                                        {{-- <thead>
+                                                                                            <tr></tr>
+                                                                                                <th>Kode</th>
+                                                                                                <th>Kegiatan</th>
+                                                                                                <th>Tahun Perubahan</th>
+                                                                                                <th>Aksi</th>
+                                                                                            </tr>
+                                                                                        </thead> --}}
+                                                                                        <tbody>
+                                                                                            @php
+                                                                                                $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
+                                                                                                $kegiatans = [];
+                                                                                                foreach ($get_kegiatans as $get_kegiatan) {
+                                                                                                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                                    if($cek_perubahan_kegiatan)
+                                                                                                    {
+                                                                                                        $kegiatans[] = [
+                                                                                                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                                                                            'program_id' => $cek_perubahan_kegiatan->program_id,
+                                                                                                            'kode' => $cek_perubahan_kegiatan->kode,
+                                                                                                            'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                                                                                                            'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
+                                                                                                            'status_aturan' => $cek_perubahan_kegiatan->status_aturan
+                                                                                                        ];
+                                                                                                    } else {
+                                                                                                        $kegiatans[] = [
+                                                                                                            'id' => $get_kegiatan->id,
+                                                                                                            'program_id' => $get_kegiatan->program_id,
+                                                                                                            'kode' => $get_kegiatan->kode,
+                                                                                                            'deskripsi' => $get_kegiatan->deskripsi,
+                                                                                                            'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
+                                                                                                            'status_aturan' => $get_kegiatan->status_aturan
+                                                                                                        ];
+                                                                                                    }
+                                                                                                }
+                                                                                            @endphp
+                                                                                            @foreach ($kegiatans as $kegiatan)
+                                                                                                <tr>
+                                                                                                    <td width="15%">{{$kegiatan['kode']}}</td>
+                                                                                                    <td width="50%">
+                                                                                                        {{$kegiatan['deskripsi']}}
+                                                                                                        <br>
+                                                                                                        <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
+                                                                                                        <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
+                                                                                                        <span class="badge bg-danger text-uppercase">{{$kegiatan['kode']}} Kegiatan</span>
+                                                                                                    </td>
+                                                                                                    <td width="15%">{{$kegiatan['tahun_perubahan']}}</td>
+                                                                                                    <td width="20%">
+                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="{{$kegiatan['id']}}" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
+                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-kegiatan" data-kegiatan-id="{{$kegiatan['id']}}" data-program-id="{{$program['id']}}" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            @endforeach
+                                                                                        </tbody>
                                                                                     </table>
                                                                                 </div>
                                                                             </td>
@@ -606,6 +623,120 @@
         </div>
     </div>
     {{-- Modal Program End --}}
+
+    {{-- Modal Kegiatan Start --}}
+    <div class="modal fade" id="addEditKegiatanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="kegiatan_form_result"></span>
+                    <form id="kegiatan_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="kegiatan_program_id" id="kegiatan_program_id">
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Kode</label>
+                                <input name="kegiatan_kode" id="kegiatan_kode" type="number" class="form-control" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Deskripsi</label>
+                                <textarea name="kegiatan_deskripsi" id="kegiatan_deskripsi" rows="5" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kegiatan_tahun_perubahan" class="form-label">Tahun Perubahan</label>
+                                <select name="kegiatan_tahun_perubahan" id="kegiatan_tahun_perubahan" class="form-control" required>
+                                    <option value="">--- Pilih Tahun Perubahan ---</option>
+                                    @foreach ($tahuns as $tahun)
+                                        <option value="{{$tahun}}">{{$tahun}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="kegiatan_aksi" id="kegiatan_aksi" value="Save">
+                    <input type="hidden" name="kegiatan_hidden_id" id="kegiatan_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="kegiatan_aksi_button" id="kegiatan_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="importKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importKegiatanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Import Data</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.kegiatan.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="kegiatan_impor_program_id" id="kegiatan_impor_program_id">
+                        <div class="mb-3 position-relative form-group">
+                            <input type="file" class="dropify" id="impor_kegiatan" name="impor_kegiatan" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <button class="btn btn-success waves-effect waves-light">Impor</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailKegiatanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Detail Modal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Urusan</label>
+                                <textarea id="kegiatan_detail_urusan" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Program</label>
+                                <textarea id="kegiatan_detail_program" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kode</label>
+                                <input id="kegiatan_detail_kode" type="text" class="form-control" disabled/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Deskripsi</label>
+                                <textarea id="kegiatan_detail_deskripsi" rows="5" class="form-control" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tahun Perubahan</label>
+                                <input id="kegiatan_detail_tahun_perubahan" type="text" class="form-control" disabled/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Perubahan Kegiatan</label>
+                                <div id="div_pivot_perubahan_kegiatan" class="scrollBarPagination"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Oke</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Modal Kegiatan End --}}
 @endsection
 
 @section('js')
@@ -970,5 +1101,133 @@
         });
     });
     // Program End
+
+    // Kegiatan Start
+    $('.kegiatan_create').click(function(){
+        $('#kegiatan_program_id').val($(this).attr('data-program-id'));
+        $('#kegiatan_form')[0].reset();
+        $('#kegiatan_aksi_button').text('Save');
+        $('#kegiatan_aksi_button').prop('disabled', false);
+        $('.modal-title').text('Add Data Kegiatan');
+        $('#kegiatan_aksi_button').val('Save');
+        $('#kegiatan_aksi').val('Save');
+        $('#kegiatan_form_result').html('');
+    });
+
+    $('#kegiatan_form').on('submit', function(e){
+        e.preventDefault();
+        if($('#kegiatan_aksi').val() == 'Save')
+        {
+            $.ajax({
+                url: "{{ route('admin.kegiatan.store') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#kegiatan_aksi_button').text('Menyimpan...');
+                    $('#kegiatan_aksi_button').prop('disabled', true);
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                        $('#kegiatan_aksi_button').prop('disabled', false);
+                        $('#kegiatan_form')[0].reset();
+                        $('#kegiatan_aksi_button').text('Save');
+                    }
+                    if(data.success)
+                    {
+                        window.location.reload();
+                    }
+
+                    $('#kegiatan_form_result').html(html);
+                }
+            });
+        }
+
+        if($('#kegiatan_aksi').val() == 'Edit')
+        {
+            $.ajax({
+                url: "{{ route('admin.kegiatan.update') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#kegiatan_aksi_button').text('Menyimpan...');
+                    $('#kegiatan_aksi_button').prop('disabled', true);
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                        $('#kegiatan_aksi_button').prop('disabled', false);
+                        $('#kegiatan_aksi_button').text('Edit');
+                    }
+                    if(data.success)
+                    {
+                        window.location.reload();
+                    }
+
+                    $('#kegiatan_form_result').html(html);
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.detail-kegiatan', function(){
+        var id = $(this).attr('data-kegiatan-id');
+        $.ajax({
+            url: "{{ url('/admin/kegiatan/detail') }}"+'/'+id,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#pivot_perubahan_kegiatan').remove();
+                $('#div_pivot_perubahan_kegiatan').append('<div id="pivot_perubahan_kegiatan"></div>');
+                $('#detail-title').text('Detail Data');
+                $('#kegiatan_detail_urusan').val(data.result.urusan);
+                $('#kegiatan_detail_program').val(data.result.program);
+                $('#kegiatan_detail_kode').val(data.result.kode);
+                $('#kegiatan_detail_deskripsi').val(data.result.deskripsi);
+                $('#pivot_perubahan_kegiatan').append(data.result.pivot_perubahan_kegiatan);
+                $('#kegiatan_detail_tahun_perubahan').val(data.result.tahun_perubahan);
+                $('#detailKegiatanModal').modal('show');
+            }
+        });
+    });
+
+    $(document).on('click', '.edit-kegiatan', function(){
+        var id = $(this).attr('data-kegiatan-id');
+        $('#kegiatan_program_id').val($(this).attr('data-program-id'));
+        $('#form_result').html('');
+        $.ajax({
+            url: "{{ url('/admin/kegiatan/edit') }}"+'/'+id,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#kegiatan_kode').val(data.result.kode);
+                $('#kegiatan_deskripsi').val(data.result.deskripsi);
+                $("[name='kegiatan_tahun_perubahan']").val(data.result.tahun_perubahan).trigger('change');
+                $('#kegiatan_hidden_id').val(id);
+                $('.modal-title').text('Edit Data');
+                $('#kegiatan_aksi_button').text('Edit');
+                $('#kegiatan_aksi_button').prop('disabled', false);
+                $('#kegiatan_aksi_button').val('Edit');
+                $('#kegiatan_aksi').val('Edit');
+                $('#addEditKegiatanModal').modal('show');
+            }
+        });
+    });
+
+    $('.kegiatan_btn_impor_template').click(function(){
+        $('#kegiatan_impor_program_id').val($(this).attr('data-program-id'));
+        $('#importKegiatanModal').modal('show');
+    });
+    // Kegiatan End
 </script>
 @endsection

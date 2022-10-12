@@ -21,6 +21,7 @@ class CreatePivotPerubahanKegiatansTable extends Migration
             $table->longText('deskripsi')->nullable();
             $table->string('tahun_perubahan')->nullable();
             $table->enum('status_aturan',['Sebelum Perubahan', 'Sesudah Perubahan'])->nullable();
+            $table->foreignId('kabupaten_id')->nullable();
             $table->timestamps();
         });
     }

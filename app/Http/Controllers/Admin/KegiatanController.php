@@ -132,23 +132,48 @@ class KegiatanController extends Controller
     public function store(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'program_id' => 'required',
-            'kode' => 'required',
-            'deskripsi' => 'required',
+            'kegiatan_program_id' => 'required',
+            'kegiatan_kode' => 'required',
+            'kegiatan_deskripsi' => 'required',
+            'kegiatan_tahun_perubahan' => 'required',
         ]);
 
         if($errors -> fails())
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
-
-        $kegiatan = new Kegiatan;
-        $kegiatan->program_id = $request->program_id;
-        $kegiatan->kode = $request->kode;
-        $kegiatan->deskripsi = $request->deskripsi;
-        $kegiatan->tanggal = Carbon::now();
-        $kegiatan->kabupaten_id = 62;
-        $kegiatan->save();
+        $cek_kegiatan = Kegiatan::where('kode', $request->kegiatan_kode)->first();
+        if($cek_kegiatan)
+        {
+            $pivot = new PivotPerubahanKegiatan;
+            $pivot->kegiatan_id = $cek_kegiatan->id;
+            $pivot->program_id = $request->kegiatan_program_id;
+            $pivot->kode = $request->kegiatan_kode;
+            $pivot->deskripsi = $request->kegiatan_deskripsi;
+            $pivot->tahun_perubahan = $request->kegiatan_tahun_perubahan;
+            if($request->kegiatan_tahun_perubahan > 2020)
+            {
+                $pivot->status_aturan = 'Sesudah Perubahan';
+            } else {
+                $pivot->status_aturan = 'Sebelum Perubahan';
+            }
+            $pivot->kabupaten_id = 62;
+            $pivot->save();
+        } else {
+            $kegiatan = new Kegiatan;
+            $kegiatan->program_id = $request->kegiatan_program_id;
+            $kegiatan->kode = $request->kegiatan_kode;
+            $kegiatan->deskripsi = $request->kegiatan_deskripsi;
+            $kegiatan->tahun_perubahan = $request->kegiatan_tahun_perubahan;
+            if($request->kegiatan_tahun_perubahan > 2020)
+            {
+                $kegiatan->status_aturan = 'Sesudah Perubahan';
+            } else {
+                $kegiatan->status_aturan = 'Sebelum Perubahan';
+            }
+            $kegiatan->kabupaten_id = 62;
+            $kegiatan->save();
+        }
 
         return response()->json(['success' => 'Berhasil Menambahkan Kegiatan']);
     }
@@ -187,13 +212,14 @@ class KegiatanController extends Controller
                 $get_urusan = Urusan::find($urusan_id);
                 $kode_urusan = $get_urusan->kode;
             }
-            $get_perubahans = PivotPerubahanKegiatan::where('program_id', $id)->get();
+            $get_perubahans = PivotPerubahanKegiatan::where('kegiatan_id', $id)->where('program_id', $cek_perubahan->program_id)->get();
             $html .= '<ul>';
             $html .= '<li><p>
                             Kode Urusan: '.$kode_urusan.' <br>
                             Kode Program: '.$kode_program.' <br>
                             Kode: '.$data->kode.'<br>
                             Deskripsi: '.$data->deskripsi.'<br>
+                            Tahun Perubahan: '.$data->tahun_perubahan.'<br>
                             Status: <span class="text-primary">Sebelum Perubahan</span>
                         </p></li>';
             $a = 1;
@@ -203,31 +229,54 @@ class KegiatanController extends Controller
                 {
                     $kode_program = $cek_perubahan_program->kode;
                     $urusan_id = $cek_perubahan_program->urusan_id;
-                    $deskripsi_program = $cek_perubahan_program->deskripsi;
                 } else {
                     $kode_program = $data->program->kode;
                     $urusan_id = $data->program->urusan_id;
-                    $deskripsi_program = $data->program->deskripsi;
                 }
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $urusan_id)->latest()->first();
                 if($cek_perubahan_urusan)
                 {
                     $kode_urusan = $cek_perubahan_urusan->kode;
-                    $deskripsi_urusan = $cek_perubahan_urusan->deskripsi;
                 } else {
                     $get_urusan = Urusan::find($urusan_id);
                     $kode_urusan = $get_urusan->kode;
-                    $deskripsi_urusan = $get_urusan->deskripsi;
                 }
                 $html .= '<li><p>
                             Kode Urusan: '.$kode_urusan.' <br>
                             Kode Program: '.$kode_program.' <br>
                             Kode: '.$get_perubahan->kode.'<br>
                             Deskripsi: '.$get_perubahan->deskripsi.'<br>
+                            Tahun Perubahan: '.$get_perubahan->tahun_perubahan.'<br>
                             Status: <span class="text-warning">Perubahan '.$a++.'</span>
                         </p></li>';
             }
             $html .= '</ul>';
+
+            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $cek_perubahan->program_id)
+                                        ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+            if($cek_perubahan_program)
+            {
+                $deskripsi_program = $cek_perubahan_program->deskripsi;
+                $urusan_id = $cek_perubahan_program->urusan_id;
+            } else {
+                $program = Program::find($cek_perubahan->program_id);
+                $deskripsi_program = $program->deskripsi;
+                $urusan_id = $program->urusan_id;
+            }
+
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $urusan_id)
+                                    ->orderBy('created_at', 'desc')->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $deskripsi_urusan = $cek_perubahan_urusan->deskripsi;
+            } else {
+                $urusan = Urusan::find($urusan_id);
+                $deskripsi_urusan = $urusan->deskripsi;
+            }
+
+            $kegiatan_kode = $cek_perubahan->kode;
+            $kegiatan_deskripsi = $cek_perubahan->deskripsi;
+            $kegiatan_tahun_perubahan = $cek_perubahan->tahun_perubahan;
         } else {
             $html .= '<p>Tidak ada</p>';
             $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $data->program_id)->latest()->first();
@@ -247,32 +296,35 @@ class KegiatanController extends Controller
                 $get_urusan = Urusan::find($urusan_id);
                 $deskripsi_urusan = $get_urusan->deskripsi;
             }
+            $kegiatan_kode = $data->kode;
+            $kegiatan_deskripsi = $data->deskripsi;
+            $kegiatan_tahun_perubahan = $data->tahun_perubahan;
         }
 
         $html .='</div>';
 
-        $cek_indikator = PivotKegiatanIndikator::where('kegiatan_id', $id)->first();
-        $indikator = '<div>';
+        // $cek_indikator = PivotKegiatanIndikator::where('kegiatan_id', $id)->first();
+        // $indikator = '<div>';
 
-        if($cek_indikator){
-            $get_indikators = PivotKegiatanIndikator::where('kegiatan_id', $id)->get();
-            $indikator .= '<ul>';
-            foreach ($get_indikators as $get_indikator) {
-                $indikator .= '<li>'.$get_indikator->indikator.'</li>';
-            }
-            $indikator .= '</ul>';
-        } else {
-            $indikator .= '<p>Tidak ada</p>';
-        }
+        // if($cek_indikator){
+        //     $get_indikators = PivotKegiatanIndikator::where('kegiatan_id', $id)->get();
+        //     $indikator .= '<ul>';
+        //     foreach ($get_indikators as $get_indikator) {
+        //         $indikator .= '<li>'.$get_indikator->indikator.'</li>';
+        //     }
+        //     $indikator .= '</ul>';
+        // } else {
+        //     $indikator .= '<p>Tidak ada</p>';
+        // }
 
-        $indikator .='</div>';
+        // $indikator .='</div>';
 
         $array = [
             'urusan' => $deskripsi_urusan,
             'program' => $deskripsi_program,
-            'kode' => $data->kode,
-            'deskripsi' => $data->deskripsi,
-            'pivot_kegiatan_indikator' => $indikator,
+            'kode' => $kegiatan_kode,
+            'deskripsi' => $kegiatan_deskripsi,
+            'tahun_perubahan' => $kegiatan_tahun_perubahan,
             'pivot_perubahan_kegiatan' => $html
         ];
 
@@ -289,41 +341,20 @@ class KegiatanController extends Controller
     {
         $data = Kegiatan::find($id);
 
-        $cek_perubahan = PivotPerubahanKegiatan::where('kegiatan_id', $id)->latest()->first();
+        $cek_perubahan = PivotPerubahanKegiatan::where('kegiatan_id', $id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
         if($cek_perubahan)
         {
-            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $cek_perubahan->program_id)->latest()->first();
-            if($cek_perubahan_program)
-            {
-                $program_id = $cek_perubahan_program->program_id;
-                $urusan_id = $cek_perubahan_program->urusan_id;
-            } else {
-                $program_id = $data->program_id;
-                $urusan_id = $data->program->urusan_id;
-            }
-
             $array = [
-                'urusan_id' => $urusan_id,
-                'program_id' => $program_id,
                 'kode' => $cek_perubahan->kode,
-                'deskripsi' => $cek_perubahan->deskripsi
+                'deskripsi' => $cek_perubahan->deskripsi,
+                'tahun_perubahan' => $cek_perubahan->tahun_perubahan
             ];
         } else {
-            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $data->program_id)->latest()->first();
-            if($cek_perubahan_program)
-            {
-                $program_id = $cek_perubahan_program->program_id;
-                $urusan_id = $cek_perubahan_program->urusan_id;
-            } else {
-                $program_id = $data->program_id;
-                $urusan_id = $data->program->urusan_id;
-            }
 
             $array = [
-                'urusan_id' => $urusan_id,
-                'program_id' => $program_id,
                 'kode' => $data->kode,
-                'deskripsi' => $data->deskripsi
+                'deskripsi' => $data->deskripsi,
+                'tahun_perubahan' => $data->tahun_perubahan
             ];
         }
 
@@ -340,9 +371,10 @@ class KegiatanController extends Controller
     public function update(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'program_id' => 'required',
-            'kode' => 'required',
-            'deskripsi' => 'required',
+            'kegiatan_kode' => 'required',
+            'kegiatan_deskripsi' => 'required',
+            'kegiatan_program_id' => 'required',
+            'kegiatan_tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
@@ -351,11 +383,17 @@ class KegiatanController extends Controller
         }
 
         $pivot_perubahan_kegiatan = new PivotPerubahanKegiatan;
-        $pivot_perubahan_kegiatan->kegiatan_id = $request->hidden_id;
-        $pivot_perubahan_kegiatan->program_id = $request->program_id;
-        $pivot_perubahan_kegiatan->kode = $request->kode;
-        $pivot_perubahan_kegiatan->deskripsi = $request->deskripsi;
-        $pivot_perubahan_kegiatan->tanggal = Carbon::now();
+        $pivot_perubahan_kegiatan->kegiatan_id = $request->kegiatan_hidden_id;
+        $pivot_perubahan_kegiatan->program_id = $request->kegiatan_program_id;
+        $pivot_perubahan_kegiatan->kode = $request->kegiatan_kode;
+        $pivot_perubahan_kegiatan->deskripsi = $request->kegiatan_deskripsi;
+        $pivot_perubahan_kegiatan->tahun_perubahan = $request->kegiatan_tahun_perubahan;
+        if($request->kegiatan_tahun_perubahan > 2020)
+        {
+            $pivot_perubahan_kegiatan->status_aturan = 'Sesudah Perubahan';
+        } else {
+            $pivot_perubahan_kegiatan->status_aturan = 'Sebelum Perubahan';
+        }
         $pivot_perubahan_kegiatan->kabupaten_id = 62;
         $pivot_perubahan_kegiatan->save();
 
@@ -375,8 +413,9 @@ class KegiatanController extends Controller
 
     public function impor(Request $request)
     {
+        $program_id = $request->kegiatan_impor_program_id;
         $file = $request->file('impor_kegiatan');
-        Excel::import(new KegiatanImport, $file->store('temp'));
+        Excel::import(new KegiatanImport($program_id), $file->store('temp'));
         $msg = [session('import_status'), session('import_message')];
         if ($msg[0]) {
             Alert::success('Berhasil', $msg[1]);
