@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     // Perencanaan
     Route::get('/admin/perencanaan', 'Admin\PerencanaanController@index')->name('admin.perencanaan.index');
+    Route::get('/admin/perencanaan/get-misi', 'Admin\PerencanaanController@get_misi')->name('admin.perencanaan.get-misi');
 
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');

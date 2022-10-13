@@ -88,27 +88,27 @@
                         <div class="border-0 pb-0">
                             <ul class="nav nav-pills responsive-tabs" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#visiNav" role="tab" aria-selected="true" type="button">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#visiNav" role="tab" aria-selected="true" type="button" id="visi_tab_button">
                                         Visi
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#misiNav" role="tab" aria-selected="false" type="button">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#misiNav" role="tab" aria-selected="false" type="button" id="misi_tab_button">
                                         Misi
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tujuanNav" role="tab" aria-selected="false" type="button">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tujuanNav" role="tab" aria-selected="false" type="button" id="tujuan_tab_button">
                                         Tujuan
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sasaranNav" role="tab" aria-selected="false" type="button">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sasaranNav" role="tab" aria-selected="false" type="button" id="sasaran_tab_button">
                                         Sasaran
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#programNav" role="tab" aria-selected="false" type="button">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#programNav" role="tab" aria-selected="false" type="button" id="misi_tab_button">
                                         Program
                                     </button>
                                 </li>
@@ -116,6 +116,7 @@
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
+                                {{-- Visi Start --}}
                                 <div class="tab-pane fade active show" id="visiNav" role="tabpanel">
                                     <div class="row mb-3">
                                         <div class="col-12" style="text-align: right">
@@ -140,21 +141,205 @@
                                         <!-- Table End -->
                                     </div>
                                 </div>
+                                {{-- Visi End --}}
+
+                                {{-- Misi Start --}}
                                 <div class="tab-pane fade" id="misiNav" role="tabpanel">
-                                    <h5 class="card-title">Second Title</h5>
-                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                    <div class="d-flex align-items-center mb-5" id="misiLoading">
+                                        <strong>Loading...</strong>
+                                        <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
+                                    </div>
                                 </div>
+                                {{-- Misi End --}}
+
+                                {{-- Tujuan Start --}}
                                 <div class="tab-pane fade" id="tujuanNav" role="tabpanel">
-                                    <h5 class="card-title">Third Title</h5>
-                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                    <div class="d-flex align-items-center mb-5" id="tujuanLoading">
+                                        <strong>Loading...</strong>
+                                        <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
+                                    </div>
+                                    <div class="data-table-rows slim" id="tujuan_div_table">
+                                        <div class="data-table-responsive-wrapper">
+                                            <table class="table table-condensed table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="15%">Kode</th>
+                                                        <th width="85%">Visi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi1" class="accordion-toggle"></td>
+                                                        <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi1" class="accordion-toggle">
+                                                            TERWUJUDNYA KABUPATEN MADIUN AMAN, MANDIRI, SEJAHTERA DAN BERAKHLAK
+                                                            <br>
+                                                            <span class="badge bg-primary text-uppercase">Visi</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3" class="hiddenRow">
+                                                            <div class="accordian-body collapse" id="tujuan_visi1">
+                                                                <table class="table table-striped">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td width="15%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi1" class="accordion-toggle">1</td>
+                                                                            <td width="50%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi1" class="accordion-toggle">
+                                                                                Mewujudkan rasa aman bagi seluruh masyarakat dan aparatur pemerintah Kabupaten Madiun
+                                                                                <br>
+                                                                                <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                <span class="badge bg-warning text-uppercase">1 Misi</span>
+                                                                            </td>
+                                                                            <td width="15%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi1" class="accordion-toggle">2020</td>
+                                                                            <td>
+                                                                                <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditMisiModal" title="Tambah Data Misi" data-misi-id="1"><i class="fas fa-plus"></i></button>
+                                                                                <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_tujuan.xlsx') }}" title="Download Template Import Data Tujuan"><i class="fas fa-file-excel"></i></a>
+                                                                                <button class="btn btn-info waves-effect waves-light tujuan_btn_impor_template" title="Import Data Tujuan" type="button" data-misi-id="1"><i class="fas fa-file-import"></i></button>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colspan="4" class="hiddenRow">
+                                                                                <div class="accordian-body collapse" id="tujuan_misi1">
+                                                                                    <table class="table table-striped">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td width="15%">1</td>
+                                                                                                <td width="50%">
+                                                                                                    Membangun Harmonisasi Sosial yang berpondasi dari nilai religius dan Kearifan Lokal
+                                                                                                    <br>
+                                                                                                    <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                                    <span class="badge bg-warning text-uppercase">1 Misi</span>
+                                                                                                    <span class="badge bg-secondary text-uppercase">1 Tujuan</span>
+                                                                                                </td>
+                                                                                                <td width="15%">2020</td>
+                                                                                                <td width="20%">
+                                                                                                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="1" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
+                                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-tujuan" data-tujuan-id="1" data-misi-id="1" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
+                                {{-- Tujuan End --}}
+
+                                {{-- Sasaran Start --}}
                                 <div class="tab-pane fade" id="sasaranNav" role="tabpanel">
-                                    <h5 class="card-title">Fourth Title</h5>
-                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                    <div class="d-flex align-items-center mb-5" id="sasaranLoading">
+                                        <strong>Loading...</strong>
+                                        <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
+                                    </div>
+                                    <div class="data-table-rows slim" id="sasaran_div_table">
+                                        <div class="data-table-responsive-wrapper">
+                                            <table class="table table-condensed table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="15%">Kode</th>
+                                                        <th width="85%">Visi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi1" class="accordion-toggle"></td>
+                                                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi1" class="accordion-toggle">
+                                                            TERWUJUDNYA KABUPATEN MADIUN AMAN, MANDIRI, SEJAHTERA DAN BERAKHLAK
+                                                            <br>
+                                                            <span class="badge bg-primary text-uppercase">Visi</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3" class="hiddenRow">
+                                                            <div class="accordian-body collapse" id="sasaran_visi1">
+                                                                <table class="table table-striped">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi1" class="accordion-toggle">1</td>
+                                                                            <td width="70%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi1" class="accordion-toggle">
+                                                                                Mewujudkan rasa aman bagi seluruh masyarakat dan aparatur pemerintah Kabupaten Madiun
+                                                                                <br>
+                                                                                <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                <span class="badge bg-warning text-uppercase">1 Misi</span>
+                                                                            </td>
+                                                                            <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi1" class="accordion-toggle">2020</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colspan="4" class="hiddenRow">
+                                                                                <div class="accordian-body collapse" id="sasaran_misi1">
+                                                                                    <table class="table table-striped">
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan1" class="accordion-toggle" width="15%">1</td>
+                                                                                                <td width="50%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan1" class="accordion-toggle">
+                                                                                                    Membangun Harmonisasi Sosial yang berpondasi dari nilai religius dan Kearifan Lokal
+                                                                                                    <br>
+                                                                                                    <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                                    <span class="badge bg-warning text-uppercase">1 Misi</span>
+                                                                                                    <span class="badge bg-secondary text-uppercase">1 Tujuan</span>
+                                                                                                </td>
+                                                                                                <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan1" class="accordion-toggle">2020</td>
+                                                                                                <td>
+                                                                                                    <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditMisiModal" title="Tambah Data Misi" data-misi-id="1"><i class="fas fa-plus"></i></button>
+                                                                                                    <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_sasaran.xlsx') }}" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
+                                                                                                    <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-misi-id="1"><i class="fas fa-file-import"></i></button>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td colspan="4" class="hiddenRow">
+                                                                                                    <div class="accordian-body collapse" id="sasaran_tujuan1">
+                                                                                                        <table class="table table-striped">
+                                                                                                            <tbody>
+                                                                                                                <tr>
+                                                                                                                    <td width="15%">1</td>
+                                                                                                                    <td width="50%">
+                                                                                                                        Membangun Harmonisasi Sosial yang berpondasi dari nilai religius dan Kearifan Lokal
+                                                                                                                        <br>
+                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                                                        <span class="badge bg-warning text-uppercase">1 Misi</span>
+                                                                                                                        <span class="badge bg-secondary text-uppercase">1 Tujuan</span>
+                                                                                                                        <span class="badge bg-danger text-uppercase">1 Sasaran</span>
+                                                                                                                    </td>
+                                                                                                                    <td width="15%">2020</td>
+                                                                                                                    <td width="20%">
+                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="1" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="1" data-tujuan-id="1" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                    </td>
+                                                                                                                </tr>
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
+                                {{-- Sasaran End --}}
                                 <div class="tab-pane fade" id="programNav" role="tabpanel">
-                                    <h5 class="card-title">Fifth Title</h5>
-                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                    <div class="d-flex align-items-center mb-5" id="programLoading">
+                                        <strong>Loading...</strong>
+                                        <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -248,6 +433,89 @@
         </div>
     </div>
     {{-- Visi Modal End --}}
+
+    {{-- Misi Modal Start--}}
+    <div class="modal fade" id="addEditMisiModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="misi_form_result"></span>
+                    <form id="misi_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="misi_visi_id" id="misi_visi_id">
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Kode</label>
+                                <input name="misi_kode" id="misi_kode" type="number" class="form-control" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Deskripsi</label>
+                                <textarea name="misi_deskripsi" id="misi_deskripsi" rows="5" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="misi_tahun_perubahan" class="form-label">Tahun Perubahan</label>
+                                <select name="misi_tahun_perubahan" id="misi_tahun_perubahan" class="form-control" required>
+                                    <option value="">--- Pilih Tahun Perubahan ---</option>
+                                    @foreach ($tahuns as $tahun)
+                                        <option value="{{$tahun}}">{{$tahun}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="misi_aksi" id="misi_aksi" value="Save">
+                    <input type="hidden" name="misi_hidden_id" id="misi_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="misi_aksi_button" id="misi_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-right large scroll-out-negative fade" id="detailMisiModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="scroll-track-visible">
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Visi</label>
+                            <div class="input-group">
+                                <div class="input-group-text"></div>
+                                <textarea id="misi_detail_visi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Misi</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><span id="misi_detail_kode"></span></div>
+                                <textarea id="misi_detail_deskripsi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Perubahan Misi</label>
+                            <div id="div_pivot_perubahan_misi" class="scrollBarPagination"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Misi Modal End--}}
 @endsection
 
 @section('js')
@@ -424,5 +692,160 @@
             });
         });
         // Visi End
+
+        // Misi Start
+        $('#misi_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.get-misi') }}",
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#misiLoading').show();
+                },
+                success: function(data)
+                {
+                    $('#misiLoading').hide();
+                    $('#misiNav').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('click','.misi_create',function(){
+            $('#misi_visi_id').val($(this).attr('data-visi-id'));
+            $('#misi_form')[0].reset();
+            $('#misi_aksi_button').text('Save');
+            $('#misi_aksi_button').prop('disabled', false);
+            $('.modal-title').text('Add Data Misi');
+            $('#misi_aksi_button').val('Save');
+            $('#misi_aksi').val('Save');
+            $('#misi_form_result').html('');
+        });
+
+        $('#misi_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#misi_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('admin.misi.store') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#misi_aksi_button').text('Menyimpan...');
+                        $('#misi_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#misi_aksi_button').prop('disabled', false);
+                            $('#misi_form')[0].reset();
+                            $('#misi_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditMisiModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Menambahkan Misi',
+                                showConfirmButton: true
+                            });
+                            $('#misiNav').html(data.success);
+                        }
+
+                        $('#misi_form_result').html(html);
+                    }
+                });
+            }
+
+            if($('#misi_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('admin.misi.update') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#misi_aksi_button').text('Menyimpan...');
+                        $('#misi_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#misi_aksi_button').prop('disabled', false);
+                            $('#misi_form')[0].reset();
+                            $('#misi_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditMisiModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Merubah Misi',
+                                showConfirmButton: true
+                            });
+                            $('#misiNav').html(data.success);
+                        }
+
+                        $('#misi_form_result').html(html);
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.detail-misi', function(){
+            var id = $(this).attr('data-misi-id');
+            $.ajax({
+                url: "{{ url('/admin/misi/detail') }}"+'/'+id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#pivot_perubahan_misi').remove();
+                    $('#div_pivot_perubahan_misi').append('<div id="pivot_perubahan_misi"></div>');
+                    $('#detail-title').text('Detail Data');
+                    $('#misi_detail_visi').val(data.result.visi);
+                    $('#misi_detail_kode').text(data.result.kode);
+                    $('#misi_detail_deskripsi').val(data.result.deskripsi);
+                    $('#pivot_perubahan_misi').append(data.result.pivot_perubahan_misi);
+                    $('#misi_detail_tahun_perubahan').val(data.result.tahun_perubahan);
+                    $('#detailMisiModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '.edit-misi', function(){
+            var id = $(this).attr('data-misi-id');
+            $('#misi_visi_id').val($(this).attr('data-visi-id'));
+            $('#misi_form_result').html('');
+            $.ajax({
+                url: "{{ url('/admin/misi/edit') }}"+'/'+id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#misi_kode').val(data.result.kode);
+                    $('#misi_deskripsi').val(data.result.deskripsi);
+                    $("[name='misi_tahun_perubahan']").val(data.result.tahun_perubahan).trigger('change');
+                    $('#misi_hidden_id').val(id);
+                    $('.modal-title').text('Edit Data');
+                    $('#misi_aksi_button').text('Edit');
+                    $('#misi_aksi_button').prop('disabled', false);
+                    $('#misi_aksi_button').val('Edit');
+                    $('#misi_aksi').val('Edit');
+                    $('#addEditMisiModal').modal('show');
+                }
+            });
+        });
+        // Misi End
+
+        // Tujuan Start
+
+        // Tujuan End
     </script>
 @endsection
