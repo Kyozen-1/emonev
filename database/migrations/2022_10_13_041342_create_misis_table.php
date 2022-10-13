@@ -19,6 +19,7 @@ class CreateMisisTable extends Migration
             $table->string('kode')->nullable();
             $table->longText('deskripsi')->nullable();
             $table->foreignId('kabupaten_id')->nullable();
+            $table->string('tahun_perubahan')->nullable();
             $table->timestamps();
         });
     }

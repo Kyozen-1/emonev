@@ -17,6 +17,7 @@ class CreateVisisTable extends Migration
             $table->id();
             $table->longText('deskripsi')->nullable();
             $table->foreignId('kabupaten_id')->nullable();
+            $table->string('tahun_perubahan')->nullable();
             $table->timestamps();
         });
     }

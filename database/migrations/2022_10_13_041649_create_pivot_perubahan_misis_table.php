@@ -20,6 +20,7 @@ class CreatePivotPerubahanMisisTable extends Migration
             $table->foreignId('visi_id')->nullable();
             $table->string('kode')->nullable();
             $table->longText('deskripsi')->nullable();
+            $table->string('tahun_perubahan')->nullable();
             $table->timestamps();
         });
     }

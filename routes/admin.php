@@ -46,6 +46,9 @@ Route::group(['middleware' => 'auth:admin'], function(){
     //Nomenklatur
     Route::get('/admin/nomenklatur', 'Admin\NomenklaturController@index')->name('admin.nomenklatur.index');
 
+    // Perencanaan
+    Route::get('/admin/perencanaan', 'Admin\PerencanaanController@index')->name('admin.perencanaan.index');
+
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');
     Route::get('/admin/urusan/detail/{id}', 'Admin\UrusanController@show');

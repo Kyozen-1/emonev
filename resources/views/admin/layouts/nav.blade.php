@@ -207,6 +207,16 @@
                     <span class="label"> Nomenklatur</span>
                 </a>
             </li>
+            <li>
+                @if (request()->routeIs('admin.perencanaan.index'))
+                    <a href="{{ route('admin.perencanaan.index') }}" class="active">
+                @else
+                    <a href="{{ route('admin.perencanaan.index') }}">
+                @endif
+                    <i data-acorn-icon="file-text" class="icon" data-acorn-size="18"></i>
+                    <span class="label"> Perencanaan</span>
+                </a>
+            </li>
             {{-- <li>
                 @if (request()->routeIs('admin.urusan.index') ||
                 request()->routeIs('admin.program.index') ||
@@ -258,7 +268,7 @@
                     </li>
                 </ul>
             </li> --}}
-            <li>
+            {{-- <li>
                 @if (request()->routeIs('admin.visi.index') ||
                 request()->routeIs('admin.misi.index') ||
                 request()->routeIs('admin.tujuan.index') ||
@@ -318,7 +328,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li> --}}
             <li>
                 @if (request()->routeIs('admin.rkpd.index'))
                     <a href="{{ route('admin.rkpd.index') }}" class="active">

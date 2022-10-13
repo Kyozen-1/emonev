@@ -20,6 +20,7 @@ class CreatePivotPerubahanTujuansTable extends Migration
             $table->string('kode')->nulllable();
             $table->longText('deskripsi')->nullable();
             $table->foreignId('kabupaten_id')->nullable();
+            $table->string('tahun_perubahan')->nullable();
             $table->timestamps();
         });
     }
