@@ -214,24 +214,231 @@ class SasaranController extends Controller
     public function store(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'tujuan_id' => 'required',
-            'kode' => 'required',
-            'deskripsi' => 'required',
+            'sasaran_tujuan_id' => 'required',
+            'sasaran_kode' => 'required',
+            'sasaran_deskripsi' => 'required',
+            'sasaran_tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
+        $cek_sasaran = Sasaran::where('kode', $request->sasaran_kode)
+                        ->where('tujuan_id', $request->sasaran_tujuan_id)
+                        ->first();
+        if($cek_sasaran)
+        {
+            $pivot = new PivotPerubahanSasaran;
+            $pivot->sasaran_id = $cek_sasaran->id;
+            $pivot->tujuan_id = $request->sasaran_tujuan_id;
+            $pivot->kode = $request->sasaran_kode;
+            $pivot->deskripsi = $request->sasaran_deskripsi;
+            $pivot->kabupaten_id = 62;
+            $pivot->tahun_perubahan = $request->sasaran_tahun_perubahan;
+            $pivot->save();
+        } else {
+            $sasaran = new Sasaran;
+            $sasaran->tujuan_id = $request->sasaran_tujuan_id;
+            $sasaran->kode = $request->sasaran_kode;
+            $sasaran->deskripsi = $request->sasaran_deskripsi;
+            $sasaran->kabupaten_id = 62;
+            $sasaran->tahun_perubahan = $request->sasaran_tahun_perubahan;
+            $sasaran->save();
+        }
 
-        $sasaran = new Sasaran;
-        $sasaran->tujuan_id = $request->tujuan_id;
-        $sasaran->kode = $request->kode;
-        $sasaran->deskripsi = $request->deskripsi;
-        $sasaran->kabupaten_id = 62;
-        $sasaran->save();
+        $get_visis = Visi::all();
+        $visis = [];
+        foreach ($get_visis as $get_visi) {
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
+                                    ->latest()->first();
+            if($cek_perubahan_visi)
+            {
+                $visis[] = [
+                    'id' => $cek_perubahan_visi->visi_id,
+                    'deskripsi' => $cek_perubahan_visi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                ];
+            } else {
+                $visis[] = [
+                    'id' => $get_visi->visi_id,
+                    'deskripsi' => $get_visi->deskripsi,
+                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                ];
+            }
+        }
 
-        return response()->json(['success' => 'Berhasil Menambahkan Sasaran']);
+        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Kode</th>
+                                    <th width="85%">Visi</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            foreach ($visis as $visi) {
+                                $html .= '<tr>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
+                                        '.$visi['deskripsi'].'
+                                        <br>
+                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="hiddenRow">
+                                        <div class="accordian-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                            <table class="table table-striped">
+                                                <tbody>';
+                                                    $get_misis = Misi::where('visi_id', $visi['id'])->get();
+                                                    $misis = [];
+                                                    foreach ($get_misis as $get_misi) {
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->orderBy('tahun_perubahan', 'desc')
+                                                                                ->latest()->first();
+                                                        if($cek_perubahan_misi)
+                                                        {
+                                                            $misis[] = [
+                                                                'id' => $cek_perubahan_misi->misi_id,
+                                                                'kode' => $cek_perubahan_misi->kode,
+                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
+                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
+                                                            ];
+                                                        } else {
+                                                            $misis[] = [
+                                                                'id' => $get_misi->id,
+                                                                'kode' => $get_misi->kode,
+                                                                'deskripsi' => $get_misi->deskripsi,
+                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
+                                                            ];
+                                                        }
+                                                    }
+                                                    foreach ($misis as $misi) {
+                                                        $html .= '<tr>
+                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                                    <td width="70%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
+                                                                        '.$misi['deskripsi'].'
+                                                                        <br>
+                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                    </td>
+                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['tahun_perubahan'].'</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="4" class="hiddenRow">
+                                                                        <div class="accordian-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                            <table class="table table-striped">
+                                                                                <tbody>';
+                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                                    $tujuans = [];
+                                                                                    foreach ($get_tujuans as $get_tujuan) {
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->orderBy('tahun_perubahan','desc')
+                                                                                                                ->latest()
+                                                                                                                ->first();
+                                                                                        if($cek_perubahan_tujuan)
+                                                                                        {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                                'kode' => $cek_perubahan_tujuan->kode,
+                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        } else {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $get_tujuan->id,
+                                                                                                'kode' => $get_tujuan->kode,
+                                                                                                'deskripsi' => $get_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        }
+                                                                                    }
+                                                                                    foreach ($tujuans as $tujuan) {
+                                                                                        $html .= '<tr>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="15%">'.$tujuan['kode'].'</td>
+                                                                                                    <td width="50%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                                        <br>
+                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                    </td>
+                                                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$tujuan['tahun_perubahan'].'</td>
+                                                                                                    <td>
+                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
+                                                                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
+                                                                                                        <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                        <div class="accordian-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-striped">
+                                                                                                                <tbody>';
+                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+                                                                                                                    $sasarans = [];
+                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->orderBy('tahun_perubahan', 'desc')
+                                                                                                                                                    ->latest()->first();
+                                                                                                                        if($cek_perubahan_sasaran)
+                                                                                                                        {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
+                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
+                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        } else {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $get_sasaran->id,
+                                                                                                                                'kode' => $get_sasaran->kode,
+                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                    foreach ($sasarans as $sasaran) {
+                                                                                                                        $html .= '<tr>
+                                                                                                                                    <td width="15%">'.$sasaran['kode'].'</td>
+                                                                                                                                    <td width="50%">
+                                                                                                                                        '.$sasaran['deskripsi'].'
+                                                                                                                                        <br>
+                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
+                                                                                                                                    </td>
+                                                                                                                                    <td width="15%">'.$sasaran['tahun_perubahan'].'</td>
+                                                                                                                                    <td width="20%">
+                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                    </td>
+                                                                                                                                </tr>';
+                                                                                                                    }
+                                                                                                                $html .= '</tbody>
+                                                                                                            </table>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>';
+                                                                                    }
+                                                                                $html .= '</tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>';
+                                                    }
+                                                $html .= '</tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>';
+                            }
+                            $html .='</tbody>
+                        </table>
+                    </div>
+                </div>';
+
+        return response()->json(['success' => $html]);
     }
 
     /**
@@ -288,6 +495,7 @@ class SasaranController extends Controller
                             Kode Tujuan: '.$kode_tujuan.' <br>
                             Kode: '.$data->kode.'<br>
                             Deskripsi: '.$data->deskripsi.'<br>
+                            Tahun Perubahan: '.$data->tahun_perubahan.'<br>
                             Status: <span class="text-primary">Sebelum Perubahan</span>
                         </p></li>';
             $a = 1;
@@ -331,6 +539,7 @@ class SasaranController extends Controller
                             Kode Misi: '.$kode_tujuan.' <br>
                             Kode: '.$get_perubahan->kode.'<br>
                             Deskripsi: '.$get_perubahan->deskripsi.'<br>
+                            Tahun Perubahan: '.$get_perubahan->tahun_perubahan.'<br>
                             Status: <span class="text-warning">Perubahan '.$a++.'</span>
                         </p></li>';
             }
@@ -340,9 +549,11 @@ class SasaranController extends Controller
             if($cek_perubahan_tujuan)
             {
                 $deskripsi_tujuan = $cek_perubahan_tujuan->deskripsi;
+                $kode_tujuan = $cek_perubahan_tujuan->kode;
                 $misi_id = $cek_perubahan_tujuan->misi_id;
             } else {
                 $tujuan = Tujuan::find($cek_perubahan->tujuan_id);
+                $kode_tujuan = $tujuan->kode;
                 $deskripsi_tujuan = $tujuan->deskripsi;
                 $misi_id = $tujuan->misi_id;
             }
@@ -350,10 +561,12 @@ class SasaranController extends Controller
             if($cek_perubahan_misi)
             {
                 $deskripsi_misi = $cek_perubahan_misi->deskripsi;
+                $kode_misi = $cek_perubahan_misi->kode;
                 $visi_id = $cek_perubahan_misi->visi_id;
             } else {
                 $misi = Misi::find($cek_perubahan->misi_id);
                 $deskripsi_misi = $misi->deskripsi;
+                $kode_misi = $misi->kode;
                 $visi_id = $misi->visi_id;
             }
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $visi_id)->latest()->first();
@@ -367,16 +580,19 @@ class SasaranController extends Controller
 
             $kode_sasaran = $cek_perubahan->kode;
             $deskripsi_sasaran = $cek_perubahan->deskripsi;
+            $tahun_perubahan_sasaran = $cek_perubahan->tahun_perubahan;
         } else {
             $html .= '<p>Tidak ada</p>';
             $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $data->tujuan_id)->latest()->first();
             if($cek_perubahan_tujuan)
             {
                 $deskripsi_tujuan = $cek_perubahan_tujuan->deskripsi;
+                $kode_tujuan = $cek_perubahan_tujuan->kode;
                 $misi_id = $cek_perubahan_tujuan->misi_id;
             } else {
                 $tujuan = Tujuan::find($data->tujuan_id);
                 $deskripsi_tujuan = $tujuan->deskripsi;
+                $kode_tujuan = $tujuan->kode;
                 $misi_id = $tujuan->misi_id;
             }
             $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $misi_id)->latest()->first();
@@ -384,10 +600,12 @@ class SasaranController extends Controller
             {
                 $visi_id = $cek_perubahan_misi->visi_id;
                 $deskripsi_misi = $cek_perubahan_misi->deskripsi;
+                $kode_misi = $cek_perubahan_misi->kode;
             } else {
                 $misi = Misi::find($data->misi_id);
                 $visi_id = $misi->visi_id;
                 $deskripsi_misi = $misi->deskripsi;
+                $kode_misi = $misi->kode;
             }
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $visi_id)->latest()->first();
             if($cek_perubahan_visi)
@@ -400,33 +618,36 @@ class SasaranController extends Controller
 
             $kode_sasaran = $data->kode;
             $deskripsi_sasaran = $data->deskripsi;
+            $tahun_perubahan_sasaran = $data->tahun_perubahan;
         }
 
         $html .='</div>';
 
-        $cek_indikator = PivotSasaranIndikator::where('sasaran_id', $id)->first();
-        $indikator = '<div>';
+        // $cek_indikator = PivotSasaranIndikator::where('sasaran_id', $id)->first();
+        // $indikator = '<div>';
 
-        if($cek_indikator){
-            $get_indikators = PivotSasaranIndikator::where('sasaran_id', $id)->get();
-            $indikator .= '<ul>';
-            foreach ($get_indikators as $get_indikator) {
-                $indikator .= '<li>'.$get_indikator->indikator.'</li>';
-            }
-            $indikator .= '</ul>';
-        } else {
-            $indikator .= '<p>Tidak ada</p>';
-        }
+        // if($cek_indikator){
+        //     $get_indikators = PivotSasaranIndikator::where('sasaran_id', $id)->get();
+        //     $indikator .= '<ul>';
+        //     foreach ($get_indikators as $get_indikator) {
+        //         $indikator .= '<li>'.$get_indikator->indikator.'</li>';
+        //     }
+        //     $indikator .= '</ul>';
+        // } else {
+        //     $indikator .= '<p>Tidak ada</p>';
+        // }
 
-        $indikator .='</div>';
+        // $indikator .='</div>';
 
         $array = [
             'visi' => $deskripsi_visi,
             'misi' => $deskripsi_misi,
+            'kode_misi' => $kode_misi,
             'tujuan' => $deskripsi_tujuan,
+            'kode_tujuan' => $kode_tujuan,
             'kode' => $kode_sasaran,
             'deskripsi' => $deskripsi_sasaran,
-            'pivot_sasaran_indikator' => $indikator,
+            'tahun_perubahan' => $tahun_perubahan_sasaran,
             'pivot_perubahan_sasaran' => $html
         ];
 
@@ -446,75 +667,16 @@ class SasaranController extends Controller
         $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $id)->latest()->first();
         if($cek_perubahan_sasaran)
         {
-            $tujuan_id = $cek_perubahan_sasaran->tujuan_id;
-            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $tujuan_id)->latest()->first();
-            if ($cek_perubahan_tujuan) {
-                $misi_id = $cek_perubahan_tujuan->misi_id;
-            } else {
-                $tujuan = Tujuan::find($tujuan_id);
-                $tujuan_id = $tujuan->misi_id;
-            }
-
-            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $misi_id)->latest()->first();
-            if($cek_perubahan_misi)
-            {
-                $visi_id = $cek_perubahan_misi->visi_id;
-            } else {
-                $misi = Misi::find($misi_id);
-                $visi_id = $misi->visi_id;
-            }
-
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $visi_id)->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visi_id = $cek_perubahan_visi->visi_id;
-            } else {
-                $visi = Visi::find($visi_id);
-                $visi_id = $visi->visi_id;
-            }
-
             $array = [
-                'visi_id' => $visi_id,
-                'misi_id' => $misi_id,
-                'tujuan_id' => $tujuan_id,
                 'kode' => $cek_perubahan_sasaran->kode,
-                'deskripsi' => $cek_perubahan_sasaran->deskripsi
+                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan
             ];
         } else {
-            $tujuan_id = $data->tujuan_id;
-            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $tujuan_id)->latest()->first();
-            if($cek_perubahan_tujuan)
-            {
-                $misi_id = $cek_perubahan_tujuan->misi_id;
-            } else {
-                $tujuan = Tujuan::find($tujuan_id);
-                $misi_id = $tujuan->misi_id;
-            }
-            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $misi_id)->latest()->first();
-            if($cek_perubahan_misi)
-            {
-                $visi_id = $cek_perubahan_misi->visi_id;
-            } else {
-                $kegiatan = Misi::find($misi_id);
-                $visi_id = $kegiatan->visi_id;
-            }
-
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $visi_id)->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visi_id = $cek_perubahan_visi->visi_id;
-            } else {
-                $visi = Visi::find($visi_id);
-
-                $visi_id = $visi->visi_id;
-            }
-
             $array = [
-                'visi_id' => $visi_id,
-                'misi_id' => $misi_id,
-                'tujuan_id' => $tujuan_id,
                 'kode' => $data->kode,
-                'deskripsi' => $data->deskripsi
+                'deskripsi' => $data->deskripsi,
+                'tahun_perubahan' => $data->tahun_perubahan
             ];
         }
 
@@ -531,9 +693,10 @@ class SasaranController extends Controller
     public function update(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'tujuan_id' => 'required',
-            'kode' => 'required',
-            'deskripsi' => 'required',
+            'sasaran_tujuan_id' => 'required',
+            'sasaran_kode' => 'required',
+            'sasaran_deskripsi' => 'required',
+            'sasaran_tahun_perubahan' => 'required'
         ]);
 
         if($errors -> fails())
@@ -542,14 +705,206 @@ class SasaranController extends Controller
         }
 
         $pivot_perubahan_sasaran = new PivotPerubahanSasaran;
-        $pivot_perubahan_sasaran->sasaran_id = $request->hidden_id;
-        $pivot_perubahan_sasaran->tujuan_id = $request->tujuan_id;
-        $pivot_perubahan_sasaran->kode = $request->kode;
-        $pivot_perubahan_sasaran->deskripsi = $request->deskripsi;
+        $pivot_perubahan_sasaran->sasaran_id = $request->sasaran_hidden_id;
+        $pivot_perubahan_sasaran->tujuan_id = $request->sasaran_tujuan_id;
+        $pivot_perubahan_sasaran->kode = $request->sasaran_kode;
+        $pivot_perubahan_sasaran->deskripsi = $request->sasaran_deskripsi;
         $pivot_perubahan_sasaran->kabupaten_id = 62;
+        $pivot_perubahan_sasaran->tahun_perubahan = $request->sasaran_tahun_perubahan;
         $pivot_perubahan_sasaran->save();
 
-        return response()->json(['success' => 'Berhasil Menambahkan Sasaran']);
+        $get_visis = Visi::all();
+        $visis = [];
+        foreach ($get_visis as $get_visi) {
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
+                                    ->latest()->first();
+            if($cek_perubahan_visi)
+            {
+                $visis[] = [
+                    'id' => $cek_perubahan_visi->visi_id,
+                    'deskripsi' => $cek_perubahan_visi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                ];
+            } else {
+                $visis[] = [
+                    'id' => $get_visi->visi_id,
+                    'deskripsi' => $get_visi->deskripsi,
+                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                ];
+            }
+        }
+
+        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Kode</th>
+                                    <th width="85%">Visi</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            foreach ($visis as $visi) {
+                                $html .= '<tr>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
+                                        '.$visi['deskripsi'].'
+                                        <br>
+                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="hiddenRow">
+                                        <div class="accordian-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                            <table class="table table-striped">
+                                                <tbody>';
+                                                    $get_misis = Misi::where('visi_id', $visi['id'])->get();
+                                                    $misis = [];
+                                                    foreach ($get_misis as $get_misi) {
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->orderBy('tahun_perubahan', 'desc')
+                                                                                ->latest()->first();
+                                                        if($cek_perubahan_misi)
+                                                        {
+                                                            $misis[] = [
+                                                                'id' => $cek_perubahan_misi->misi_id,
+                                                                'kode' => $cek_perubahan_misi->kode,
+                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
+                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
+                                                            ];
+                                                        } else {
+                                                            $misis[] = [
+                                                                'id' => $get_misi->id,
+                                                                'kode' => $get_misi->kode,
+                                                                'deskripsi' => $get_misi->deskripsi,
+                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
+                                                            ];
+                                                        }
+                                                    }
+                                                    foreach ($misis as $misi) {
+                                                        $html .= '<tr>
+                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                                    <td width="70%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
+                                                                        '.$misi['deskripsi'].'
+                                                                        <br>
+                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                    </td>
+                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['tahun_perubahan'].'</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="4" class="hiddenRow">
+                                                                        <div class="accordian-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                            <table class="table table-striped">
+                                                                                <tbody>';
+                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                                    $tujuans = [];
+                                                                                    foreach ($get_tujuans as $get_tujuan) {
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->orderBy('tahun_perubahan','desc')
+                                                                                                                ->latest()
+                                                                                                                ->first();
+                                                                                        if($cek_perubahan_tujuan)
+                                                                                        {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                                'kode' => $cek_perubahan_tujuan->kode,
+                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        } else {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $get_tujuan->id,
+                                                                                                'kode' => $get_tujuan->kode,
+                                                                                                'deskripsi' => $get_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        }
+                                                                                    }
+                                                                                    foreach ($tujuans as $tujuan) {
+                                                                                        $html .= '<tr>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="15%">'.$tujuan['kode'].'</td>
+                                                                                                    <td width="50%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                                        <br>
+                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                    </td>
+                                                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$tujuan['tahun_perubahan'].'</td>
+                                                                                                    <td>
+                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
+                                                                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
+                                                                                                        <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                        <div class="accordian-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-striped">
+                                                                                                                <tbody>';
+                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+                                                                                                                    $sasarans = [];
+                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->orderBy('tahun_perubahan', 'desc')
+                                                                                                                                                    ->latest()->first();
+                                                                                                                        if($cek_perubahan_sasaran)
+                                                                                                                        {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
+                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
+                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        } else {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $get_sasaran->id,
+                                                                                                                                'kode' => $get_sasaran->kode,
+                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                    foreach ($sasarans as $sasaran) {
+                                                                                                                        $html .= '<tr>
+                                                                                                                                    <td width="15%">'.$sasaran['kode'].'</td>
+                                                                                                                                    <td width="50%">
+                                                                                                                                        '.$sasaran['deskripsi'].'
+                                                                                                                                        <br>
+                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
+                                                                                                                                    </td>
+                                                                                                                                    <td width="15%">'.$sasaran['tahun_perubahan'].'</td>
+                                                                                                                                    <td width="20%">
+                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                    </td>
+                                                                                                                                </tr>';
+                                                                                                                    }
+                                                                                                                $html .= '</tbody>
+                                                                                                            </table>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>';
+                                                                                    }
+                                                                                $html .= '</tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>';
+                                                    }
+                                                $html .= '</tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>';
+                            }
+                            $html .='</tbody>
+                        </table>
+                    </div>
+                </div>';
+
+        return response()->json(['success' => $html]);
     }
 
     /**
@@ -560,8 +915,9 @@ class SasaranController extends Controller
      */
     public function impor(Request $request)
     {
+        $tujuan_id = $request->sasaran_impor_tujuan_id;
         $file = $request->file('impor_sasaran');
-        Excel::import(new SasaranImport, $file->store('temp'));
+        Excel::import(new SasaranImport($tujuan_id), $file->store('temp'));
         $msg = [session('import_status'), session('import_message')];
         if ($msg[0]) {
             Alert::success('Berhasil', $msg[1]);

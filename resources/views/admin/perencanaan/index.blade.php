@@ -167,100 +167,6 @@
                                         <strong>Loading...</strong>
                                         <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
                                     </div>
-                                    <div class="data-table-rows slim" id="sasaran_div_table">
-                                        <div class="data-table-responsive-wrapper">
-                                            <table class="table table-condensed table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th width="15%">Kode</th>
-                                                        <th width="85%">Visi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi1" class="accordion-toggle"></td>
-                                                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi1" class="accordion-toggle">
-                                                            TERWUJUDNYA KABUPATEN MADIUN AMAN, MANDIRI, SEJAHTERA DAN BERAKHLAK
-                                                            <br>
-                                                            <span class="badge bg-primary text-uppercase">Visi</span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="3" class="hiddenRow">
-                                                            <div class="accordian-body collapse" id="sasaran_visi1">
-                                                                <table class="table table-striped">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi1" class="accordion-toggle">1</td>
-                                                                            <td width="70%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi1" class="accordion-toggle">
-                                                                                Mewujudkan rasa aman bagi seluruh masyarakat dan aparatur pemerintah Kabupaten Madiun
-                                                                                <br>
-                                                                                <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                <span class="badge bg-warning text-uppercase">1 Misi</span>
-                                                                            </td>
-                                                                            <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi1" class="accordion-toggle">2020</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="accordian-body collapse" id="sasaran_misi1">
-                                                                                    <table class="table table-striped">
-                                                                                        <tbody>
-                                                                                            <tr>
-                                                                                                <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan1" class="accordion-toggle" width="15%">1</td>
-                                                                                                <td width="50%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan1" class="accordion-toggle">
-                                                                                                    Membangun Harmonisasi Sosial yang berpondasi dari nilai religius dan Kearifan Lokal
-                                                                                                    <br>
-                                                                                                    <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                    <span class="badge bg-warning text-uppercase">1 Misi</span>
-                                                                                                    <span class="badge bg-secondary text-uppercase">1 Tujuan</span>
-                                                                                                </td>
-                                                                                                <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan1" class="accordion-toggle">2020</td>
-                                                                                                <td>
-                                                                                                    <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditMisiModal" title="Tambah Data Misi" data-misi-id="1"><i class="fas fa-plus"></i></button>
-                                                                                                    <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_sasaran.xlsx') }}" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
-                                                                                                    <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-misi-id="1"><i class="fas fa-file-import"></i></button>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                            <tr>
-                                                                                                <td colspan="4" class="hiddenRow">
-                                                                                                    <div class="accordian-body collapse" id="sasaran_tujuan1">
-                                                                                                        <table class="table table-striped">
-                                                                                                            <tbody>
-                                                                                                                <tr>
-                                                                                                                    <td width="15%">1</td>
-                                                                                                                    <td width="50%">
-                                                                                                                        Membangun Harmonisasi Sosial yang berpondasi dari nilai religius dan Kearifan Lokal
-                                                                                                                        <br>
-                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                        <span class="badge bg-warning text-uppercase">1 Misi</span>
-                                                                                                                        <span class="badge bg-secondary text-uppercase">1 Tujuan</span>
-                                                                                                                        <span class="badge bg-danger text-uppercase">1 Sasaran</span>
-                                                                                                                    </td>
-                                                                                                                    <td width="15%">2020</td>
-                                                                                                                    <td width="20%">
-                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="1" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="1" data-tujuan-id="1" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                    </td>
-                                                                                                                </tr>
-                                                                                                            </tbody>
-                                                                                                        </table>
-                                                                                                    </div>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
                                 </div>
                                 {{-- Sasaran End --}}
                                 <div class="tab-pane fade" id="programNav" role="tabpanel">
@@ -558,6 +464,126 @@
         </div>
     </div>
     {{-- Tujuan End --}}
+
+    {{-- Sasaran Start --}}
+    <div class="modal fade" id="addEditSasaranModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="sasaran_form_result"></span>
+                    <form id="sasaran_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sasaran_tujuan_id" id="sasaran_tujuan_id">
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Kode</label>
+                                <input name="sasaran_kode" id="sasaran_kode" type="number" class="form-control" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Deskripsi</label>
+                                <textarea name="sasaran_deskripsi" id="sasaran_deskripsi" rows="5" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="sasaran_tahun_perubahan" class="form-label">Tahun Perubahan</label>
+                                <select name="sasaran_tahun_perubahan" id="sasaran_tahun_perubahan" class="form-control" required>
+                                    <option value="">--- Pilih Tahun Perubahan ---</option>
+                                    @foreach ($tahuns as $tahun)
+                                        <option value="{{$tahun}}">{{$tahun}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="sasaran_aksi" id="sasaran_aksi" value="Save">
+                    <input type="hidden" name="sasaran_hidden_id" id="sasaran_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="sasaran_aksi_button" id="sasaran_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-right large scroll-out-negative fade" id="detailSasaranModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="scroll-track-visible">
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Visi</label>
+                            <div class="input-group">
+                                <div class="input-group-text"></div>
+                                <textarea id="sasaran_detail_visi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Misi</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><span id="sasaran_detail_misi_kode"></span></div>
+                                <textarea id="sasaran_detail_misi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Tujuan</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><span id="sasaran_detail_tujuan_kode"></span></div>
+                                <textarea id="sasaran_detail_tujuan" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Sasaran</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><span id="sasaran_detail_kode"></span></div>
+                                <textarea id="sasaran_detail_deskripsi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Perubahan Sasaran</label>
+                            <div id="div_pivot_perubahan_sasaran" class="scrollBarPagination"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="importSasaranModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importSasaranModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Import Data</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.sasaran.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sasaran_impor_tujuan_id" id="sasaran_impor_tujuan_id">
+                        <div class="mb-3 position-relative form-group">
+                            <input type="file" class="dropify" id="impor_sasaran" name="impor_sasaran" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <button class="btn btn-success waves-effect waves-light">Impor</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Sasaran End --}}
 @endsection
 
 @section('js')
@@ -1042,5 +1068,166 @@
             });
         });
         // Tujuan End
+
+        // Sasaran Start
+        $('#sasaran_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.get-sasaran') }}",
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#sasaranLoading').show();
+                },
+                success: function(data)
+                {
+                    $('#sasaranLoading').hide();
+                    $('#sasaranNav').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('click','.sasaran_create',function(){
+            $('#sasaran_tujuan_id').val($(this).attr('data-tujuan-id'));
+            $('#sasaran_form')[0].reset();
+            $('#sasaran_aksi_button').text('Save');
+            $('#sasaran_aksi_button').prop('disabled', false);
+            $('.modal-title').text('Add Data Sasaran');
+            $('#sasaran_aksi_button').val('Save');
+            $('#sasaran_aksi').val('Save');
+            $('#sasaran_form_result').html('');
+        });
+
+        $('#sasaran_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#sasaran_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('admin.sasaran.store') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#sasaran_aksi_button').text('Menyimpan...');
+                        $('#sasaran_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#sasaran_aksi_button').prop('disabled', false);
+                            $('#sasaran_form')[0].reset();
+                            $('#sasaran_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditSasaranModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Menambahkan Sasaran',
+                                showConfirmButton: true
+                            });
+                            $('#sasaranNav').html(data.success);
+                        }
+
+                        $('#sasaran_form_result').html(html);
+                    }
+                });
+            }
+
+            if($('#sasaran_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('admin.sasaran.update') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#sasaran_aksi_button').text('Menyimpan...');
+                        $('#sasaran_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#sasaran_aksi_button').prop('disabled', false);
+                            $('#sasaran_form')[0].reset();
+                            $('#sasaran_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditSasaranModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Merubah Sasaran',
+                                showConfirmButton: true
+                            });
+                            $('#sasaranNav').html(data.success);
+                        }
+
+                        $('#sasaran_form_result').html(html);
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.detail-sasaran', function(){
+            var id = $(this).attr('data-sasaran-id');
+            $.ajax({
+                url: "{{ url('/admin/sasaran/detail') }}"+'/'+id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#pivot_perubahan_sasaran').remove();
+                    $('#div_pivot_perubahan_sasaran').append('<div id="pivot_perubahan_sasaran"></div>');
+                    $('#detail-title').text('Detail Data');
+                    $('#sasaran_detail_visi').val(data.result.visi);
+                    $('#sasaran_detail_misi').val(data.result.misi);
+                    $('#sasaran_detail_tujuan').val(data.result.tujuan);
+                    $('#sasaran_detail_kode').text(data.result.kode);
+                    $('#sasaran_detail_misi_kode').text(data.result.kode_misi);
+                    $('#sasaran_detail_tujuan_kode').text(data.result.kode_tujuan);
+                    $('#sasaran_detail_deskripsi').val(data.result.deskripsi);
+                    $('#pivot_perubahan_sasaran').append(data.result.pivot_perubahan_sasaran);
+                    $('#sasaran_detail_tahun_perubahan').val(data.result.tahun_perubahan);
+                    $('#detailSasaranModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '.edit-sasaran', function(){
+            var id = $(this).attr('data-sasaran-id');
+            $('#sasaran_tujuan_id').val($(this).attr('data-tujuan-id'));
+            $('#sasaran_form_result').html('');
+            $.ajax({
+                url: "{{ url('/admin/sasaran/edit') }}"+'/'+id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#sasaran_kode').val(data.result.kode);
+                    $('#sasaran_deskripsi').val(data.result.deskripsi);
+                    $("[name='sasaran_tahun_perubahan']").val(data.result.tahun_perubahan).trigger('change');
+                    $('#sasaran_hidden_id').val(id);
+                    $('.modal-title').text('Edit Data');
+                    $('#sasaran_aksi_button').text('Edit');
+                    $('#sasaran_aksi_button').prop('disabled', false);
+                    $('#sasaran_aksi_button').val('Edit');
+                    $('#sasaran_aksi').val('Edit');
+                    $('#addEditSasaranModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click','.sasaran_btn_impor_template',function(){
+            $('#sasaran_impor_tujuan_id').val($(this).attr('data-tujuan-id'));
+            $('#importSasaranModal').modal('show');
+        });
+
+        // Sasaran End
     </script>
 @endsection

@@ -25,6 +25,13 @@ class SasaranImport implements ToCollection,WithStartRow
     /**
     * @param Collection $collection
     */
+    protected $tujuan_id;
+
+    public function __construct($tujuan_id)
+    {
+        $this->tujuan_id = $tujuan_id;
+    }
+
     public function startRow(): int
     {
         return 2;
@@ -48,7 +55,7 @@ class SasaranImport implements ToCollection,WithStartRow
                     if($row[1] == null)
                     {
                         $response['import_status'] = false;
-                        $response['import_message'] = 'Kode Misi Harus Diisi';
+                        $response['import_message'] = 'Kode Sasaran Harus Diisi';
                         session(['import_status' => $response['import_status']]);
                         session(['import_message' => $response['import_message']]);
                         return false;
@@ -56,41 +63,69 @@ class SasaranImport implements ToCollection,WithStartRow
                     if($row[2] == null)
                     {
                         $response['import_status'] = false;
-                        $response['import_message'] = 'Kode Tujuan Harus Diisi';
-                        session(['import_status' => $response['import_status']]);
-                        session(['import_message' => $response['import_message']]);
-                        return false;
-                    }
-                    if($row[3] == null)
-                    {
-                        $response['import_status'] = false;
-                        $response['import_message'] = 'Kode Sasaran Harus Diisi';
-                        session(['import_status' => $response['import_status']]);
-                        session(['import_message' => $response['import_message']]);
-                        return false;
-                    }
-                    if($row[3] == null)
-                    {
-                        $response['import_status'] = false;
                         $response['import_message'] = 'Sasaran Harus Diisi';
                         session(['import_status' => $response['import_status']]);
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
-
-                    $cek_tujuan = Tujuan::where('kode', $row[2])->first();
-                    $sasaran = new Sasaran;
-                    if($cek_tujuan)
+                    if($row[3] == null)
                     {
-                        $sasaran->tujuan_id = $cek_tujuan->id;
-                    } else {
-                        $sasaran->tujuan_id = null;
+                        $response['import_status'] = false;
+                        $response['import_message'] = 'Tahun Perubahan Harus Diisi';
+                        session(['import_status' => $response['import_status']]);
+                        session(['import_message' => $response['import_message']]);
+                        return false;
                     }
-                    $sasaran->kode = $row[3];
-                    $sasaran->deskripsi = $row[4];
-                    $sasaran->kabupaten_id = 62;
-                    $sasaran->save();
+                    $cek_sasaran = Sasaran::where('kode', $row[3])->whereHas('tujuan', function($q) use ($row){
+                        $q->where('kode', $row[2]);
+                        $q->whereHas('misi', function($q) use ($row){
+                            $q->where('kode', $row[1]);
+                        });
+                    })->first();
+                    if($cek_sasaran)
+                    {
+                        $pivot = new PivotPerubahanSasaran;
+                        $pivot->sasaran_id = $cek_sasaran->id;
+                        $pivot->tujuan_id = $cek_sasaran->tujuan_id;
+                        $pivot->kode = $row[3];
+                        $pivot->deskripsi = $row[4];
+                        $pivot->kabupaten_id = 62;
+                        $pivot->tahun_perubahan = $row[5];
+                        $pivot->save();
+                    } else {
+                        $get_tujuan = Tujuan::where('kode', $row[2])->whereHas('misi', function($q) use ($row){
+                            $q->where('kode', $row[1]);
+                        })->first();
+                        $sasaran = new Sasaran;
+                        $sasaran->tujuan_id = $get_tujuan->id;
+                        $sasaran->kode = $row[3];
+                        $sasaran->deskripsi = $row[4];
+                        $sasaran->kabupaten_id = 62;
+                        $sasaran->tahun_perubahan = $row[5];
+                        $sasaran->save();
+                    }
+                    // $cek_sasaran = Sasaran::where('kode', $row[1])->where('tujuan_id', $this->tujuan_id)->first();
+                    // if($cek_sasaran)
+                    // {
+                    //     $pivot = new PivotPerubahanSasaran;
+                    //     $pivot->sasaran_id = $cek_sasaran->id;
+                    //     $pivot->tujuan_id = $this->tujuan_id;
+                    //     $pivot->kode = $row[1];
+                    //     $pivot->deskripsi = $row[2];
+                    //     $pivot->kabupaten_id = 62;
+                    //     $pivot->tahun_perubahan = $row[3];
+                    //     $pivot->save();
+                    // } else {
+                    //     $sasaran = new Sasaran;
+                    //     $sasaran->tujuan_id = $this->tujuan_id;
+                    //     $sasaran->kode = $row[1];
+                    //     $sasaran->deskripsi = $row[2];
+                    //     $sasaran->kabupaten_id = 62;
+                    //     $sasaran->tahun_perubahan = $row[3];
+                    //     $sasaran->save();
+                    // }
                 }
+                $n++;
             }
             $time_elapsed_secs = microtime(true) - $start;
             $response['import_message'] = $n. ' data telah diimport dalam '. $time_elapsed_secs.' Second';
