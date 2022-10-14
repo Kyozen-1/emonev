@@ -24,6 +24,13 @@ class TujuanImport implements ToCollection,WithStartRow
     /**
     * @param Collection $collection
     */
+    protected $misi_id;
+
+    public function __construct($misi_id)
+    {
+        $this->misi_id = $misi_id;
+    }
+
     public function startRow(): int
     {
         return 2;
@@ -47,7 +54,7 @@ class TujuanImport implements ToCollection,WithStartRow
                     if($row[1] == null)
                     {
                         $response['import_status'] = false;
-                        $response['import_message'] = 'Kode Misi Harus Diisi';
+                        $response['import_message'] = 'Kode Tujuan Harus Diisi';
                         session(['import_status' => $response['import_status']]);
                         session(['import_message' => $response['import_message']]);
                         return false;
@@ -55,7 +62,7 @@ class TujuanImport implements ToCollection,WithStartRow
                     if($row[2] == null)
                     {
                         $response['import_status'] = false;
-                        $response['import_message'] = 'Kode Tujuan Harus Diisi';
+                        $response['import_message'] = 'Tujuan Harus Diisi';
                         session(['import_status' => $response['import_status']]);
                         session(['import_message' => $response['import_message']]);
                         return false;
@@ -63,25 +70,57 @@ class TujuanImport implements ToCollection,WithStartRow
                     if($row[3] == null)
                     {
                         $response['import_status'] = false;
-                        $response['import_message'] = 'Tujuan Harus Diisi';
+                        $response['import_message'] = 'Tahun Perubahan Harus Diisi';
                         session(['import_status' => $response['import_status']]);
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
+                    // $cek_tujuan = Tujuan::where('kode', $row['2'])->whereHas('misi', function($q) use ($row) {
+                    //     $q->where('kode', $row[1]);
+                    // })->first();
+                    // if($cek_tujuan)
+                    // {
+                    //     $pivot = new PivotPerubahanTujuan;
+                    //     $pivot->tujuan_id = $cek_tujuan->id;
+                    //     $pivot->misi_id = $cek_tujuan->misi_id;
+                    //     $pivot->kode = $row[2];
+                    //     $pivot->deskripsi = $row[3];
+                    //     $pivot->tahun_perubahan = $row[4];
+                    //     $pivot->kabupaten_id = 62;
+                    //     $pivot->save();
+                    // } else {
+                    //     $get_misi = Misi::where('kode', $row[1])->first();
 
-                    $cek_misi = Misi::where('kode', $row[1])->first();
-                    $tujuan = new Tujuan;
-                    if($cek_misi)
+                    //     $tujuan = new Tujuan;
+                    //     $tujuan->misi_id = $get_misi->id;
+                    //     $tujuan->kode = $row[2];
+                    //     $tujuan->deskripsi = $row[3];
+                    //     $tujuan->tahun_perubahan = $row[4];
+                    //     $tujuan->kabupaten_id = 62;
+                    //     $tujuan->save();
+                    // }
+                    $cek_tujuan = Tujuan::where('kode', $row[1])->where('misi_id', $this->misi_id)->first();
+                    if($cek_tujuan)
                     {
-                        $tujuan->misi_id = $cek_misi->id;
+                        $pivot = new PivotPerubahanTujuan;
+                        $pivot->tujuan_id = $cek_tujuan->id;
+                        $pivot->misi_id = $this->misi_id;
+                        $pivot->kode = $row[1];
+                        $pivot->deskripsi = $row[2];
+                        $pivot->tahun_perubahan = $row[3];
+                        $pivot->kabupaten_id = 62;
+                        $pivot->save();
                     } else {
-                        $tujuan->misi_id = null;
+                        $tujuan = new Tujuan;
+                        $tujuan->misi_id = $this->misi_id;
+                        $tujuan->kode = $row[1];
+                        $tujuan->deskripsi = $row[2];
+                        $tujuan->tahun_perubahan = $row[3];
+                        $tujuan->kabupaten_id = 62;
+                        $tujuan->save();
                     }
-                    $tujuan->kode = $row[2];
-                    $tujuan->deskripsi = $row[3];
-                    $tujuan->kabupaten_id = 62;
-                    $tujuan->save();
                 }
+                $n++;
             }
             $time_elapsed_secs = microtime(true) - $start;
             $response['import_message'] = $n. ' data telah diimport dalam '. $time_elapsed_secs.' Second';

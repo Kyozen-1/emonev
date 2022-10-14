@@ -158,78 +158,6 @@
                                         <strong>Loading...</strong>
                                         <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
                                     </div>
-                                    <div class="data-table-rows slim" id="tujuan_div_table">
-                                        <div class="data-table-responsive-wrapper">
-                                            <table class="table table-condensed table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th width="15%">Kode</th>
-                                                        <th width="85%">Visi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi1" class="accordion-toggle"></td>
-                                                        <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi1" class="accordion-toggle">
-                                                            TERWUJUDNYA KABUPATEN MADIUN AMAN, MANDIRI, SEJAHTERA DAN BERAKHLAK
-                                                            <br>
-                                                            <span class="badge bg-primary text-uppercase">Visi</span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="3" class="hiddenRow">
-                                                            <div class="accordian-body collapse" id="tujuan_visi1">
-                                                                <table class="table table-striped">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td width="15%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi1" class="accordion-toggle">1</td>
-                                                                            <td width="50%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi1" class="accordion-toggle">
-                                                                                Mewujudkan rasa aman bagi seluruh masyarakat dan aparatur pemerintah Kabupaten Madiun
-                                                                                <br>
-                                                                                <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                <span class="badge bg-warning text-uppercase">1 Misi</span>
-                                                                            </td>
-                                                                            <td width="15%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi1" class="accordion-toggle">2020</td>
-                                                                            <td>
-                                                                                <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditMisiModal" title="Tambah Data Misi" data-misi-id="1"><i class="fas fa-plus"></i></button>
-                                                                                <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_tujuan.xlsx') }}" title="Download Template Import Data Tujuan"><i class="fas fa-file-excel"></i></a>
-                                                                                <button class="btn btn-info waves-effect waves-light tujuan_btn_impor_template" title="Import Data Tujuan" type="button" data-misi-id="1"><i class="fas fa-file-import"></i></button>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="accordian-body collapse" id="tujuan_misi1">
-                                                                                    <table class="table table-striped">
-                                                                                        <tbody>
-                                                                                            <tr>
-                                                                                                <td width="15%">1</td>
-                                                                                                <td width="50%">
-                                                                                                    Membangun Harmonisasi Sosial yang berpondasi dari nilai religius dan Kearifan Lokal
-                                                                                                    <br>
-                                                                                                    <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                    <span class="badge bg-warning text-uppercase">1 Misi</span>
-                                                                                                    <span class="badge bg-secondary text-uppercase">1 Tujuan</span>
-                                                                                                </td>
-                                                                                                <td width="15%">2020</td>
-                                                                                                <td width="20%">
-                                                                                                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="1" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-tujuan" data-tujuan-id="1" data-misi-id="1" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
                                 </div>
                                 {{-- Tujuan End --}}
 
@@ -516,6 +444,120 @@
         </div>
     </div>
     {{-- Misi Modal End--}}
+
+    {{-- Tujuan Start --}}
+    <div class="modal fade" id="addEditTujuanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="tujuan_form_result"></span>
+                    <form id="tujuan_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="tujuan_misi_id" id="tujuan_misi_id">
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Kode</label>
+                                <input name="tujuan_kode" id="tujuan_kode" type="number" class="form-control" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Deskripsi</label>
+                                <textarea name="tujuan_deskripsi" id="tujuan_deskripsi" rows="5" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tujuan_tahun_perubahan" class="form-label">Tahun Perubahan</label>
+                                <select name="tujuan_tahun_perubahan" id="tujuan_tahun_perubahan" class="form-control" required>
+                                    <option value="">--- Pilih Tahun Perubahan ---</option>
+                                    @foreach ($tahuns as $tahun)
+                                        <option value="{{$tahun}}">{{$tahun}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="tujuan_aksi" id="tujuan_aksi" value="Save">
+                    <input type="hidden" name="tujuan_hidden_id" id="tujuan_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="tujuan_aksi_button" id="tujuan_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="importTujuanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importTujuanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Import Data</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.tujuan.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="tujuan_impor_misi_id" id="tujuan_impor_misi_id">
+                        <div class="mb-3 position-relative form-group">
+                            <input type="file" class="dropify" id="impor_tujuan" name="impor_tujuan" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <button class="btn btn-success waves-effect waves-light">Impor</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailTujuanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Detail Modal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Visi</label>
+                                <textarea id="tujuan_detail_visi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Misi</label>
+                                <textarea id="tujuan_detail_misi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kode</label>
+                                <input id="tujuan_detail_kode" type="text" class="form-control" disabled/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="" class="form-label">Deskripsi</label>
+                                <textarea id="tujuan_detail_deskripsi" rows="5" class="form-control" disabled></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tahun Perubahan</label>
+                                <input id="tujuan_detail_tahun_perubahan" type="text" class="form-control" disabled/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Perubahan Tujuan</label>
+                                <div id="div_pivot_perubahan_tujuan" class="scrollBarPagination"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Oke</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Tujuan End --}}
 @endsection
 
 @section('js')
@@ -845,7 +887,160 @@
         // Misi End
 
         // Tujuan Start
+        $('#tujuan_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.get-tujuan') }}",
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#tujuanLoading').show();
+                },
+                success: function(data)
+                {
+                    $('#tujuanLoading').hide();
+                    $('#tujuanNav').html(data.html);
+                }
+            });
+        });
 
+        $(document).on('click','.tujuan_create',function(){
+            $('#tujuan_misi_id').val($(this).attr('data-misi-id'));
+            $('#tujuan_form')[0].reset();
+            $('#tujuan_aksi_button').text('Save');
+            $('#tujuan_aksi_button').prop('disabled', false);
+            $('.modal-title').text('Add Data Tujuan');
+            $('#tujuan_aksi_button').val('Save');
+            $('#tujuan_aksi').val('Save');
+            $('#tujuan_form_result').html('');
+        });
+
+        $('#tujuan_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#tujuan_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('admin.tujuan.store') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#tujuan_aksi_button').text('Menyimpan...');
+                        $('#tujuan_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#tujuan_aksi_button').prop('disabled', false);
+                            $('#tujuan_form')[0].reset();
+                            $('#tujuan_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditTujuanModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Menambahkan Tujuan',
+                                showConfirmButton: true
+                            });
+                            $('#tujuanNav').html(data.success);
+                        }
+
+                        $('#tujuan_form_result').html(html);
+                    }
+                });
+            }
+
+            if($('#tujuan_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('admin.tujuan.update') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#tujuan_aksi_button').text('Menyimpan...');
+                        $('#tujuan_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#tujuan_aksi_button').prop('disabled', false);
+                            $('#tujuan_form')[0].reset();
+                            $('#tujuan_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditTujuanModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Merubah Tujuan',
+                                showConfirmButton: true
+                            });
+                            $('#tujuanNav').html(data.success);
+                        }
+
+                        $('#tujuan_form_result').html(html);
+                    }
+                });
+            }
+        });
+
+        $(document).on('click','.tujuan_btn_impor_template',function(){
+            $('#tujuan_impor_misi_id').val($(this).attr('data-misi-id'));
+            $('#importTujuanModal').modal('show');
+        });
+
+        $(document).on('click', '.detail-tujuan', function(){
+            var id = $(this).attr('data-tujuan-id');
+            $.ajax({
+                url: "{{ url('/admin/tujuan/detail') }}"+'/'+id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#pivot_perubahan_tujuan').remove();
+                    $('#div_pivot_perubahan_tujuan').append('<div id="pivot_perubahan_tujuan"></div>');
+                    $('#detail-title').text('Detail Data');
+                    $('#tujuan_detail_visi').val(data.result.visi);
+                    $('#tujuan_detail_misi').val(data.result.misi);
+                    $('#tujuan_detail_kode').val(data.result.kode);
+                    $('#tujuan_detail_deskripsi').val(data.result.deskripsi);
+                    $('#pivot_perubahan_tujuan').append(data.result.pivot_perubahan_tujuan);
+                    $('#tujuan_detail_tahun_perubahan').val(data.result.tahun_perubahan);
+                    $('#detailTujuanModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '.edit-tujuan', function(){
+            var id = $(this).attr('data-tujuan-id');
+            $('#tujuan_misi_id').val($(this).attr('data-misi-id'));
+            $('#tujuan_form_result').html('');
+            $.ajax({
+                url: "{{ url('/admin/tujuan/edit') }}"+'/'+id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#tujuan_kode').val(data.result.kode);
+                    $('#tujuan_deskripsi').val(data.result.deskripsi);
+                    $("[name='tujuan_tahun_perubahan']").val(data.result.tahun_perubahan).trigger('change');
+                    $('#tujuan_hidden_id').val(id);
+                    $('.modal-title').text('Edit Data');
+                    $('#tujuan_aksi_button').text('Edit');
+                    $('#tujuan_aksi_button').prop('disabled', false);
+                    $('#tujuan_aksi_button').val('Edit');
+                    $('#tujuan_aksi').val('Edit');
+                    $('#addEditTujuanModal').modal('show');
+                }
+            });
+        });
         // Tujuan End
     </script>
 @endsection
