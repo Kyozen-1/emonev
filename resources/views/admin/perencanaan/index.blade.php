@@ -21,6 +21,9 @@
         .select2-selection__arrow {
             height: 36px !important;
         }
+        .select2-container{
+            z-index:100000;
+        }
         .hiddenRow {
             padding: 0 !important;
         }
@@ -108,7 +111,7 @@
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#programNav" role="tab" aria-selected="false" type="button" id="misi_tab_button">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#programNav" role="tab" aria-selected="false" type="button" id="program_tab_button">
                                         Program
                                     </button>
                                 </li>
@@ -174,6 +177,15 @@
                                         <strong>Loading...</strong>
                                         <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-6 justify-content-center align-self-center">
+                                            <label for="" class="form-label">Tambah Program</label>
+                                        </div>
+                                        <div class="col-6" style="text-align: right">
+                                            <button class="btn btn-primary waves-effect waves-light btn-icon" id="program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program"><i class="fas fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div id="programNavDiv"></div>
                                 </div>
                             </div>
                         </div>
@@ -547,7 +559,31 @@
                                 <textarea id="sasaran_detail_deskripsi" class="form-control" rows="5" disabled></textarea>
                             </div>
                         </div>
+                        <hr>
+                        <div class="data-table-rows slim">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="" class="form-label">Sasaran Indikator</label>
+                                </div>
+                            </div>
+                            <!-- Table Start -->
+                            <div class="data-table-responsive-wrapper">
+                                <table class="data-table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted text-small text-uppercase" width="50%">Indikator</th>
+                                            <th class="text-muted text-small text-uppercase" width="25%">Target</th>
+                                            <th class="text-muted text-small text-uppercase" width="25%">Satuan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody_detail_sasaran_indikator">
 
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Table End -->
+                        </div>
+                        <hr>
                         <div class="form-group position-relative mb-3">
                             <label for="" class="form-label">Perubahan Sasaran</label>
                             <div id="div_pivot_perubahan_sasaran" class="scrollBarPagination"></div>
@@ -584,6 +620,185 @@
         </div>
     </div>
     {{-- Sasaran End --}}
+
+    {{-- Sasaran Indikator Start --}}
+    <div class="modal fade" id="addEditSasaranIndikatorModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="sasaran_indikator_form_result"></span>
+                    <form id="sasaran_indikator_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sasaran_indikator_sasaran_id" id="sasaran_indikator_sasaran_id">
+                        <div class="mb-3">
+                            <label class="form-label">Indikator</label>
+                            <textarea name="sasaran_indikator_indikator" id="sasaran_indikator_indikator" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="" class="form-label">Target</label>
+                            <input type="number" name="sasaran_indikator_target" id="sasaran_indikator_target" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" name="sasaran_indikator_satuan" id="sasaran_indikator_satuan" required>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="sasaran_indikator_aksi" id="sasaran_indikator_aksi" value="Save">
+                    <input type="hidden" name="sasaran_indikator_hidden_id" id="sasaran_indikator_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="sasaran_indikator_aksi_button" id="sasaran_indikator_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- <div class="modal modal-right large scroll-out-negative fade" id="detailSasaranIndikatorModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group position-relative mb-3">
+                                <label for="" class="form-label">Indikator</label>
+                                <textarea id="sasaran_indikator_detail_indikator" rows="5" class="form-control" disabled></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="" class="form-label">Target</label>
+                                    <input type="text" class="form-label" id="sasaran_indikator_detail_target" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="" class="form-label">Satuan</label>
+                                    <input type="text" class="form-control" id="sasaran_indikator_detail_satuan">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-table-rows slim">
+                        <!-- Table Start -->
+                        <div class="data-table-responsive-wrapper">
+                            <table id="visi_table" class="data-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th class="text-muted text-small text-uppercase" width="10%">No</th>
+                                        <th class="text-muted text-small text-uppercase" width="55%">Target</th>
+                                        <th class="text-muted text-small text-uppercase" width="15%">Satuan</th>
+                                        <th class="text-muted text-small text-uppercase" width="20%">Aksi</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- Table End -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+    {{-- Sassaran Indikator End --}}
+
+    {{-- Program RPJMD Start --}}
+    <div class="modal fade" id="addEditProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="program_form_result"></span>
+                    <form id="program_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <h2 class="small-title">Atur Program</h2>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Urusan</label>
+                            <select name="program_urusan_id" id="program_urusan_id" class="form-control" required>
+                                <option value="">--- Pilih Urusan ---</option>
+                                @foreach ($urusans as $urusan)
+                                    <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Program</label>
+                            <select name="program_program_id" id="program_program_id" class="form-control" disabled required>
+                                <option value="">--- Pilih Program ---</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Status Program</label>
+                            <select name="program_status_program" id="program_status_program" class="form-control" required>
+                                <option value="">--- Pilih Status Program ---</option>
+                                <option value="Program Prioritas">Program Prioritas</option>
+                                <option value="Program Pendukung">Program Pendukung</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Pagu</label>
+                            <input type="number" name="program_pagu" id="program_pagu" class="form-control" required>
+                        </div>
+                        <h2 class="small-title">Atur Sasaran Indikator</h2>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Misi</label>
+                            <select name="program_misi_id" id="program_misi_id" class="form-control" required>
+                                <option value="">--- Pilih Misi ---</option>
+                                @foreach ($misis as $misi)
+                                    <option value="{{$misi['id']}}">{{$misi['kode']}}. {{$misi['deskripsi']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Tujuan</label>
+                            <select name="program_tujuan_id" id="program_tujuan_id" class="form-control" disabled required>
+                                <option value="">--- Pilih Tujuan ---</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Sasaran</label>
+                            <select name="program_sasaran_id" id="program_sasaran_id" class="form-control" disabled required>
+                                <option value="">--- Pilih Sasaran ---</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Sasaran Indikator</label>
+                            <select name="program_sasaran_indikator_id[]" id="program_sasaran_indikator_id" class="form-control" multiple="multiple" disabled required>
+                            </select>
+                        </div>
+                        <h2 class="small-title">Atur OPD Terkai</h2>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Pilih OPD</label>
+                            <select name="program_opd_id[]" id="program_opd_id" class="form-control" multiple="multiple" required>
+                                @foreach ($opds as $id => $nama)
+                                    <option value="{{$id}}">{{$nama}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="program_aksi" id="program_aksi" value="Save">
+                    <input type="hidden" name="program_hidden_id" id="program_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="program_aksi_button" id="program_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    {{-- Program RPJMD End --}}
 @endsection
 
 @section('js')
@@ -607,6 +822,13 @@
     <script>
         // Visi Start
         $(document).ready(function(){
+            $('#program_urusan_id').select2();
+            $('#program_program_id').select2();
+            $('#program_misi_id').select2();
+            $('#program_tujuan_id').select2();
+            $('#program_sasaran_id').select2();
+            $('#program_sasaran_indikator_id').select2();
+            $('#program_opd_id').select2();
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');
 
@@ -1195,6 +1417,7 @@
                     $('#sasaran_detail_deskripsi').val(data.result.deskripsi);
                     $('#pivot_perubahan_sasaran').append(data.result.pivot_perubahan_sasaran);
                     $('#sasaran_detail_tahun_perubahan').val(data.result.tahun_perubahan);
+                    $('#tbody_detail_sasaran_indikator').html(data.result.sasaran_indikator);
                     $('#detailSasaranModal').modal('show');
                 }
             });
@@ -1227,7 +1450,258 @@
             $('#sasaran_impor_tujuan_id').val($(this).attr('data-tujuan-id'));
             $('#importSasaranModal').modal('show');
         });
-
         // Sasaran End
+
+        // Sasaran Indikator Start
+        $(document).on('click','.sasaran_indikator_create',function(){
+            $('#sasaran_indikator_sasaran_id').val($(this).attr('data-sasaran-id'));
+            $('#sasaran_indikator_form')[0].reset();
+            $('#sasaran_indikator_aksi_button').text('Save');
+            $('#sasaran_indikator_aksi_button').prop('disabled', false);
+            $('.modal-title').text('Add Data Sasaran Indikator');
+            $('#sasaran_indikator_aksi_button').val('Save');
+            $('#sasaran_indikator_aksi').val('Save');
+            $('#sasaran_indikator_form_result').html('');
+        });
+
+        $('#sasaran_indikator_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#sasaran_indikator_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('admin.sasaran.indikator.store') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#sasaran_indikator_aksi_button').text('Menyimpan...');
+                        $('#sasaran_indikator_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#sasaran_indikator_aksi_button').prop('disabled', false);
+                            $('#sasaran_indikator_form')[0].reset();
+                            $('#sasaran_indikator_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditSasaranIndikatorModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Menambahkan Sasaran Indikator',
+                                showConfirmButton: true
+                            });
+                            $('#sasaranNav').html(data.success);
+                        }
+
+                        $('#sasaran_indikator_form_result').html(html);
+                    }
+                });
+            }
+
+            if($('#sasaran_indikator_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('admin.sasaran.indikator.update') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#sasaran_indikator_aksi_button').text('Menyimpan...');
+                        $('#sasaran_indikator_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#sasaran_indikator_aksi_button').prop('disabled', false);
+                            $('#sasaran_indikator_form')[0].reset();
+                            $('#sasaran_indikator_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditSasaranIndikatorModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Merubah Sasaran Indikator',
+                                showConfirmButton: true
+                            });
+                            $('#sasaranNav').html(data.success);
+                        }
+
+                        $('#sasaran_indikator_form_result').html(html);
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.edit-sasaran-indikator', function(){
+            var id = $(this).attr('data-sasaran-indikator-id');
+            $('#sasaran_indikator_sasaran_id').val($(this).attr('data-sasaran-id'));
+            $('#sasaran_indikator_form_result').html('');
+            $.ajax({
+                url: "{{ url('/admin/sasaran/indikator/edit') }}"+'/'+id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#sasaran_indikator_indikator').val(data.result.indikator);
+                    $('#sasaran_indikator_target').val(data.result.target);
+                    $('#sasaran_indikator_satuan').val(data.result.satuan);
+                    $('#sasaran_indikator_hidden_id').val(id);
+                    $('.modal-title').text('Edit Data Sasaran Indikator');
+                    $('#sasaran_indikator_aksi_button').text('Edit');
+                    $('#sasaran_indikator_aksi_button').prop('disabled', false);
+                    $('#sasaran_indikator_aksi_button').val('Edit');
+                    $('#sasaran_indikator_aksi').val('Edit');
+                    $('#addEditSasaranIndikatorModal').modal('show');
+                }
+            });
+        });
+        // Sasaran Indikator End
+
+        // Program Start
+        $('#program_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.get-program') }}",
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#programLoading').show();
+                },
+                success: function(data)
+                {
+                    $('#programLoading').remove();
+                    $('#programNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#program_urusan_id').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.program-rpjmd.get-program') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#program_program_id').empty();
+                        $('#program_program_id').prop('disabled', false);
+                        $('#program_program_id').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(key, value){
+                            $('#program_program_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#program_program_id').prop('disabled', true);
+            }
+        });
+
+        $('#program_misi_id').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.program-rpjmd.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#program_tujuan_id').empty();
+                        $('#program_tujuan_id').prop('disabled', false);
+                        $('#program_sasaran_id').prop('disabled', true);
+                        $('#program_sasaran_indikator_id').prop('disabled', true);
+                        $('#program_tujuan_id').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#program_tujuan_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#program_tujuan_id').prop('disabled', true);
+                $('#program_sasaran_id').prop('disabled', true);
+                $('#program_sasaran_indikator_id').prop('disabled', true);
+            }
+        });
+
+        $('#program_tujuan_id').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.program-rpjmd.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#program_sasaran_id').empty();
+                        $('#program_sasaran_id').prop('disabled', false);
+                        $('#program_sasaran_indikator_id').prop('disabled', true);
+                        $('#program_sasaran_id').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#program_sasaran_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#program_sasaran_id').prop('disabled', true);
+                $('#program_sasaran_indikator_id').prop('disabled', true);
+            }
+        });
+
+        $('#program_sasaran_id').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.program-rpjmd.get-sasaran-indikator') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#program_sasaran_indikator_id').empty();
+                        $('#program_sasaran_indikator_id').prop('disabled', false);
+                        $('#program_sasaran_indikator_id').append('<option value="">--- Pilih Sasaran Indikator ---</option>');
+                        $.each(response, function(key, value){
+                            $('#program_sasaran_indikator_id').append(new Option(value.indikator, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#program_sasaran_indikator_id').prop('disabled', true);
+            }
+        });
+
+        $('#program_create').click(function(){
+            $('#program_form')[0].reset();
+            $('#program_aksi_button').text('Save');
+            $('#program_aksi_button').prop('disabled', false);
+            $('.modal-title').text('Add Data Program');
+            $('#program_aksi_button').val('Save');
+            $('#program_aksi').val('Save');
+            $('#program_form_result').html('');
+            $("[name='program_urusan_id']").val('').trigger('change');
+            $("[name='program_program_id']").val('').trigger('change');
+            $("[name='program_misi_id']").val('').trigger('change');
+            $("[name='program_tujuan_id']").val('').trigger('change');
+            $("[name='program_sasaran_id']").val('').trigger('change');
+            $("[name='program_sasaran_indikator_id[]']").val('').trigger('change');
+            $("[name='program_opd_id[]']").val('').trigger('change');
+        });
+        // Program End
     </script>
 @endsection

@@ -51,6 +51,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/perencanaan/get-misi', 'Admin\PerencanaanController@get_misi')->name('admin.perencanaan.get-misi');
     Route::get('/admin/perencanaan/get-tujuan', 'Admin\PerencanaanController@get_tujuan')->name('admin.perencanaan.get-tujuan');
     Route::get('/admin/perencanaan/get-sasaran', 'Admin\PerencanaanController@get_sasaran')->name('admin.perencanaan.get-sasaran');
+    Route::get('/admin/perencanaan/get-program', 'Admin\PerencanaanController@get_program')->name('admin.perencanaan.get-program');
 
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');
@@ -164,23 +165,31 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/sasaran/destroy/{id}','Admin\SasaranController@destroy');
     Route::post('/admin/sasaran/destroy/impor', 'Admin\SasaranController@impor')->name('admin.sasaran.impor');
 
-    //Sasaran - Indikator
-    Route::get('/admin/sasaran/{sasaran_id}/indikator', 'Admin\SasaranIndikatorController@index');
-    Route::get('/admin/sasaran/indikator/detail/{id}', 'Admin\SasaranIndikatorController@show');
-    Route::post('/admin/sasaran/indikator','Admin\SasaranIndikatorController@store');
-    Route::get('/admin/sasaran/indikator/edit/{id}','Admin\SasaranIndikatorController@edit');
-    Route::post('/admin/sasaran/indikator/update','Admin\SasaranIndikatorController@update');
-    Route::get('/admin/sasaran/indikator/destroy/{id}','Admin\SasaranIndikatorController@destroy');
-    Route::post('/admin/sasaran/indikator/impor', 'Admin\SasaranIndikatorController@impor')->name('admin.sasaran.indikator.impor');
+    // Sasaran Indikator
+    Route::post('/admin/sasaran/indikator', 'Admin\SasaranController@sasaran_indikator_store')->name('admin.sasaran.indikator.store');
+    Route::get('/admin/sasaran/indikator/edit/{id}', 'Admin\SasaranController@sasaran_indikator_edit');
+    Route::post('/admin/sasaran/indikator/update', 'Admin\SasaranController@sasaran_indikator_update')->name('admin.sasaran.indikator.update');
+
+    // //Sasaran - Indikator
+    // Route::get('/admin/sasaran/{sasaran_id}/indikator', 'Admin\SasaranIndikatorController@index');
+    // Route::get('/admin/sasaran/indikator/detail/{id}', 'Admin\SasaranIndikatorController@show');
+    // Route::post('/admin/sasaran/indikator','Admin\SasaranIndikatorController@store');
+    // Route::get('/admin/sasaran/indikator/edit/{id}','Admin\SasaranIndikatorController@edit');
+    // Route::post('/admin/sasaran/indikator/update','Admin\SasaranIndikatorController@update');
+    // Route::get('/admin/sasaran/indikator/destroy/{id}','Admin\SasaranIndikatorController@destroy');
+    // Route::post('/admin/sasaran/indikator/impor', 'Admin\SasaranIndikatorController@impor')->name('admin.sasaran.indikator.impor');
 
     //Program RPJMD
     Route::get('/admin/program-rpjmd', 'Admin\ProgramRpjmdController@index')->name('admin.program-rpjmd.index');
-    Route::post('/admin/program-rpjmd/get-program', 'Admin\ProgramRpjmdController@get_program')->name('admin.program-rpjmd.get-program');
     Route::get('/admin/program-rpjmd/get-sasaran/{id}', 'Admin\ProgramRpjmdController@get_sasaran');
     Route::post('/admin/program-rpjmd','Admin\ProgramRpjmdController@store')->name('admin.program-rpjmd.store');
     Route::get('/admin/program-rpjmd/edit/{id}','Admin\ProgramRpjmdController@edit');
     Route::post('/admin/program-rpjmd/update','Admin\ProgramRpjmdController@update')->name('admin.program-rpjmd.update');
     Route::get('/admin/program-rpjmd/destroy/{id}','Admin\ProgramRpjmdController@destroy');
+    Route::post('/admin/program-rpjmd/get-program', 'Admin\ProgramRpjmdController@get_program')->name('admin.program-rpjmd.get-program');
+    Route::post('/admin/program-rpjmd/get-tujuan', 'Admin\ProgramRpjmdController@get_tujuan')->name('admin.program-rpjmd.get-tujuan');
+    Route::post('/admin/program-rpjmd/get-sasaran', 'Admin\ProgramRpjmdController@get_sasaran')->name('admin.program-rpjmd.get-sasaran');
+    Route::post('/admin/program-rpjmd/get-sasaran-indikator', 'Admin\ProgramRpjmdController@get_sasaran_indikator')->name('admin.program-rpjmd.get-sasaran-indikator');
 
     //Tahun Periode
     Route::get('/admin/tahun-periode', 'Admin\TahunPeriodeController@index')->name('admin.tahun-periode.index');

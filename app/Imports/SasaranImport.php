@@ -76,34 +76,36 @@ class SasaranImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
-                    $cek_sasaran = Sasaran::where('kode', $row[3])->whereHas('tujuan', function($q) use ($row){
-                        $q->where('kode', $row[2]);
-                        $q->whereHas('misi', function($q) use ($row){
-                            $q->where('kode', $row[1]);
-                        });
-                    })->first();
-                    if($cek_sasaran)
-                    {
-                        $pivot = new PivotPerubahanSasaran;
-                        $pivot->sasaran_id = $cek_sasaran->id;
-                        $pivot->tujuan_id = $cek_sasaran->tujuan_id;
-                        $pivot->kode = $row[3];
-                        $pivot->deskripsi = $row[4];
-                        $pivot->kabupaten_id = 62;
-                        $pivot->tahun_perubahan = $row[5];
-                        $pivot->save();
-                    } else {
-                        $get_tujuan = Tujuan::where('kode', $row[2])->whereHas('misi', function($q) use ($row){
-                            $q->where('kode', $row[1]);
-                        })->first();
-                        $sasaran = new Sasaran;
-                        $sasaran->tujuan_id = $get_tujuan->id;
-                        $sasaran->kode = $row[3];
-                        $sasaran->deskripsi = $row[4];
-                        $sasaran->kabupaten_id = 62;
-                        $sasaran->tahun_perubahan = $row[5];
-                        $sasaran->save();
-                    }
+                    // Import Semua Sasaran
+                    // $cek_sasaran = Sasaran::where('kode', $row[3])->whereHas('tujuan', function($q) use ($row){
+                    //     $q->where('kode', $row[2]);
+                    //     $q->whereHas('misi', function($q) use ($row){
+                    //         $q->where('kode', $row[1]);
+                    //     });
+                    // })->first();
+                    // if($cek_sasaran)
+                    // {
+                    //     $pivot = new PivotPerubahanSasaran;
+                    //     $pivot->sasaran_id = $cek_sasaran->id;
+                    //     $pivot->tujuan_id = $cek_sasaran->tujuan_id;
+                    //     $pivot->kode = $row[3];
+                    //     $pivot->deskripsi = $row[4];
+                    //     $pivot->kabupaten_id = 62;
+                    //     $pivot->tahun_perubahan = $row[5];
+                    //     $pivot->save();
+                    // } else {
+                    //     $get_tujuan = Tujuan::where('kode', $row[2])->whereHas('misi', function($q) use ($row){
+                    //         $q->where('kode', $row[1]);
+                    //     })->first();
+                    //     $sasaran = new Sasaran;
+                    //     $sasaran->tujuan_id = $get_tujuan->id;
+                    //     $sasaran->kode = $row[3];
+                    //     $sasaran->deskripsi = $row[4];
+                    //     $sasaran->kabupaten_id = 62;
+                    //     $sasaran->tahun_perubahan = $row[5];
+                    //     $sasaran->save();
+                    // }
+                    // Import Sasaran Spesifik
                     // $cek_sasaran = Sasaran::where('kode', $row[1])->where('tujuan_id', $this->tujuan_id)->first();
                     // if($cek_sasaran)
                     // {
@@ -124,6 +126,23 @@ class SasaranImport implements ToCollection,WithStartRow
                     //     $sasaran->tahun_perubahan = $row[3];
                     //     $sasaran->save();
                     // }
+
+                    // Import Semua Sasaran Indikator
+                    $cek_sasaran = Sasaran::where('kode', $row[3])->whereHas('tujuan', function($q) use ($row){
+                        $q->where('kode', $row[2]);
+                        $q->whereHas('misi', function($q) use ($row){
+                            $q->where('kode', $row[1]);
+                        });
+                    })->first();
+                    if($cek_sasaran)
+                    {
+                        $indikator = new PivotSasaranIndikator;
+                        $indikator->sasaran_id = $cek_sasaran->id;
+                        $indikator->indikator = $row[4];
+                        $indikator->target = $row[5];
+                        $indikator->satuan = $row[6];
+                        $indikator->save();
+                    }
                 }
                 $n++;
             }
