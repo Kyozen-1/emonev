@@ -29,6 +29,9 @@ use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
 use App\Models\PivotPerubahanUrusan;
 use App\Models\MasterOpd;
+use App\Models\PivotSasaranIndikatorProgramRpjmd;
+use App\Models\Program;
+use App\Models\PivotPerubahanProgram;
 
 class PerencanaanController extends Controller
 {
@@ -71,13 +74,15 @@ class PerencanaanController extends Controller
                 $misis[] = [
                     'id' => $cek_perubahan_misi->misi_id,
                     'kode' => $cek_perubahan_misi->kode,
-                    'deskripsi' => $cek_perubahan_misi->deskripsi
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
                 ];
             } else {
-                $get_misi[] = [
+                $misis[] = [
                     'id' => $get_misi->id,
                     'kode' => $get_misi->kode,
-                    'deskripsi' => $get_misi->deskripsi
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
                 ];
             }
         }
@@ -751,15 +756,15 @@ class PerencanaanController extends Controller
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
                                                                                                                                                         <th width="50%"><strong>Sasaran Indikator</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Target</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Satuan</strong></th>
+                                                                                                                                                        <th width="25%"><strong>Target</strong></th>
+                                                                                                                                                        <th width="25%"><strong>Satuan</strong></th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
                                                                                                                                                     $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
                                                                                                                                                     foreach ($sasaran_indikators as $sasaran_indikator) {
                                                                                                                                                         $html .= '<tr>
-                                                                                                                                                                    <td>
+                                                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_rpjmd'.$sasaran_indikator['id'].'" class="accordion-toggle">
                                                                                                                                                                         '.$sasaran_indikator['indikator'].'
                                                                                                                                                                         <br>
                                                                                                                                                                         <span class="badge bg-primary text-uppercase">Visi</span>
@@ -768,11 +773,82 @@ class PerencanaanController extends Controller
                                                                                                                                                                         <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
                                                                                                                                                                         <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
                                                                                                                                                                     </td>
-                                                                                                                                                                    <td width="15%">
+                                                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_rpjmd'.$sasaran_indikator['id'].'" class="accordion-toggle">
                                                                                                                                                                         '.$sasaran_indikator['target'].'
                                                                                                                                                                     </td>
-                                                                                                                                                                    <td width="15%">
+                                                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_rpjmd'.$sasaran_indikator['id'].'" class="accordion-toggle">
                                                                                                                                                                         '.$sasaran_indikator['satuan'].'
+                                                                                                                                                                    </td>
+                                                                                                                                                                </tr>
+                                                                                                                                                                <tr>
+                                                                                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                                                                                        <div class="accordian-body collapse" id="program_rpjmd'.$sasaran_indikator['id'].'">
+                                                                                                                                                                            <table class="table table-striped">
+                                                                                                                                                                                <thead>
+                                                                                                                                                                                    <tr>
+                                                                                                                                                                                        <th width="50%"><strong>Program RPJMD</strong></th>
+                                                                                                                                                                                        <th width="15%"><strong>Status Program</strong></th>
+                                                                                                                                                                                        <th width="15%"><strong>Pagu</strong></th>
+                                                                                                                                                                                        <th width="20%"><strong>OPD</strong></th>
+                                                                                                                                                                                    </tr>
+                                                                                                                                                                                </thead>
+                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                    $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran_indikator){
+                                                                                                                                                                                        $q->where('sasaran_indikator_id', $sasaran_indikator['id']);
+                                                                                                                                                                                    })->get();
+                                                                                                                                                                                    $programs = [];
+                                                                                                                                                                                    foreach ($get_program_rpjmds as $get_program_rpjmd) {
+                                                                                                                                                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                                                                                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                                                                                                                        if($cek_perubahan_program)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $programs[] = [
+                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
+                                                                                                                                                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
+                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
+                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu
+                                                                                                                                                                                            ];
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $program = Program::find($get_program_rpjmd->program_id);
+                                                                                                                                                                                            $programs[] = [
+                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
+                                                                                                                                                                                                'deskripsi' => $program->deskripsi,
+                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
+                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu
+                                                                                                                                                                                            ];
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                                                    foreach ($programs as $program) {
+                                                                                                                                                                                        $html .= '<tr>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    '.$program['deskripsi'].'
+                                                                                                                                                                                                    <br>
+                                                                                                                                                                                                    <span class="badge bg-primary text-uppercase">Visi</span>
+                                                                                                                                                                                                    <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                                                                                                                                                    <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                                                                                                                    <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
+                                                                                                                                                                                                    <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                                                                                    <span class="badge bg-success text-uppercase">Program RPJMD</span>
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    '.$program['status_program'].'
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    '.$program['pagu'].'
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                                <td>';
+                                                                                                                                                                                                $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program['id'])->get();
+                                                                                                                                                                                                $html .= '<ul>';
+                                                                                                                                                                                                    foreach ($get_opds as $get_opd) {
+                                                                                                                                                                                                        $html .= '<li>'.$get_opd->opd->nama.'</li>';
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                $html.='</ul>';
+                                                                                                                                                                                                $html.= '</td>
+                                                                                                                                                                                            </tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                $html .= '</tbody>
+                                                                                                                                                                            </table>
+                                                                                                                                                                        </div>
                                                                                                                                                                     </td>
                                                                                                                                                                 </tr>';
                                                                                                                                                     }

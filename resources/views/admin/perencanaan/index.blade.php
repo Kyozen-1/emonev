@@ -50,6 +50,28 @@
 @endsection
 
 @section('content')
+    @php
+        use Carbon\Carbon;
+        use App\Models\TahunPeriode;
+        use App\Models\Visi;
+        use App\Models\PivotPerubahanVisi;
+        use App\Models\Misi;
+        use App\Models\PivotPerubahanMisi;
+        use App\Models\Tujuan;
+        use App\Models\PivotPerubahanTujuan;
+        use App\Models\Sasaran;
+        use App\Models\PivotPerubahanSasaran;
+        use App\Models\PivotSasaranIndikator;
+        use App\Models\TargetRpPertahunSasaran;
+        use App\Models\ProgramRpjmd;
+        use App\Models\PivotOpdProgramRpjmd;
+        use App\Models\Urusan;
+        use App\Models\PivotPerubahanUrusan;
+        use App\Models\MasterOpd;
+        use App\Models\PivotSasaranIndikatorProgramRpjmd;
+        use App\Models\Program;
+        use App\Models\PivotPerubahanProgram;
+    @endphp
     <div class="container">
         <!-- Title and Top Buttons Start -->
         <div class="page-title-container">
@@ -191,8 +213,522 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="renstraTab" role="tabpanel">
-                        <h5 class="card-title">Second Line Title</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <div class="border-0 pb-0">
+                            <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#renstra_tujuan_pd" role="tab" aria-selected="true" type="button">Tujuan PD</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#renstra_sasaran_pd" role="tab" aria-selected="false" type="button">Sasaran PD</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#renstra_program" role="tab" aria-selected="false" type="button">Program</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#renstra_kegiatan" role="tab" aria-selected="false" type="button">Kegiatan</button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                {{-- Renstra Tujuan Start --}}
+                                <div class="tab-pane fade active show" id="renstra_tujuan_pd" role="tabpanel">
+                                    <div class="data-table-rows slim">
+                                        <div class="data-table-responsive-wrapper">
+                                            <table class="table table-condensed table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="15%">Kode</th>
+                                                        <th width="70%">Misi</th>
+                                                        <th width="15%">Tahun Perubahan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($misis as $misi)
+                                                        <tr>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['kode']}}
+                                                            </td>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['deskripsi']}}
+                                                                <br>
+                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                            </td>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['tahun_perubahan']}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3" class="hiddenRow">
+                                                                <div class="accordion-body collapse" id="renstra_misi{{$misi['id']}}">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <tbody>
+                                                                            @php
+                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                                $renstra_tujuans = [];
+                                                                                foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
+                                                                                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
+                                                                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                    if($cek_perubahan_tujuan)
+                                                                                    {
+                                                                                        $renstra_tujuans[] = [
+                                                                                            'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                            'kode' => $cek_perubahan_tujuan->kode,
+                                                                                            'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                            'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
+                                                                                        ];
+                                                                                    } else {
+                                                                                        $renstra_tujuans[] = [
+                                                                                            'id' => $renstra_get_tujuan->id,
+                                                                                            'kode' => $renstra_get_tujuan->kode,
+                                                                                            'deskripsi' => $renstra_get_tujuan->deskripsi,
+                                                                                            'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
+                                                                                        ];
+                                                                                    }
+                                                                                }
+                                                                            @endphp
+                                                                            @foreach ($renstra_tujuans as $renstra_tujuan)
+                                                                                <tr>
+                                                                                    <td width="15%">
+                                                                                        {{$renstra_tujuan['kode']}}
+                                                                                    </td>
+                                                                                    <td width="70%">
+                                                                                        {{$renstra_tujuan['deskripsi']}}
+                                                                                        <br>
+                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                    </td>
+                                                                                    <td width="15%">
+                                                                                        {{$renstra_tujuan['tahun_perubahan']}}
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- Renstra Tujuan End --}}
+                                <div class="tab-pane fade" id="renstra_sasaran_pd" role="tabpanel">
+                                    <div class="data-table-rows slim">
+                                        <div class="data-table-responsive-wrapper">
+                                            <table class="table table-condensed table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="15%">Kode</th>
+                                                        <th width="70%">Misi</th>
+                                                        <th width="15%">Tahun Perubahan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($misis as $misi)
+                                                        <tr>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['kode']}}
+                                                            </td>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['deskripsi']}}
+                                                                <br>
+                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                            </td>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['tahun_perubahan']}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3" class="hiddenRow">
+                                                                <div class="accordion-body collapse" id="renstra_sasaran_misi{{$misi['id']}}">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <tbody>
+                                                                            @php
+                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                                $renstra_tujuans = [];
+                                                                                foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
+                                                                                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
+                                                                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                    if($cek_perubahan_tujuan)
+                                                                                    {
+                                                                                        $renstra_tujuans[] = [
+                                                                                            'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                            'kode' => $cek_perubahan_tujuan->kode,
+                                                                                            'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                            'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
+                                                                                        ];
+                                                                                    } else {
+                                                                                        $renstra_tujuans[] = [
+                                                                                            'id' => $renstra_get_tujuan->id,
+                                                                                            'kode' => $renstra_get_tujuan->kode,
+                                                                                            'deskripsi' => $renstra_get_tujuan->deskripsi,
+                                                                                            'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
+                                                                                        ];
+                                                                                    }
+                                                                                }
+                                                                            @endphp
+                                                                            @foreach ($renstra_tujuans as $renstra_tujuan)
+                                                                                <tr>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
+                                                                                        {{$renstra_tujuan['kode']}}
+                                                                                    </td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="70%">
+                                                                                        {{$renstra_tujuan['deskripsi']}}
+                                                                                        <br>
+                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                    </td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
+                                                                                        {{$renstra_tujuan['tahun_perubahan']}}
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td colspan="3" class="hiddenRow">
+                                                                                        <div class="accordion-body collapse" id="renstra_tujuan{{$renstra_tujuan['id']}}">
+                                                                                            <table class="table table-striped table-condesed">
+                                                                                                <tbody>
+                                                                                                    @php
+                                                                                                        $get_renstra_sasarans = Sasaran::where('tujuan_id', $renstra_tujuan['id'])->get();
+                                                                                                        $renstra_sasarans = [];
+                                                                                                        foreach ($get_renstra_sasarans as $get_renstra_sasaran) {
+                                                                                                            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_renstra_sasaran->id)
+                                                                                                                                        ->orderBy('tahun_perubahan', 'desc')
+                                                                                                                                        ->latest()->first();
+                                                                                                            if($cek_perubahan_sasaran)
+                                                                                                            {
+                                                                                                                $renstra_sasarans[] = [
+                                                                                                                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                                                                                                                    'kode' => $cek_perubahan_sasaran->kode,
+                                                                                                                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                                                                                                                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan
+                                                                                                                ];
+                                                                                                            } else {
+                                                                                                                $renstra_sasarans[] = [
+                                                                                                                    'id' => $get_renstra_sasaran->id,
+                                                                                                                    'kode' => $get_renstra_sasaran->kode,
+                                                                                                                    'deskripsi' => $get_renstra_sasaran->deskripsi,
+                                                                                                                    'tahun_perubahan' => $get_renstra_sasaran->tahun_perubahan
+                                                                                                                ];
+                                                                                                            }
+                                                                                                        }
+                                                                                                    @endphp
+                                                                                                    @foreach ($renstra_sasarans as $sasaran)
+                                                                                                        <tr>
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">{{$sasaran['kode']}}</td>
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="70%">
+                                                                                                                {{$sasaran['deskripsi']}}
+                                                                                                                <br>
+                                                                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                                                                                <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                                                <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
+                                                                                                            </td>
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">
+                                                                                                                {{$sasaran['tahun_perubahan']}}
+                                                                                                            </td>
+                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                            <td class="hiddenRow" colspan="3">
+                                                                                                                <div class="accordion-body collapse" id="renstra_sasaran{{$sasaran['id']}}">
+                                                                                                                    <table class="table table-striped table-condesed">
+                                                                                                                        <thead>
+                                                                                                                            <tr>
+                                                                                                                                <th width="60%">Sasaran Indikator</th>
+                                                                                                                                <th width="20%">Target</th>
+                                                                                                                                <th width="20%">Satuan</th>
+                                                                                                                            </tr>
+                                                                                                                        </thead>
+                                                                                                                        <tbody>
+                                                                                                                            @php
+                                                                                                                                $get_renstra_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                            @endphp
+                                                                                                                            @foreach ($get_renstra_sasaran_indikators as $sasaran_indikator)
+                                                                                                                                <tr>
+                                                                                                                                    <td>
+                                                                                                                                        {{$sasaran_indikator->indikator}}
+                                                                                                                                        <br>
+                                                                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
+                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                    </td>
+                                                                                                                                    <td>{{$sasaran_indikator->target}}</td>
+                                                                                                                                    <td>{{$sasaran_indikator->satuan}}</td>
+                                                                                                                                </tr>
+                                                                                                                            @endforeach
+                                                                                                                        </tbody>
+                                                                                                                    </table>
+                                                                                                                </div>
+                                                                                                            </td>
+                                                                                                        </tr>
+                                                                                                    @endforeach
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="renstra_program" role="tabpanel">
+                                    <div class="data-table-rows slim">
+                                        <div class="data-table-responsive-wrapper">
+                                            <table class="table table-condensed table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="15%">Kode</th>
+                                                        <th width="70%">Misi</th>
+                                                        <th width="15%">Tahun Perubahan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($misis as $misi)
+                                                        <tr>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['kode']}}
+                                                            </td>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['deskripsi']}}
+                                                                <br>
+                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                            </td>
+                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                {{$misi['tahun_perubahan']}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3" class="hiddenRow">
+                                                                <div class="accordion-body collapse" id="renstra_program_misi{{$misi['id']}}">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <tbody>
+                                                                            @php
+                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                                $renstra_tujuans = [];
+                                                                                foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
+                                                                                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
+                                                                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                    if($cek_perubahan_tujuan)
+                                                                                    {
+                                                                                        $renstra_tujuans[] = [
+                                                                                            'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                            'kode' => $cek_perubahan_tujuan->kode,
+                                                                                            'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                            'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
+                                                                                        ];
+                                                                                    } else {
+                                                                                        $renstra_tujuans[] = [
+                                                                                            'id' => $renstra_get_tujuan->id,
+                                                                                            'kode' => $renstra_get_tujuan->kode,
+                                                                                            'deskripsi' => $renstra_get_tujuan->deskripsi,
+                                                                                            'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
+                                                                                        ];
+                                                                                    }
+                                                                                }
+                                                                            @endphp
+                                                                            @foreach ($renstra_tujuans as $renstra_tujuan)
+                                                                                <tr>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
+                                                                                        {{$renstra_tujuan['kode']}}
+                                                                                    </td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="70%">
+                                                                                        {{$renstra_tujuan['deskripsi']}}
+                                                                                        <br>
+                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                    </td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
+                                                                                        {{$renstra_tujuan['tahun_perubahan']}}
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td colspan="3" class="hiddenRow">
+                                                                                        <div class="accordion-body collapse" id="renstra_program_tujuan{{$renstra_tujuan['id']}}">
+                                                                                            <table class="table table-striped table-condesed">
+                                                                                                <tbody>
+                                                                                                    @php
+                                                                                                        $get_renstra_sasarans = Sasaran::where('tujuan_id', $renstra_tujuan['id'])->get();
+                                                                                                        $renstra_sasarans = [];
+                                                                                                        foreach ($get_renstra_sasarans as $get_renstra_sasaran) {
+                                                                                                            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_renstra_sasaran->id)
+                                                                                                                                        ->orderBy('tahun_perubahan', 'desc')
+                                                                                                                                        ->latest()->first();
+                                                                                                            if($cek_perubahan_sasaran)
+                                                                                                            {
+                                                                                                                $renstra_sasarans[] = [
+                                                                                                                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                                                                                                                    'kode' => $cek_perubahan_sasaran->kode,
+                                                                                                                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                                                                                                                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan
+                                                                                                                ];
+                                                                                                            } else {
+                                                                                                                $renstra_sasarans[] = [
+                                                                                                                    'id' => $get_renstra_sasaran->id,
+                                                                                                                    'kode' => $get_renstra_sasaran->kode,
+                                                                                                                    'deskripsi' => $get_renstra_sasaran->deskripsi,
+                                                                                                                    'tahun_perubahan' => $get_renstra_sasaran->tahun_perubahan
+                                                                                                                ];
+                                                                                                            }
+                                                                                                        }
+                                                                                                    @endphp
+                                                                                                    @foreach ($renstra_sasarans as $sasaran)
+                                                                                                        <tr>
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">{{$sasaran['kode']}}</td>
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="70%">
+                                                                                                                {{$sasaran['deskripsi']}}
+                                                                                                                <br>
+                                                                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                                                                                <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                                                <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
+                                                                                                            </td>
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">
+                                                                                                                {{$sasaran['tahun_perubahan']}}
+                                                                                                            </td>
+                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                            <td class="hiddenRow" colspan="3">
+                                                                                                                <div class="accordion-body collapse" id="renstra_program_sasaran{{$sasaran['id']}}">
+                                                                                                                    <table class="table table-striped table-condesed">
+                                                                                                                        <thead>
+                                                                                                                            <tr>
+                                                                                                                                <th width="60%">Sasaran Indikator</th>
+                                                                                                                                <th width="20%">Target</th>
+                                                                                                                                <th width="20%">Satuan</th>
+                                                                                                                            </tr>
+                                                                                                                        </thead>
+                                                                                                                        <tbody>
+                                                                                                                            @php
+                                                                                                                                $get_renstra_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                            @endphp
+                                                                                                                            @foreach ($get_renstra_sasaran_indikators as $sasaran_indikator)
+                                                                                                                                <tr>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
+                                                                                                                                        {{$sasaran_indikator->indikator}}
+                                                                                                                                        <br>
+                                                                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
+                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                    </td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
+                                                                                                                                        {{$sasaran_indikator->target}}
+                                                                                                                                    </td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
+                                                                                                                                        {{$sasaran_indikator->satuan}}
+                                                                                                                                    </td>
+                                                                                                                                </tr>
+                                                                                                                                <tr>
+                                                                                                                                    <td class="hiddenRow" colspan="3">
+                                                                                                                                        <div class="accordion-body collapse" id="renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}">
+                                                                                                                                            <table class="table table-striped table-condesed">
+                                                                                                                                                <thead>
+                                                                                                                                                    <tr>
+                                                                                                                                                        <th width="50%">Program RPJMD</th>
+                                                                                                                                                        <th width="15%">Status Program</th>
+                                                                                                                                                        <th width="15%">Pagu</th>
+                                                                                                                                                        <th width="20%">OPD</th>
+                                                                                                                                                    </tr>
+                                                                                                                                                </thead>
+                                                                                                                                                <tbody>
+                                                                                                                                                    @php
+                                                                                                                                                        $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran_indikator){
+                                                                                                                                                                                        $q->where('sasaran_indikator_id', $sasaran_indikator['id']);
+                                                                                                                                                                                    })->get();
+                                                                                                                                                                                    $programs = [];
+                                                                                                                                                                                    foreach ($get_program_rpjmds as $get_program_rpjmd) {
+                                                                                                                                                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                                                                                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                                                                                                                        if($cek_perubahan_program)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $programs[] = [
+                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
+                                                                                                                                                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
+                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
+                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu
+                                                                                                                                                                                            ];
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $program = Program::find($get_program_rpjmd->program_id);
+                                                                                                                                                                                            $programs[] = [
+                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
+                                                                                                                                                                                                'deskripsi' => $program->deskripsi,
+                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
+                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu
+                                                                                                                                                                                            ];
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                    @endphp
+                                                                                                                                                    @foreach ($programs as $program)
+                                                                                                                                                        <tr>
+                                                                                                                                                            <td>
+                                                                                                                                                                {{$program['deskripsi']}}
+                                                                                                                                                                <br>
+                                                                                                                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
+                                                                                                                                                                <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                                                                                                <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
+                                                                                                                                                                <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                                                <span class="badge bg-success text-uppercase">Program RPJMD</span>
+                                                                                                                                                            </td>
+                                                                                                                                                            <td>
+                                                                                                                                                                {{$program['status_program']}}
+                                                                                                                                                            </td>
+                                                                                                                                                            <td>{{$program['pagu']}}</td>
+                                                                                                                                                            <td>
+                                                                                                                                                                @php
+                                                                                                                                                                    $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program['id'])->get();
+                                                                                                                                                                @endphp
+                                                                                                                                                                <ul>
+                                                                                                                                                                    @foreach ($get_opds as $get_opd)
+                                                                                                                                                                        <li>{{$get_opd->opd->nama}}</li>
+                                                                                                                                                                    @endforeach
+                                                                                                                                                                </ul>
+                                                                                                                                                            </td>
+                                                                                                                                                        </tr>
+                                                                                                                                                    @endforeach
+                                                                                                                                                </tbody>
+                                                                                                                                            </table>
+                                                                                                                                        </div>
+                                                                                                                                    </td>
+                                                                                                                                </tr>
+                                                                                                                            @endforeach
+                                                                                                                        </tbody>
+                                                                                                                    </table>
+                                                                                                                </div>
+                                                                                                            </td>
+                                                                                                        </tr>
+                                                                                                    @endforeach
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="renstra_kegiatan" role="tabpanel">
+                                    <h5 class="card-title">Kegiatan</h5>
+                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="tab-pane fade" id="rkpdTab" role="tabpanel">
                         <h5 class="card-title">Third Line Title</h5>
@@ -798,6 +1334,93 @@
             </div>
         </div>
     </div>
+
+    {{-- <div class="modal fade" id="editProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="program_edit_form_result"></span>
+                    <form id="program_edit_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <h2 class="small-title">Atur Program</h2>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Urusan</label>
+                            <select name="program_edit_urusan_id" id="program_edit_urusan_id" class="form-control" required>
+                                <option value="">--- Pilih Urusan ---</option>
+                                @foreach ($urusans as $urusan)
+                                    <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Program</label>
+                            <select name="program_edit_program_id" id="program_edit_program_id" class="form-control" disabled required>
+                                <option value="">--- Pilih Program ---</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Status Program</label>
+                            <select name="program_edit_status_program" id="program_edit_status_program" class="form-control" required>
+                                <option value="">--- Pilih Status Program ---</option>
+                                <option value="Program Prioritas">Program Prioritas</option>
+                                <option value="Program Pendukung">Program Pendukung</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Pagu</label>
+                            <input type="number" name="program_edit_pagu" id="program_edit_pagu" class="form-control" required>
+                        </div>
+                        <h2 class="small-title">Atur Sasaran Indikator</h2>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Misi</label>
+                            <select name="program_edit_misi_id" id="program_edit_misi_id" class="form-control" required>
+                                <option value="">--- Pilih Misi ---</option>
+                                @foreach ($misis as $misi)
+                                    <option value="{{$misi['id']}}">{{$misi['kode']}}. {{$misi['deskripsi']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Tujuan</label>
+                            <select name="program_edit_tujuan_id" id="program_edit_tujuan_id" class="form-control" disabled required>
+                                <option value="">--- Pilih Tujuan ---</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Sasaran</label>
+                            <select name="program_edit_sasaran_id" id="program_edit_sasaran_id" class="form-control" disabled required>
+                                <option value="">--- Pilih Sasaran ---</option>
+                            </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Sasaran Indikator</label>
+                            <select name="program_edit_sasaran_indikator_id" id="program_edit_sasaran_indikator_id" class="form-control" disabled required>
+                            </select>
+                        </div>
+                        <h2 class="small-title">Atur OPD Terkait</h2>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Pilih OPD</label>
+                            <select name="program_edit_opd_id" id="program_edit_opd_id" class="form-control" required>
+                                @foreach ($opds as $id => $nama)
+                                    <option value="{{$id}}">{{$nama}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="program_edit_aksi" id="program_edit_aksi" value="Save">
+                    <input type="hidden" name="program_edit_hidden_id" id="program_edit_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="program_edit_aksi_button" id="program_edit_aksi_button">Add</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div> --}}
     {{-- Program RPJMD End --}}
 @endsection
 
@@ -1568,6 +2191,11 @@
         // Sasaran Indikator End
 
         // Program Start
+        var program_edit_program_id = 0;
+        var program_edit_tujuan_id = 0;
+        var program_edit_sasaran_id = 0;
+        var program_edit_sasaran_indikator_id = 0;
+
         $('#program_tab_button').click(function(){
             $.ajax({
                 url: "{{ route('admin.perencanaan.get-program') }}",
@@ -1687,6 +2315,10 @@
         });
 
         $('#program_create').click(function(){
+            program_edit_program_id = 0;
+            program_edit_tujuan_id = 0;
+            program_edit_sasaran_id = 0;
+            program_edit_sasaran_indikator_id = 0;
             $('#program_form')[0].reset();
             $('#program_aksi_button').text('Save');
             $('#program_aksi_button').prop('disabled', false);
@@ -1702,6 +2334,216 @@
             $("[name='program_sasaran_indikator_id[]']").val('').trigger('change');
             $("[name='program_opd_id[]']").val('').trigger('change');
         });
+
+        $('#program_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#program_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('admin.program-rpjmd.store') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#program_aksi_button').text('Menyimpan...');
+                        $('#program_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#program_aksi_button').prop('disabled', false);
+                            $('#program_form')[0].reset();
+                            $('#program_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditProgramModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Menambahkan Program RPJMD',
+                                showConfirmButton: true
+                            });
+                            $('#programNavDiv').html(data.success);
+                        }
+
+                        $('#program_form_result').html(html);
+                    }
+                });
+            }
+
+            if($('#program_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('admin.program-rpjmd.update') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#program_aksi_button').text('Menyimpan...');
+                        $('#program_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#program_aksi_button').prop('disabled', false);
+                            $('#program_form')[0].reset();
+                            $('#program_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditProgramModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Merubah Program RPJMD',
+                                showConfirmButton: true
+                            });
+                            $('#programNavDiv').html(data.success);
+                        }
+
+                        $('#program_form_result').html(html);
+                    }
+                });
+            }
+        });
+
+        // $('#program_edit_urusan_id').on('change', function(){
+        //     if($(this).val() != '')
+        //     {
+        //         $.ajax({
+        //             url: "{{ route('admin.program-rpjmd.get-program') }}",
+        //             method: 'POST',
+        //             data: {
+        //                 "_token": "{{ csrf_token() }}",
+        //                 id:$(this).val()
+        //             },
+        //             success: function(response){
+        //                 $('#program_edit_program_id').empty();
+        //                 $('#program_edit_program_id').prop('disabled', false);
+        //                 $('#program_edit_program_id').append('<option value="">--- Pilih Program ---</option>');
+        //                 $.each(response, function(key, value){
+        //                     $('#program_edit_program_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+        //                 });
+        //             }
+        //         });
+        //     } else {
+        //         $('#program_edit_program_id').prop('disabled', true);
+        //     }
+        // });
+
+        // $('#program_edit_misi_id').on('change', function(){
+        //     if($(this).val() != '')
+        //     {
+        //         $.ajax({
+        //             url: "{{ route('admin.program-rpjmd.get-tujuan') }}",
+        //             method: 'POST',
+        //             data: {
+        //                 "_token": "{{ csrf_token() }}",
+        //                 id:$(this).val()
+        //             },
+        //             success: function(response){
+        //                 $('#program_edit_tujuan_id').empty();
+        //                 $('#program_edit_tujuan_id').prop('disabled', false);
+        //                 $('#program_edit_sasaran_id').prop('disabled', true);
+        //                 $('#program_edit_sasaran_indikator_id').prop('disabled', true);
+        //                 $('#program_edit_tujuan_id').append('<option value="">--- Pilih Tujuan ---</option>');
+        //                 $.each(response, function(key, value){
+        //                     $('#program_edit_tujuan_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+        //                 });
+        //             }
+        //         });
+        //     } else {
+        //         $('#program_edit_tujuan_id').prop('disabled', true);
+        //         $('#program_edit_sasaran_id').prop('disabled', true);
+        //         $('#program_edit_sasaran_indikator_id').prop('disabled', true);
+        //     }
+        // });
+
+        // $('#program_edit_tujuan_id').on('change', function(){
+        //     if($(this).val() != '')
+        //     {
+        //         $.ajax({
+        //             url: "{{ route('admin.program-rpjmd.get-sasaran') }}",
+        //             method: 'POST',
+        //             data: {
+        //                 "_token": "{{ csrf_token() }}",
+        //                 id:$(this).val()
+        //             },
+        //             success: function(response){
+        //                 $('#program_edit_sasaran_id').empty();
+        //                 $('#program_edit_sasaran_id').prop('disabled', false);
+        //                 $('#program_edit_sasaran_indikator_id').prop('disabled', true);
+        //                 $('#program_edit_sasaran_id').append('<option value="">--- Pilih Sasaran ---</option>');
+        //                 $.each(response, function(key, value){
+        //                     $('#program_edit_sasaran_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+        //                 });
+        //             }
+        //         });
+        //     } else {
+        //         $('#program_edit_sasaran_id').prop('disabled', true);
+        //         $('#program_edit_sasaran_indikator_id').prop('disabled', true);
+        //     }
+        // });
+
+        // $('#program_edit_sasaran_id').on('change', function(){
+        //     if($(this).val() != '')
+        //     {
+        //         $.ajax({
+        //             url: "{{ route('admin.program-rpjmd.get-sasaran-indikator') }}",
+        //             method: 'POST',
+        //             data: {
+        //                 "_token": "{{ csrf_token() }}",
+        //                 id:$(this).val()
+        //             },
+        //             success: function(response){
+        //                 $('#program_edit_sasaran_indikator_id').empty();
+        //                 $('#program_edit_sasaran_indikator_id').prop('disabled', false);
+        //                 $('#program_edit_sasaran_indikator_id').append('<option value="">--- Pilih Sasaran Indikator ---</option>');
+        //                 $.each(response, function(key, value){
+        //                     $('#program_edit_sasaran_indikator_id').append(new Option(value.indikator, value.id));
+        //                 });
+        //             }
+        //         });
+        //     } else {
+        //         $('#program_edit_sasaran_indikator_id').prop('disabled', true);
+        //     }
+        // });
+
+        // $(document).on('click', '.edit-sasaran-indikator', function(){
+        //     var sasaran_indikator_id = $(this).attr('data-sasaran-indikator-id');
+        //     var id = $(this).attr('data-id');
+        //     $('#program_edit_form_result').html('');
+        //     $.ajax({
+        //         url: "{{ url('/admin/program-rpjmd/edit') }}"+'/'+id+'/'+sasaran_indikator_id,
+        //         dataType: "json",
+        //         success: function(data)
+        //         {
+        //             $("[name='program_edit_urusan_id']").val(data.result.urusan_id).trigger('change');
+        //             program_edit_program_id = data.result.program_id;
+        //             $("[name='program_edit_status_program']").val(data.result.status_program).trigger('change');
+        //             $('#program_edit_pagu').val(data.result.pagu);
+        //             $("[name='program_edit_misi_id']").val(data.result.misi_id).trigger('change');
+        //             program_edit_tujuan_id = data.result.tujuan_id;
+        //             program_edit_sasaran_id = data.result.sasaran_id;
+        //             program_edit_sasaran_indikator_id = data.result.sasaran_indikator_id;
+        //             $("[name='program_edit_opd_id']").val(data.result.opd_id).trigger('change');
+        //             $('#program_edit_hidden_id').val(id);
+        //             $('.modal-title').text('Edit Data Program RPJMD');
+        //             $('#program_edit_aksi_button').text('Edit');
+        //             $('#program_edit_aksi_button').prop('disabled', false);
+        //             $('#program_edit_aksi_button').val('Edit');
+        //             $('#program_edit_aksi').val('Edit');
+        //             $('#editProgramModal').modal('show');
+        //         }
+        //     });
+        // });
         // Program End
     </script>
 @endsection

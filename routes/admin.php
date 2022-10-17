@@ -183,7 +183,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/program-rpjmd', 'Admin\ProgramRpjmdController@index')->name('admin.program-rpjmd.index');
     Route::get('/admin/program-rpjmd/get-sasaran/{id}', 'Admin\ProgramRpjmdController@get_sasaran');
     Route::post('/admin/program-rpjmd','Admin\ProgramRpjmdController@store')->name('admin.program-rpjmd.store');
-    Route::get('/admin/program-rpjmd/edit/{id}','Admin\ProgramRpjmdController@edit');
+    Route::get('/admin/program-rpjmd/edit/{id}/{sasaran_indikator_id}','Admin\ProgramRpjmdController@edit');
     Route::post('/admin/program-rpjmd/update','Admin\ProgramRpjmdController@update')->name('admin.program-rpjmd.update');
     Route::get('/admin/program-rpjmd/destroy/{id}','Admin\ProgramRpjmdController@destroy');
     Route::post('/admin/program-rpjmd/get-program', 'Admin\ProgramRpjmdController@get_program')->name('admin.program-rpjmd.get-program');

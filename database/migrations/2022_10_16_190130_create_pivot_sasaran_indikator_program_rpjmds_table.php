@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProgramRpjmdsTable extends Migration
+class CreatePivotSasaranIndikatorProgramRpjmdsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateProgramRpjmdsTable extends Migration
      */
     public function up()
     {
-        Schema::create('program_rpjmds', function (Blueprint $table) {
+        Schema::create('pivot_sasaran_indikator_program_rpjmds', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('program_id')->nullable();
-            $table->enum('status_program', ['Program Prioritas', 'Program Pendukung'])->nullable();
-            $table->string('pagu')->nullable();
+            $table->foreignId('program_rpjmd_id')->nullable();
+            $table->foreignId('sasaran_indikator_id')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateProgramRpjmdsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('program_rpjmds');
+        Schema::dropIfExists('pivot_sasaran_indikator_program_rpjmds');
     }
 }

@@ -218,7 +218,7 @@
                                                 <tr>
                                                     <td colspan="4" class="hiddenRow">
                                                         <div class="accordian-body collapse" id="program_urusan{{$urusan['id']}}">
-                                                            <table class="table table-striped">
+                                                            <table class="table table-striped table-condesed">
                                                                 {{-- <thead>
                                                                     <tr>
                                                                         <th width="15%">Kode</th>
@@ -261,7 +261,7 @@
                         <div class="tab-pane fade" id="kegiatan" role="tabpanel">
                             <div class="data-table-rows slim">
                                 <div class="data-table-responsive-wrapper">
-                                    <table class="table table-condensed table-striped">
+                                    <table class="table table-striped table-condesed">
                                         <thead>
                                             <tr>
                                                 <th width="15%">Kode</th>
@@ -312,7 +312,7 @@
                                                 <tr>
                                                     <td colspan="3" class="hiddenRow">
                                                         <div class="accordian-body collapse" id="kegiatan_urusan{{$urusan['id']}}">
-                                                            <table class="table table-striped">
+                                                            <table class="table table-striped table-condesed">
                                                                 {{-- <thead>
                                                                     <tr>
                                                                         <th width="15%">Kode</th>
@@ -341,7 +341,7 @@
                                                                         <tr>
                                                                             <td colspan="12" class="hiddenRow">
                                                                                 <div class="accordian-body collapse" id="kegiatan_program{{$program['id']}}">
-                                                                                    <table class="table table-striped">
+                                                                                    <table class="table table-striped table-condesed">
                                                                                         {{-- <thead>
                                                                                             <tr></tr>
                                                                                                 <th>Kode</th>
@@ -418,7 +418,7 @@
                         <div class="tab-pane fade active show" id="sub_kegiatan" role="tabpanel">
                             <div class="data-table-rows slim">
                                 <div class="data-table-responsive-wrapper">
-                                    <table class="table table-condensed table-striped">
+                                    <table class="table table-striped table-condesed">
                                         <thead>
                                             <tr>
                                                 <th width="15%">Kode</th>
@@ -469,7 +469,7 @@
                                                 <tr>
                                                     <td colspan="3" class="hiddenRow">
                                                         <div class="accordian-body collapse" id="sub_kegiatan_urusan{{$urusan['id']}}">
-                                                            <table class="table table-striped">
+                                                            <table class="table table-striped table-condesed">
                                                                 {{-- <thead>
                                                                     <tr>
                                                                         <th width="15%">Kode</th>
@@ -553,7 +553,7 @@
                                                                                                 <tr>
                                                                                                     <td colspan="12" class="hiddenRow">
                                                                                                         <div class="accordian-body collapse" id="sub_kegiatan_kegiatan{{$kegiatan['id']}}">
-                                                                                                            <table class="table table-striped">
+                                                                                                            <table class="table table-striped table-condesed">
                                                                                                                 <tbody>
                                                                                                                     @php
                                                                                                                         $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->get();

@@ -329,7 +329,7 @@
                     </li>
                 </ul>
             </li> --}}
-            <li>
+            {{-- <li>
                 @if (request()->routeIs('admin.rkpd.index'))
                     <a href="{{ route('admin.rkpd.index') }}" class="active">
                 @else
@@ -338,7 +338,7 @@
                     <i data-acorn-icon="file-data" class="icon" data-acorn-size="18"></i>
                     <span class="label">RKPD</span>
                 </a>
-            </li>
+            </li> --}}
             <li>
                 @if (request()->routeIs('admin.laporan.tc-14.index') ||
                 request()->routeIs('admin.laporan.tc-19.index') ||

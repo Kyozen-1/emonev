@@ -9,8 +9,13 @@ class ProgramRpjmd extends Model
     protected $table = 'program_rpjmds';
     protected $guarded = 'id';
 
-    public function pivot_sasaran_indikator()
+    public function pivot_sasaran_indikator_program_rpjmd()
     {
-        return $this->belongsTo('App\Models\PivotSasaranIndikator', 'pivot_sasaran_indikator_id');
+        return $this->hasMany('App\Models\PivotSasaranIndikatorProgramRpjmd', 'program_rpjmd_id');
+    }
+
+    public function pivot_opd_program_rpjmd()
+    {
+        return $this->hasMany('App\Models\PivotOpdProgramRpjmd', 'program_rpjmd_id');
     }
 }
