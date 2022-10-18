@@ -217,6 +217,16 @@
                     <span class="label"> Perencanaan</span>
                 </a>
             </li>
+            <li>
+                @if (request()->routeIs('admin.laporan.index'))
+                    <a href="{{ route('admin.laporan.index') }}" class="active">
+                @else
+                    <a href="{{ route('admin.laporan.index') }}">
+                @endif
+                    <i data-acorn-icon="file-text" class="icon" data-acorn-size="18"></i>
+                    <span class="label"> Laporan</span>
+                </a>
+            </li>
             {{-- <li>
                 @if (request()->routeIs('admin.urusan.index') ||
                 request()->routeIs('admin.program.index') ||
@@ -339,7 +349,7 @@
                     <span class="label">RKPD</span>
                 </a>
             </li> --}}
-            <li>
+            {{-- <li>
                 @if (request()->routeIs('admin.laporan.tc-14.index') ||
                 request()->routeIs('admin.laporan.tc-19.index') ||
                 request()->routeIs('admin.laporan.e-79.index'))
@@ -388,7 +398,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li> --}}
             <li>
                 @if (request()->routeIs('admin.kecamatan.index') ||
                 request()->routeIs('admin.kelurahan.index') ||

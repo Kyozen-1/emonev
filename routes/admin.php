@@ -53,6 +53,9 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/perencanaan/get-sasaran', 'Admin\PerencanaanController@get_sasaran')->name('admin.perencanaan.get-sasaran');
     Route::get('/admin/perencanaan/get-program', 'Admin\PerencanaanController@get_program')->name('admin.perencanaan.get-program');
 
+    // Laporan
+    Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');
+
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');
     Route::get('/admin/urusan/detail/{id}', 'Admin\UrusanController@show');
