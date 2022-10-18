@@ -209,4 +209,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/laporan/e-79/{tahun}', 'Admin\Laporan\E79Controller@detail');
     Route::get('/admin/laporan/e-78', 'Admin\Laporan\E78Controller@index')->name('admin.laporan.e-78.index');
     Route::get('/admin/laporan/e-78/{tahun}', 'Admin\Laporan\E78Controller@detail');
+
+    //Renstra
+    Route::post('/admin/renstra/get-kegiatan', 'Admin\RenstraKegiatanController@get_kegiatan')->name('admin.renstra.get-kegiatan');
+    Route::post('/admin/renstra/kegiatan', 'Admin\RenstraKegiatanController@store')->name('admin.renstra.store');
 });

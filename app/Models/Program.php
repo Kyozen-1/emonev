@@ -23,4 +23,9 @@ class Program extends Model
     {
         return $this->hasMany('App\Models\Kegiatan', 'program_id');
     }
+
+    public function pivot_program_kegiatan_renstra()
+    {
+        return $this->hasMany('App\Models\PivotProgramKegiatanRenstra', 'program_id');
+    }
 }

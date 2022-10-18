@@ -23,4 +23,9 @@ class Kegiatan extends Model
     {
         return $this->hasMany('App\Models\SubKegiatan', 'sub_kegiatan_id');
     }
+
+    public function pivot_program_kegiatan_renstra()
+    {
+        return $this->hasMany('App\Models\PivotProgramKegiatanRenstra', 'kegiatan_id');
+    }
 }

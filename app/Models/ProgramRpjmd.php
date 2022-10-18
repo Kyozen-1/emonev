@@ -18,4 +18,9 @@ class ProgramRpjmd extends Model
     {
         return $this->hasMany('App\Models\PivotOpdProgramRpjmd', 'program_rpjmd_id');
     }
+
+    public function pivot_program_kegiatan_renstra()
+    {
+        return $this->hasMany('App\Models\PivotProgramKegiatanRenstra', 'program_rpjmd_id');
+    }
 }
