@@ -1638,6 +1638,86 @@
         </div>
     </div>
 
+    <div class="modal modal-right large scroll-out-negative fade" id="detailProgramModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="scroll-track-visible">
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Visi</label>
+                            <div class="input-group">
+                                <div class="input-group-text"></div>
+                                <textarea id="program_detail_visi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Misi</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><span id="program_detail_misi_kode"></span></div>
+                                <textarea id="program_detail_misi" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Tujuan</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><span id="program_detail_tujuan_kode"></span></div>
+                                <textarea id="program_detail_tujuan" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Sasaran</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><span id="program_detail_sasaran_kode"></span></div>
+                                <textarea id="program_detail_sasaran" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="data-table-rows slim">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="" class="form-label">Sasaran Indikator</label>
+                                </div>
+                            </div>
+                            <!-- Table Start -->
+                            <div class="data-table-responsive-wrapper">
+                                <table class="data-table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted text-small text-uppercase" width="50%">Indikator</th>
+                                            <th class="text-muted text-small text-uppercase" width="25%">Target</th>
+                                            <th class="text-muted text-small text-uppercase" width="25%">Satuan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="program_tbody_detail_sasaran_indikator">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Table End -->
+                        </div>
+                        <hr>
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Program</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><span id="program_detail_program_kode"></span></div>
+                                <textarea id="program_detail_program" class="form-control" rows="5" disabled></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div id="program_atur_target_rp_pertahun"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- <div class="modal fade" id="editProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -2749,6 +2829,30 @@
                     }
                 });
             }
+        });
+
+        $(document).on('click', '.detail-program-rpjmd', function(){
+            var id = $(this).attr('data-program-rpjmd-id');
+            $.ajax({
+                url: "{{ url('/admin/program-rpjmd/detail') }}" + '/' +id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#detail-title').text('Detail Data');
+                    $('#program_detail_visi').val(data.result.visi);
+                    $('#program_detail_misi').val(data.result.misi);
+                    $('#program_detail_misi_kode').text(data.result.misi_kode);
+                    $('#program_detail_tujuan').val(data.result.tujuan);
+                    $('#program_detail_tujuan_kode').text(data.result.tujuan_kode);
+                    $('#program_detail_sasaran').val(data.result.sasaran);
+                    $('#program_detail_sasaran_kode').text(data.result.sasaran_kode);
+                    $('#program_tbody_detail_sasaran_indikator').html(data.result.sasaran_indikator);
+                    $('#program_detail_program').val(data.result.program);
+                    $('#program_detail_program_kode').text(data.result.program_kode);
+                    $('#program_atur_target_rp_pertahun').html(data.result.target_rp_pertahun);
+                    $('#detailProgramModal').modal('show');
+                }
+            });
         });
 
         // $('#program_edit_urusan_id').on('change', function(){

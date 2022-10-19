@@ -13,6 +13,7 @@ use Validator;
 use DataTables;
 use Excel;
 use Carbon\Carbon;
+use App\Models\TahunPeriode;
 use App\Models\Visi;
 use App\Models\PivotPerubahanVisi;
 use App\Models\Misi;
@@ -23,14 +24,15 @@ use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
 use App\Models\PivotSasaranIndikator;
 use App\Models\ProgramRpjmd;
-use App\Models\PivotPerubahanProgramRpjmd;
+use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
 use App\Models\PivotPerubahanUrusan;
-use App\Models\Program;
-use App\Models\PivotPerubahanProgram;
 use App\Models\MasterOpd;
 use App\Models\PivotSasaranIndikatorProgramRpjmd;
-use App\Models\PivotOpdProgramRpjmd;
+use App\Models\Program;
+use App\Models\PivotPerubahanProgram;
+use App\Models\PivotProgramKegiatanRenstra;
+use App\Models\TargetRpPertahunProgram;
 
 class ProgramRpjmdController extends Controller
 {
@@ -579,10 +581,11 @@ class ProgramRpjmdController extends Controller
                                                                                                                                                                             <table class="table table-striped">
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
-                                                                                                                                                                                        <th width="50%"><strong>Program RPJMD</strong></th>
+                                                                                                                                                                                        <th width="40%"><strong>Program RPJMD</strong></th>
                                                                                                                                                                                         <th width="15%"><strong>Status Program</strong></th>
                                                                                                                                                                                         <th width="15%"><strong>Pagu</strong></th>
                                                                                                                                                                                         <th width="20%"><strong>OPD</strong></th>
+                                                                                                                                                                                        <th width="10%"><strong>Aksi</strong></th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -637,6 +640,9 @@ class ProgramRpjmdController extends Controller
                                                                                                                                                                                                     }
                                                                                                                                                                                                 $html.='</ul>';
                                                                                                                                                                                                 $html.= '</td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program-rpjmd" data-program-rpjmd-id="'.$program['id'].'" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
+                                                                                                                                                                                                </td>
                                                                                                                                                                                             </tr>';
                                                                                                                                                                                     }
                                                                                                                                                                                 $html .= '</tbody>
@@ -674,5 +680,173 @@ class ProgramRpjmdController extends Controller
                     </div>
                 </div>';
         return response()->json(['success' => $html]);
+    }
+
+    public function detail($id)
+    {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
+        $get_pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('program_rpjmd_id', $id)->get();
+        $pivot_sasaran_indikators = [];
+        $sasaran_indikator = '';
+        foreach ($get_pivot_sasaran_indikator_program_rpjmds as $get_pivot_sasaran_indikator_program_rpjmd) {
+            $pivot_sasaran_indikator = PivotSasaranIndikator::find($get_pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_id);
+            $sasaran_indikator .= '<tr>';
+                $sasaran_indikator .= '<td>'.$pivot_sasaran_indikator->indikator.'</td>';
+                $sasaran_indikator .= '<td>'.$pivot_sasaran_indikator->target.'</td>';
+                $sasaran_indikator .= '<td>'.$pivot_sasaran_indikator->satuan.'</td>';
+            $sasaran_indikator .= '</tr>';
+        }
+
+        $first_pivot_sasaran_indikator_program_rpjmd = PivotSasaranIndikatorProgramRpjmd::where('program_rpjmd_id', $id)->first();
+        $first_pivot_sasaran_indikator = PivotSasaranIndikator::find($first_pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_id);
+        // Sasaran
+        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $first_pivot_sasaran_indikator->sasaran_id)->orderBy('tahun_perubahan', 'desc')
+                                    ->latest()->first();
+        if($cek_perubahan_sasaran)
+        {
+            $sasaran = $cek_perubahan_sasaran->deskripsi;
+            $sasaran_kode = $cek_perubahan_sasaran->kode;
+            $tujuan_id = $cek_perubahan_sasaran->tujuan_id;
+        } else {
+            $get_sasaran = Sasaran::find($first_pivot_sasaran_indikator->sasaran_id);
+            $sasaran = $get_sasaran->deskripsi;
+            $sasaran_kode = $get_sasaran->kode;
+            $tujuan_id = $get_sasaran->tujuan_id;
+        }
+        // Tujuan
+        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $tujuan_id)
+                                ->orderBy('tahun_perubahan', 'desc')
+                                ->latest()->first();
+        if($cek_perubahan_tujuan)
+        {
+            $tujuan = $cek_perubahan_tujuan->deskripsi;
+            $tujuan_kode = $cek_perubahan_tujuan->kode;
+            $misi_id = $cek_perubahan_tujuan->misi_id;
+        } else {
+            $get_tujuan = Tujuan::find($tujuan_id);
+            $tujuan = $get_tujuan->deskripsi;
+            $tujuan_kode = $get_tujuan->kode;
+            $misi_id = $get_tujuan->misi_id;
+        }
+
+        // Misi
+        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $misi_id)
+                                ->orderBy('tahun_perubahan', 'desc')
+                                ->latest()->first();
+        if($cek_perubahan_misi)
+        {
+            $misi = $cek_perubahan_misi->deskripsi;
+            $misi_kode = $cek_perubahan_misi->kode;
+            $visi_id = $cek_perubahan_misi->visi_id;
+        } else {
+            $get_misi = Misi::find($misi_id);
+            $misi = $get_misi->deskripsi;
+            $misi_kode = $get_misi->kode;
+            $visi_id = $get_misi->visi_id;
+        }
+
+        // Visi
+        $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $visi_id)
+                                ->orderBy('tahun_perubahan', 'desc')
+                                ->latest()->first();
+        if($cek_perubahan_visi)
+        {
+            $visi = $cek_perubahan_visi->deskripsi;
+        } else {
+            $get_visi = Visi::find($visi_id);
+            $visi = $get_visi->deskripsi;
+        }
+
+        // Program
+        $get_program_rpjmd = ProgramRpjmd::find($id);
+        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                    ->orderBy('tahun_perubahan')->latest()->first();
+        if($cek_perubahan_program)
+        {
+            $program = $cek_perubahan_program->deskripsi;
+            $program_kode = $cek_perubahan_program->kode;
+        } else {
+            $get_program = Program::find($get_program_rpjmd->program_id);
+            $program = $get_program->deskripsi;
+            $program_kode = $get_program->kode;
+        }
+
+        //Opd
+        $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $id)->get();
+        $target_rp_pertahun = '';
+        foreach ($get_opds as $get_opd) {
+            $target_rp_pertahun .= '<div class="data-table-rows slim">
+                                    <h2 class="small-title">OPD: '.$get_opd->opd->nama.' </h2>
+                                    <div class="data-table-responsive-wrapper">
+                                        <table class="data-table w-100">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-muted text-small text-uppercase" width="30%">Target</th>
+                                                    <th class="text-muted text-small text-uppercase" width="20%">Satuan</th>
+                                                    <th class="text-muted text-small text-uppercase" width="20%">RP</th>
+                                                    <th class="text-muted text-small text-uppercase" width="15%">Tahun</th>
+                                                    <th class="text-muted text-small text-uppercase" width="15%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>';
+                                            foreach ($tahuns as $tahun) {
+                                                $get_target_rp_pertahun = TargetRpPertahunProgram::where('tahun', $tahun)
+                                                                            ->where('opd_id', $get_opd->opd_id)
+                                                                            ->where('program_rpjmd_id', $id)
+                                                                            ->first();
+                                                                            if($get_target_rp_pertahun)
+                                                                            {
+                                                                                $target_rp_pertahun .= '<tr>';
+                                                                                $target_rp_pertahun .= '<td>'. $get_target_rp_pertahun->target.'</td>';
+                                                                                $target_rp_pertahun .= '<td>'. $get_target_rp_pertahun->satuan.'</td>';
+                                                                                $target_rp_pertahun .= '<td>'. $get_target_rp_pertahun->rp.'</td>';
+                                                                                $target_rp_pertahun .= '<td>'.$tahun.'</td>';
+                                                                                $target_rp_pertahun .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1" type="button">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                            } else {
+                                                                                $target_rp_pertahun .= '<tr>';
+                                                                                $target_rp_pertahun .= '<td></td>';
+                                                                                $target_rp_pertahun .= '<td></td>';
+                                                                                $target_rp_pertahun .= '<td></td>';
+                                                                                $target_rp_pertahun .= '<td>'.$tahun.'</td>';
+                                                                                $target_rp_pertahun .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1" type="button">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                            }
+                                                $target_rp_pertahun .= '</tr>';
+                                            }
+                                            $target_rp_pertahun .= '</tbody>
+                                        </table>
+                                    </div>
+                                </div> <hr>';
+        }
+
+        $array = [
+            'visi' => $visi,
+            'misi' => $misi,
+            'misi_kode' => $misi_kode,
+            'tujuan' => $tujuan,
+            'tujuan_kode' => $tujuan_kode,
+            'sasaran' => $sasaran,
+            'sasaran_kode' => $sasaran_kode,
+            'sasaran_indikator' => $sasaran_indikator,
+            'program' => $program,
+            'program_kode' => $program_kode,
+            'target_rp_pertahun' => $target_rp_pertahun
+        ];
+
+        return response()->json(['result' => $array]);
     }
 }

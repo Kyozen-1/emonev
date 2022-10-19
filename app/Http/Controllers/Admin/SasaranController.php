@@ -682,13 +682,14 @@ class SasaranController extends Controller
         // $indikator .='</div>';
 
         $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $id)->get();
-        $indikator = '<tr>';
+        $indikator = '';
         foreach ($sasaran_indikators as $sasaran_indikator) {
+            $indikator .= '<tr>';
             $indikator .= '<td>'.$sasaran_indikator->indikator.'</td>';
             $indikator .= '<td>'.$sasaran_indikator->target.'</td>';
             $indikator .= '<td>'.$sasaran_indikator->satuan.'</td>';
+            $indikator .= '</tr>';
         }
-        $indikator .= '</tr>';
 
         $array = [
             'visi' => $deskripsi_visi,

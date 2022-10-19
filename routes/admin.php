@@ -193,6 +193,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/program-rpjmd/get-tujuan', 'Admin\ProgramRpjmdController@get_tujuan')->name('admin.program-rpjmd.get-tujuan');
     Route::post('/admin/program-rpjmd/get-sasaran', 'Admin\ProgramRpjmdController@get_sasaran')->name('admin.program-rpjmd.get-sasaran');
     Route::post('/admin/program-rpjmd/get-sasaran-indikator', 'Admin\ProgramRpjmdController@get_sasaran_indikator')->name('admin.program-rpjmd.get-sasaran-indikator');
+    Route::get('/admin/program-rpjmd/detail/{id}','Admin\ProgramRpjmdController@detail');
 
     //Tahun Periode
     Route::get('/admin/tahun-periode', 'Admin\TahunPeriodeController@index')->name('admin.tahun-periode.index');

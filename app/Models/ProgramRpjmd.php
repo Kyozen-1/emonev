@@ -23,4 +23,9 @@ class ProgramRpjmd extends Model
     {
         return $this->hasMany('App\Models\PivotProgramKegiatanRenstra', 'program_rpjmd_id');
     }
+
+    public function target_rp_pertahun_program()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunProgram', 'program_rpjmd_id');
+    }
 }

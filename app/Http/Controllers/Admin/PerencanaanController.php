@@ -23,7 +23,6 @@ use App\Models\PivotPerubahanTujuan;
 use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
 use App\Models\PivotSasaranIndikator;
-use App\Models\TargetRpPertahunSasaran;
 use App\Models\ProgramRpjmd;
 use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
@@ -33,6 +32,7 @@ use App\Models\PivotSasaranIndikatorProgramRpjmd;
 use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotProgramKegiatanRenstra;
+use App\Models\TargetRpPertahunProgram;
 
 class PerencanaanController extends Controller
 {
@@ -787,10 +787,11 @@ class PerencanaanController extends Controller
                                                                                                                                                                             <table class="table table-striped">
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
-                                                                                                                                                                                        <th width="50%"><strong>Program RPJMD</strong></th>
+                                                                                                                                                                                        <th width="40%"><strong>Program RPJMD</strong></th>
                                                                                                                                                                                         <th width="15%"><strong>Status Program</strong></th>
                                                                                                                                                                                         <th width="15%"><strong>Pagu</strong></th>
                                                                                                                                                                                         <th width="20%"><strong>OPD</strong></th>
+                                                                                                                                                                                        <th width="10%"><strong>Aksi</strong></th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -845,6 +846,9 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                     }
                                                                                                                                                                                                 $html.='</ul>';
                                                                                                                                                                                                 $html.= '</td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program-rpjmd" data-program-rpjmd-id="'.$program['id'].'" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
+                                                                                                                                                                                                </td>
                                                                                                                                                                                             </tr>';
                                                                                                                                                                                     }
                                                                                                                                                                                 $html .= '</tbody>
