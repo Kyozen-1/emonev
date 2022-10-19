@@ -150,6 +150,9 @@
                                         <th>(17)</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    {!!$tc_14!!}
+                                </tbody>
                             </table>
                         </div>
                     </div>

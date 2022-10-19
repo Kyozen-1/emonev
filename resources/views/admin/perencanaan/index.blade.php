@@ -3057,5 +3057,80 @@
                 });
             }
         });
+
+        $(document).on('click', '.button-target-rp-pertahun', function(){
+            var tahun = $(this).attr('data-tahun');
+            var opd_id = $(this).attr('data-opd-id');
+            var program_rpjmd_id = $(this).attr('data-program-rpjmd-id');
+            var target_rp_pertahun_program_id = $(this).attr('data-target-rp-pertahun-program-id');
+
+            var target = $('.add-target.'+tahun+'.data-opd-'+opd_id+'.data-program-rpjmd-'+program_rpjmd_id).val();
+            var satuan = $('.add-satuan.'+tahun+'.data-opd-'+opd_id+'.data-program-rpjmd-'+program_rpjmd_id).val();
+            var rp = $('.add-rp.'+tahun+'.data-opd-'+opd_id+'.data-program-rpjmd-'+program_rpjmd_id).val();
+
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.program-rpjmd.detail.target-rp-pertahun') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tahun:tahun,
+                            opd_id:opd_id,
+                            program_rpjmd_id:program_rpjmd_id,
+                            target:target,
+                            satuan:satuan,
+                            rp:rp,
+                            target_rp_pertahun_program_id:target_rp_pertahun_program_id
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                $('#program_atur_target_rp_pertahun').html(data.success);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-edit-target-rp-pertahun', function(){
+            var tahun = $(this).attr('data-tahun');
+            var opd_id = $(this).attr('data-opd-id');
+            var program_rpjmd_id = $(this).attr('data-program-rpjmd-id');
+            var target_rp_pertahun_program_id = $(this).attr('data-target-rp-pertahun-program-id');
+            var target = $('.span-target.'+tahun+'.data-opd-'+opd_id+'.data-program-rpjmd-'+program_rpjmd_id).text();
+            var satuan = $('.span-satuan.'+tahun+'.data-opd-'+opd_id+'.data-program-rpjmd-'+program_rpjmd_id).text();
+            var rp = $('.span-rp.'+tahun+'.data-opd-'+opd_id+'.data-program-rpjmd-'+program_rpjmd_id).text();
+
+            target_rp_pertahun = '<td><input type="number" class="form-control add-target '+tahun+' data-opd-'+opd_id+' data-program-rpjmd-'+program_rpjmd_id+'" value="'+target+'"></td>';
+            target_rp_pertahun += '<td><input type="text" class="form-control add-satuan '+tahun+' data-opd-'+opd_id+' data-program-rpjmd-'+program_rpjmd_id+'" value="'+satuan+'"></td>';
+            target_rp_pertahun += '<td><input type="text" class="form-control add-rp '+tahun+' data-opd-'+opd_id+' data-program-rpjmd-'+program_rpjmd_id+'" value="'+rp+'"></td>';
+            target_rp_pertahun += '<td>'+tahun+'</td>';
+            target_rp_pertahun += '<td>'+
+                                        '<button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-target-rp-pertahun" type="button" data-opd-id="'+opd_id+'" data-tahun="'+tahun+'" data-program-rpjmd-id="'+program_rpjmd_id+'" data-target-rp-pertahun-program-id='+target_rp_pertahun_program_id+'>'+
+                                        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>'+
+                                        '</button>'+
+                                    '</td>';
+            $('.tr-target-rp.'+tahun+'.data-opd-'+opd_id+'.data-program-rpjmd-'+program_rpjmd_id).html(target_rp_pertahun);
+        });
     </script>
 @endsection
