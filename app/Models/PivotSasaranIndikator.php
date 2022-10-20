@@ -16,6 +16,6 @@ class PivotSasaranIndikator extends Model
 
     public function pivot_sasaran_indikator_program_rpjmd()
     {
-        return $this->hasMany('App\Models\PivotSasaranIndikatorProgramRpjmd', 'pivot_sasaran_indikator_id');
+        return $this->hasMany('App\Models\PivotSasaranIndikatorProgramRpjmd', 'sasaran_indikator_id');
     }
 }

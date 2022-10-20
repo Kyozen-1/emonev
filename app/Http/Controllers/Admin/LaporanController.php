@@ -23,7 +23,7 @@ use App\Models\PivotPerubahanTujuan;
 use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
 use App\Models\PivotSasaranIndikator;
-use App\Models\TargetRpPertahunSasaran;
+use App\Models\TargetRpPertahunProgram;
 use App\Models\ProgramRpjmd;
 use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
@@ -181,44 +181,62 @@ class LaporanController extends Controller
                                         $tc_14 .= '<td>'.$get_sasaran_indikator->indikator.'</td>';
                                         $tc_14 .= '<td colspan="14"></td>';
                                     $tc_14 .= '</tr>';
-
-                                    // $program_rpjmd = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($get_sasaran_indikator){
-                                    //     $q->where('sasaran_indikator_id', $get_sasaran_indikator->id);
-                                    // })->first();
-                                    // if($program_rpjmd)
-                                    // {
-                                    //     $pivot_opd_program_rpjmds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program_rpjmd->id)
-                                    //                                 ->get();
-                                    //     foreach ($pivot_opd_program_rpjmds as $pivot_opd_program_rpjmd) {
-                                    //         $tc_14 .= '<tr>';
-                                    //             $tc_14 .= '<td colspan="19" style="text-align:left"><strong>Program</strong></td>';
-                                    //         $tc_14 .= '</tr>';
-                                    //         $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_opd_program_rpjmd->program_rpjmd->program_id)
-                                    //                                     ->orderBy('tahun_perubahan', 'desc')
-                                    //                                     ->latest()->first();
-                                    //                                     $program = [];
-                                    //         if($cek_perubahan_program)
-                                    //         {
-                                    //             $program = [
-                                    //                 'deskripsi' => $cek_perubahan_program->deskripsi,
-                                    //             ];
-                                    //         } else {
-                                    //             $get_program = Program::find($pivot_opd_program_rpjmd->program_rpjmd->program_id);
-                                    //             $program = [
-                                    //                 'deskripsi' => $get_program->deskripsi
-                                    //             ];
-                                    //         }
-                                    //         $tc_14 .= '<tr>';
-                                    //             $tc_14 .= '<td></td>';
-                                    //             $tc_14 .= '<td></td>';
-                                    //             $tc_14 .= '<td></td>';
-                                    //             $tc_14 .= '<td>'.$program['deskripsi'].'</td>';
-                                    //         $tc_14 .= '</tr>';
-                                    //     }
-                                    // }
                                 }
                                 $a++;
                             }
+                            $tc_14 .= '<tr>';
+                                $tc_14 .= '<td colspan="19" style="text-align:left"><strong>Program</strong></td>';
+                            $tc_14 .= '</tr>';
+                            $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran) {
+                                $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran){
+                                    $q->where('sasaran_id', $sasaran['id']);
+                                });
+                            })->distinct('id')->get();
+                            foreach ($get_program_rpjmds as $get_program_rpjmd) {
+                                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                if($cek_perubahan_program)
+                                {
+                                    $program = [
+                                        'id' => $cek_perubahan_program->program_id,
+                                        'deskripsi' => $cek_perubahan_program->deskripsi
+                                    ];
+                                } else {
+                                    $get_program = Program::find($get_program_rpjmd->program_id);
+                                    $program = [
+                                        'id' => $get_program->id,
+                                        'deskripsi' => $get_program->deskripsi
+                                    ];
+                                }
+
+                                $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $get_program_rpjmd->id)->get();
+                                foreach ($get_opds as $get_opd) {
+                                    $tc_14 .= '<tr>';
+                                        $tc_14 .= '<td></td>';
+                                        $tc_14 .= '<td></td>';
+                                        $tc_14 .= '<td></td>';
+                                        $tc_14 .= '<td>'.$program['deskripsi'].'</td>';
+                                        $tc_14 .= '<td></td>';
+                                        $tc_14 .= '<td></td>';
+                                        foreach ($tahuns as $tahun) {
+                                            $target_rp_pertahun_program = TargetRpPertahunProgram::where('program_rpjmd_id', $get_program_rpjmd->id)
+                                                                            ->where('tahun', $tahun)->where('opd_id', $get_opd->opd_id)
+                                                                            ->first();
+                                            if($target_rp_pertahun_program)
+                                            {
+                                                $tc_14 .= '<td>'.$target_rp_pertahun_program->target.'</td>';
+                                                $tc_14 .= '<td>Rp. '.number_format($target_rp_pertahun_program->rp, 2).'</td>';
+                                            } else {
+                                                $tc_14 .= '<td></td>';
+                                                $tc_14 .= '<td></td>';
+                                            }
+                                        }
+                                        $tc_14 .= '<td colspan="2"></td>';
+                                        $tc_14 .= '<td>'.$get_opd->opd->nama.'</td>';
+                                    $tc_14 .= '</tr>';
+                                }
+                            }
+
                     }
                 }
             }
