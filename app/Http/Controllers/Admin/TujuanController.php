@@ -171,9 +171,10 @@ class TujuanController extends Controller
         }
 
         $get_visis = Visi::all();
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun_sekarang)
                                     ->latest()->first();
             if($cek_perubahan_visi)
             {
@@ -184,20 +185,28 @@ class TujuanController extends Controller
                 ];
             } else {
                 $visis[] = [
-                    'id' => $get_visi->visi_id,
+                    'id' => $get_visi->id,
                     'deskripsi' => $get_visi->deskripsi,
                     'tahun_perubahan' => $get_visi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingTujuan" checked>
+                            <label class="form-check-label" for="onOffTaggingTujuan">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="tujuan_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th width="15%">Kode</th>
-                                    <th width="85%">Visi</th>
+                                    <th width="5%">Kode</th>
+                                    <th width="95%">Deskripsi</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -207,19 +216,19 @@ class TujuanController extends Controller
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle">
                                         '.$visi['deskripsi'].'
                                         <br>
-                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordian-body collapse" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped">
+                                        <div class="accordion-body collapse" id="tujuan_visi'.$visi['id'].'">
+                                            <table class="table table-striped table-condesed">
                                                 <tbody>';
                                                 $get_misis = Misi::where('visi_id', $visi['id'])->get();
                                                 $misis = [];
                                                 foreach ($get_misis as $get_misi) {
                                                     $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->orderBy('tahun_perubahan', 'desc')
+                                                                            ->where('tahun_perubahan', $tahun_sekarang)
                                                                             ->latest()
                                                                             ->first();
                                                     if($cek_perubahan_misi)
@@ -239,17 +248,32 @@ class TujuanController extends Controller
                                                         ];
                                                     }
                                                 }
+                                                $a = 1;
                                                 foreach ($misis as $misi) {
                                                     $html .= '<tr>
-                                                        <td width="15%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                        <td width="50%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">
+                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                        <td width="75%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">
                                                             '.$misi['deskripsi'].'
-                                                            <br>
-                                                            <span class="badge bg-primary text-uppercase">Visi</span>
-                                                            <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                            <br>';
+                                                            if($a == 1 || $a == 2)
+                                                            {
+                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
+                                                            }
+                                                            if($a == 3)
+                                                            {
+                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
+                                                            }
+                                                            if($a == 4)
+                                                            {
+                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
+                                                            }
+                                                            if($a == 5)
+                                                            {
+                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
+                                                            }
+                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
                                                         </td>
-                                                        <td width="15%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">2020</td>
-                                                        <td>
+                                                        <td width="20%">
                                                             <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
                                                             <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_tujuan.xlsx').'" title="Download Template Import Data Tujuan"><i class="fas fa-file-excel"></i></a>
                                                             <button class="btn btn-info waves-effect waves-light tujuan_btn_impor_template" title="Import Data Tujuan" type="button" data-misi-id="'.$misi['id'].'"><i class="fas fa-file-import"></i></button>
@@ -257,14 +281,14 @@ class TujuanController extends Controller
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4" class="hiddenRow">
-                                                            <div class="accordian-body collapse" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped">
+                                                            <div class="accordion-body collapse" id="tujuan_misi'.$misi['id'].'">
+                                                                <table class="table table-striped table-condesed">
                                                                     <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
                                                                     $tujuans = [];
                                                                     foreach ($get_tujuans as $get_tujuan) {
                                                                         $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
-                                                                                                    ->orderBy('tahun_perubahan', 'desc')
+                                                                                                    ->where('tahun_perubahan', $tahun_sekarang)
                                                                                                     ->latest()
                                                                                                     ->first();
                                                                         if($cek_perubahan_tujuan)
@@ -286,15 +310,29 @@ class TujuanController extends Controller
                                                                     }
                                                                     foreach ($tujuans as $tujuan) {
                                                                         $html .= '<tr>
-                                                                            <td width="15%">'.$tujuan['kode'].'</td>
-                                                                            <td width="50%">
+                                                                            <td width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                            <td width="75%">
                                                                                 '.$tujuan['deskripsi'].'
-                                                                                <br>
-                                                                                <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                <br>';
+                                                                                if($a == 1 || $a == 2)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
+                                                                                }
+                                                                                if($a == 3)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
+                                                                                }
+                                                                                if($a == 4)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
+                                                                                }
+                                                                                if($a == 5)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
+                                                                                }
+                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                             </td>
-                                                                            <td width="15%">'.$tujuan['tahun_perubahan'].'</td>
                                                                             <td width="20%">
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
@@ -306,6 +344,7 @@ class TujuanController extends Controller
                                                             </div>
                                                         </td>
                                                     </tr>';
+                                                    $a++;
                                                 }
                                                 $html .= '</tbody>
                                             </table>
@@ -317,7 +356,6 @@ class TujuanController extends Controller
                         </table>
                     </div>
                 </div>';
-
         return response()->json(['success' => $html]);
     }
 
@@ -521,9 +559,10 @@ class TujuanController extends Controller
         $pivot_perubahan_tujuan->save();
 
         $get_visis = Visi::all();
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun_sekarang)
                                     ->latest()->first();
             if($cek_perubahan_visi)
             {
@@ -534,19 +573,28 @@ class TujuanController extends Controller
                 ];
             } else {
                 $visis[] = [
-                    'id' => $get_visi->visi_id,
+                    'id' => $get_visi->id,
                     'deskripsi' => $get_visi->deskripsi,
                     'tahun_perubahan' => $get_visi->tahun_perubahan
                 ];
             }
         }
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
+
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingTujuan" checked>
+                            <label class="form-check-label" for="onOffTaggingTujuan">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="tujuan_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th width="15%">Kode</th>
-                                    <th width="85%">Visi</th>
+                                    <th width="5%">Kode</th>
+                                    <th width="95%">Deskripsi</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -556,19 +604,19 @@ class TujuanController extends Controller
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle">
                                         '.$visi['deskripsi'].'
                                         <br>
-                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordian-body collapse" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped">
+                                        <div class="accordion-body collapse" id="tujuan_visi'.$visi['id'].'">
+                                            <table class="table table-striped table-condesed">
                                                 <tbody>';
                                                 $get_misis = Misi::where('visi_id', $visi['id'])->get();
                                                 $misis = [];
                                                 foreach ($get_misis as $get_misi) {
                                                     $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->orderBy('tahun_perubahan', 'desc')
+                                                                            ->where('tahun_perubahan', $tahun_sekarang)
                                                                             ->latest()
                                                                             ->first();
                                                     if($cek_perubahan_misi)
@@ -588,17 +636,32 @@ class TujuanController extends Controller
                                                         ];
                                                     }
                                                 }
+                                                $a = 1;
                                                 foreach ($misis as $misi) {
                                                     $html .= '<tr>
-                                                        <td width="15%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                        <td width="50%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">
+                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                        <td width="75%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">
                                                             '.$misi['deskripsi'].'
-                                                            <br>
-                                                            <span class="badge bg-primary text-uppercase">Visi</span>
-                                                            <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                            <br>';
+                                                            if($a == 1 || $a == 2)
+                                                            {
+                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
+                                                            }
+                                                            if($a == 3)
+                                                            {
+                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
+                                                            }
+                                                            if($a == 4)
+                                                            {
+                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
+                                                            }
+                                                            if($a == 5)
+                                                            {
+                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
+                                                            }
+                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
                                                         </td>
-                                                        <td width="15%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">2020</td>
-                                                        <td>
+                                                        <td width="20%">
                                                             <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
                                                             <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_tujuan.xlsx').'" title="Download Template Import Data Tujuan"><i class="fas fa-file-excel"></i></a>
                                                             <button class="btn btn-info waves-effect waves-light tujuan_btn_impor_template" title="Import Data Tujuan" type="button" data-misi-id="'.$misi['id'].'"><i class="fas fa-file-import"></i></button>
@@ -606,14 +669,14 @@ class TujuanController extends Controller
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4" class="hiddenRow">
-                                                            <div class="accordian-body collapse" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped">
+                                                            <div class="accordion-body collapse" id="tujuan_misi'.$misi['id'].'">
+                                                                <table class="table table-striped table-condesed">
                                                                     <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
                                                                     $tujuans = [];
                                                                     foreach ($get_tujuans as $get_tujuan) {
                                                                         $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
-                                                                                                    ->orderBy('tahun_perubahan', 'desc')
+                                                                                                    ->where('tahun_perubahan', $tahun_sekarang)
                                                                                                     ->latest()
                                                                                                     ->first();
                                                                         if($cek_perubahan_tujuan)
@@ -635,15 +698,29 @@ class TujuanController extends Controller
                                                                     }
                                                                     foreach ($tujuans as $tujuan) {
                                                                         $html .= '<tr>
-                                                                            <td width="15%">'.$tujuan['kode'].'</td>
-                                                                            <td width="50%">
+                                                                            <td width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                            <td width="75%">
                                                                                 '.$tujuan['deskripsi'].'
-                                                                                <br>
-                                                                                <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                <br>';
+                                                                                if($a == 1 || $a == 2)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
+                                                                                }
+                                                                                if($a == 3)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
+                                                                                }
+                                                                                if($a == 4)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
+                                                                                }
+                                                                                if($a == 5)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
+                                                                                }
+                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                             </td>
-                                                                            <td width="15%">'.$tujuan['tahun_perubahan'].'</td>
                                                                             <td width="20%">
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
@@ -655,6 +732,7 @@ class TujuanController extends Controller
                                                             </div>
                                                         </td>
                                                     </tr>';
+                                                    $a++;
                                                 }
                                                 $html .= '</tbody>
                                             </table>
@@ -666,7 +744,6 @@ class TujuanController extends Controller
                         </table>
                     </div>
                 </div>';
-
         return response()->json(['success' => $html]);
     }
 

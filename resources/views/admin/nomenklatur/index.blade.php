@@ -43,6 +43,14 @@
                 overflow-y: scroll;
             }
         }
+        /* .accordion-toggle:after {
+            font-family: 'FontAwesome';
+            content: "\f068";
+            float: right;
+        }
+        .accordion-toggle.collapsed:after {
+            content: "\f067";
+        } */
     </style>
 @endsection
 
@@ -159,13 +167,21 @@
 
                         {{-- Program Start --}}
                         <div class="tab-pane fade" id="program" role="tabpanel">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
+                                        <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="data-table-rows slim">
                                 <div class="data-table-responsive-wrapper">
                                     <table class="table table-condensed table-striped">
                                         <thead>
                                             <tr>
                                                 <th width="15%">Kode</th>
-                                                <th width="50%">Urusan</th>
+                                                <th width="50%">Deskripsi</th>
                                                 <th width="15%">Tahun Perubahan</th>
                                                 <th width="20%">Aksi</th>
                                             </tr>
@@ -204,7 +220,7 @@
                                                     <td data-bs-toggle="collapse" data-bs-target="#program_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['deskripsi']}}
                                                         <br>
-                                                        <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
+                                                        <span class="badge bg-primary text-uppercase program-tagging">{{$urusan['kode']}} Urusan</span>
                                                     </td>
                                                     <td data-bs-toggle="collapse" data-bs-target="#program_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['tahun_perubahan']}}
@@ -230,12 +246,12 @@
                                                                 <tbody>
                                                                     @foreach ($programs as $program)
                                                                         <tr>
-                                                                            <td width="15%">{{$program['kode']}}</td>
+                                                                            <td width="15%">{{$urusan['kode']}}.{{$program['kode']}}</td>
                                                                             <td width="50%">
                                                                                 {{$program['deskripsi']}}
                                                                                 <br>
-                                                                                <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
-                                                                                <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
+                                                                                <span class="badge bg-primary text-uppercase program-tagging">Urusan {{$urusan['kode']}}</span>
+                                                                                <span class="badge bg-warning text-uppercase program-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
                                                                             </td>
                                                                             <td width="15%"> {{$program['tahun_perubahan']}}</td>
                                                                             <td width="20%">
@@ -259,13 +275,21 @@
 
                         {{-- Kegiatan Start --}}
                         <div class="tab-pane fade" id="kegiatan" role="tabpanel">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="onOffTaggingKegiatan" checked>
+                                        <label class="form-check-label" for="onOffTaggingKegiatan">On / Off Tagging</label>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="data-table-rows slim">
                                 <div class="data-table-responsive-wrapper">
                                     <table class="table table-striped table-condesed">
                                         <thead>
                                             <tr>
                                                 <th width="15%">Kode</th>
-                                                <th width="70%">Urusan</th>
+                                                <th width="70%">Deskripsi</th>
                                                 <th width="15%">Tahun Perubahan</th>
                                             </tr>
                                         </thead>
@@ -303,7 +327,7 @@
                                                     <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['deskripsi']}}
                                                         <br>
-                                                        <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
+                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">{{$urusan['kode']}} Urusan</span>
                                                     </td>
                                                     <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['tahun_perubahan']}}
@@ -324,12 +348,12 @@
                                                                 <tbody>
                                                                     @foreach ($programs as $program)
                                                                         <tr>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%">{{$program['kode']}}</td>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%">{{$urusan['kode']}}.{{$program['kode']}}</td>
                                                                             <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="50%">
                                                                                 {{$program['deskripsi']}}
                                                                                 <br>
-                                                                                <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
-                                                                                <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
+                                                                                <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan {{$urusan['kode']}}</span>
+                                                                                <span class="badge bg-warning text-uppercase kegiatan-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
                                                                             </td>
                                                                             <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%"> {{$program['tahun_perubahan']}}</td>
                                                                             <td width="20%">
@@ -380,13 +404,13 @@
                                                                                             @endphp
                                                                                             @foreach ($kegiatans as $kegiatan)
                                                                                                 <tr>
-                                                                                                    <td width="15%">{{$kegiatan['kode']}}</td>
+                                                                                                    <td width="15%">{{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}</td>
                                                                                                     <td width="50%">
                                                                                                         {{$kegiatan['deskripsi']}}
                                                                                                         <br>
-                                                                                                        <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
-                                                                                                        <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
-                                                                                                        <span class="badge bg-danger text-uppercase">{{$kegiatan['kode']}} Kegiatan</span>
+                                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">{{$urusan['kode']}} Urusan</span>
+                                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">{{$urusan['kode']}}.{{$program['kode']}} Program</span>
+                                                                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">{{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}} Kegiatan</span>
                                                                                                     </td>
                                                                                                     <td width="15%">{{$kegiatan['tahun_perubahan']}}</td>
                                                                                                     <td width="20%">
@@ -416,13 +440,21 @@
 
                         {{-- Sub Kegiatan Start --}}
                         <div class="tab-pane fade active show" id="sub_kegiatan" role="tabpanel">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="onOffTaggingSubKegiatan" checked>
+                                        <label class="form-check-label" for="onOffTaggingSubKegiatan">On / Off Tagging</label>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="data-table-rows slim">
                                 <div class="data-table-responsive-wrapper">
                                     <table class="table table-striped table-condesed">
                                         <thead>
                                             <tr>
                                                 <th width="15%">Kode</th>
-                                                <th width="70%">Urusan</th>
+                                                <th width="70%">Deskripsi</th>
                                                 <th width="15%">Tahun Perubahan</th>
                                             </tr>
                                         </thead>
@@ -460,7 +492,7 @@
                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['deskripsi']}}
                                                         <br>
-                                                        <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
+                                                        <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">{{$urusan['kode']}} Urusan</span>
                                                     </td>
                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
                                                         {{$urusan['tahun_perubahan']}}
@@ -481,12 +513,14 @@
                                                                 <tbody>
                                                                     @foreach ($programs as $program)
                                                                         <tr>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%">{{$program['kode']}}</td>
+                                                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%">
+                                                                                {{$urusan['kode']}}.{{$program['kode']}}
+                                                                            </td>
                                                                             <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="70%">
                                                                                 {{$program['deskripsi']}}
                                                                                 <br>
-                                                                                <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
-                                                                                <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
+                                                                                <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan {{$urusan['kode']}}</span>
+                                                                                <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
                                                                             </td>
                                                                             <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%"> {{$program['tahun_perubahan']}}</td>
                                                                         </tr>
@@ -535,13 +569,15 @@
                                                                                             @endphp
                                                                                             @foreach ($kegiatans as $kegiatan)
                                                                                                 <tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="15%">{{$kegiatan['kode']}}</td>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="15%">
+                                                                                                        {{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}
+                                                                                                    </td>
                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="50%">
                                                                                                         {{$kegiatan['deskripsi']}}
                                                                                                         <br>
-                                                                                                        <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
-                                                                                                        <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
-                                                                                                        <span class="badge bg-danger text-uppercase">{{$kegiatan['kode']}} Kegiatan</span>
+                                                                                                        <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan {{$urusan['kode']}}</span>
+                                                                                                        <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
+                                                                                                        <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">{{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}} Kegiatan</span>
                                                                                                     </td>
                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="15%">{{$kegiatan['tahun_perubahan']}}</td>
                                                                                                     <td width="20%">
@@ -585,15 +621,15 @@
                                                                                                                     @foreach ($sub_kegiatans as $sub_kegiatan)
                                                                                                                         <tr>
                                                                                                                             <td width="15%">
-                                                                                                                                {{$sub_kegiatan['kode']}}
+                                                                                                                                {{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}.{{$sub_kegiatan['kode']}}
                                                                                                                             </td>
                                                                                                                             <td width="50%">
                                                                                                                                 {{$sub_kegiatan['deskripsi']}}
                                                                                                                                 <br>
-                                                                                                                                <span class="badge bg-primary text-uppercase">{{$urusan['kode']}} Urusan</span>
-                                                                                                                                <span class="badge bg-warning text-uppercase">{{$program['kode']}} Program</span>
-                                                                                                                                <span class="badge bg-danger text-uppercase">{{$kegiatan['kode']}} Kegiatan</span>
-                                                                                                                                <span class="badge bg-info text-uppercase">{{$sub_kegiatan['kode']}} Sub Kegiatan</span>
+                                                                                                                                <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan {{$urusan['kode']}}</span>
+                                                                                                                                <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
+                                                                                                                                <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">Kegiatan {{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}</span>
+                                                                                                                                <span class="badge bg-info text-uppercase sub-kegiatan-tagging">Sub Kegiatan {{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}.{{$sub_kegiatan['kode']}}</span>
                                                                                                                             </td>
                                                                                                                             <td width="15%">{{$sub_kegiatan['tahun_perubahan']}}</td>
                                                                                                                             <td width="20%">
@@ -1696,5 +1732,33 @@
         $('#importSubKegiatanModal').modal('show');
     });
     // Sub Kegiatan End
+
+    // On / Off Tagging
+    $('#onOffTaggingProgram').change(function(){
+        if($(this).prop('checked') == true)
+        {
+            $('.program-tagging').show();
+        } else {
+            $('.program-tagging').hide();
+        }
+    });
+
+    $('#onOffTaggingKegiatan').change(function(){
+        if($(this).prop('checked') == true)
+        {
+            $('.kegiatan-tagging').show();
+        } else {
+            $('.kegiatan-tagging').hide();
+        }
+    });
+
+    $('#onOffTaggingSubKegiatan').change(function(){
+        if($(this).prop('checked') == true)
+        {
+            $('.sub-kegiatan-tagging').show();
+        } else {
+            $('.sub-kegiatan-tagging').hide();
+        }
+    });
 </script>
 @endsection

@@ -159,8 +159,8 @@
                                                 <thead>
                                                     <tr>
                                                         <th class="text-muted text-small text-uppercase" width="10%">No</th>
-                                                        <th class="text-muted text-small text-uppercase" width="55%">Visi</th>
-                                                        <th class="text-muted text-small text-uppercase" width="15%">Tahun Perubahan</th>
+                                                        <th class="text-muted text-small text-uppercase" width="70%">Deskripsi</th>
+                                                        {{-- <th class="text-muted text-small text-uppercase" width="15%">Tahun Perubahan</th> --}}
                                                         <th class="text-muted text-small text-uppercase" width="20%">Aksi</th>
                                                     </tr>
                                                 </thead>
@@ -1886,10 +1886,10 @@
                         data: 'deskripsi',
                         name: 'deskripsi'
                     },
-                    {
-                        data: 'tahun_perubahan',
-                        name: 'tahun_perubahan'
-                    },
+                    // {
+                    //     data: 'tahun_perubahan',
+                    //     name: 'tahun_perubahan'
+                    // },
                     {
                         data: 'aksi',
                         name: 'aksi',
@@ -3131,6 +3131,42 @@
                                         '</button>'+
                                     '</td>';
             $('.tr-target-rp.'+tahun+'.data-opd-'+opd_id+'.data-program-rpjmd-'+program_rpjmd_id).html(target_rp_pertahun);
+        });
+
+        $(document).on('change', '#onOffTaggingMisi',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.misi-tagging').show();
+            } else {
+                $('.misi-tagging').hide();
+            }
+        });
+
+        $(document).on('change', '#onOffTaggingTujuan',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.tujuan-tagging').show();
+            } else {
+                $('.tujuan-tagging').hide();
+            }
+        });
+
+        $(document).on('change', '#onOffTaggingSasaran',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.sasaran-tagging').show();
+            } else {
+                $('.sasaran-tagging').hide();
+            }
+        });
+
+        $(document).on('change', '#onOffTaggingProgram',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.program-tagging').show();
+            } else {
+                $('.program-tagging').hide();
+            }
         });
     </script>
 @endsection

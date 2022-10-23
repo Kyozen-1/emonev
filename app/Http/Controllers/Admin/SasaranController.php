@@ -248,6 +248,7 @@ class SasaranController extends Controller
         }
 
         $get_visis = Visi::all();
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
@@ -261,20 +262,28 @@ class SasaranController extends Controller
                 ];
             } else {
                 $visis[] = [
-                    'id' => $get_visi->visi_id,
+                    'id' => $get_visi->id,
                     'deskripsi' => $get_visi->deskripsi,
                     'tahun_perubahan' => $get_visi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingSasaran" checked>
+                            <label class="form-check-label" for="onOffTaggingSasaran">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="sasaran_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th width="15%">Kode</th>
-                                    <th width="85%">Visi</th>
+                                    <th width="5%">Kode</th>
+                                    <th width="95%">Deskripsi</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -284,18 +293,18 @@ class SasaranController extends Controller
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
                                         '.$visi['deskripsi'].'
                                         <br>
-                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordian-body collapse" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped">
+                                        <div class="accordion-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                            <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
                                                     $misis = [];
                                                     foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->orderBy('tahun_perubahan', 'desc')
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_sekarang)
                                                                                 ->latest()->first();
                                                         if($cek_perubahan_misi)
                                                         {
@@ -314,26 +323,41 @@ class SasaranController extends Controller
                                                             ];
                                                         }
                                                     }
+                                                    $a = 1;
                                                     foreach ($misis as $misi) {
                                                         $html .= '<tr>
-                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="70%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
                                                                         '.$misi['deskripsi'].'
-                                                                        <br>
-                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                        <br>';
+                                                                        if($a == 1 || $a == 2)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                        }
+                                                                        if($a == 3)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                        }
+                                                                        if($a == 4)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                        }
+                                                                        if($a == 5)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                        }
+                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
                                                                     </td>
-                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['tahun_perubahan'].'</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordian-body collapse" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped">
+                                                                        <div class="accordion-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                            <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
                                                                                     $tujuans = [];
                                                                                     foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->orderBy('tahun_perubahan','desc')
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan',$tahun_sekarang)
                                                                                                                 ->latest()
                                                                                                                 ->first();
                                                                                         if($cek_perubahan_tujuan)
@@ -355,16 +379,30 @@ class SasaranController extends Controller
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
                                                                                         $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="15%">'.$tujuan['kode'].'</td>
-                                                                                                    <td width="50%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
                                                                                                         '.$tujuan['deskripsi'].'
-                                                                                                        <br>
-                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                        <br>';
+                                                                                                        if($a == 1 || $a == 2)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                        }
+                                                                                                        if($a == 3)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                        }
+                                                                                                        if($a == 4)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                        }
+                                                                                                        if($a == 5)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                        }
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                     </td>
-                                                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$tujuan['tahun_perubahan'].'</td>
-                                                                                                    <td>
+                                                                                                    <td width ="20%">
                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                         <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
                                                                                                         <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
@@ -372,13 +410,13 @@ class SasaranController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordian-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped">
+                                                                                                        <div class="accordion-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->orderBy('tahun_perubahan', 'desc')
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
                                                                                                                                                     ->latest()->first();
                                                                                                                         if($cek_perubahan_sasaran)
                                                                                                                         {
@@ -399,17 +437,31 @@ class SasaranController extends Controller
                                                                                                                     }
                                                                                                                     foreach ($sasarans as $sasaran) {
                                                                                                                         $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="15%">'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="50%">
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="70%">
                                                                                                                                         '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>
-                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
+                                                                                                                                        <br>';
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="15%">'.$sasaran['tahun_perubahan'].'</td>
-                                                                                                                                    <td width="20%">
+                                                                                                                                    <td width="25%">
                                                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_indikator_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranIndikatorModal" title="Tambah Data Sasaran Indikator" data-sasaran-id="'.$sasaran['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
@@ -417,28 +469,45 @@ class SasaranController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordian-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped">
+                                                                                                                                        <div class="accordion-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
+                                                                                                                                                        <th width="5%"><strong>No</strong></th>
                                                                                                                                                         <th width="50%"><strong>Sasaran Indikator</strong></th>
                                                                                                                                                         <th width="15%"><strong>Target</strong></th>
                                                                                                                                                         <th width="15%"><strong>Satuan</strong></th>
-                                                                                                                                                        <th width="20%"><strong>Aksi</strong></th>
+                                                                                                                                                        <th width="15%"><strong>Aksi</strong></th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
                                                                                                                                                     $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                    $b = 1;
                                                                                                                                                     foreach ($sasaran_indikators as $sasaran_indikator) {
                                                                                                                                                         $html .= '<tr>
-                                                                                                                                                                    <td width="50%">
+                                                                                                                                                                    <td>'.$b++.'</td>
+                                                                                                                                                                    <td>
                                                                                                                                                                         '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>
-                                                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
-                                                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                                                        <br>';
+                                                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 3)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 4)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 5)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                                                     </td>
                                                                                                                                                                     <td width="15%">
                                                                                                                                                                         '.$sasaran_indikator['target'].'
@@ -468,6 +537,7 @@ class SasaranController extends Controller
                                                                         </div>
                                                                     </td>
                                                                 </tr>';
+                                                    $a++;
                                                     }
                                                 $html .= '</tbody>
                                             </table>
@@ -479,7 +549,6 @@ class SasaranController extends Controller
                         </table>
                     </div>
                 </div>';
-
         return response()->json(['success' => $html]);
     }
 
@@ -767,6 +836,7 @@ class SasaranController extends Controller
         $pivot_perubahan_sasaran->save();
 
         $get_visis = Visi::all();
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
@@ -780,20 +850,28 @@ class SasaranController extends Controller
                 ];
             } else {
                 $visis[] = [
-                    'id' => $get_visi->visi_id,
+                    'id' => $get_visi->id,
                     'deskripsi' => $get_visi->deskripsi,
                     'tahun_perubahan' => $get_visi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingSasaran" checked>
+                            <label class="form-check-label" for="onOffTaggingSasaran">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="sasaran_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th width="15%">Kode</th>
-                                    <th width="85%">Visi</th>
+                                    <th width="5%">Kode</th>
+                                    <th width="95%">Deskripsi</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -803,18 +881,18 @@ class SasaranController extends Controller
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
                                         '.$visi['deskripsi'].'
                                         <br>
-                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordian-body collapse" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped">
+                                        <div class="accordion-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                            <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
                                                     $misis = [];
                                                     foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->orderBy('tahun_perubahan', 'desc')
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_sekarang)
                                                                                 ->latest()->first();
                                                         if($cek_perubahan_misi)
                                                         {
@@ -833,26 +911,41 @@ class SasaranController extends Controller
                                                             ];
                                                         }
                                                     }
+                                                    $a = 1;
                                                     foreach ($misis as $misi) {
                                                         $html .= '<tr>
-                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="70%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
                                                                         '.$misi['deskripsi'].'
-                                                                        <br>
-                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                        <br>';
+                                                                        if($a == 1 || $a == 2)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                        }
+                                                                        if($a == 3)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                        }
+                                                                        if($a == 4)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                        }
+                                                                        if($a == 5)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                        }
+                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
                                                                     </td>
-                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['tahun_perubahan'].'</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordian-body collapse" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped">
+                                                                        <div class="accordion-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                            <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
                                                                                     $tujuans = [];
                                                                                     foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->orderBy('tahun_perubahan','desc')
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan',$tahun_sekarang)
                                                                                                                 ->latest()
                                                                                                                 ->first();
                                                                                         if($cek_perubahan_tujuan)
@@ -874,16 +967,30 @@ class SasaranController extends Controller
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
                                                                                         $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="15%">'.$tujuan['kode'].'</td>
-                                                                                                    <td width="50%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
                                                                                                         '.$tujuan['deskripsi'].'
-                                                                                                        <br>
-                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                        <br>';
+                                                                                                        if($a == 1 || $a == 2)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                        }
+                                                                                                        if($a == 3)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                        }
+                                                                                                        if($a == 4)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                        }
+                                                                                                        if($a == 5)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                        }
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                     </td>
-                                                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$tujuan['tahun_perubahan'].'</td>
-                                                                                                    <td>
+                                                                                                    <td width ="20%">
                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                         <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
                                                                                                         <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
@@ -891,13 +998,13 @@ class SasaranController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordian-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped">
+                                                                                                        <div class="accordion-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->orderBy('tahun_perubahan', 'desc')
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
                                                                                                                                                     ->latest()->first();
                                                                                                                         if($cek_perubahan_sasaran)
                                                                                                                         {
@@ -918,17 +1025,31 @@ class SasaranController extends Controller
                                                                                                                     }
                                                                                                                     foreach ($sasarans as $sasaran) {
                                                                                                                         $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="15%">'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="50%">
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="70%">
                                                                                                                                         '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>
-                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
+                                                                                                                                        <br>';
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="15%">'.$sasaran['tahun_perubahan'].'</td>
-                                                                                                                                    <td width="20%">
+                                                                                                                                    <td width="25%">
                                                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_indikator_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranIndikatorModal" title="Tambah Data Sasaran Indikator" data-sasaran-id="'.$sasaran['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
@@ -936,28 +1057,45 @@ class SasaranController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordian-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped">
+                                                                                                                                        <div class="accordion-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
+                                                                                                                                                        <th width="5%"><strong>No</strong></th>
                                                                                                                                                         <th width="50%"><strong>Sasaran Indikator</strong></th>
                                                                                                                                                         <th width="15%"><strong>Target</strong></th>
                                                                                                                                                         <th width="15%"><strong>Satuan</strong></th>
-                                                                                                                                                        <th width="20%"><strong>Aksi</strong></th>
+                                                                                                                                                        <th width="15%"><strong>Aksi</strong></th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
                                                                                                                                                     $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                    $b = 1;
                                                                                                                                                     foreach ($sasaran_indikators as $sasaran_indikator) {
                                                                                                                                                         $html .= '<tr>
-                                                                                                                                                                    <td width="50%">
+                                                                                                                                                                    <td>'.$b++.'</td>
+                                                                                                                                                                    <td>
                                                                                                                                                                         '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>
-                                                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
-                                                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                                                        <br>';
+                                                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 3)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 4)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 5)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                                                     </td>
                                                                                                                                                                     <td width="15%">
                                                                                                                                                                         '.$sasaran_indikator['target'].'
@@ -987,6 +1125,7 @@ class SasaranController extends Controller
                                                                         </div>
                                                                     </td>
                                                                 </tr>';
+                                                    $a++;
                                                     }
                                                 $html .= '</tbody>
                                             </table>
@@ -998,7 +1137,6 @@ class SasaranController extends Controller
                         </table>
                     </div>
                 </div>';
-
         return response()->json(['success' => $html]);
     }
 
@@ -1050,6 +1188,7 @@ class SasaranController extends Controller
         $sasaran_indikator->save();
 
         $get_visis = Visi::all();
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
@@ -1063,20 +1202,28 @@ class SasaranController extends Controller
                 ];
             } else {
                 $visis[] = [
-                    'id' => $get_visi->visi_id,
+                    'id' => $get_visi->id,
                     'deskripsi' => $get_visi->deskripsi,
                     'tahun_perubahan' => $get_visi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingSasaran" checked>
+                            <label class="form-check-label" for="onOffTaggingSasaran">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="sasaran_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th width="15%">Kode</th>
-                                    <th width="85%">Visi</th>
+                                    <th width="5%">Kode</th>
+                                    <th width="95%">Deskripsi</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -1086,18 +1233,18 @@ class SasaranController extends Controller
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
                                         '.$visi['deskripsi'].'
                                         <br>
-                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordian-body collapse" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped">
+                                        <div class="accordion-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                            <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
                                                     $misis = [];
                                                     foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->orderBy('tahun_perubahan', 'desc')
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_sekarang)
                                                                                 ->latest()->first();
                                                         if($cek_perubahan_misi)
                                                         {
@@ -1116,26 +1263,41 @@ class SasaranController extends Controller
                                                             ];
                                                         }
                                                     }
+                                                    $a = 1;
                                                     foreach ($misis as $misi) {
                                                         $html .= '<tr>
-                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="70%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
                                                                         '.$misi['deskripsi'].'
-                                                                        <br>
-                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                        <br>';
+                                                                        if($a == 1 || $a == 2)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                        }
+                                                                        if($a == 3)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                        }
+                                                                        if($a == 4)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                        }
+                                                                        if($a == 5)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                        }
+                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
                                                                     </td>
-                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['tahun_perubahan'].'</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordian-body collapse" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped">
+                                                                        <div class="accordion-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                            <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
                                                                                     $tujuans = [];
                                                                                     foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->orderBy('tahun_perubahan','desc')
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan',$tahun_sekarang)
                                                                                                                 ->latest()
                                                                                                                 ->first();
                                                                                         if($cek_perubahan_tujuan)
@@ -1157,16 +1319,30 @@ class SasaranController extends Controller
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
                                                                                         $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="15%">'.$tujuan['kode'].'</td>
-                                                                                                    <td width="50%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
                                                                                                         '.$tujuan['deskripsi'].'
-                                                                                                        <br>
-                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                        <br>';
+                                                                                                        if($a == 1 || $a == 2)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                        }
+                                                                                                        if($a == 3)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                        }
+                                                                                                        if($a == 4)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                        }
+                                                                                                        if($a == 5)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                        }
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                     </td>
-                                                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$tujuan['tahun_perubahan'].'</td>
-                                                                                                    <td>
+                                                                                                    <td width ="20%">
                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                         <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
                                                                                                         <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
@@ -1174,13 +1350,13 @@ class SasaranController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordian-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped">
+                                                                                                        <div class="accordion-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->orderBy('tahun_perubahan', 'desc')
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
                                                                                                                                                     ->latest()->first();
                                                                                                                         if($cek_perubahan_sasaran)
                                                                                                                         {
@@ -1201,17 +1377,31 @@ class SasaranController extends Controller
                                                                                                                     }
                                                                                                                     foreach ($sasarans as $sasaran) {
                                                                                                                         $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="15%">'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="50%">
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="70%">
                                                                                                                                         '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>
-                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
+                                                                                                                                        <br>';
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="15%">'.$sasaran['tahun_perubahan'].'</td>
-                                                                                                                                    <td width="20%">
+                                                                                                                                    <td width="25%">
                                                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_indikator_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranIndikatorModal" title="Tambah Data Sasaran Indikator" data-sasaran-id="'.$sasaran['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
@@ -1219,28 +1409,45 @@ class SasaranController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordian-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped">
+                                                                                                                                        <div class="accordion-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
+                                                                                                                                                        <th width="5%"><strong>No</strong></th>
                                                                                                                                                         <th width="50%"><strong>Sasaran Indikator</strong></th>
                                                                                                                                                         <th width="15%"><strong>Target</strong></th>
                                                                                                                                                         <th width="15%"><strong>Satuan</strong></th>
-                                                                                                                                                        <th width="20%"><strong>Aksi</strong></th>
+                                                                                                                                                        <th width="15%"><strong>Aksi</strong></th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
                                                                                                                                                     $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                    $b = 1;
                                                                                                                                                     foreach ($sasaran_indikators as $sasaran_indikator) {
                                                                                                                                                         $html .= '<tr>
-                                                                                                                                                                    <td width="50%">
+                                                                                                                                                                    <td>'.$b++.'</td>
+                                                                                                                                                                    <td>
                                                                                                                                                                         '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>
-                                                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
-                                                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                                                        <br>';
+                                                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 3)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 4)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 5)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                                                     </td>
                                                                                                                                                                     <td width="15%">
                                                                                                                                                                         '.$sasaran_indikator['target'].'
@@ -1270,6 +1477,7 @@ class SasaranController extends Controller
                                                                         </div>
                                                                     </td>
                                                                 </tr>';
+                                                    $a++;
                                                     }
                                                 $html .= '</tbody>
                                             </table>
@@ -1281,7 +1489,6 @@ class SasaranController extends Controller
                         </table>
                     </div>
                 </div>';
-
         return response()->json(['success' => $html]);
     }
 
@@ -1312,6 +1519,7 @@ class SasaranController extends Controller
         $sasaran_indikator->save();
 
         $get_visis = Visi::all();
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
@@ -1325,20 +1533,28 @@ class SasaranController extends Controller
                 ];
             } else {
                 $visis[] = [
-                    'id' => $get_visi->visi_id,
+                    'id' => $get_visi->id,
                     'deskripsi' => $get_visi->deskripsi,
                     'tahun_perubahan' => $get_visi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingSasaran" checked>
+                            <label class="form-check-label" for="onOffTaggingSasaran">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="sasaran_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th width="15%">Kode</th>
-                                    <th width="85%">Visi</th>
+                                    <th width="5%">Kode</th>
+                                    <th width="95%">Deskripsi</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -1348,18 +1564,18 @@ class SasaranController extends Controller
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
                                         '.$visi['deskripsi'].'
                                         <br>
-                                        <span class="badge bg-primary text-uppercase">Visi</span>
+                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordian-body collapse" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped">
+                                        <div class="accordion-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                            <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
                                                     $misis = [];
                                                     foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->orderBy('tahun_perubahan', 'desc')
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_sekarang)
                                                                                 ->latest()->first();
                                                         if($cek_perubahan_misi)
                                                         {
@@ -1378,26 +1594,41 @@ class SasaranController extends Controller
                                                             ];
                                                         }
                                                     }
+                                                    $a = 1;
                                                     foreach ($misis as $misi) {
                                                         $html .= '<tr>
-                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="70%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
                                                                         '.$misi['deskripsi'].'
-                                                                        <br>
-                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                        <br>';
+                                                                        if($a == 1 || $a == 2)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                        }
+                                                                        if($a == 3)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                        }
+                                                                        if($a == 4)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                        }
+                                                                        if($a == 5)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                        }
+                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
                                                                     </td>
-                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['tahun_perubahan'].'</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordian-body collapse" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped">
+                                                                        <div class="accordion-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                            <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
                                                                                     $tujuans = [];
                                                                                     foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->orderBy('tahun_perubahan','desc')
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan',$tahun_sekarang)
                                                                                                                 ->latest()
                                                                                                                 ->first();
                                                                                         if($cek_perubahan_tujuan)
@@ -1419,16 +1650,30 @@ class SasaranController extends Controller
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
                                                                                         $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="15%">'.$tujuan['kode'].'</td>
-                                                                                                    <td width="50%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
                                                                                                         '.$tujuan['deskripsi'].'
-                                                                                                        <br>
-                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
+                                                                                                        <br>';
+                                                                                                        if($a == 1 || $a == 2)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                        }
+                                                                                                        if($a == 3)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                        }
+                                                                                                        if($a == 4)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                        }
+                                                                                                        if($a == 5)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                        }
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                     </td>
-                                                                                                    <td width="15%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$tujuan['tahun_perubahan'].'</td>
-                                                                                                    <td>
+                                                                                                    <td width ="20%">
                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                         <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
                                                                                                         <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
@@ -1436,13 +1681,13 @@ class SasaranController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordian-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped">
+                                                                                                        <div class="accordion-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->orderBy('tahun_perubahan', 'desc')
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
                                                                                                                                                     ->latest()->first();
                                                                                                                         if($cek_perubahan_sasaran)
                                                                                                                         {
@@ -1463,17 +1708,31 @@ class SasaranController extends Controller
                                                                                                                     }
                                                                                                                     foreach ($sasarans as $sasaran) {
                                                                                                                         $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="15%">'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="50%">
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="70%">
                                                                                                                                         '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>
-                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
+                                                                                                                                        <br>';
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="15%">'.$sasaran['tahun_perubahan'].'</td>
-                                                                                                                                    <td width="20%">
+                                                                                                                                    <td width="25%">
                                                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_indikator_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranIndikatorModal" title="Tambah Data Sasaran Indikator" data-sasaran-id="'.$sasaran['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
@@ -1481,28 +1740,45 @@ class SasaranController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordian-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped">
+                                                                                                                                        <div class="accordion-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
+                                                                                                                                                        <th width="5%"><strong>No</strong></th>
                                                                                                                                                         <th width="50%"><strong>Sasaran Indikator</strong></th>
                                                                                                                                                         <th width="15%"><strong>Target</strong></th>
                                                                                                                                                         <th width="15%"><strong>Satuan</strong></th>
-                                                                                                                                                        <th width="20%"><strong>Aksi</strong></th>
+                                                                                                                                                        <th width="15%"><strong>Aksi</strong></th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
                                                                                                                                                     $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                    $b = 1;
                                                                                                                                                     foreach ($sasaran_indikators as $sasaran_indikator) {
                                                                                                                                                         $html .= '<tr>
-                                                                                                                                                                    <td width="50%">
+                                                                                                                                                                    <td>'.$b++.'</td>
+                                                                                                                                                                    <td>
                                                                                                                                                                         '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>
-                                                                                                                                                                        <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                                                                                                                        <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase">'.$tujuan['kode'].' Tujuan</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase">'.$sasaran['kode'].' Sasaran</span>
-                                                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                                                        <br>';
+                                                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 3)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 4)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 5)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                                                     </td>
                                                                                                                                                                     <td width="15%">
                                                                                                                                                                         '.$sasaran_indikator['target'].'
@@ -1532,6 +1808,7 @@ class SasaranController extends Controller
                                                                         </div>
                                                                     </td>
                                                                 </tr>';
+                                                    $a++;
                                                     }
                                                 $html .= '</tbody>
                                             </table>
@@ -1543,7 +1820,6 @@ class SasaranController extends Controller
                         </table>
                     </div>
                 </div>';
-
         return response()->json(['success' => $html]);
     }
 }

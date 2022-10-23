@@ -28,6 +28,7 @@ class VisiController extends Controller
         if(request()->ajax())
         {
             $data = Visi::latest()->get();
+            $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
@@ -39,8 +40,8 @@ class VisiController extends Controller
                     $button = $button_show . ' ' . $button_edit;
                     return $button;
                 })
-                ->editColumn('deskripsi', function($data){
-                    $cek_perubahan = PivotPerubahanVisi::where('visi_id',$data->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                ->editColumn('deskripsi', function($data) use ($tahun_sekarang){
+                    $cek_perubahan = PivotPerubahanVisi::where('visi_id',$data->id)->where('tahun_perubahan', $tahun_sekarang)->latest()->first();
                     if($cek_perubahan)
                     {
                         return $cek_perubahan->deskripsi;
@@ -48,15 +49,15 @@ class VisiController extends Controller
                         return $data->deskripsi;
                     }
                 })
-                ->editColumn('tahun_perubahan', function($data){
-                    $cek_perubahan = PivotPerubahanVisi::where('visi_id', $data->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                    if($cek_perubahan)
-                    {
-                        return $cek_perubahan->tahun_perubahan;
-                    } else {
-                        return $data->tahun_perubahan;
-                    }
-                })
+                // ->editColumn('tahun_perubahan', function($data) use ($tahun_sekarang){
+                //     $cek_perubahan = PivotPerubahanVisi::where('visi_id', $data->id)->where('tahun_perubahan', $tahun_sekarang)->latest()->first();
+                //     if($cek_perubahan)
+                //     {
+                //         return $cek_perubahan->tahun_perubahan;
+                //     } else {
+                //         return $data->tahun_perubahan;
+                //     }
+                // })
                 ->rawColumns(['aksi'])
                 ->make(true);
         }
@@ -90,22 +91,23 @@ class VisiController extends Controller
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
-        $cek_visi = Visi::where('tahun_perubahan', $request->visi_tahun_perubahan)->first();
-        if($cek_visi)
-        {
-            $pivot = new PivotPerubahanVisi;
-            $pivot->visi_id = $cek_visi->id;
-            $pivot->deskripsi = $request->visi_deskripsi;
-            $pivot->tahun_perubahan = $request->visi_tahun_perubahan;
-            $visi->kabupaten_id = 62;
-            $pivot->save();
-        } else {
-            $visi = new Visi;
-            $visi->deskripsi = $request->visi_deskripsi;
-            $visi->tahun_perubahan = $request->visi_tahun_perubahan;
-            $visi->kabupaten_id = 62;
-            $visi->save();
-        }
+        // $cek_visi = Visi::where('tahun_perubahan', $request->visi_tahun_perubahan)->first();
+        // if($cek_visi)
+        // {
+        //     $pivot = new PivotPerubahanVisi;
+        //     $pivot->visi_id = $cek_visi->id;
+        //     $pivot->deskripsi = $request->visi_deskripsi;
+        //     $pivot->tahun_perubahan = $request->visi_tahun_perubahan;
+        //     $pivot->kabupaten_id = 62;
+        //     $pivot->save();
+        // } else {
+
+        // }
+        $visi = new Visi;
+        $visi->deskripsi = $request->visi_deskripsi;
+        $visi->tahun_perubahan = $request->visi_tahun_perubahan;
+        $visi->kabupaten_id = 62;
+        $visi->save();
 
         return response()->json(['success' => 'Berhasil Menambahkan Visi']);
     }

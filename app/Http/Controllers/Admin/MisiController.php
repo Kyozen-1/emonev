@@ -118,7 +118,7 @@ class MisiController extends Controller
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
-        $cek_misi = Misi::where('kode', $request->misi_kode)->first();
+        $cek_misi = Misi::where('kode', $request->misi_kode)->where('visi_id', $request->misi_visi_id)->first();
         if($cek_misi)
         {
             $pivot = new PivotPerubahanMisi;
@@ -140,9 +140,10 @@ class MisiController extends Controller
         }
 
         $get_visis = Visi::all();
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun_sekarang)
                                     ->latest()->first();
             if($cek_perubahan_visi)
             {
@@ -153,19 +154,27 @@ class MisiController extends Controller
                 ];
             } else {
                 $visis[] = [
-                    'id' => $get_visi->visi_id,
+                    'id' => $get_visi->id,
                     'deskripsi' => $get_visi->deskripsi,
                     'tahun_perubahan' => $get_visi->tahun_perubahan
                 ];
             }
         }
-        $html = '<div class="data-table-rows slim" id="misi_div_table">
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingMisi" checked>
+                            <label class="form-check-label" for="onOffTaggingMisi">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="misi_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th width="15%">Kode</th>
-                                    <th width="65%">Visi</th>
+                                    <th width="5%">Kode</th>
+                                    <th width="75%">Deskripsi</th>
                                     <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
@@ -176,7 +185,7 @@ class MisiController extends Controller
                                 foreach($get_misis as $get_misi)
                                 {
                                     $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                            ->orderBy('tahun_perubahan', 'desc')
+                                                            ->where('tahun_perubahan', $tahun_sekarang)
                                                             ->latest()
                                                             ->first();
                                     if($cek_perubahan_misi)
@@ -185,14 +194,14 @@ class MisiController extends Controller
                                             'id' => $cek_perubahan_misi->misi_id,
                                             'kode' => $cek_perubahan_misi->kode,
                                             'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
+                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
                                         ];
                                     } else {
                                         $misis[] = [
                                             'id' => $get_misi->id,
                                             'kode' => $get_misi->kode,
                                             'deskripsi' => $get_misi->deskripsi,
-                                            'tahun_perubahan' => $get_misi->tahun_perubahan
+                                            'tahun_perubahan' => $get_misi->tahun_perubahan,
                                         ];
                                     }
                                 }
@@ -201,7 +210,7 @@ class MisiController extends Controller
                                             <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle">
                                                 '.$visi['deskripsi'].'
                                                 <br>
-                                                <span class="badge bg-primary text-uppercase">Visi</span>
+                                                <span class="badge bg-primary text-uppercase misi-tagging">Visi</span>
                                             </td>
                                             <td>
                                                 <button class="btn btn-primary waves-effect waves-light mr-2 misi_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditMisiModal" title="Tambah Data Misi" data-visi-id="'.$visi['id'].'"><i class="fas fa-plus"></i></button>
@@ -209,24 +218,40 @@ class MisiController extends Controller
                                         </tr>
                                         <tr>
                                             <td colspan="3" class="hiddenRow">
-                                                <div class="accordian-body collapse" id="misi_visi'.$visi['id'].'">
+                                                <div class="accordion-body collapse" id="misi_visi'.$visi['id'].'">
                                                     <table class="table table-striped">
                                                         <tbody>';
+                                                        $a = 1;
                                                         foreach ($misis as $misi) {
                                                             $html .= '<tr>
-                                                                        <td width="15%">'.$misi['kode'].'</td>
-                                                                        <td width="50%">
+                                                                        <td width="5%">'.$misi['kode'].'</td>
+                                                                        <td width="75%">
                                                                             '.$misi['deskripsi'].'
-                                                                            <br>
-                                                                            <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                            <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                            <br>';
+                                                                            if($a == 1 || $a == 2)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Aman]</span>';
+                                                                            }
+                                                                            if($a == 3)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Mandiri]</span>';
+                                                                            }
+                                                                            if($a == 4)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Sejahtera]</span>';
+                                                                            }
+                                                                            if($a == 5)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Berahlak]</span>';
+                                                                            }
+                                                                            $html .= ' <span class="badge bg-warning text-uppercase misi-tagging">Misi '.$misi['kode'].'</span>
                                                                         </td>
-                                                                        <td width="15%">'.$misi['tahun_perubahan'].'</td>
                                                                         <td width="20%">
                                                                             <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-misi" data-misi-id="'.$misi['id'].'" type="button" title="Detail Misi"><i class="fas fa-eye"></i></button>
                                                                             <button class="btn btn-icon btn-warning waves-effect waves-light edit-misi" data-misi-id="'.$misi['id'].'" data-visi-id="'.$visi['id'].'" type="button" title="Edit Misi"><i class="fas fa-edit"></i></button>
                                                                         </td>
                                                                     </tr>';
+                                                            $a++;
                                                         }
                                                         $html .= '</tbody>
                                                     </table>
@@ -384,9 +409,10 @@ class MisiController extends Controller
         $pivot_perubahan->save();
 
         $get_visis = Visi::all();
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun_sekarang)
                                     ->latest()->first();
             if($cek_perubahan_visi)
             {
@@ -397,19 +423,27 @@ class MisiController extends Controller
                 ];
             } else {
                 $visis[] = [
-                    'id' => $get_visi->visi_id,
+                    'id' => $get_visi->id,
                     'deskripsi' => $get_visi->deskripsi,
                     'tahun_perubahan' => $get_visi->tahun_perubahan
                 ];
             }
         }
-        $html = '<div class="data-table-rows slim" id="misi_div_table">
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingMisi" checked>
+                            <label class="form-check-label" for="onOffTaggingMisi">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="misi_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
-                                    <th width="15%">Kode</th>
-                                    <th width="65%">Visi</th>
+                                    <th width="5%">Kode</th>
+                                    <th width="75%">Deskripsi</th>
                                     <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
@@ -420,7 +454,7 @@ class MisiController extends Controller
                                 foreach($get_misis as $get_misi)
                                 {
                                     $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                            ->orderBy('tahun_perubahan', 'desc')
+                                                            ->where('tahun_perubahan', $tahun_sekarang)
                                                             ->latest()
                                                             ->first();
                                     if($cek_perubahan_misi)
@@ -429,14 +463,14 @@ class MisiController extends Controller
                                             'id' => $cek_perubahan_misi->misi_id,
                                             'kode' => $cek_perubahan_misi->kode,
                                             'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
+                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
                                         ];
                                     } else {
                                         $misis[] = [
                                             'id' => $get_misi->id,
                                             'kode' => $get_misi->kode,
                                             'deskripsi' => $get_misi->deskripsi,
-                                            'tahun_perubahan' => $get_misi->tahun_perubahan
+                                            'tahun_perubahan' => $get_misi->tahun_perubahan,
                                         ];
                                     }
                                 }
@@ -445,7 +479,7 @@ class MisiController extends Controller
                                             <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle">
                                                 '.$visi['deskripsi'].'
                                                 <br>
-                                                <span class="badge bg-primary text-uppercase">Visi</span>
+                                                <span class="badge bg-primary text-uppercase misi-tagging">Visi</span>
                                             </td>
                                             <td>
                                                 <button class="btn btn-primary waves-effect waves-light mr-2 misi_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditMisiModal" title="Tambah Data Misi" data-visi-id="'.$visi['id'].'"><i class="fas fa-plus"></i></button>
@@ -453,24 +487,40 @@ class MisiController extends Controller
                                         </tr>
                                         <tr>
                                             <td colspan="3" class="hiddenRow">
-                                                <div class="accordian-body collapse" id="misi_visi'.$visi['id'].'">
+                                                <div class="accordion-body collapse" id="misi_visi'.$visi['id'].'">
                                                     <table class="table table-striped">
                                                         <tbody>';
+                                                        $a = 1;
                                                         foreach ($misis as $misi) {
                                                             $html .= '<tr>
-                                                                        <td width="15%">'.$misi['kode'].'</td>
-                                                                        <td width="50%">
+                                                                        <td width="5%">'.$misi['kode'].'</td>
+                                                                        <td width="75%">
                                                                             '.$misi['deskripsi'].'
-                                                                            <br>
-                                                                            <span class="badge bg-primary text-uppercase">Visi</span>
-                                                                            <span class="badge bg-warning text-uppercase">'.$misi['kode'].' Misi</span>
+                                                                            <br>';
+                                                                            if($a == 1 || $a == 2)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Aman]</span>';
+                                                                            }
+                                                                            if($a == 3)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Mandiri]</span>';
+                                                                            }
+                                                                            if($a == 4)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Sejahtera]</span>';
+                                                                            }
+                                                                            if($a == 5)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Berahlak]</span>';
+                                                                            }
+                                                                            $html .= ' <span class="badge bg-warning text-uppercase misi-tagging">Misi '.$misi['kode'].'</span>
                                                                         </td>
-                                                                        <td width="15%">'.$misi['tahun_perubahan'].'</td>
                                                                         <td width="20%">
                                                                             <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-misi" data-misi-id="'.$misi['id'].'" type="button" title="Detail Misi"><i class="fas fa-eye"></i></button>
                                                                             <button class="btn btn-icon btn-warning waves-effect waves-light edit-misi" data-misi-id="'.$misi['id'].'" data-visi-id="'.$visi['id'].'" type="button" title="Edit Misi"><i class="fas fa-edit"></i></button>
                                                                         </td>
                                                                     </tr>';
+                                                            $a++;
                                                         }
                                                         $html .= '</tbody>
                                                     </table>
