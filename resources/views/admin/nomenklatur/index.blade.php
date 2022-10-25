@@ -122,12 +122,12 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#kegiatan" role="tab" type="button" aria-selected="false">
+                            <button id="kegiatan_tab_button" class="nav-link" data-bs-toggle="tab" data-bs-target="#kegiatan" role="tab" type="button" aria-selected="false">
                                 Kegiatan
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sub_kegiatan" role="tab" type="button" aria-selected="false">
+                            <button id="sub_kegiatan_tab_button" class="nav-link" data-bs-toggle="tab" data-bs-target="#sub_kegiatan" role="tab" type="button" aria-selected="false">
                                 Sub Kegiatan
                             </button>
                         </li>
@@ -173,391 +173,60 @@
 
                         {{-- Kegiatan Start --}}
                         <div class="tab-pane fade" id="kegiatan" role="tabpanel">
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="onOffTaggingKegiatan" checked>
-                                        <label class="form-check-label" for="onOffTaggingKegiatan">On / Off Tagging</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="data-table-rows slim">
-                                <div class="data-table-responsive-wrapper">
-                                    <table class="table table-striped table-condesed">
-                                        <thead>
-                                            <tr>
-                                                <th width="15%">Kode</th>
-                                                <th width="70%">Deskripsi</th>
-                                                <th width="15%">Tahun Perubahan</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($urusans as $urusan)
-                                                @php
-                                                    $get_programs = Program::where('urusan_id', $urusan['id'])->get();
-                                                    $programs = [];
-                                                    foreach ($get_programs as $get_program) {
-                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                        if($cek_perubahan_program)
-                                                        {
-                                                            $programs[] = [
-                                                                'id' => $cek_perubahan_program->program_id,
-                                                                'kode' => $cek_perubahan_program->kode,
-                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                                'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                            ];
-                                                        } else {
-                                                            $programs[] = [
-                                                                'id' => $get_program->id,
-                                                                'kode' => $get_program->kode,
-                                                                'deskripsi' => $get_program->deskripsi,
-                                                                'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                                'status_aturan' => $get_program->status_aturan,
-                                                            ];
-                                                        }
-                                                    }
-                                                @endphp
-                                                <tr>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['kode']}}
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['deskripsi']}}
-                                                        <br>
-                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">{{$urusan['kode']}} Urusan</span>
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['tahun_perubahan']}}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="3" class="hiddenRow">
-                                                        <div class="accordian-body collapse" id="kegiatan_urusan{{$urusan['id']}}">
-                                                            <table class="table table-striped table-condesed">
-                                                                {{-- <thead>
-                                                                    <tr>
-                                                                        <th width="15%">Kode</th>
-                                                                        <th width="50%">Program</th>
-                                                                        <th width="15%">Tahun Perubahan</th>
-                                                                        <th width="20%">Aksi</th>
-                                                                    </tr>
-                                                                </thead> --}}
-                                                                <tbody>
-                                                                    @foreach ($programs as $program)
-                                                                        <tr>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%">{{$urusan['kode']}}.{{$program['kode']}}</td>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="50%">
-                                                                                {{$program['deskripsi']}}
-                                                                                <br>
-                                                                                <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan {{$urusan['kode']}}</span>
-                                                                                <span class="badge bg-warning text-uppercase kegiatan-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
-                                                                            </td>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%"> {{$program['tahun_perubahan']}}</td>
-                                                                            <td width="20%">
-                                                                                <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="{{$program['id']}}"><i class="fas fa-plus"></i></button>
-                                                                                <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_kegiatan.xlsx') }}" title="Download Template Import Data Kegiatan"><i class="fas fa-file-excel"></i></a>
-                                                                                <button class="btn btn-info waves-effect waves-light kegiatan_btn_impor_template" title="Import Data Kegiatan" type="button" data-program-id="{{$program['id']}}"><i class="fas fa-file-import"></i></button>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td colspan="12" class="hiddenRow">
-                                                                                <div class="accordian-body collapse" id="kegiatan_program{{$program['id']}}">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        {{-- <thead>
-                                                                                            <tr></tr>
-                                                                                                <th>Kode</th>
-                                                                                                <th>Kegiatan</th>
-                                                                                                <th>Tahun Perubahan</th>
-                                                                                                <th>Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead> --}}
-                                                                                        <tbody>
-                                                                                            @php
-                                                                                                $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
-                                                                                                $kegiatans = [];
-                                                                                                foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                                    if($cek_perubahan_kegiatan)
-                                                                                                    {
-                                                                                                        $kegiatans[] = [
-                                                                                                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
-                                                                                                            'program_id' => $cek_perubahan_kegiatan->program_id,
-                                                                                                            'kode' => $cek_perubahan_kegiatan->kode,
-                                                                                                            'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
-                                                                                                            'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
-                                                                                                            'status_aturan' => $cek_perubahan_kegiatan->status_aturan
-                                                                                                        ];
-                                                                                                    } else {
-                                                                                                        $kegiatans[] = [
-                                                                                                            'id' => $get_kegiatan->id,
-                                                                                                            'program_id' => $get_kegiatan->program_id,
-                                                                                                            'kode' => $get_kegiatan->kode,
-                                                                                                            'deskripsi' => $get_kegiatan->deskripsi,
-                                                                                                            'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
-                                                                                                            'status_aturan' => $get_kegiatan->status_aturan
-                                                                                                        ];
-                                                                                                    }
-                                                                                                }
-                                                                                            @endphp
-                                                                                            @foreach ($kegiatans as $kegiatan)
-                                                                                                <tr>
-                                                                                                    <td width="15%">{{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}</td>
-                                                                                                    <td width="50%">
-                                                                                                        {{$kegiatan['deskripsi']}}
-                                                                                                        <br>
-                                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">{{$urusan['kode']}} Urusan</span>
-                                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">{{$urusan['kode']}}.{{$program['kode']}} Program</span>
-                                                                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">{{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}} Kegiatan</span>
-                                                                                                    </td>
-                                                                                                    <td width="15%">{{$kegiatan['tahun_perubahan']}}</td>
-                                                                                                    <td width="20%">
-                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="{{$kegiatan['id']}}" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-kegiatan" data-kegiatan-id="{{$kegiatan['id']}}" data-program-id="{{$program['id']}}" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            @endforeach
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                            <div id="kegiatanDiv"></div>
                         </div>
                         {{-- Kegiatan End --}}
 
                         {{-- Sub Kegiatan Start --}}
                         <div class="tab-pane fade" id="sub_kegiatan" role="tabpanel">
-                            <div class="row mb-3">
+                            <div class="row mb-5">
                                 <div class="col-12">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="onOffTaggingSubKegiatan" checked>
-                                        <label class="form-check-label" for="onOffTaggingSubKegiatan">On / Off Tagging</label>
+                                    <h2 class="small-title">Filter Data</h2>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Urusan</label>
+                                        <select name="sub_kegiatan_filter_urusan" id="sub_kegiatan_filter_urusan" class="form-control">
+                                            <option value="">--- Pilih Urusan ---</option>
+                                            @foreach ($urusans as $urusan)
+                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Program</label>
+                                        <select name="sub_kegiatan_filter_program" id="sub_kegiatan_filter_program" class="form-control" disabled>
+                                            <option value="">--- Pilih Program ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Kegiatan</label>
+                                        <select name="sub_kegiatan_filter_kegiatan" id="sub_kegiatan_filter_kegiatan" class="form-control" disabled>
+                                            <option value="">--- Pilih Kegiatan ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Sub Kegiatan</label>
+                                        <select name="sub_kegiatan_filter_sub_kegiatan" id="sub_kegiatan_filter_sub_kegiatan" class="form-control" disabled>
+                                            <option value="">--- Pilih Sub Kegiatan ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                        <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="sub_kegiatan_btn_filter">Filter Data</button>
+                                        <button class="btn btn-secondary waves-effect waves-light" type="button" id="sub_kegiatan_btn_reset">Reset</button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="data-table-rows slim">
-                                <div class="data-table-responsive-wrapper">
-                                    <table class="table table-striped table-condesed">
-                                        <thead>
-                                            <tr>
-                                                <th width="15%">Kode</th>
-                                                <th width="70%">Deskripsi</th>
-                                                <th width="15%">Tahun Perubahan</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($urusans as $urusan)
-                                                @php
-                                                    $get_programs = Program::where('urusan_id', $urusan['id'])->get();
-                                                    $programs = [];
-                                                    foreach ($get_programs as $get_program) {
-                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                        if($cek_perubahan_program)
-                                                        {
-                                                            $programs[] = [
-                                                                'id' => $cek_perubahan_program->program_id,
-                                                                'kode' => $cek_perubahan_program->kode,
-                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                                'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                            ];
-                                                        } else {
-                                                            $programs[] = [
-                                                                'id' => $get_program->id,
-                                                                'kode' => $get_program->kode,
-                                                                'deskripsi' => $get_program->deskripsi,
-                                                                'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                                'status_aturan' => $get_program->status_aturan,
-                                                            ];
-                                                        }
-                                                    }
-                                                @endphp
-                                                <tr>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['kode']}}
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['deskripsi']}}
-                                                        <br>
-                                                        <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">{{$urusan['kode']}} Urusan</span>
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['tahun_perubahan']}}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="3" class="hiddenRow">
-                                                        <div class="accordian-body collapse" id="sub_kegiatan_urusan{{$urusan['id']}}">
-                                                            <table class="table table-striped table-condesed">
-                                                                {{-- <thead>
-                                                                    <tr>
-                                                                        <th width="15%">Kode</th>
-                                                                        <th width="50%">Program</th>
-                                                                        <th width="15%">Tahun Perubahan</th>
-                                                                        <th width="20%">Aksi</th>
-                                                                    </tr>
-                                                                </thead> --}}
-                                                                <tbody>
-                                                                    @foreach ($programs as $program)
-                                                                        <tr>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%">
-                                                                                {{$urusan['kode']}}.{{$program['kode']}}
-                                                                            </td>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="70%">
-                                                                                {{$program['deskripsi']}}
-                                                                                <br>
-                                                                                <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan {{$urusan['kode']}}</span>
-                                                                                <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
-                                                                            </td>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program{{$program['id']}}" class="accordion-toggle" width="15%"> {{$program['tahun_perubahan']}}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td colspan="12" class="hiddenRow">
-                                                                                <div class="accordian-body collapse" id="sub_kegiatan_program{{$program['id']}}">
-                                                                                    <table class="table table-striped">
-                                                                                        {{-- <thead>
-                                                                                            <tr></tr>
-                                                                                                <th>Kode</th>
-                                                                                                <th>Kegiatan</th>
-                                                                                                <th>Tahun Perubahan</th>
-                                                                                                <th>Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead> --}}
-                                                                                        <tbody>
-                                                                                            @php
-                                                                                                $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
-                                                                                                $kegiatans = [];
-                                                                                                foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                                    if($cek_perubahan_kegiatan)
-                                                                                                    {
-                                                                                                        $kegiatans[] = [
-                                                                                                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
-                                                                                                            'program_id' => $cek_perubahan_kegiatan->program_id,
-                                                                                                            'kode' => $cek_perubahan_kegiatan->kode,
-                                                                                                            'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
-                                                                                                            'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
-                                                                                                            'status_aturan' => $cek_perubahan_kegiatan->status_aturan
-                                                                                                        ];
-                                                                                                    } else {
-                                                                                                        $kegiatans[] = [
-                                                                                                            'id' => $get_kegiatan->id,
-                                                                                                            'program_id' => $get_kegiatan->program_id,
-                                                                                                            'kode' => $get_kegiatan->kode,
-                                                                                                            'deskripsi' => $get_kegiatan->deskripsi,
-                                                                                                            'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
-                                                                                                            'status_aturan' => $get_kegiatan->status_aturan
-                                                                                                        ];
-                                                                                                    }
-                                                                                                }
-                                                                                            @endphp
-                                                                                            @php
-                                                                                                $a = 1;
-                                                                                            @endphp
-                                                                                            @foreach ($kegiatans as $kegiatan)
-                                                                                                <tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="15%">
-                                                                                                        {{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}
-                                                                                                    </td>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="50%">
-                                                                                                        {{$kegiatan['deskripsi']}}
-                                                                                                        <br>
-                                                                                                        <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan {{$urusan['kode']}}</span>
-                                                                                                        <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
-                                                                                                        <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">{{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}} Kegiatan</span>
-                                                                                                    </td>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan{{$kegiatan['id']}}" class="accordion-toggle" width="15%">{{$kegiatan['tahun_perubahan']}}</td>
-                                                                                                    <td width="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="{{$kegiatan['id']}}"><i class="fas fa-plus"></i></button>
-                                                                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_sub_kegiatan.xlsx') }}" title="Download Template Import Data Sub Kegiatan"><i class="fas fa-file-excel"></i></a>
-                                                                                                        <button class="btn btn-info waves-effect waves-light sub_kegiatan_btn_impor_template" title="Import Data Sub Kegiatan" type="button" data-kegiatan-id="{{$kegiatan['id']}}"><i class="fas fa-file-import"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="12" class="hiddenRow">
-                                                                                                        <div class="accordian-body collapse" id="sub_kegiatan_kegiatan{{$kegiatan['id']}}">
-                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                <tbody>
-                                                                                                                    @php
-                                                                                                                        $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                        $sub_kegiatans = [];
-                                                                                                                        foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
-                                                                                                                            $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                                                            if($cek_perubahan_sub_kegiatan)
-                                                                                                                            {
-                                                                                                                                $sub_kegiatans[] = [
-                                                                                                                                    'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
-                                                                                                                                    'kegiatan_id' => $cek_perubahan_sub_kegiatan->kegiatan_id,
-                                                                                                                                    'kode' => $cek_perubahan_sub_kegiatan->kode,
-                                                                                                                                    'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi,
-                                                                                                                                    'tahun_perubahan' => $cek_perubahan_sub_kegiatan->tahun_perubahan,
-                                                                                                                                    'status_aturan' => $cek_perubahan_sub_kegiatan->status_aturan
-                                                                                                                                ];
-                                                                                                                            } else {
-                                                                                                                                $sub_kegiatans[] = [
-                                                                                                                                    'id' => $get_sub_kegiatan->id,
-                                                                                                                                    'kegiatan_id' => $get_sub_kegiatan->kegiatan_id,
-                                                                                                                                    'kode' => $get_sub_kegiatan->kode,
-                                                                                                                                    'deskripsi' => $get_sub_kegiatan->deskripsi,
-                                                                                                                                    'tahun_perubahan' => $get_sub_kegiatan->tahun_perubahan,
-                                                                                                                                    'status_aturan' => $get_sub_kegiatan->status_aturan
-                                                                                                                                ];
-                                                                                                                            }
-                                                                                                                        }
-                                                                                                                    @endphp
-                                                                                                                    @foreach ($sub_kegiatans as $sub_kegiatan)
-                                                                                                                        <tr>
-                                                                                                                            <td width="15%">
-                                                                                                                                {{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}.{{$sub_kegiatan['kode']}}
-                                                                                                                            </td>
-                                                                                                                            <td width="50%">
-                                                                                                                                {{$sub_kegiatan['deskripsi']}}
-                                                                                                                                <br>
-                                                                                                                                <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan {{$urusan['kode']}}</span>
-                                                                                                                                <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
-                                                                                                                                <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">Kegiatan {{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}</span>
-                                                                                                                                <span class="badge bg-info text-uppercase sub-kegiatan-tagging">Sub Kegiatan {{$urusan['kode']}}.{{$program['kode']}}.{{$kegiatan['kode']}}.{{$sub_kegiatan['kode']}}</span>
-                                                                                                                            </td>
-                                                                                                                            <td width="15%">{{$sub_kegiatan['tahun_perubahan']}}</td>
-                                                                                                                            <td width="20%">
-                                                                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sub-kegiatan" data-sub-kegiatan-id="{{$sub_kegiatan['id']}}" type="button" title="Detail Sub Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="{{$sub_kegiatan['id']}}" data-kegiatan-id="{{$kegiatan['id']}}" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
-                                                                                                                            </td>
-                                                                                                                        </tr>
-                                                                                                                    @endforeach
-                                                                                                                </tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            @endforeach
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                            <hr>
+                            <div id="subKegiatanDiv"></div>
                         </div>
                         {{-- Sub Kegiatan End --}}
                     </div>
@@ -1035,6 +704,11 @@
         $('.dropify').dropify();
         $('.dropify-wrapper').css('line-height', '3rem');
 
+        $('#sub_kegiatan_filter_urusan').select2();
+        $('#sub_kegiatan_filter_program').select2();
+        $('#sub_kegiatan_filter_kegiatan').select2();
+        $('#sub_kegiatan_filter_sub_kegiatan').select2();
+
         var dataTables = $('#urusan_table').DataTable({
             processing: true,
             serverSide: true,
@@ -1386,7 +1060,18 @@
     // Program End
 
     // Kegiatan Start
-    $('.kegiatan_create').click(function(){
+    $('#kegiatan_tab_button').click(function(){
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.get-kegiatan') }}",
+            dataType: "json",
+            success: function(data)
+            {
+                $('#kegiatanDiv').html(data.html);
+            }
+        });
+    });
+
+    $(document).on('click', '.kegiatan_create',function(){
         $('#kegiatan_program_id').val($(this).attr('data-program-id'));
         $('#kegiatan_form')[0].reset();
         $('#kegiatan_aksi_button').text('Save');
@@ -1507,14 +1192,25 @@
         });
     });
 
-    $('.kegiatan_btn_impor_template').click(function(){
+    $(document).on('click', '.kegiatan_btn_impor_template',function(){
         $('#kegiatan_impor_program_id').val($(this).attr('data-program-id'));
         $('#importKegiatanModal').modal('show');
     });
     // Kegiatan End
 
     // Sub Kegiatan Start
-    $('.sub_kegiatan_create').click(function(){
+    $('#sub_kegiatan_tab_button').click(function(){
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.get-sub-kegiatan') }}",
+            dataType: "json",
+            success: function(data)
+            {
+                $('#subKegiatanDiv').html(data.html);
+            }
+        });
+    });
+
+    $(document).on('click','.sub_kegiatan_create',function(){
         $('#sub_kegiatan_kegiatan_id').val($(this).attr('data-kegiatan-id'));
         $('#sub_kegiatan_form')[0].reset();
         $('#sub_kegiatan_aksi_button').text('Save');
@@ -1636,7 +1332,7 @@
         });
     });
 
-    $('.sub_kegiatan_btn_impor_template').click(function(){
+    $(document).on('click','.sub_kegiatan_btn_impor_template',function(){
         $('#sub_kegiatan_impor_kegiatan_id').val($(this).attr('data-kegiatan-id'));
         $('#importSubKegiatanModal').modal('show');
     });
@@ -1667,6 +1363,35 @@
             $('.sub-kegiatan-tagging').show();
         } else {
             $('.sub-kegiatan-tagging').hide();
+        }
+    });
+
+    // Filter Data Sub Kegiatan
+    $('#sub_kegiatan_filter_urusan').on('change', function(){
+        if($(this).val() != '')
+        {
+            $.ajax({
+                url: "{{ route('admin.nomenklatur.filter.get-program') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:$(this).val()
+                },
+                success: function(response){
+                    $('#sub_kegiatan_filter_program').empty();
+                    $('#sub_kegiatan_filter_program').prop('disabled', false);
+                    $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
+                    $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
+                    $('#sub_kegiatan_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                    $.each(response, function(key, value){
+                        $('#sub_kegiatan_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                    });
+                }
+            });
+        } else {
+            $('#sub_kegiatan_filter_program').prop('disabled', true);
+            $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
+            $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
         }
     });
 </script>

@@ -46,6 +46,9 @@ Route::group(['middleware' => 'auth:admin'], function(){
     //Nomenklatur
     Route::get('/admin/nomenklatur', 'Admin\NomenklaturController@index')->name('admin.nomenklatur.index');
     Route::get('/admin/nomenklatur/get-program', 'Admin\NomenklaturController@get_program')->name('admin.nomenklatur.get-program');
+    Route::get('/admin/nomenklatur/get-kegiatan', 'Admin\NomenklaturController@get_kegiatan')->name('admin.nomenklatur.get-kegiatan');
+    Route::get('/admin/nomenklatur/get-sub-kegiatan', 'Admin\NomenklaturController@get_sub_kegiatan')->name('admin.nomenklatur.get-sub-kegiatan');
+    Route::post('/admin/nomenklatur/filter/get-program', 'Admin\NomenklaturController@filter_get_program')->name('admin.nomenklatur.filter.get-program');
 
     // Perencanaan
     Route::get('/admin/perencanaan', 'Admin\PerencanaanController@index')->name('admin.perencanaan.index');
