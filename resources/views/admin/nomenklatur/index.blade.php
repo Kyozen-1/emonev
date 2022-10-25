@@ -167,12 +167,82 @@
 
                         {{-- Program Start --}}
                         <div class="tab-pane fade" id="program" role="tabpanel">
+                            <div class="row mb-5">
+                                <div class="col-12">
+                                    <h2 class="small-title">Filter Data</h2>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Urusan</label>
+                                        <select name="program_filter_urusan" id="program_filter_urusan" class="form-control">
+                                            <option value="">--- Pilih Urusan ---</option>
+                                            @foreach ($urusans as $urusan)
+                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Program</label>
+                                        <select name="program_filter_program" id="program_filter_program" class="form-control" disabled>
+                                            <option value="">--- Pilih Program ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                        <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="program_btn_filter">Filter Data</button>
+                                        <button class="btn btn-secondary waves-effect waves-light" type="button" id="program_btn_reset">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
                             <div id="programDiv"></div>
                         </div>
                         {{-- Program End --}}
 
                         {{-- Kegiatan Start --}}
                         <div class="tab-pane fade" id="kegiatan" role="tabpanel">
+                            <div class="row mb-5">
+                                <div class="col-12">
+                                    <h2 class="small-title">Filter Data</h2>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Urusan</label>
+                                        <select name="kegiatan_filter_urusan" id="kegiatan_filter_urusan" class="form-control">
+                                            <option value="">--- Pilih Urusan ---</option>
+                                            @foreach ($urusans as $urusan)
+                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Program</label>
+                                        <select name="kegiatan_filter_program" id="kegiatan_filter_program" class="form-control" disabled>
+                                            <option value="">--- Pilih Program ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3">
+                                        <label for="" class="form-label">Kegiatan</label>
+                                        <select name="kegiatan_filter_kegiatan" id="kegiatan_filter_kegiatan" class="form-control" disabled>
+                                            <option value="">--- Pilih Kegiatan ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                        <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="kegiatan_btn_filter">Filter Data</button>
+                                        <button class="btn btn-secondary waves-effect waves-light" type="button" id="kegiatan_btn_reset">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
                             <div id="kegiatanDiv"></div>
                         </div>
                         {{-- Kegiatan End --}}
@@ -703,6 +773,13 @@
     $(document).ready(function(){
         $('.dropify').dropify();
         $('.dropify-wrapper').css('line-height', '3rem');
+
+        $('#program_filter_urusan').select2();
+        $('#program_filter_program').select2();
+
+        $('#kegiatan_filter_urusan').select2();
+        $('#kegiatan_filter_program').select2();
+        $('#kegiatan_filter_kegiatan').select2();
 
         $('#sub_kegiatan_filter_urusan').select2();
         $('#sub_kegiatan_filter_program').select2();
@@ -1366,6 +1443,158 @@
         }
     });
 
+    // Filter Data Program
+    $('#program_filter_urusan').on('change', function(){
+        if($(this).val() != '')
+        {
+            $.ajax({
+                url: "{{ route('admin.nomenklatur.filter.get-program') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:$(this).val()
+                },
+                success: function(response){
+                    $('#program_filter_program').empty();
+                    $('#program_filter_program').prop('disabled', false);
+                    $('#program_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                    $.each(response, function(key, value){
+                        $('#program_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                    });
+                }
+            });
+        } else {
+            $('#program_filter_program').prop('disabled', true);
+        }
+    });
+
+    $('#program_btn_filter').click(function(){
+        var urusan = $('#program_filter_urusan').val();
+        var program = $('#program_filter_program').val();
+
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.filter.program') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                urusan: urusan,
+                program: program
+            },
+            success: function(data)
+            {
+                $('#programDiv').html(data.html);
+            }
+        });
+    });
+
+    $('#program_btn_reset').click(function(){
+        $('#program_filter_program').prop('disabled', true);
+        $("[name='program_filter_urusan']").val('').trigger('change');
+        $("[name='program_filter_program']").val('').trigger('change');
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.reset.program') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data)
+            {
+                $('#programDiv').html(data.html);
+            }
+        });
+    });
+
+    // Filter Data Kegiatan
+    $('#kegiatan_filter_urusan').on('change', function(){
+        if($(this).val() != '')
+        {
+            $.ajax({
+                url: "{{ route('admin.nomenklatur.filter.get-program') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:$(this).val()
+                },
+                success: function(response){
+                    $('#kegiatan_filter_program').empty();
+                    $('#kegiatan_filter_program').prop('disabled', false);
+                    $('#kegiatan_filter_kegiatan').prop('disabled', true);
+                    $('#kegiatan_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                    $.each(response, function(key, value){
+                        $('#kegiatan_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                    });
+                }
+            });
+        } else {
+            $('#kegiatan_filter_program').prop('disabled', true);
+            $('#kegiatan_filter_kegiatan').prop('disabled', true);
+        }
+    });
+
+    $('#kegiatan_filter_program').on('change', function(){
+        if($(this).val() != '')
+        {
+            $.ajax({
+                url: "{{ route('admin.nomenklatur.filter.get-kegiatan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:$(this).val()
+                },
+                success: function(response){
+                    $('#kegiatan_filter_kegiatan').empty();
+                    $('#kegiatan_filter_kegiatan').prop('disabled', false);
+                    $('#kegiatan_filter_kegiatan').append('<option value="">--- Pilih Kegiatan ---</option>');
+                    $.each(response, function(key, value){
+                        $('#kegiatan_filter_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                    });
+                }
+            });
+        } else {
+            $('#kegiatan_filter_kegiatan').prop('disabled', true);
+        }
+    });
+
+    $('#kegiatan_btn_filter').click(function(){
+        var urusan = $('#kegiatan_filter_urusan').val();
+        var program = $('#kegiatan_filter_program').val();
+        var kegiatan = $('#kegiatan_filter_kegiatan').val();
+
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.filter.kegiatan') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                urusan: urusan,
+                program: program,
+                kegiatan: kegiatan
+            },
+            success: function(data)
+            {
+                $('#kegiatanDiv').html(data.html);
+            }
+        });
+    });
+
+    $('#kegiatan_btn_reset').click(function(){
+        $('#kegiatan_filter_program').prop('disabled', true);
+        $('#kegiatan_filter_kegiatan').prop('disabled', true);
+        $("[name='kegiatan_filter_urusan']").val('').trigger('change');
+        $("[name='kegiatan_filter_program']").val('').trigger('change');
+        $("[name='kegiatan_filter_kegiatan']").val('').trigger('change');
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.reset.kegiatan') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data)
+            {
+                $('#kegiatanDiv').html(data.html);
+            }
+        });
+    });
+
     // Filter Data Sub Kegiatan
     $('#sub_kegiatan_filter_urusan').on('change', function(){
         if($(this).val() != '')
@@ -1393,6 +1622,100 @@
             $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
             $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
         }
+    });
+
+    $('#sub_kegiatan_filter_program').on('change', function(){
+        if($(this).val() != '')
+        {
+            $.ajax({
+                url: "{{ route('admin.nomenklatur.filter.get-kegiatan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:$(this).val()
+                },
+                success: function(response){
+                    $('#sub_kegiatan_filter_kegiatan').empty();
+                    $('#sub_kegiatan_filter_kegiatan').prop('disabled', false);
+                    $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
+                    $('#sub_kegiatan_filter_kegiatan').append('<option value="">--- Pilih Kegiatan ---</option>');
+                    $.each(response, function(key, value){
+                        $('#sub_kegiatan_filter_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                    });
+                }
+            });
+        } else {
+            $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
+            $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
+        }
+    });
+
+    $('#sub_kegiatan_filter_kegiatan').on('change', function(){
+        if($(this).val() != '')
+        {
+            $.ajax({
+                url: "{{ route('admin.nomenklatur.filter.get-sub-kegiatan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:$(this).val()
+                },
+                success: function(response){
+                    $('#sub_kegiatan_filter_sub_kegiatan').empty();
+                    $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', false);
+                    $('#sub_kegiatan_filter_sub_kegiatan').append('<option value="">--- Pilih Sub Kegiatan ---</option>');
+                    $.each(response, function(key, value){
+                        $('#sub_kegiatan_filter_sub_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                    });
+                }
+            });
+        } else {
+            $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
+        }
+    });
+
+    $('#sub_kegiatan_btn_filter').click(function(){
+        var urusan = $('#sub_kegiatan_filter_urusan').val();
+        var program = $('#sub_kegiatan_filter_program').val();
+        var kegiatan = $('#sub_kegiatan_filter_kegiatan').val();
+        var sub_kegiatan = $('#sub_kegiatan_filter_sub_kegiatan').val();
+
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.filter.sub-kegiatan') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                urusan: urusan,
+                program: program,
+                kegiatan: kegiatan,
+                sub_kegiatan: sub_kegiatan,
+            },
+            success: function(data)
+            {
+                $('#subKegiatanDiv').html(data.html);
+            }
+        });
+    });
+
+    $('#sub_kegiatan_btn_reset').click(function(){
+        $('#sub_kegiatan_filter_program').prop('disabled', true);
+        $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
+        $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
+        $("[name='sub_kegiatan_filter_urusan']").val('').trigger('change');
+        $("[name='sub_kegiatan_filter_program']").val('').trigger('change');
+        $("[name='sub_kegiatan_filter_kegiatan']").val('').trigger('change');
+        $("[name='sub_kegiatan_filter_sub_kegiatan']").val('').trigger('change');
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.reset.sub-kegiatan') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data)
+            {
+                $('#subKegiatanDiv').html(data.html);
+            }
+        });
     });
 </script>
 @endsection

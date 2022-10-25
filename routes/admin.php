@@ -49,6 +49,14 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/nomenklatur/get-kegiatan', 'Admin\NomenklaturController@get_kegiatan')->name('admin.nomenklatur.get-kegiatan');
     Route::get('/admin/nomenklatur/get-sub-kegiatan', 'Admin\NomenklaturController@get_sub_kegiatan')->name('admin.nomenklatur.get-sub-kegiatan');
     Route::post('/admin/nomenklatur/filter/get-program', 'Admin\NomenklaturController@filter_get_program')->name('admin.nomenklatur.filter.get-program');
+    Route::post('/admin/nomenklatur/filter/get-kegiatan', 'Admin\NomenklaturController@filter_get_kegiatan')->name('admin.nomenklatur.filter.get-kegiatan');
+    Route::post('/admin/nomenklatur/filter/get-sub-kegiatan', 'Admin\NomenklaturController@filter_get_sub_kegiatan')->name('admin.nomenklatur.filter.get-sub-kegiatan');
+    Route::post('/admin/nomenklatur/filter/sub-kegiatan', 'Admin\NomenklaturController@filter_sub_kegiatan')->name('admin.nomenklatur.filter.sub-kegiatan');
+    Route::post('/admin/nomenklatur/reset/sub-kegiatan', 'Admin\NomenklaturController@get_sub_kegiatan')->name('admin.nomenklatur.reset.sub-kegiatan');
+    Route::post('/admin/nomenklatur/filter/kegiatan', 'Admin\NomenklaturController@filter_kegiatan')->name('admin.nomenklatur.filter.kegiatan');
+    Route::post('/admin/nomenklatur/reset/kegiatan', 'Admin\NomenklaturController@get_kegiatan')->name('admin.nomenklatur.reset.kegiatan');
+    Route::post('/admin/nomenklatur/filter/program', 'Admin\NomenklaturController@filter_program')->name('admin.nomenklatur.filter.program');
+    Route::post('/admin/nomenklatur/reset/program', 'Admin\NomenklaturController@get_program')->name('admin.nomenklatur.reset.program');
 
     // Perencanaan
     Route::get('/admin/perencanaan', 'Admin\PerencanaanController@index')->name('admin.perencanaan.index');
