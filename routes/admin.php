@@ -45,6 +45,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     //Nomenklatur
     Route::get('/admin/nomenklatur', 'Admin\NomenklaturController@index')->name('admin.nomenklatur.index');
+    Route::get('/admin/nomenklatur/get-program', 'Admin\NomenklaturController@get_program')->name('admin.nomenklatur.get-program');
 
     // Perencanaan
     Route::get('/admin/perencanaan', 'Admin\PerencanaanController@index')->name('admin.perencanaan.index');
@@ -52,6 +53,17 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/perencanaan/get-tujuan', 'Admin\PerencanaanController@get_tujuan')->name('admin.perencanaan.get-tujuan');
     Route::get('/admin/perencanaan/get-sasaran', 'Admin\PerencanaanController@get_sasaran')->name('admin.perencanaan.get-sasaran');
     Route::get('/admin/perencanaan/get-program', 'Admin\PerencanaanController@get_program')->name('admin.perencanaan.get-program');
+    Route::post('/admin/perencanaan/filter/get-misi', 'Admin\PerencanaanController@filter_get_misi')->name('admin.perencanaan.filter.get-misi');
+    Route::post('/admin/perencanaan/filter/get-tujuan', 'Admin\PerencanaanController@filter_get_tujuan')->name('admin.perencanaan.filter.get-tujuan');
+    Route::post('/admin/perencanaan/filter/get-sasaran', 'Admin\PerencanaanController@filter_get_sasaran')->name('admin.perencanaan.filter.get-sasaran');
+    Route::post('/admin/perencanaan/filter/program', 'Admin\PerencanaanController@filter_program')->name('admin.perencanaan.filter.program');
+    Route::post('/admin/perencanaan/reset/program', 'Admin\PerencanaanController@get_program')->name('admin.perencanaan.reset.program');
+    Route::post('/admin/perencanaan/filter/sasaran', 'Admin\PerencanaanController@filter_sasaran')->name('admin.perencanaan.filter.sasaran');
+    Route::post('/admin/perencanaan/reset/sasaran', 'Admin\PerencanaanController@get_sasaran')->name('admin.perencanaan.reset.sasaran');
+    Route::post('/admin/perencanaan/filter/tujuan', 'Admin\PerencanaanController@filter_tujuan')->name('admin.perencanaan.filter.tujuan');
+    Route::post('/admin/perencanaan/reset/tujuan', 'Admin\PerencanaanController@get_tujuan')->name('admin.perencanaan.reset.tujuan');
+    Route::post('/admin/perencanaan/filter/misi', 'Admin\PerencanaanController@filter_misi')->name('admin.perencanaan.filter.misi');
+    Route::post('/admin/perencanaan/reset/misi', 'Admin\PerencanaanController@get_misi')->name('admin.perencanaan.reset.misi');
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');

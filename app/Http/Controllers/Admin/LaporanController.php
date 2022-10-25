@@ -97,7 +97,7 @@ class LaporanController extends Controller
                     $tc_14 .= '<td>'.$misi['kode'].'</td>';
                     $tc_14 .= '<td></td>';
                     $tc_14 .= '<td></td>';
-                    $tc_14 .= '<td>'.$misi['deskripsi'].'</td>';
+                    $tc_14 .= '<td style="text-align:left">'.$misi['deskripsi'].'</td>';
                     $tc_14 .= '<td colspan="15"></td>';
                 $tc_14 .= '</tr>';
 
@@ -130,7 +130,7 @@ class LaporanController extends Controller
                         $tc_14 .= '<td>'.$misi['kode'].'</td>';
                         $tc_14 .= '<td>'.$tujuan['kode'].'</td>';
                         $tc_14 .= '<td></td>';
-                        $tc_14 .= '<td>'.$tujuan['deskripsi'].'</td>';
+                        $tc_14 .= '<td style="text-align:left">'.$tujuan['deskripsi'].'</td>';
                         $tc_14 .= '<td colspan="15"></td>';
                     $tc_14 .= '</tr>';
 
@@ -163,13 +163,13 @@ class LaporanController extends Controller
                             $tc_14 .= '<td>'.$misi['kode'].'</td>';
                             $tc_14 .= '<td>'.$tujuan['kode'].'</td>';
                             $tc_14 .= '<td>'.$sasaran['kode'].'</td>';
-                            $tc_14 .= '<td>'.$sasaran['deskripsi'].'</td>';
+                            $tc_14 .= '<td style="text-align:left">'.$sasaran['deskripsi'].'</td>';
                             $get_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
                             $a = 0;
                             foreach ($get_sasaran_indikators as $get_sasaran_indikator) {
                                 if($a == 0)
                                 {
-                                        $tc_14 .= '<td>'.$get_sasaran_indikator->indikator.'</td>';
+                                        $tc_14 .= '<td style="text-align:left">'.$get_sasaran_indikator->indikator.'</td>';
                                         $tc_14 .= '<td colspan="14"></td>';
                                     $tc_14 .= '</tr>';
                                 } else {
@@ -178,7 +178,7 @@ class LaporanController extends Controller
                                         $tc_14 .= '<td></td>';
                                         $tc_14 .= '<td></td>';
                                         $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td>'.$get_sasaran_indikator->indikator.'</td>';
+                                        $tc_14 .= '<td style="text-align:left">'.$get_sasaran_indikator->indikator.'</td>';
                                         $tc_14 .= '<td colspan="14"></td>';
                                     $tc_14 .= '</tr>';
                                 }
@@ -215,24 +215,40 @@ class LaporanController extends Controller
                                         $tc_14 .= '<td></td>';
                                         $tc_14 .= '<td></td>';
                                         $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td>'.$program['deskripsi'].'</td>';
+                                        $tc_14 .= '<td style="text-align:left">'.$program['deskripsi'].'</td>';
                                         $tc_14 .= '<td></td>';
                                         $tc_14 .= '<td></td>';
+                                        $len = count($tahuns);
+                                        $program_a = 0;
                                         foreach ($tahuns as $tahun) {
                                             $target_rp_pertahun_program = TargetRpPertahunProgram::where('program_rpjmd_id', $get_program_rpjmd->id)
                                                                             ->where('tahun', $tahun)->where('opd_id', $get_opd->opd_id)
                                                                             ->first();
                                             if($target_rp_pertahun_program)
                                             {
-                                                $tc_14 .= '<td>'.$target_rp_pertahun_program->target.'</td>';
-                                                $tc_14 .= '<td>Rp. '.number_format($target_rp_pertahun_program->rp, 2).'</td>';
+                                                $tc_14 .= '<td style="text-align:left">'.$target_rp_pertahun_program->target.' / '.$target_rp_pertahun_program->satuan.'</td>';
+                                                $tc_14 .= '<td style="text-align:left">Rp. '.number_format($target_rp_pertahun_program->rp, 2).'</td>';
+                                                if($program_a == $len - 1)
+                                                {
+                                                    $last_satuan = $target_rp_pertahun_program->satuan;
+                                                    $last_target = $target_rp_pertahun_program->target;
+                                                    $last_rp = $target_rp_pertahun_program->rp;
+
+                                                    $tc_14 .= '<td style="text-align:left">'.$last_target.' / '.$last_satuan.'</td>';
+                                                    $tc_14 .= '<td style="text-align:left">Rp. '.number_format($last_rp,2).'</td>';
+                                                    $tc_14 .= '<td style="text-align:left">'.$get_opd->opd->nama.'</td>';
+                                                }
                                             } else {
                                                 $tc_14 .= '<td></td>';
                                                 $tc_14 .= '<td></td>';
+                                                if($program_a == $len - 1)
+                                                {
+                                                    $tc_14 .= '<td colspan="2"></td>';
+                                                    $tc_14 .= '<td style="text-align:left">'.$get_opd->opd->nama.'</td>';
+                                                }
                                             }
+                                            $program_a++;
                                         }
-                                        $tc_14 .= '<td colspan="2"></td>';
-                                        $tc_14 .= '<td>'.$get_opd->opd->nama.'</td>';
                                     $tc_14 .= '</tr>';
                                 }
                             }

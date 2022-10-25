@@ -112,12 +112,12 @@
                     <ul class="nav nav-tabs nav-tabs-line card-header-tabs responsive-tabs" role="tablist">
                         {{-- Urusan Start --}}
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#urusan" role="tab" type="button" aria-selected="true">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#urusan" role="tab" type="button" aria-selected="true">
                             Urusan
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#program" role="tab" type="button" aria-selected="false">
+                            <button id="program_tab_button" class="nav-link" data-bs-toggle="tab" data-bs-target="#program" role="tab" type="button" aria-selected="false">
                                 Program
                             </button>
                         </li>
@@ -127,7 +127,7 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#sub_kegiatan" role="tab" type="button" aria-selected="false">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sub_kegiatan" role="tab" type="button" aria-selected="false">
                                 Sub Kegiatan
                             </button>
                         </li>
@@ -136,7 +136,7 @@
                 <div class="card-body">
                     <div class="tab-content">
                         {{-- Urusan Start --}}
-                            <div class="tab-pane fade" id="urusan" role="tabpanel">
+                            <div class="tab-pane fade active show" id="urusan" role="tabpanel">
                                 <div class="row mb-3">
                                     <div class="col-12" style="text-align: right">
                                         <button class="btn btn-outline-primary waves-effect waves-light mr-2" id="urusan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditUrusanModal" title="Tambah Data"><i class="fas fa-plus"></i></button>
@@ -167,109 +167,7 @@
 
                         {{-- Program Start --}}
                         <div class="tab-pane fade" id="program" role="tabpanel">
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
-                                        <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="data-table-rows slim">
-                                <div class="data-table-responsive-wrapper">
-                                    <table class="table table-condensed table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th width="15%">Kode</th>
-                                                <th width="50%">Deskripsi</th>
-                                                <th width="15%">Tahun Perubahan</th>
-                                                <th width="20%">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($urusans as $urusan)
-                                                @php
-                                                    $get_programs = Program::where('urusan_id', $urusan['id'])->get();
-                                                    $programs = [];
-                                                    foreach ($get_programs as $get_program) {
-                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                        if($cek_perubahan_program)
-                                                        {
-                                                            $programs[] = [
-                                                                'id' => $cek_perubahan_program->program_id,
-                                                                'kode' => $cek_perubahan_program->kode,
-                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                                'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                            ];
-                                                        } else {
-                                                            $programs[] = [
-                                                                'id' => $get_program->id,
-                                                                'kode' => $get_program->kode,
-                                                                'deskripsi' => $get_program->deskripsi,
-                                                                'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                                'status_aturan' => $get_program->status_aturan,
-                                                            ];
-                                                        }
-                                                    }
-                                                @endphp
-                                                <tr>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#program_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['kode']}}
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#program_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['deskripsi']}}
-                                                        <br>
-                                                        <span class="badge bg-primary text-uppercase program-tagging">{{$urusan['kode']}} Urusan</span>
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#program_urusan{{$urusan['id']}}" class="accordion-toggle">
-                                                        {{$urusan['tahun_perubahan']}}
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-primary waves-effect waves-light mr-2 program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program" data-urusan-id="{{$urusan['id']}}"><i class="fas fa-plus"></i></button>
-                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_program.xlsx') }}" title="Download Template Import Data Program"><i class="fas fa-file-excel"></i></a>
-                                                        <button class="btn btn-info waves-effect waves-light program_btn_impor_template" title="Import Data Program" type="button" data-urusan-id="{{$urusan['id']}}"><i class="fas fa-file-import"></i></button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="4" class="hiddenRow">
-                                                        <div class="accordian-body collapse" id="program_urusan{{$urusan['id']}}">
-                                                            <table class="table table-striped table-condesed">
-                                                                {{-- <thead>
-                                                                    <tr>
-                                                                        <th width="15%">Kode</th>
-                                                                        <th width="50%">Program</th>
-                                                                        <th width="15%">Tahun Perubahan</th>
-                                                                        <th width="20%">Aksi</th>
-                                                                    </tr>
-                                                                </thead> --}}
-                                                                <tbody>
-                                                                    @foreach ($programs as $program)
-                                                                        <tr>
-                                                                            <td width="15%">{{$urusan['kode']}}.{{$program['kode']}}</td>
-                                                                            <td width="50%">
-                                                                                {{$program['deskripsi']}}
-                                                                                <br>
-                                                                                <span class="badge bg-primary text-uppercase program-tagging">Urusan {{$urusan['kode']}}</span>
-                                                                                <span class="badge bg-warning text-uppercase program-tagging">Program {{$urusan['kode']}}.{{$program['kode']}}</span>
-                                                                            </td>
-                                                                            <td width="15%"> {{$program['tahun_perubahan']}}</td>
-                                                                            <td width="20%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="{{$program['id']}}" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light edit-program" data-program-id="{{$program['id']}}" data-urusan-id="{{$urusan['id']}}" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                            <div id="programDiv"></div>
                         </div>
                         {{-- Program End --}}
 
@@ -439,7 +337,7 @@
                         {{-- Kegiatan End --}}
 
                         {{-- Sub Kegiatan Start --}}
-                        <div class="tab-pane fade active show" id="sub_kegiatan" role="tabpanel">
+                        <div class="tab-pane fade" id="sub_kegiatan" role="tabpanel">
                             <div class="row mb-3">
                                 <div class="col-12">
                                     <div class="form-check form-switch">
@@ -1349,7 +1247,18 @@
     // Urusan End
 
     // Program Start
-    $('.program_create').click(function(){
+    $('#program_tab_button').click(function(){
+        $.ajax({
+            url: "{{ route('admin.nomenklatur.get-program') }}",
+            dataType: "json",
+            success: function(data)
+            {
+                $('#programDiv').html(data.html);
+            }
+        });
+    });
+
+    $(document).on('click', '.program_create',function(){
         $('#program_urusan_id').val($(this).attr('data-urusan-id'));
         $('#program_form')[0].reset();
         $('#program_aksi_button').text('Save');
@@ -1427,7 +1336,7 @@
         }
     });
 
-    $('.program_btn_impor_template').click(function(){
+    $(document).on('click','.program_btn_impor_template',function(){
         $('#program_impor_urusan_id').val($(this).attr('data-urusan-id'));
         $('#importProgramModal').modal('show');
     });
@@ -1734,7 +1643,7 @@
     // Sub Kegiatan End
 
     // On / Off Tagging
-    $('#onOffTaggingProgram').change(function(){
+    $(document).on('change','#onOffTaggingProgram',function(){
         if($(this).prop('checked') == true)
         {
             $('.program-tagging').show();
@@ -1743,7 +1652,7 @@
         }
     });
 
-    $('#onOffTaggingKegiatan').change(function(){
+    $(document).on('change','#onOffTaggingKegiatan',function(){
         if($(this).prop('checked') == true)
         {
             $('.kegiatan-tagging').show();
@@ -1752,7 +1661,7 @@
         }
     });
 
-    $('#onOffTaggingSubKegiatan').change(function(){
+    $(document).on('change','#onOffTaggingSubKegiatan',function(){
         if($(this).prop('checked') == true)
         {
             $('.sub-kegiatan-tagging').show();

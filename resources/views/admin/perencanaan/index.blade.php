@@ -74,6 +74,9 @@
         use App\Models\PivotProgramKegiatanRenstra;
         use App\Models\Kegiatan;
         use App\Models\PivotPerubahanKegiatan;
+        use App\Models\TargetRpPertahunProgram;
+
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
     @endphp
     <div class="container">
         <!-- Title and Top Buttons Start -->
@@ -173,31 +176,202 @@
 
                                 {{-- Misi Start --}}
                                 <div class="tab-pane fade" id="misiNav" role="tabpanel">
-                                    <div class="d-flex align-items-center mb-5" id="misiLoading">
+                                    <div class="row mb-5">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select name="misi_filter_visi" id="misi_filter_visi" class="form-control">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select name="misi_filter_misi" id="misi_filter_misi" class="form-control" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="misi_btn_filter">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="misi_btn_reset">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    {{-- <div class="d-flex align-items-center mb-5" id="misiLoading">
                                         <strong>Loading...</strong>
                                         <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
-                                    </div>
+                                    </div> --}}
+                                    <div id="misiNavDiv"></div>
                                 </div>
                                 {{-- Misi End --}}
 
                                 {{-- Tujuan Start --}}
                                 <div class="tab-pane fade" id="tujuanNav" role="tabpanel">
-                                    <div class="d-flex align-items-center mb-5" id="tujuanLoading">
+                                    <div class="row mb-5">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select name="tujuan_filter_visi" id="tujuan_filter_visi" class="form-control">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select name="tujuan_filter_misi" id="tujuan_filter_misi" class="form-control" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select name="tujuan_filter_tujuan" id="tujuan_filter_tujuan" class="form-control" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="tujuan_btn_filter">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="tujuan_btn_reset">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    {{-- <div class="d-flex align-items-center mb-5" id="tujuanLoading">
                                         <strong>Loading...</strong>
                                         <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
-                                    </div>
+                                    </div> --}}
+                                    <div id="tujuanNavDiv"></div>
                                 </div>
                                 {{-- Tujuan End --}}
 
                                 {{-- Sasaran Start --}}
                                 <div class="tab-pane fade" id="sasaranNav" role="tabpanel">
-                                    <div class="d-flex align-items-center mb-5" id="sasaranLoading">
+                                    {{-- <div class="d-flex align-items-center mb-5" id="sasaranLoading">
                                         <strong>Loading...</strong>
                                         <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
+                                    </div> --}}
+                                    <div class="row mb-5">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select name="sasaran_filter_visi" id="sasaran_filter_visi" class="form-control">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select name="sasaran_filter_misi" id="sasaran_filter_misi" class="form-control" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select name="sasaran_filter_tujuan" id="sasaran_filter_tujuan" class="form-control" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select name="sasaran_filter_sasaran" id="sasaran_filter_sasaran" class="form-control" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="sasaran_btn_filter">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="sasaran_btn_reset">Reset</button>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <hr>
+                                    <div id="sasaranNavDiv"></div>
                                 </div>
                                 {{-- Sasaran End --}}
                                 <div class="tab-pane fade" id="programNav" role="tabpanel">
+                                    <div class="row mb-5">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select name="program_filter_visi" id="program_filter_visi" class="form-control">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select name="program_filter_misi" id="program_filter_misi" class="form-control" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select name="program_filter_tujuan" id="program_filter_tujuan" class="form-control" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select name="program_filter_sasaran" id="program_filter_sasaran" class="form-control" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="program_btn_filter">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="program_btn_reset">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
                                     <div class="d-flex align-items-center mb-5" id="programLoading">
                                         <strong>Loading...</strong>
                                         <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
@@ -236,14 +410,21 @@
                             <div class="tab-content">
                                 {{-- Renstra Tujuan Start --}}
                                 <div class="tab-pane fade active show" id="renstra_tujuan_pd" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraTujuan" checked>
+                                                <label class="form-check-label" for="onOffTaggingRenstraTujuan">On / Off Tagging</label>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="data-table-rows slim">
                                         <div class="data-table-responsive-wrapper">
                                             <table class="table table-condensed table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <th width="15%">Kode</th>
-                                                        <th width="70%">Misi</th>
-                                                        <th width="15%">Tahun Perubahan</th>
+                                                        <th width="5%">Kode</th>
+                                                        <th width="95%">Deskripsi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -255,10 +436,7 @@
                                                             <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
                                                                 {{$misi['deskripsi']}}
                                                                 <br>
-                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                            </td>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['tahun_perubahan']}}
+                                                                <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -267,7 +445,7 @@
                                                                     <table class="table table-striped table-condesed">
                                                                         <tbody>
                                                                             @php
-                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
                                                                                 $renstra_tujuans = [];
                                                                                 foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
                                                                                     $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
@@ -292,17 +470,14 @@
                                                                             @endphp
                                                                             @foreach ($renstra_tujuans as $renstra_tujuan)
                                                                                 <tr>
-                                                                                    <td width="15%">
-                                                                                        {{$renstra_tujuan['kode']}}
+                                                                                    <td>
+                                                                                        {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
                                                                                     </td>
-                                                                                    <td width="70%">
+                                                                                    <td>
                                                                                         {{$renstra_tujuan['deskripsi']}}
                                                                                         <br>
-                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                    </td>
-                                                                                    <td width="15%">
-                                                                                        {{$renstra_tujuan['tahun_perubahan']}}
+                                                                                        <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                        <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
                                                                                     </td>
                                                                                 </tr>
                                                                             @endforeach
@@ -318,15 +493,23 @@
                                     </div>
                                 </div>
                                 {{-- Renstra Tujuan End --}}
+                                {{-- Renstra Sasaran Start --}}
                                 <div class="tab-pane fade" id="renstra_sasaran_pd" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraSasaran" checked>
+                                                <label class="form-check-label" for="onOffTaggingRenstraSasaran">On / Off Tagging</label>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="data-table-rows slim">
                                         <div class="data-table-responsive-wrapper">
                                             <table class="table table-condensed table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <th width="15%">Kode</th>
-                                                        <th width="70%">Misi</th>
-                                                        <th width="15%">Tahun Perubahan</th>
+                                                        <th width="5%">Kode</th>
+                                                        <th width="95%">Deskripsi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -338,10 +521,7 @@
                                                             <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran_misi{{$misi['id']}}" class="accordion-toggle">
                                                                 {{$misi['deskripsi']}}
                                                                 <br>
-                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                            </td>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['tahun_perubahan']}}
+                                                                <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi {{$misi['kode']}}</span>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -354,7 +534,7 @@
                                                                                 $renstra_tujuans = [];
                                                                                 foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
                                                                                     $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
-                                                                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                                            ->where('tahun_perubahan', $tahun_sekarang)->latest()->first();
                                                                                     if($cek_perubahan_tujuan)
                                                                                     {
                                                                                         $renstra_tujuans[] = [
@@ -375,17 +555,14 @@
                                                                             @endphp
                                                                             @foreach ($renstra_tujuans as $renstra_tujuan)
                                                                                 <tr>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
-                                                                                        {{$renstra_tujuan['kode']}}
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="5%">
+                                                                                        {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="70%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="95%">
                                                                                         {{$renstra_tujuan['deskripsi']}}
                                                                                         <br>
-                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
-                                                                                        {{$renstra_tujuan['tahun_perubahan']}}
+                                                                                        <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                        <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
@@ -398,7 +575,7 @@
                                                                                                         $renstra_sasarans = [];
                                                                                                         foreach ($get_renstra_sasarans as $get_renstra_sasaran) {
                                                                                                             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_renstra_sasaran->id)
-                                                                                                                                        ->orderBy('tahun_perubahan', 'desc')
+                                                                                                                                        ->where('tahun_perubahan', $tahun_sekarang)
                                                                                                                                         ->latest()->first();
                                                                                                             if($cek_perubahan_sasaran)
                                                                                                             {
@@ -420,16 +597,15 @@
                                                                                                     @endphp
                                                                                                     @foreach ($renstra_sasarans as $sasaran)
                                                                                                         <tr>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">{{$sasaran['kode']}}</td>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="70%">
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="5%">
+                                                                                                                {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}
+                                                                                                            </td>
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="95%">
                                                                                                                 {{$sasaran['deskripsi']}}
                                                                                                                 <br>
-                                                                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                                                <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                            </td>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">
-                                                                                                                {{$sasaran['tahun_perubahan']}}
+                                                                                                                <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                                                <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
+                                                                                                                <span class="badge bg-danger text-uppercase sasaran-renstra-tagging">Sasaran {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</span>
                                                                                                             </td>
                                                                                                         </tr>
                                                                                                         <tr>
@@ -438,7 +614,8 @@
                                                                                                                     <table class="table table-striped table-condesed">
                                                                                                                         <thead>
                                                                                                                             <tr>
-                                                                                                                                <th width="60%">Sasaran Indikator</th>
+                                                                                                                                <th width="5%">No</th>
+                                                                                                                                <th width="55%">Sasaran Indikator</th>
                                                                                                                                 <th width="20%">Target</th>
                                                                                                                                 <th width="20%">Satuan</th>
                                                                                                                             </tr>
@@ -446,16 +623,17 @@
                                                                                                                         <tbody>
                                                                                                                             @php
                                                                                                                                 $get_renstra_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                $a_indikator = 1;
                                                                                                                             @endphp
                                                                                                                             @foreach ($get_renstra_sasaran_indikators as $sasaran_indikator)
                                                                                                                                 <tr>
+                                                                                                                                    <td>{{$a_indikator++}}</td>
                                                                                                                                     <td>
                                                                                                                                         {{$sasaran_indikator->indikator}}
                                                                                                                                         <br>
-                                                                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                        <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-renstra-tagging">Sasaran {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</span>
                                                                                                                                     </td>
                                                                                                                                     <td>{{$sasaran_indikator->target}}</td>
                                                                                                                                     <td>{{$sasaran_indikator->satuan}}</td>
@@ -484,16 +662,24 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- Renstra Sasaran Start --}}
+                                {{-- Renstra Sasaran End --}}
+                                {{-- Renstra Program Start --}}
                                 <div class="tab-pane fade" id="renstra_program" role="tabpanel">
                                     <div class="data-table-rows slim">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraProgram" checked>
+                                                    <label class="form-check-label" for="onOffTaggingRenstraProgram">On / Off Tagging</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="data-table-responsive-wrapper">
                                             <table class="table table-condensed table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <th width="15%">Kode</th>
-                                                        <th width="70%">Misi</th>
-                                                        <th width="15%">Tahun Perubahan</th>
+                                                        <th width="5%">Kode</th>
+                                                        <th width="95%">Misi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -505,10 +691,7 @@
                                                             <td data-bs-toggle="collapse" data-bs-target="#renstra_program_misi{{$misi['id']}}" class="accordion-toggle">
                                                                 {{$misi['deskripsi']}}
                                                                 <br>
-                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                            </td>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['tahun_perubahan']}}
+                                                                <span class="badge bg-warning text-uppercase program-renstra-tagging">Misi {{$misi['kode']}}</span>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -542,17 +725,14 @@
                                                                             @endphp
                                                                             @foreach ($renstra_tujuans as $renstra_tujuan)
                                                                                 <tr>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
-                                                                                        {{$renstra_tujuan['kode']}}
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="5%">
+                                                                                        {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="70%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="95%">
                                                                                         {{$renstra_tujuan['deskripsi']}}
                                                                                         <br>
-                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
-                                                                                        {{$renstra_tujuan['tahun_perubahan']}}
+                                                                                        <span class="badge bg-warning text-uppercase program-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                        <span class="badge bg-secondary text-uppercase program-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
@@ -587,16 +767,13 @@
                                                                                                     @endphp
                                                                                                     @foreach ($renstra_sasarans as $sasaran)
                                                                                                         <tr>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">{{$sasaran['kode']}}</td>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="70%">
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="5%">{{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</td>
+                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="95%">
                                                                                                                 {{$sasaran['deskripsi']}}
                                                                                                                 <br>
-                                                                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                                                <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                            </td>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">
-                                                                                                                {{$sasaran['tahun_perubahan']}}
+                                                                                                                <span class="badge bg-warning text-uppercase program-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                                                <span class="badge bg-secondary text-uppercase program-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
+                                                                                                                <span class="badge bg-danger text-uppercase program-renstra-tagging">Sasaran {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</span>
                                                                                                             </td>
                                                                                                         </tr>
                                                                                                         <tr>
@@ -605,7 +782,8 @@
                                                                                                                     <table class="table table-striped table-condesed">
                                                                                                                         <thead>
                                                                                                                             <tr>
-                                                                                                                                <th width="60%">Sasaran Indikator</th>
+                                                                                                                                <th width="5%">No</th>
+                                                                                                                                <th width="55%">Sasaran Indikator</th>
                                                                                                                                 <th width="20%">Target</th>
                                                                                                                                 <th width="20%">Satuan</th>
                                                                                                                             </tr>
@@ -613,16 +791,17 @@
                                                                                                                         <tbody>
                                                                                                                             @php
                                                                                                                                 $get_renstra_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                $b = 1;
                                                                                                                             @endphp
                                                                                                                             @foreach ($get_renstra_sasaran_indikators as $sasaran_indikator)
                                                                                                                                 <tr>
+                                                                                                                                    <td>{{$b++}}</td>
                                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
                                                                                                                                         {{$sasaran_indikator->indikator}}
                                                                                                                                         <br>
-                                                                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
+                                                                                                                                        <span class="badge bg-warning text-uppercase program-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase program-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase program-renstra-tagging">Sasaran {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</span>
                                                                                                                                     </td>
                                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
                                                                                                                                         {{$sasaran_indikator->target}}
@@ -632,15 +811,18 @@
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 <tr>
-                                                                                                                                    <td class="hiddenRow" colspan="3">
+                                                                                                                                    <td class="hiddenRow" colspan="4">
                                                                                                                                         <div class="accordion-body collapse" id="renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}">
                                                                                                                                             <table class="table table-striped table-condesed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
-                                                                                                                                                        <th width="50%">Program RPJMD</th>
-                                                                                                                                                        <th width="15%">Status Program</th>
-                                                                                                                                                        <th width="15%">Pagu</th>
-                                                                                                                                                        <th width="20%">OPD</th>
+                                                                                                                                                        <th width="5%"><strong>No</strong></th>
+                                                                                                                                                        <th width="40%"><strong>Program RPJMD</strong></th>
+                                                                                                                                                        <th width="5%"><strong>Target</strong></th>
+                                                                                                                                                        <th width="5%"><strong>Satuan</strong></th>
+                                                                                                                                                        <th width="10%"><strong>Rp</strong></th>
+                                                                                                                                                        <th width="20%"><strong>OPD</strong></th>
+                                                                                                                                                        <th width="15%"><strong>Pagu</strong></th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>
@@ -670,22 +852,46 @@
                                                                                                                                                                                             ];
                                                                                                                                                                                         }
                                                                                                                                                                                     }
+                                                                                                                                                    $c = 1;
                                                                                                                                                     @endphp
                                                                                                                                                     @foreach ($programs as $program)
                                                                                                                                                         <tr>
+                                                                                                                                                            <td>{{$c++}}</td>
                                                                                                                                                             <td>
                                                                                                                                                                 {{$program['deskripsi']}}
+                                                                                                                                                                @if ($program['status_program'] == "Program Prioritas")
+                                                                                                                                                                    <i title="Program Prioritas" class="fas fa-star text-primary"></i>
+                                                                                                                                                                @endif
                                                                                                                                                                 <br>
-                                                                                                                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                                                                                                <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                                                                <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                                                                                <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
-                                                                                                                                                                <span class="badge bg-success text-uppercase">Program RPJMD</span>
+                                                                                                                                                                <span class="badge bg-warning text-uppercase program-renstra-tagging">{{$misi['kode']}} Misi</span>
+                                                                                                                                                                <span class="badge bg-secondary text-uppercase program-renstra-tagging">{{$renstra_tujuan['kode']}} Tujuan</span>
+                                                                                                                                                                <span class="badge bg-danger text-uppercase program-renstra-tagging">{{$sasaran['kode']}} Sasaran</span>
                                                                                                                                                             </td>
-                                                                                                                                                            <td>
-                                                                                                                                                                {{$program['status_program']}}
-                                                                                                                                                            </td>
-                                                                                                                                                            <td>{{$program['pagu']}}</td>
+                                                                                                                                                            @php
+                                                                                                                                                                $cek_target_rps = TargetRpPertahunProgram::where('program_rpjmd_id', $program['id'])
+                                                                                                                                                                                                                ->where('tahun', $tahun_sekarang)
+                                                                                                                                                                                                                ->first();
+                                                                                                                                                            @endphp
+                                                                                                                                                            @if ($cek_target_rps)
+                                                                                                                                                                @php
+                                                                                                                                                                    $get_target_rps = TargetRpPertahunProgram::where('program_rpjmd_id', $program['id'])
+                                                                                                                                                                                                                    ->where('tahun', $tahun_sekarang)
+                                                                                                                                                                                                                    ->get();
+                                                                                                                                                                                                    $program_target = [];
+                                                                                                                                                                                                    $program_rp = [];
+                                                                                                                                                                                                    foreach ($get_target_rps as $get_target_rp) {
+                                                                                                                                                                                                        $program_target[] = $get_target_rp->target;
+                                                                                                                                                                                                        $program_rp[] = $get_target_rp->rp;
+                                                                                                                                                                                                    }
+                                                                                                                                                                @endphp
+                                                                                                                                                                <td>{{array_sum($program_target)}}</td>
+                                                                                                                                                                <td>{{$get_target_rp->satuan}}</td>
+                                                                                                                                                                <td>Rp. {{number_format(array_sum($program_rp), 2)}}</td>
+                                                                                                                                                            @else
+                                                                                                                                                                <td></td>
+                                                                                                                                                                <td></td>
+                                                                                                                                                                <td></td>
+                                                                                                                                                            @endif
                                                                                                                                                             <td>
                                                                                                                                                                 @php
                                                                                                                                                                     $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program['id'])->get();
@@ -696,6 +902,7 @@
                                                                                                                                                                     @endforeach
                                                                                                                                                                 </ul>
                                                                                                                                                             </td>
+                                                                                                                                                            <td>Rp. {{number_format($program['pagu'])}}</td>
                                                                                                                                                         </tr>
                                                                                                                                                     @endforeach
                                                                                                                                                 </tbody>
@@ -727,7 +934,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- Renstra Sasaran End --}}
+                                {{-- Renstra Program End --}}
                                 {{-- Renstra Kegiatan Start --}}
                                 <div class="tab-pane fade" id="renstra_kegiatan" role="tabpanel">
                                     <div class="data-table-rows slim">
@@ -1869,6 +2076,24 @@
             $('#program_sasaran_indikator_id').select2();
             $('#program_opd_id').select2();
             $('#renstra_kegiatan_kegiatan_id').select2();
+
+            $('#misi_filter_visi').select2();
+            $('#misi_filter_misi').select2();
+
+            $('#tujuan_filter_visi').select2();
+            $('#tujuan_filter_misi').select2();
+            $('#tujuan_filter_tujuan').select2();
+
+            $('#sasaran_filter_visi').select2();
+            $('#sasaran_filter_misi').select2();
+            $('#sasaran_filter_tujuan').select2();
+            $('#sasaran_filter_sasaran').select2();
+
+            $('#program_filter_visi').select2();
+            $('#program_filter_misi').select2();
+            $('#program_filter_tujuan').select2();
+            $('#program_filter_sasaran').select2();
+
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');
 
@@ -2035,7 +2260,7 @@
                 success: function(data)
                 {
                     $('#misiLoading').hide();
-                    $('#misiNav').html(data.html);
+                    $('#misiNavDiv').html(data.html);
                 }
             });
         });
@@ -2083,7 +2308,7 @@
                                 title: 'Berhasil Menambahkan Misi',
                                 showConfirmButton: true
                             });
-                            $('#misiNav').html(data.success);
+                            $('#misiNavDiv').html(data.success);
                         }
 
                         $('#misi_form_result').html(html);
@@ -2121,7 +2346,7 @@
                                 title: 'Berhasil Merubah Misi',
                                 showConfirmButton: true
                             });
-                            $('#misiNav').html(data.success);
+                            $('#misiNavDiv').html(data.success);
                         }
 
                         $('#misi_form_result').html(html);
@@ -2186,7 +2411,7 @@
                 success: function(data)
                 {
                     $('#tujuanLoading').hide();
-                    $('#tujuanNav').html(data.html);
+                    $('#tujuanNavDiv').html(data.html);
                 }
             });
         });
@@ -2234,7 +2459,7 @@
                                 title: 'Berhasil Menambahkan Tujuan',
                                 showConfirmButton: true
                             });
-                            $('#tujuanNav').html(data.success);
+                            $('#tujuanNavDiv').html(data.success);
                         }
 
                         $('#tujuan_form_result').html(html);
@@ -2272,7 +2497,7 @@
                                 title: 'Berhasil Merubah Tujuan',
                                 showConfirmButton: true
                             });
-                            $('#tujuanNav').html(data.success);
+                            $('#tujuanNavDiv').html(data.success);
                         }
 
                         $('#tujuan_form_result').html(html);
@@ -2343,7 +2568,7 @@
                 success: function(data)
                 {
                     $('#sasaranLoading').hide();
-                    $('#sasaranNav').html(data.html);
+                    $('#sasaranNavDiv').html(data.html);
                 }
             });
         });
@@ -2750,6 +2975,19 @@
             $("[name='program_sasaran_id']").val('').trigger('change');
             $("[name='program_sasaran_indikator_id[]']").val('').trigger('change');
             $("[name='program_opd_id[]']").val('').trigger('change');
+            $('#program_filter_visi').select2('destroy');
+            $('#program_filter_misi').select2('destroy');
+            $('#program_filter_tujuan').select2('destroy');
+            $('#program_filter_sasaran').select2('destroy');
+        });
+
+        $('#addEditProgramModal').on('hidden.bs.modal', function () {
+            $('#program_filter_visi').select2();
+            $('#program_filter_misi').select2();
+            $('#program_filter_tujuan').select2();
+            $('#program_filter_sasaran').select2();
+
+            $(".select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow").css({"position":"absolute", "top":"1px", "right":"1px", "width":"20px"})
         });
 
         $('#program_form').on('submit', function(e){
@@ -3167,6 +3405,431 @@
             } else {
                 $('.program-tagging').hide();
             }
+        });
+
+        $(document).on('change', '#onOffTaggingRenstraTujuan',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.tujuan-renstra-tagging').show();
+            } else {
+                $('.tujuan-renstra-tagging').hide();
+            }
+        });
+
+        $(document).on('change', '#onOffTaggingRenstraSasaran',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.sasaran-renstra-tagging').show();
+            } else {
+                $('.sasaran-renstra-tagging').hide();
+            }
+        });
+
+        $(document).on('change', '#onOffTaggingRenstraProgram',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.program-renstra-tagging').show();
+            } else {
+                $('.program-renstra-tagging').hide();
+            }
+        });
+
+        // Filter Data Misi
+        $('#misi_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#misi_filter_misi').empty();
+                        $('#misi_filter_misi').prop('disabled', false);
+                        $('#misi_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#misi_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#misi_filter_misi').prop('disabled', true);
+            }
+        });
+
+        $('#misi_btn_filter').click(function(){
+            var visi = $('#misi_filter_visi').val();
+            var misi = $('#misi_filter_misi').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.filter.misi') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                },
+                success: function(data)
+                {
+                    $('#misiNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#misi_btn_reset').click(function(){
+            $('#misi_filter_misi').prop('disabled', true);
+            $("[name='misi_filter_visi']").val('').trigger('change');
+            $("[name='misi_filter_misi']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.reset.misi') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#misiNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Filter Data Tujuan
+        $('#tujuan_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#tujuan_filter_misi').empty();
+                        $('#tujuan_filter_misi').prop('disabled', false);
+                        $('#tujuan_filter_tujuan').prop('disabled', true);
+                        $('#tujuan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#tujuan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#tujuan_filter_misi').prop('disabled', true);
+                $('#tujuan_filter_tujuan').prop('disabled', true);
+            }
+        });
+
+        $('#tujuan_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#tujuan_filter_tujuan').empty();
+                        $('#tujuan_filter_tujuan').prop('disabled', false);
+                        $('#tujuan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#tujuan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#tujuan_filter_tujuan').prop('disabled', true);
+            }
+        });
+
+        $('#tujuan_btn_filter').click(function(){
+            var visi = $('#tujuan_filter_visi').val();
+            var misi = $('#tujuan_filter_misi').val();
+            var tujuan = $('#tujuan_filter_tujuan').val();
+            var sasaran = $('#tujuan_filter_sasaran').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.filter.tujuan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan
+                },
+                success: function(data)
+                {
+                    $('#tujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#tujuan_btn_reset').click(function(){
+            $('#tujuan_filter_misi').prop('disabled', true);
+            $('#tujuan_filter_tujuan').prop('disabled', true);
+            $("[name='tujuan_filter_visi']").val('').trigger('change');
+            $("[name='tujuan_filter_misi']").val('').trigger('change');
+            $("[name='tujuan_filter_tujuan']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.reset.tujuan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#tujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Filter Data Sasaran
+        $('#sasaran_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#sasaran_filter_misi').empty();
+                        $('#sasaran_filter_misi').prop('disabled', false);
+                        $('#sasaran_filter_tujuan').prop('disabled', true);
+                        $('#sasaran_filter_sasaran').prop('disabled', true);
+                        $('#sasaran_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#sasaran_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#sasaran_filter_misi').prop('disabled', true);
+                $('#sasaran_filter_tujuan').prop('disabled', true);
+                $('#sasaran_filter_sasaran').prop('disabled', true);
+            }
+        });
+
+        $('#sasaran_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#sasaran_filter_tujuan').empty();
+                        $('#sasaran_filter_tujuan').prop('disabled', false);
+                        $('#sasaran_filter_sasaran').prop('disabled', true);
+                        $('#sasaran_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#sasaran_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#sasaran_filter_tujuan').prop('disabled', true);
+                $('#sasaran_filter_sasaran').prop('disabled', true);
+            }
+        });
+
+        $('#sasaran_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#sasaran_filter_sasaran').empty();
+                        $('#sasaran_filter_sasaran').prop('disabled', false);
+                        $('#sasaran_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#sasaran_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#sasaran_filter_sasaran').prop('disabled', true);
+            }
+        });
+
+        $('#sasaran_btn_filter').click(function(){
+            var visi = $('#sasaran_filter_visi').val();
+            var misi = $('#sasaran_filter_misi').val();
+            var tujuan = $('#sasaran_filter_tujuan').val();
+            var sasaran = $('#sasaran_filter_sasaran').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.filter.sasaran') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran,
+                },
+                success: function(data)
+                {
+                    $('#sasaranNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#sasaran_btn_reset').click(function(){
+            $('#sasaran_filter_misi').prop('disabled', true);
+            $('#sasaran_filter_tujuan').prop('disabled', true);
+            $('#sasaran_filter_sasaran').prop('disabled', true);
+            $("[name='sasaran_filter_visi']").val('').trigger('change');
+            $("[name='sasaran_filter_misi']").val('').trigger('change');
+            $("[name='sasaran_filter_tujuan']").val('').trigger('change');
+            $("[name='sasaran_filter_sasaran']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.reset.sasaran') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#sasaranNavDiv').html(data.html);
+                }
+            });
+        });
+        // Filter Data Program
+        $('#program_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#program_filter_misi').empty();
+                        $('#program_filter_misi').prop('disabled', false);
+                        $('#program_filter_tujuan').prop('disabled', true);
+                        $('#program_filter_sasaran').prop('disabled', true);
+                        $('#program_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#program_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#program_filter_misi').prop('disabled', true);
+                $('#program_filter_tujuan').prop('disabled', true);
+                $('#program_filter_sasaran').prop('disabled', true);
+            }
+        });
+
+        $('#program_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#program_filter_tujuan').empty();
+                        $('#program_filter_tujuan').prop('disabled', false);
+                        $('#program_filter_sasaran').prop('disabled', true);
+                        $('#program_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#program_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#program_filter_tujuan').prop('disabled', true);
+                $('#program_filter_sasaran').prop('disabled', true);
+            }
+        });
+
+        $('#program_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#program_filter_sasaran').empty();
+                        $('#program_filter_sasaran').prop('disabled', false);
+                        $('#program_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#program_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#program_filter_sasaran').prop('disabled', true);
+            }
+        });
+
+        $('#program_btn_filter').click(function(){
+            var visi = $('#program_filter_visi').val();
+            var misi = $('#program_filter_misi').val();
+            var tujuan = $('#program_filter_tujuan').val();
+            var sasaran = $('#program_filter_sasaran').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.filter.program') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran,
+                },
+                success: function(data)
+                {
+                    $('#programNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#program_btn_reset').click(function(){
+            $('#program_filter_misi').prop('disabled', true);
+            $('#program_filter_tujuan').prop('disabled', true);
+            $('#program_filter_sasaran').prop('disabled', true);
+            $("[name='program_filter_visi']").val('').trigger('change');
+            $("[name='program_filter_misi']").val('').trigger('change');
+            $("[name='program_filter_tujuan']").val('').trigger('change');
+            $("[name='program_filter_sasaran']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.reset.program') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#programNavDiv').html(data.html);
+                }
+            });
         });
     </script>
 @endsection
