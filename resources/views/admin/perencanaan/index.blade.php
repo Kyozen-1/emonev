@@ -829,7 +829,7 @@
                                                                                                                                                     @php
                                                                                                                                                         $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran_indikator){
                                                                                                                                                                                         $q->where('sasaran_indikator_id', $sasaran_indikator['id']);
-                                                                                                                                                                                    })->get();
+                                                                                                                                                                                    })->whereHas('program')->get();
                                                                                                                                                                                     $programs = [];
                                                                                                                                                                                     foreach ($get_program_rpjmds as $get_program_rpjmd) {
                                                                                                                                                                                         $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
@@ -894,7 +894,7 @@
                                                                                                                                                             @endif
                                                                                                                                                             <td>
                                                                                                                                                                 @php
-                                                                                                                                                                    $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program['id'])->get();
+                                                                                                                                                                    $get_opds = PivotOpdProgramRpjmd::whereHas('opd')->where('program_rpjmd_id', $program['id'])->get();
                                                                                                                                                                 @endphp
                                                                                                                                                                 <ul>
                                                                                                                                                                     @foreach ($get_opds as $get_opd)
@@ -1099,7 +1099,7 @@
                                                                                                                                                     @php
                                                                                                                                                         $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran_indikator){
                                                                                                                                                                                         $q->where('sasaran_indikator_id', $sasaran_indikator['id']);
-                                                                                                                                                                                    })->get();
+                                                                                                                                                                                    })->whereHas('program')->get();
                                                                                                                                                                                     $programs = [];
                                                                                                                                                                                     foreach ($get_program_rpjmds as $get_program_rpjmd) {
                                                                                                                                                                                         $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
@@ -1144,7 +1144,7 @@
                                                                                                                                                             </td>
                                                                                                                                                             <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_program_rpjmd{{$program['id']}}" class="accordion-toggle">
                                                                                                                                                                 @php
-                                                                                                                                                                    $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program['id'])->get();
+                                                                                                                                                                    $get_opds = PivotOpdProgramRpjmd::whereHas('opd')->where('program_rpjmd_id', $program['id'])->get();
                                                                                                                                                                 @endphp
                                                                                                                                                                 <ul>
                                                                                                                                                                     @foreach ($get_opds as $get_opd)
@@ -2508,6 +2508,7 @@
 
         $(document).on('click','.tujuan_btn_impor_template',function(){
             $('#tujuan_impor_misi_id').val($(this).attr('data-misi-id'));
+            $('.modal-title').text('Import Data Tujuan');
             $('#importTujuanModal').modal('show');
         });
 
@@ -2713,6 +2714,7 @@
 
         $(document).on('click','.sasaran_btn_impor_template',function(){
             $('#sasaran_impor_tujuan_id').val($(this).attr('data-tujuan-id'));
+            $('.modal-title').text('Import Data Sasaran');
             $('#importSasaranModal').modal('show');
         });
         // Sasaran End
@@ -2979,6 +2981,7 @@
             $('#program_filter_misi').select2('destroy');
             $('#program_filter_tujuan').select2('destroy');
             $('#program_filter_sasaran').select2('destroy');
+            // $('#MyID').siblings('.select2').children('.selection').children('.select2-selection').css('border-color', 'red')
         });
 
         $('#addEditProgramModal').on('hidden.bs.modal', function () {

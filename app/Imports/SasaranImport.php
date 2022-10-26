@@ -19,6 +19,16 @@ use App\Models\PivotPerubahanTujuan;
 use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
 use App\Models\PivotSasaranIndikator;
+use App\Models\ProgramRpjmd;
+use App\Models\PivotOpdProgramRpjmd;
+use App\Models\Urusan;
+use App\Models\PivotPerubahanUrusan;
+use App\Models\MasterOpd;
+use App\Models\PivotSasaranIndikatorProgramRpjmd;
+use App\Models\Program;
+use App\Models\PivotPerubahanProgram;
+use App\Models\PivotProgramKegiatanRenstra;
+use App\Models\TargetRpPertahunProgram;
 
 class SasaranImport implements ToCollection,WithStartRow
 {
@@ -106,43 +116,84 @@ class SasaranImport implements ToCollection,WithStartRow
                     //     $sasaran->save();
                     // }
                     // Import Sasaran Spesifik
-                    // $cek_sasaran = Sasaran::where('kode', $row[1])->where('tujuan_id', $this->tujuan_id)->first();
-                    // if($cek_sasaran)
-                    // {
-                    //     $pivot = new PivotPerubahanSasaran;
-                    //     $pivot->sasaran_id = $cek_sasaran->id;
-                    //     $pivot->tujuan_id = $this->tujuan_id;
-                    //     $pivot->kode = $row[1];
-                    //     $pivot->deskripsi = $row[2];
-                    //     $pivot->kabupaten_id = 62;
-                    //     $pivot->tahun_perubahan = $row[3];
-                    //     $pivot->save();
-                    // } else {
-                    //     $sasaran = new Sasaran;
-                    //     $sasaran->tujuan_id = $this->tujuan_id;
-                    //     $sasaran->kode = $row[1];
-                    //     $sasaran->deskripsi = $row[2];
-                    //     $sasaran->kabupaten_id = 62;
-                    //     $sasaran->tahun_perubahan = $row[3];
-                    //     $sasaran->save();
-                    // }
-
-                    // Import Semua Sasaran Indikator
-                    $cek_sasaran = Sasaran::where('kode', $row[3])->whereHas('tujuan', function($q) use ($row){
-                        $q->where('kode', $row[2]);
-                        $q->whereHas('misi', function($q) use ($row){
-                            $q->where('kode', $row[1]);
-                        });
-                    })->first();
+                    $cek_sasaran = Sasaran::where('kode', $row[1])->where('tujuan_id', $this->tujuan_id)->first();
                     if($cek_sasaran)
                     {
-                        $indikator = new PivotSasaranIndikator;
-                        $indikator->sasaran_id = $cek_sasaran->id;
-                        $indikator->indikator = $row[4];
-                        $indikator->target = $row[5];
-                        $indikator->satuan = $row[6];
-                        $indikator->save();
+                        $pivot = new PivotPerubahanSasaran;
+                        $pivot->sasaran_id = $cek_sasaran->id;
+                        $pivot->tujuan_id = $this->tujuan_id;
+                        $pivot->kode = $row[1];
+                        $pivot->deskripsi = $row[2];
+                        $pivot->kabupaten_id = 62;
+                        $pivot->tahun_perubahan = $row[3];
+                        $pivot->save();
+                    } else {
+                        $sasaran = new Sasaran;
+                        $sasaran->tujuan_id = $this->tujuan_id;
+                        $sasaran->kode = $row[1];
+                        $sasaran->deskripsi = $row[2];
+                        $sasaran->kabupaten_id = 62;
+                        $sasaran->tahun_perubahan = $row[3];
+                        $sasaran->save();
                     }
+
+                    // Import Semua Sasaran Indikator
+                    // $cek_sasaran = Sasaran::where('kode', $row[3])->whereHas('tujuan', function($q) use ($row){
+                    //     $q->where('kode', $row[2]);
+                    //     $q->whereHas('misi', function($q) use ($row){
+                    //         $q->where('kode', $row[1]);
+                    //     });
+                    // })->first();
+                    // if($cek_sasaran)
+                    // {
+                    //     $indikator = new PivotSasaranIndikator;
+                    //     $indikator->sasaran_id = $cek_sasaran->id;
+                    //     $indikator->indikator = $row[4];
+                    //     $indikator->target = $row[5];
+                    //     $indikator->satuan = $row[6];
+                    //     $indikator->save();
+                    // }
+
+                    // Import Program Rpjmd
+                    // $sasaran_indikator = PivotSasaranIndikator::where('indikator', 'like', '%'.$row[4].'%')
+                    //                         ->whereHas('sasaran', function($q) use ($row) {
+                    //                             $q->where('kode', $row[3]);
+                    //                             $q->whereHas('tujuan', function($q) use ($row) {
+                    //                                 $q->where('kode', $row[2]);
+                    //                                 $q->whereHas('misi', function($q) use ($row) {
+                    //                                     $q->where('kode', $row[1]);
+                    //                                 });
+                    //                             });
+                    //                         })->first();
+                    // $program = Program::where('kode', [6])->whereHas('urusan', function($q) use ($row){
+                    //                 $q->where('kode', $row[5]);
+                    //             })->first();
+                    // $opd = MasterOpd::where('nama', 'like', '%'.$row[7].'%')->first();
+
+                    // if($sasaran_indikator)
+                    // {
+                    //     if($program)
+                    //     {
+                    //         if($opd)
+                    //         {
+                    //             $program_rpjmd = new ProgramRpjmd;
+                    //             $program_rpjmd->program_id = $program ? $program->id:'';
+                    //             $program_rpjmd->status_program = 'Program Prioritas';
+                    //             $program_rpjmd->pagu = null;
+                    //             $program_rpjmd->save();
+
+                    //             $pivot_sasaran_indikator_program_rpjmd = new PivotSasaranIndikatorProgramRpjmd;
+                    //             $pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id = $program_rpjmd->id;
+                    //             $pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_id = $sasaran_indikator ? $sasaran_indikator->id : '';
+                    //             $pivot_sasaran_indikator_program_rpjmd->save();
+
+                    //             $pivot_opd_program_rpjmd = new PivotOpdProgramRpjmd;
+                    //             $pivot_opd_program_rpjmd->program_rpjmd_id = $program_rpjmd->id;
+                    //             $pivot_opd_program_rpjmd->opd_id = $opd ? $opd->id : '';
+                    //             $pivot_opd_program_rpjmd->save();
+                    //         }
+                    //     }
+                    // }
                 }
                 $n++;
             }

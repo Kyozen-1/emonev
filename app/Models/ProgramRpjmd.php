@@ -28,4 +28,9 @@ class ProgramRpjmd extends Model
     {
         return $this->hasMany('App\Models\TargetRpPertahunProgram', 'program_rpjmd_id');
     }
+
+    public function program()
+    {
+        return $this->belongsTo('App\Models\Program', 'program_id');
+    }
 }
