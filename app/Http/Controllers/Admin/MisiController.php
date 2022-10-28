@@ -218,7 +218,7 @@ class MisiController extends Controller
                                         </tr>
                                         <tr>
                                             <td colspan="3" class="hiddenRow">
-                                                <div class="accordion-body collapse" id="misi_visi'.$visi['id'].'">
+                                                <div class=" collapse" id="misi_visi'.$visi['id'].'">
                                                     <table class="table table-striped">
                                                         <tbody>';
                                                         $a = 1;
@@ -487,7 +487,7 @@ class MisiController extends Controller
                                         </tr>
                                         <tr>
                                             <td colspan="3" class="hiddenRow">
-                                                <div class="accordion-body collapse" id="misi_visi'.$visi['id'].'">
+                                                <div class=" collapse" id="misi_visi'.$visi['id'].'">
                                                     <table class="table table-striped">
                                                         <tbody>';
                                                         $a = 1;

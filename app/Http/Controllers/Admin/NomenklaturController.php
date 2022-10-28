@@ -16,6 +16,7 @@ use App\Models\PivotPerubahanSubKegiatan;
 
 class NomenklaturController extends Controller
 {
+    // accordion-body
     public function index()
     {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
@@ -140,7 +141,7 @@ class NomenklaturController extends Controller
                                         </tr>
                                         <tr>
                                             <td colspan="4" class="hiddenRow">
-                                                <div class="accordion-body collapse" id="program_urusan'.$urusan['id'].'">
+                                                <div class="collapse" id="program_urusan'.$urusan['id'].'">
                                                     <table class="table table-striped table-condesed">
                                                         <tbody>';
                                                             foreach ($programs as $program) {
@@ -211,8 +212,9 @@ class NomenklaturController extends Controller
                             <thead>
                                 <tr>
                                     <th width="15%">Kode</th>
-                                    <th width="70%">Deskripsi</th>
+                                    <th width="50%">Deskripsi</th>
                                     <th width="15%">Tahun Perubahan</th>
+                                    <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -253,10 +255,11 @@ class NomenklaturController extends Controller
                                                 <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle">
                                                     '.$urusan['tahun_perubahan'].'
                                                 </td>
+                                                <td></td>
                                             </tr>
                                             <tr>
-                                                <td colspan="3" class="hiddenRow">
-                                                    <div class="accordion-body collapse" id="kegiatan_urusan'.$urusan['id'].'">
+                                                <td colspan="4" class="hiddenRow">
+                                                    <div class="collapse" id="kegiatan_urusan'.$urusan['id'].'">
                                                         <table class="table table-striped table-condesed">
                                                             <tbody>';
                                                                 foreach ($programs as $program) {
@@ -277,7 +280,7 @@ class NomenklaturController extends Controller
                                                                             </tr>
                                                                             <tr>
                                                                                 <td colspan="12" class="hiddenRow">
-                                                                                    <div class="accordion-body collapse" id="kegiatan_program'.$program['id'].'">
+                                                                                    <div class="collapse" id="kegiatan_program'.$program['id'].'">
                                                                                         <table class="table table-striped table-condesed">
                                                                                             <tbody>';
                                                                                                 $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
@@ -380,8 +383,9 @@ class NomenklaturController extends Controller
                             <thead>
                                 <tr>
                                     <th width="15%">Kode</th>
-                                    <th width="70%">Deskripsi</th>
+                                    <th width="50%">Deskripsi</th>
                                     <th width="15%">Tahun Perubahan</th>
+                                    <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -422,10 +426,11 @@ class NomenklaturController extends Controller
                                                 <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle">
                                                     '.$urusan['tahun_perubahan'].'
                                                 </td>
+                                                <td></td>
                                             </tr>
                                             <tr>
-                                                <td colspan="3" class="hiddenRow">
-                                                    <div class="accordion-body collapse" id="sub_kegiatan_urusan'.$urusan['id'].'">
+                                                <td colspan="4" class="hiddenRow">
+                                                    <div class="collapse" id="sub_kegiatan_urusan'.$urusan['id'].'">
                                                         <table class="table table-striped table-condesed">
                                                             <tbody>';
                                                                 foreach ($programs as $program) {
@@ -433,17 +438,18 @@ class NomenklaturController extends Controller
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%">
                                                                                     '.$urusan['kode'].'.'.$program['kode'].'
                                                                                 </td>
-                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="70%">
+                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="50%">
                                                                                     '.$program['deskripsi'].'
                                                                                     <br>
                                                                                     <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                     <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                 </td>
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"> '.$program['tahun_perubahan'].'</td>
+                                                                                <td width="20%"></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td colspan="12" class="hiddenRow">
-                                                                                    <div class="accordion-body collapse" id="sub_kegiatan_program'.$program['id'].'">
+                                                                                    <div class="collapse" id="sub_kegiatan_program'.$program['id'].'">
                                                                                         <table class="table table-striped">
                                                                                             <tbody>';
                                                                                                 $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
@@ -493,7 +499,7 @@ class NomenklaturController extends Controller
                                                                                                             </tr>
                                                                                                             <tr>
                                                                                                                 <td colspan="12" class="hiddenRow">
-                                                                                                                    <div class="accordion-body collapse" id="sub_kegiatan_kegiatan'.$kegiatan['id'].'">
+                                                                                                                    <div class="collapse" id="sub_kegiatan_kegiatan'.$kegiatan['id'].'">
                                                                                                                         <table class="table table-striped table-condesed">
                                                                                                                             <tbody>';
                                                                                                                                 $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->get();

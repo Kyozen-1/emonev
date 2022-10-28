@@ -436,7 +436,7 @@ class ProgramRpjmdController extends Controller
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordion-body collapse" id="program_visi'.$visi['id'].'">
+                                        <div class=" collapse" id="program_visi'.$visi['id'].'">
                                             <table class="table table-condensed table-striped">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -489,7 +489,7 @@ class ProgramRpjmdController extends Controller
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordion-body collapse" id="program_misi'.$misi['id'].'">
+                                                                        <div class=" collapse" id="program_misi'.$misi['id'].'">
                                                                             <table class="table table-condensed table-striped">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
@@ -543,7 +543,7 @@ class ProgramRpjmdController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordion-body collapse" id="program_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class=" collapse" id="program_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-condensed table-striped">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
@@ -597,7 +597,7 @@ class ProgramRpjmdController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordion-body collapse" id="program_sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                        <div class=" collapse" id="program_sasaran_indikator'.$sasaran['id'].'">
                                                                                                                                             <table class="table table-condensed table-striped">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
@@ -645,7 +645,7 @@ class ProgramRpjmdController extends Controller
                                                                                                                                                                 </tr>
                                                                                                                                                                 <tr>
                                                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                                                        <div class="accordion-body collapse" id="program_rpjmd'.$sasaran_indikator['id'].'">
+                                                                                                                                                                        <div class=" collapse" id="program_rpjmd'.$sasaran_indikator['id'].'">
                                                                                                                                                                             <table class="table table-condensed table-striped">
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>

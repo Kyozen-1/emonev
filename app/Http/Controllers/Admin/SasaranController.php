@@ -298,7 +298,7 @@ class SasaranController extends Controller
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordion-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                        <div class=" collapse" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -351,7 +351,7 @@ class SasaranController extends Controller
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordion-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class=" collapse" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
@@ -410,7 +410,7 @@ class SasaranController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordion-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class=" collapse" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
@@ -469,7 +469,7 @@ class SasaranController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordion-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                        <div class=" collapse" id="sasaran_indikator'.$sasaran['id'].'">
                                                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
@@ -886,7 +886,7 @@ class SasaranController extends Controller
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordion-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                        <div class=" collapse" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -939,7 +939,7 @@ class SasaranController extends Controller
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordion-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class=" collapse" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
@@ -998,7 +998,7 @@ class SasaranController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordion-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class=" collapse" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
@@ -1057,7 +1057,7 @@ class SasaranController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordion-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                        <div class=" collapse" id="sasaran_indikator'.$sasaran['id'].'">
                                                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
@@ -1238,7 +1238,7 @@ class SasaranController extends Controller
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordion-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                        <div class=" collapse" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -1291,7 +1291,7 @@ class SasaranController extends Controller
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordion-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class=" collapse" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
@@ -1350,7 +1350,7 @@ class SasaranController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordion-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class=" collapse" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
@@ -1409,7 +1409,7 @@ class SasaranController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordion-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                        <div class=" collapse" id="sasaran_indikator'.$sasaran['id'].'">
                                                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
@@ -1569,7 +1569,7 @@ class SasaranController extends Controller
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordion-body collapse" id="sasaran_visi'.$visi['id'].'">
+                                        <div class=" collapse" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -1622,7 +1622,7 @@ class SasaranController extends Controller
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="accordion-body collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class=" collapse" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
@@ -1681,7 +1681,7 @@ class SasaranController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="accordion-body collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class=" collapse" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
@@ -1740,7 +1740,7 @@ class SasaranController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="accordion-body collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                        <div class=" collapse" id="sasaran_indikator'.$sasaran['id'].'">
                                                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>

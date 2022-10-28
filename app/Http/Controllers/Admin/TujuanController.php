@@ -221,7 +221,7 @@ class TujuanController extends Controller
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordion-body collapse" id="tujuan_visi'.$visi['id'].'">
+                                        <div class=" collapse" id="tujuan_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condesed">
                                                 <tbody>';
                                                 $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -281,7 +281,7 @@ class TujuanController extends Controller
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4" class="hiddenRow">
-                                                            <div class="accordion-body collapse" id="tujuan_misi'.$misi['id'].'">
+                                                            <div class=" collapse" id="tujuan_misi'.$misi['id'].'">
                                                                 <table class="table table-striped table-condesed">
                                                                     <tbody>';
                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
@@ -609,7 +609,7 @@ class TujuanController extends Controller
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="accordion-body collapse" id="tujuan_visi'.$visi['id'].'">
+                                        <div class=" collapse" id="tujuan_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condesed">
                                                 <tbody>';
                                                 $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -669,7 +669,7 @@ class TujuanController extends Controller
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4" class="hiddenRow">
-                                                            <div class="accordion-body collapse" id="tujuan_misi'.$misi['id'].'">
+                                                            <div class=" collapse" id="tujuan_misi'.$misi['id'].'">
                                                                 <table class="table table-striped table-condesed">
                                                                     <tbody>';
                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
