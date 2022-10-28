@@ -47,6 +47,10 @@ class OpdController extends Controller
                         return $data->opd->master_opd->nama;
                     }
                 })
+                ->editColumn('name', function($data){
+                    $name = strip_tags(substr($data->name,0, 15)) . '...';
+                    return $name;
+                })
                 ->rawColumns(['aksi', 'foto'])
                 ->make(true);
         }
