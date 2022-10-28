@@ -26,8 +26,8 @@
     <!-- User Menu Start -->
     <div class="user-container d-flex">
         <a href="#" class="d-flex user position-relative" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <img class="profile" alt="profile" src="{{ asset('acorn/acorn-elearning-portal/img/profile/profile-3.webp') }}" />
-        <div class="name">Lisa Jackson</div>
+        <img class="profile" alt="profile" src="{{ asset('images/opd/'.Auth::user()->opd->foto) }}" />
+        <div class="name">{{Auth::user()->opd->nama}}</div>
         </a>
         <div class="dropdown-menu dropdown-menu-end user-menu wide">
         <div class="row mb-3 ms-0 me-0">
@@ -112,7 +112,7 @@
                 </a>
                 </li> --}}
                 <li>
-                <a href="{{ route('admin.logout') }}">
+                <a href="{{ route('opd.logout') }}">
                     <i data-acorn-icon="logout" class="me-2" data-acorn-size="17"></i>
                     <span class="align-middle">Logout</span>
                 </a>
