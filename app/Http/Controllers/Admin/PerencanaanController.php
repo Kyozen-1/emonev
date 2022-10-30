@@ -37,6 +37,7 @@ use App\Models\RenstraKegiatan;
 use App\Models\PivotPerubahanKegiatan;
 use App\Models\Kegiatan;
 use App\Models\PivotOpdRentraKegiatan;
+use App\Models\TargetRpPertahunRenstraKegiatan;
 
 class PerencanaanController extends Controller
 {
@@ -1273,20 +1274,20 @@ class PerencanaanController extends Controller
     {
         $get_kegiatans = RenstraKegiatan::where('program_rpjmd_id', $request->id)
                         ->get();
-        $kegiatan = [];
+        $kegiatans = [];
         foreach ($get_kegiatans as $get_kegiatan) {
             $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->kegiatan_id)
                                         ->orderBy('tahun_perubahan', 'desc')
                                         ->latest()->first();
             if($cek_perubahan_kegiatan){
-                $kegiatan[] = [
+                $kegiatans[] = [
                     'id' => $cek_perubahan_kegiatan->kegiatan_id,
                     'kode' => $cek_perubahan_kegiatan->kode,
                     'deskripsi' => $cek_perubahan_kegiatan->deskripsi
                 ];
             } else {
                 $kegiatan = Kegiatan::find($get_kegiatan->kegiatan_id);
-                $kegiatan[] = [
+                $kegiatans[] = [
                     'id' => $kegiatan->kegiatan_id,
                     'kode' => $kegiatan->kode,
                     'deskripsi' => $kegiatan->deskripsi
@@ -1294,7 +1295,7 @@ class PerencanaanController extends Controller
             }
         }
 
-        return response()->json($kegiatan);
+        return response()->json($kegiatans);
     }
 
     public function filter_program(Request $request)
@@ -4417,8 +4418,13 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                             <thead>
                                                                                                                                                                                                                 <tr>
                                                                                                                                                                                                                     <th width="5%"><strong>No</strong></th>
-                                                                                                                                                                                                                    <th width="75%"><strong>Kegiatan</strong></th>
+                                                                                                                                                                                                                    <th width="35%"><strong>Kegiatan</strong></th>
+                                                                                                                                                                                                                    <th width="5%"><strong>Target</strong></th>
+                                                                                                                                                                                                                    <th width="5%"><strong>Satuan</strong></th>
+                                                                                                                                                                                                                    <th width="10%"><strong>Rp</strong></th>
                                                                                                                                                                                                                     <th width="20%"><strong>OPD</strong></th>
+                                                                                                                                                                                                                    <th width="10%"><strong>Pagu</strong></th>
+                                                                                                                                                                                                                    <th width="10%"><strong>Aksi</strong></th>
                                                                                                                                                                                                                 </tr>
                                                                                                                                                                                                             </thead>
                                                                                                                                                                                                             <tbody>';
@@ -4435,6 +4441,7 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                                         'id' => $cek_perubahan_kegiatan->kegiatan_id,
                                                                                                                                                                                                                         'kode' => $cek_perubahan_kegiatan->kode,
                                                                                                                                                                                                                         'deskripsi'  => $cek_perubahan_kegiatan->deskripsi,
+                                                                                                                                                                                                                        'pagu' => $get_renstra_kegiatan->pagu,
                                                                                                                                                                                                                         'renstra_kegiatan_id' => $get_renstra_kegiatan->id
                                                                                                                                                                                                                     ];
                                                                                                                                                                                                                 } else {
@@ -4443,6 +4450,7 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                                         'id' => $kegiatan->id,
                                                                                                                                                                                                                         'kode' => $kegiatan->kode,
                                                                                                                                                                                                                         'deskripsi'  => $kegiatan->deskripsi,
+                                                                                                                                                                                                                        'pagu' => $get_renstra_kegiatan->pagu,
                                                                                                                                                                                                                         'renstra_kegiatan_id' => $get_renstra_kegiatan->id
                                                                                                                                                                                                                     ];
                                                                                                                                                                                                                 }
@@ -4452,13 +4460,38 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                                 $html .= '<tr>
                                                                                                                                                                                                                     <td>'.$d++.'</td>
                                                                                                                                                                                                                     <td>'.$kegiatan['deskripsi'].'</td>';
-
+                                                                                                                                                                                                                    $cek_target_rp_pertahun_renstra_kegiatan = TargetRpPertahunRenstraKegiatan::where('renstra_kegiatan_id', $kegiatan['renstra_kegiatan_id'])
+                                                                                                                                                                                                                    ->where('tahun', $tahun_sekarang)
+                                                                                                                                                                                                                    ->first();
+                                                                                                                                                                                                                    if($cek_target_rp_pertahun_renstra_kegiatan)
+                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                        $get_target_rp_pertahun_renstra_kegiatans = TargetRpPertahunRenstraKegiatan::where('renstra_kegiatan_id', $kegiatan['renstra_kegiatan_id'])
+                                                                                                                                                                                                                                        ->where('tahun', $tahun_sekarang)
+                                                                                                                                                                                                                                        ->get();
+                                                                                                                                                                                                                        $kegiatan_target = [];
+                                                                                                                                                                                                                        $kegiatan_rp = [];
+                                                                                                                                                                                                                        foreach ($get_target_rp_pertahun_renstra_kegiatans as $get_target_rp_pertahun_renstra_kegiatan) {
+                                                                                                                                                                                                                            $kegiatan_target[] = $get_target_rp_pertahun_renstra_kegiatan->target;
+                                                                                                                                                                                                                            $kegiatan_rp[] = $get_target_rp_pertahun_renstra_kegiatan->rp;
+                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                        $html .= '<td>'.array_sum($kegiatan_target).'</td>
+                                                                                                                                                                                                                    <td>'.$cek_target_rp_pertahun_renstra_kegiatan->satuan.'</td>
+                                                                                                                                                                                                                    <td>Rp. '.number_format(array_sum($kegiatan_rp), 2).'</td>';
+                                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                                        $html .= '<td></td>
+                                                                                                                                                                                                                    <td></td>
+                                                                                                                                                                                                                    <td></td>';
+                                                                                                                                                                                                                    }
                                                                                                                                                                                                                 $get_opd_renstra_kegiatans = PivotOpdRentraKegiatan::where('rentra_kegiatan_id', $kegiatan['renstra_kegiatan_id'])->get();
                                                                                                                                                                                                                 $html .= '<td><ul>';
                                                                                                                                                                                                                 foreach ($get_opd_renstra_kegiatans as $get_opd_renstra_kegiatan) {
                                                                                                                                                                                                                     $html .= '<li>'.$get_opd_renstra_kegiatan->opd->nama.'</li>';
                                                                                                                                                                                                                 }
                                                                                                                                                                                                                 $html .='</ul></td>';
+                                                                                                                                                                                                                $html .= '<td>Rp. '.number_format($kegiatan['pagu']).'</td>';
+                                                                                                                                                                                                                $html .= '<td>
+                                                                                                                                                                                                                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-renstra-kegiatan" data-renstra-kegiatan-id="'.$kegiatan['renstra_kegiatan_id'].'" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
+                                                                                                                                                                                                                </td>';
                                                                                                                                                                                                                 $html .= '</tr>';
                                                                                                                                                                                                             }
                                                                                                                                                                                                             $html .= '</tbody>

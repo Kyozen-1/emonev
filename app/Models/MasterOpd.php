@@ -33,4 +33,9 @@ class MasterOpd extends Model
     {
         return $this->belongsTo('App\Models\PivotOpdRenstraKegiatan', 'opd_id');
     }
+
+    public function target_rp_pertahun_renstra_kegiatan()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunRenstraKegiatan', 'opd_id');
+    }
 }

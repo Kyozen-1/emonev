@@ -7,6 +7,7 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::get('/opd/renstra/get-tujuan', 'Opd\RenstraController@get_tujuan')->name('opd.renstra.get-tujuan');
     Route::get('/opd/renstra/get-sasaran', 'Opd\RenstraController@get_sasaran')->name('opd.renstra.get-sasaran');
     Route::get('/opd/renstra/get-program', 'Opd\RenstraController@get_program')->name('opd.renstra.get-program');
+    Route::get('/opd/renstra/get-kegiatan', 'Opd\RenstraController@get_kegiatan')->name('opd.renstra.get-kegiatan');
     Route::post('/opd/renstra/filter-get-misi', 'Opd\RenstraController@filter_get_misi')->name('opd.renstra.filter-get-misi');
     Route::post('/opd/renstra/filter-get-tujuan', 'Opd\RenstraController@filter_get_tujuan')->name('opd.renstra.filter-get-tujuan');
     Route::post('/opd/renstra/filter-get-sasaran', 'Opd\RenstraController@filter_get_sasaran')->name('opd.renstra.filter-get-sasaran');

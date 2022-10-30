@@ -17,6 +17,7 @@ class CreatePivotOpdRentraKegiatansTable extends Migration
             $table->id();
             $table->foreignId('rentra_kegiatan_id')->nullable();
             $table->foreignId('opd_id')->nullable();
+            $table->string('pagu')->nullable();
             $table->timestamps();
         });
     }

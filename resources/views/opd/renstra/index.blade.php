@@ -239,8 +239,71 @@
                         <div id="renstraProgramNavDiv"></div>
                     </div>
                     <div class="tab-pane fade" id="renstra_kegiatan" role="tabpanel">
-                        <h5 class="card-title">Kegiatan</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <div class="row mb-5">
+                            <div class="col-12">
+                                <h2 class="small-title">Filter Data</h2>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Visi</label>
+                                    <select name="renstra_kegiatan_filter_visi" id="renstra_kegiatan_filter_visi" class="form-control">
+                                        <option value="">--- Pilih Visi ---</option>
+                                        <option value="aman">Aman</option>
+                                        <option value="mandiri">Mandiri</option>
+                                        <option value="sejahtera">Sejahtera</option>
+                                        <option value="berahlak">Berahlak</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Misi</label>
+                                    <select name="renstra_kegiatan_filter_misi" id="renstra_kegiatan_filter_misi" class="form-control" disabled>
+                                        <option value="">--- Pilih Misi ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Tujuan</label>
+                                    <select name="renstra_kegiatan_filter_tujuan" id="renstra_kegiatan_filter_tujuan" class="form-control" disabled>
+                                        <option value="">--- Pilih Tujuan ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Sasaran</label>
+                                    <select name="renstra_kegiatan_filter_sasaran" id="renstra_kegiatan_filter_sasaran" class="form-control" disabled>
+                                        <option value="">--- Pilih Sasaran ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Program</label>
+                                    <select name="renstra_kegiatan_filter_program" id="renstra_kegiatan_filter_program" class="form-control" disabled>
+                                        <option value="">--- Pilih Program ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Kegiatan</label>
+                                    <select name="renstra_kegiatan_filter_kegiatan" id="renstra_kegiatan_filter_kegiatan" class="form-control" disabled>
+                                        <option value="">--- Pilih Kegiatan ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                    <button class="btn btn-primary waves-effect waves-light mr-1 mb-2" type="button" id="renstra_kegiatan_btn_filter">Filter Data</button>
+                                    <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_kegiatan_btn_reset">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div id="renstraKegiatanNavDiv"></div>
                     </div>
                 </div>
             </div>
@@ -739,6 +802,71 @@
                 success: function(data)
                 {
                     $('#renstraProgramNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renstra Kegiatan
+        $('#renstra_kegiatan_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('opd.renstra.get-kegiatan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraKegiatanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('change', '#onOffTaggingRenstraKegiatan',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.renstra-kegiatan-tagging').show();
+            } else {
+                $('.renstra-kegiatan-tagging').hide();
+            }
+        });
+
+        $(document).on('click','.renstra_kegiatan_create',function(){
+            $('#renstra_kegiatan_form')[0].reset();
+            $("[name='renstra_kegiatan_kegiatan_id']").val('').trigger('change');
+            $('#renstra_kegiatan_aksi_button').text('Save');
+            $('#renstra_kegiatan_aksi_button').prop('disabled', false);
+            $('.modal-title').text('Add Data Kegiatan');
+            $('#renstra_kegiatan_aksi_button').val('Save');
+            $('#renstra_kegiatan_aksi').val('Save');
+            $('#kegiatan_renstra_form_result').html('');
+            $('#renstra_kegiatan_program_rpjmd_id').val($(this).attr('data-program-rpjmd-id'));
+            $.ajax({
+                url: "{{ route('admin.renstra.get-kegiatan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:$(this).attr('data-program-id')
+                },
+                success: function(response){
+                    $('#renstra_kegiatan_kegiatan_id').empty();
+                    $('#renstra_kegiatan_kegiatan_id').append('<option value="">--- Pilih Kegiatan ---</option>');
+                    $.each(response, function(key, value){
+                        $('#renstra_kegiatan_kegiatan_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                    });
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('admin.renstra.get-opd') }}",
+                method: 'POST',
+                data: {
+                    "_token" : "{{ csrf_token() }}",
+                    id: $(this).attr('data-program-rpjmd-id')
+                },
+                success: function(response)
+                {
+                    $('#renstra_kegiatan_opd_id').empty();
+                    $('#renstra_kegiatan_opd_id').append('<option value="">--- Pilih OPD ---</option>');
+                    $.each(response, function(key, value){
+                        $('#renstra_kegiatan_opd_id').append(new Option(value.nama, value.id));
+                    });
                 }
             });
         });

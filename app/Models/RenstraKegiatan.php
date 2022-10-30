@@ -23,4 +23,9 @@ class RenstraKegiatan extends Model
     {
         return $this->belongsTo('App\Models\PivotOpdRenstraKegiatan', 'rentra_kegiatan_id');
     }
+
+    public function renstra_kegiatan()
+    {
+        return $this->hasMany('App\Models\TargetRpPertahunRenstraKegiatan', 'renstra_kegiatan_id');
+    }
 }

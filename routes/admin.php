@@ -255,5 +255,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     //Renstra
     Route::post('/admin/renstra/get-kegiatan', 'Admin\RenstraKegiatanController@get_kegiatan')->name('admin.renstra.get-kegiatan');
     Route::post('/admin/renstra/get-opd', 'Admin\RenstraKegiatanController@get_opd')->name('admin.renstra.get-opd');
-    Route::post('/admin/renstra/kegiatan', 'Admin\RenstraKegiatanController@store')->name('admin.renstra.store');
+    Route::post('/admin/renstra/kegiatan', 'Admin\RenstraKegiatanController@store')->name('admin.renstra.kegiatan.store');
+    Route::get('/admin/renstra/kegiatan/detail/{id}','Admin\RenstraKegiatanController@detail');
+    Route::post('/admin/renstra/kegiatan/detail/target-rp-pertahun', 'Admin\RenstraKegiatanController@store_target_rp_pertahun')->name('admin.renstra.kegiatan.detail.target-rp-pertahun');
 });
