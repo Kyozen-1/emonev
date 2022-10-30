@@ -67,6 +67,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/perencanaan/filter/get-misi', 'Admin\PerencanaanController@filter_get_misi')->name('admin.perencanaan.filter.get-misi');
     Route::post('/admin/perencanaan/filter/get-tujuan', 'Admin\PerencanaanController@filter_get_tujuan')->name('admin.perencanaan.filter.get-tujuan');
     Route::post('/admin/perencanaan/filter/get-sasaran', 'Admin\PerencanaanController@filter_get_sasaran')->name('admin.perencanaan.filter.get-sasaran');
+    Route::post('/admin/perencanaan/filter/get-program', 'Admin\PerencanaanController@filter_get_program')->name('admin.perencanaan.filter.get-program');
+    Route::post('/admin/perencanaan/filter/get-kegiatan', 'Admin\PerencanaanController@filter_get_kegiatan')->name('admin.perencanaan.filter.get-kegiatan');
     Route::post('/admin/perencanaan/filter/program', 'Admin\PerencanaanController@filter_program')->name('admin.perencanaan.filter.program');
     Route::post('/admin/perencanaan/reset/program', 'Admin\PerencanaanController@get_program')->name('admin.perencanaan.reset.program');
     Route::post('/admin/perencanaan/filter/sasaran', 'Admin\PerencanaanController@filter_sasaran')->name('admin.perencanaan.filter.sasaran');
@@ -75,6 +77,18 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/perencanaan/reset/tujuan', 'Admin\PerencanaanController@get_tujuan')->name('admin.perencanaan.reset.tujuan');
     Route::post('/admin/perencanaan/filter/misi', 'Admin\PerencanaanController@filter_misi')->name('admin.perencanaan.filter.misi');
     Route::post('/admin/perencanaan/reset/misi', 'Admin\PerencanaanController@get_misi')->name('admin.perencanaan.reset.misi');
+    Route::get('/admin/perencanaan/renstra/get-tujuan', 'Admin\PerencanaanController@renstra_get_tujuan')->name('admin.perencanaan.renstra.get-tujuan');
+    Route::post('/admin/perencanaan/renstra/filter/tujuan', 'Admin\PerencanaanController@renstra_filter_tujuan')->name('admin.perencanaan.renstra.filter.tujuan');
+    Route::post('/admin/perencanaan/renstra/reset/tujuan', 'Admin\PerencanaanController@renstra_get_tujuan')->name('admin.perencanaan.renstra.reset.tujuan');
+    Route::get('/admin/perencanaan/renstra/get-sasaran', 'Admin\PerencanaanController@renstra_get_sasaran')->name('admin.perencanaan.renstra.get-sasaran');
+    Route::post('/admin/perencanaan/renstra/filter/sasaran', 'Admin\PerencanaanController@renstra_filter_sasaran')->name('admin.perencanaan.renstra.filter.sasaran');
+    Route::post('/admin/perencanaan/renstra/reset/sasaran', 'Admin\PerencanaanController@renstra_get_sasaran')->name('admin.perencanaan.renstra.reset.sasaran');
+    Route::get('/admin/perencanaan/renstra/get-program', 'Admin\PerencanaanController@renstra_get_program')->name('admin.perencanaan.renstra.get-program');
+    Route::post('/admin/perencanaan/renstra/filter/program', 'Admin\PerencanaanController@renstra_filter_program')->name('admin.perencanaan.renstra.filter.program');
+    Route::post('/admin/perencanaan/renstra/reset/program', 'Admin\PerencanaanController@renstra_get_program')->name('admin.perencanaan.renstra.reset.program');
+    Route::get('/admin/perencanaan/renstra/get-kegiatan', 'Admin\PerencanaanController@renstra_get_kegiatan')->name('admin.perencanaan.renstra.get-kegiatan');
+    Route::post('/admin/perencanaan/renstra/filter/kegiatan', 'Admin\PerencanaanController@renstra_filter_kegiatan')->name('admin.perencanaan.renstra.filter.kegiatan');
+    Route::post('/admin/perencanaan/renstra/reset/kegiatan', 'Admin\PerencanaanController@renstra_get_kegiatan')->name('admin.perencanaan.renstra.reset.kegiatan');
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');

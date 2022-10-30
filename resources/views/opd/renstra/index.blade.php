@@ -447,7 +447,7 @@
             });
         });
 
-        // Filter Data Tujuan
+        // Filter Data Sasaran
         $('#renstra_sasaran_filter_visi').on('change', function(){
             if($(this).val() != '')
             {
@@ -576,7 +576,7 @@
             });
         });
 
-        // Filter Data Tujuan
+        // Filter Data Program
         $('#renstra_program_filter_visi').on('change', function(){
             if($(this).val() != '')
             {
@@ -700,7 +700,7 @@
             var misi = $('#renstra_program_filter_misi').val();
             var tujuan = $('#renstra_program_filter_tujuan').val();
             var sasaran = $('#renstra_program_filter_sasaran').val();
-            var sasaran = $('#renstra_program_filter_program').val();
+            var program = $('#renstra_program_filter_program').val();
 
             $.ajax({
                 url: "{{ route('opd.renstra.filter.get-program') }}",

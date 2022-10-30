@@ -389,20 +389,21 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Renstra Start --}}
                     <div class="tab-pane fade" id="renstraTab" role="tabpanel">
                         <div class="border-0 pb-0">
                             <ul class="nav nav-pills responsive-tabs" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#renstra_tujuan_pd" role="tab" aria-selected="true" type="button">Tujuan PD</button>
+                                    <button class="nav-link active" id="renstra_tujuan_tab_button" data-bs-toggle="tab" data-bs-target="#renstra_tujuan_pd" role="tab" aria-selected="true" type="button">Tujuan PD</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#renstra_sasaran_pd" role="tab" aria-selected="false" type="button">Sasaran PD</button>
+                                    <button class="nav-link" id="renstra_sasaran_tab_button" data-bs-toggle="tab" data-bs-target="#renstra_sasaran_pd" role="tab" aria-selected="false" type="button">Sasaran PD</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#renstra_program" role="tab" aria-selected="false" type="button">Program</button>
+                                    <button class="nav-link" id="renstra_program_tab_button" data-bs-toggle="tab" data-bs-target="#renstra_program" role="tab" aria-selected="false" type="button">Program</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#renstra_kegiatan" role="tab" aria-selected="false" type="button">Kegiatan</button>
+                                    <button class="nav-link" id="renstra_kegiatan_tab_button" data-bs-toggle="tab" data-bs-target="#renstra_kegiatan" role="tab" aria-selected="false" type="button">Kegiatan</button>
                                 </li>
                             </ul>
                         </div>
@@ -410,836 +411,327 @@
                             <div class="tab-content">
                                 {{-- Renstra Tujuan Start --}}
                                 <div class="tab-pane fade active show" id="renstra_tujuan_pd" role="tabpanel">
-                                    <div class="row mb-3">
+                                    <div class="row mb-5">
                                         <div class="col-12">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraTujuan" checked>
-                                                <label class="form-check-label" for="onOffTaggingRenstraTujuan">On / Off Tagging</label>
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select name="renstra_tujuan_filter_visi" id="renstra_tujuan_filter_visi" class="form-control">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select name="renstra_tujuan_filter_misi" id="renstra_tujuan_filter_misi" class="form-control" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select name="renstra_tujuan_filter_tujuan" id="renstra_tujuan_filter_tujuan" class="form-control" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="renstra_tujuan_btn_filter">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_tujuan_btn_reset">Reset</button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="data-table-rows slim">
-                                        <div class="data-table-responsive-wrapper">
-                                            <table class="table table-condensed table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th width="5%">Kode</th>
-                                                        <th width="95%">Deskripsi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($misis as $misi)
+                                    <hr>
+                                    <div id="renstraTujuanNavDiv">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraTujuan" checked>
+                                                    <label class="form-check-label" for="onOffTaggingRenstraTujuan">On / Off Tagging</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="data-table-rows slim">
+                                            <div class="data-table-responsive-wrapper">
+                                                <table class="table table-condensed table-striped">
+                                                    <thead>
                                                         <tr>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['kode']}}
-                                                            </td>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['deskripsi']}}
-                                                                <br>
-                                                                <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                            </td>
+                                                            <th width="5%">Kode</th>
+                                                            <th width="95%">Deskripsi</th>
                                                         </tr>
-                                                        <tr>
-                                                            <td colspan="3" class="hiddenRow">
-                                                                <div class="accordion-body collapse" id="renstra_misi{{$misi['id']}}">
-                                                                    <table class="table table-striped table-condesed">
-                                                                        <tbody>
-                                                                            @php
-                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
-                                                                                $renstra_tujuans = [];
-                                                                                foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
-                                                                                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
-                                                                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                    if($cek_perubahan_tujuan)
-                                                                                    {
-                                                                                        $renstra_tujuans[] = [
-                                                                                            'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                            'kode' => $cek_perubahan_tujuan->kode,
-                                                                                            'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                            'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
-                                                                                        ];
-                                                                                    } else {
-                                                                                        $renstra_tujuans[] = [
-                                                                                            'id' => $renstra_get_tujuan->id,
-                                                                                            'kode' => $renstra_get_tujuan->kode,
-                                                                                            'deskripsi' => $renstra_get_tujuan->deskripsi,
-                                                                                            'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
-                                                                                        ];
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($misis as $misi)
+                                                            <tr>
+                                                                <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                    {{$misi['kode']}}
+                                                                </td>
+                                                                <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                    {{$misi['deskripsi']}}
+                                                                    <br>
+                                                                    <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="3" class="hiddenRow">
+                                                                    <div class="collapse" id="renstra_misi{{$misi['id']}}">
+                                                                        <table class="table table-striped table-condesed">
+                                                                            <tbody>
+                                                                                @php
+                                                                                    $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+                                                                                    $renstra_tujuans = [];
+                                                                                    foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
+                                                                                                                ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                        if($cek_perubahan_tujuan)
+                                                                                        {
+                                                                                            $renstra_tujuans[] = [
+                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                                'kode' => $cek_perubahan_tujuan->kode,
+                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
+                                                                                            ];
+                                                                                        } else {
+                                                                                            $renstra_tujuans[] = [
+                                                                                                'id' => $renstra_get_tujuan->id,
+                                                                                                'kode' => $renstra_get_tujuan->kode,
+                                                                                                'deskripsi' => $renstra_get_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
+                                                                                            ];
+                                                                                        }
                                                                                     }
-                                                                                }
-                                                                            @endphp
-                                                                            @foreach ($renstra_tujuans as $renstra_tujuan)
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        {{$renstra_tujuan['deskripsi']}}
-                                                                                        <br>
-                                                                                        <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                        <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endforeach
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                                                                @endphp
+                                                                                @foreach ($renstra_tujuans as $renstra_tujuan)
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            {{$renstra_tujuan['deskripsi']}}
+                                                                                            <br>
+                                                                                            <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                            <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 {{-- Renstra Tujuan End --}}
                                 {{-- Renstra Sasaran Start --}}
                                 <div class="tab-pane fade" id="renstra_sasaran_pd" role="tabpanel">
-                                    <div class="row mb-3">
+                                    <div class="row mb-5">
                                         <div class="col-12">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraSasaran" checked>
-                                                <label class="form-check-label" for="onOffTaggingRenstraSasaran">On / Off Tagging</label>
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select name="renstra_sasaran_filter_visi" id="renstra_sasaran_filter_visi" class="form-control">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select name="renstra_sasaran_filter_misi" id="renstra_sasaran_filter_misi" class="form-control" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select name="renstra_sasaran_filter_tujuan" id="renstra_sasaran_filter_tujuan" class="form-control" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select name="renstra_sasaran_filter_sasaran" id="renstra_sasaran_filter_sasaran" class="form-control" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="renstra_sasaran_btn_filter">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_sasaran_btn_reset">Reset</button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="data-table-rows slim">
-                                        <div class="data-table-responsive-wrapper">
-                                            <table class="table table-condensed table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th width="5%">Kode</th>
-                                                        <th width="95%">Deskripsi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($misis as $misi)
-                                                        <tr>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['kode']}}
-                                                            </td>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['deskripsi']}}
-                                                                <br>
-                                                                <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="3" class="hiddenRow">
-                                                                <div class="accordion-body collapse" id="renstra_sasaran_misi{{$misi['id']}}">
-                                                                    <table class="table table-striped table-condesed">
-                                                                        <tbody>
-                                                                            @php
-                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
-                                                                                $renstra_tujuans = [];
-                                                                                foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
-                                                                                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
-                                                                                                            ->where('tahun_perubahan', $tahun_sekarang)->latest()->first();
-                                                                                    if($cek_perubahan_tujuan)
-                                                                                    {
-                                                                                        $renstra_tujuans[] = [
-                                                                                            'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                            'kode' => $cek_perubahan_tujuan->kode,
-                                                                                            'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                            'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
-                                                                                        ];
-                                                                                    } else {
-                                                                                        $renstra_tujuans[] = [
-                                                                                            'id' => $renstra_get_tujuan->id,
-                                                                                            'kode' => $renstra_get_tujuan->kode,
-                                                                                            'deskripsi' => $renstra_get_tujuan->deskripsi,
-                                                                                            'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
-                                                                                        ];
-                                                                                    }
-                                                                                }
-                                                                            @endphp
-                                                                            @foreach ($renstra_tujuans as $renstra_tujuan)
-                                                                                <tr>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="5%">
-                                                                                        {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="95%">
-                                                                                        {{$renstra_tujuan['deskripsi']}}
-                                                                                        <br>
-                                                                                        <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                        <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="3" class="hiddenRow">
-                                                                                        <div class="accordion-body collapse" id="renstra_tujuan{{$renstra_tujuan['id']}}">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>
-                                                                                                    @php
-                                                                                                        $get_renstra_sasarans = Sasaran::where('tujuan_id', $renstra_tujuan['id'])->get();
-                                                                                                        $renstra_sasarans = [];
-                                                                                                        foreach ($get_renstra_sasarans as $get_renstra_sasaran) {
-                                                                                                            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_renstra_sasaran->id)
-                                                                                                                                        ->where('tahun_perubahan', $tahun_sekarang)
-                                                                                                                                        ->latest()->first();
-                                                                                                            if($cek_perubahan_sasaran)
-                                                                                                            {
-                                                                                                                $renstra_sasarans[] = [
-                                                                                                                    'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                    'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan
-                                                                                                                ];
-                                                                                                            } else {
-                                                                                                                $renstra_sasarans[] = [
-                                                                                                                    'id' => $get_renstra_sasaran->id,
-                                                                                                                    'kode' => $get_renstra_sasaran->kode,
-                                                                                                                    'deskripsi' => $get_renstra_sasaran->deskripsi,
-                                                                                                                    'tahun_perubahan' => $get_renstra_sasaran->tahun_perubahan
-                                                                                                                ];
-                                                                                                            }
-                                                                                                        }
-                                                                                                    @endphp
-                                                                                                    @foreach ($renstra_sasarans as $sasaran)
-                                                                                                        <tr>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="5%">
-                                                                                                                {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}
-                                                                                                            </td>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="95%">
-                                                                                                                {{$sasaran['deskripsi']}}
-                                                                                                                <br>
-                                                                                                                <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                                                <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                                                <span class="badge bg-danger text-uppercase sasaran-renstra-tagging">Sasaran {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</span>
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                        <tr>
-                                                                                                            <td class="hiddenRow" colspan="3">
-                                                                                                                <div class="accordion-body collapse" id="renstra_sasaran{{$sasaran['id']}}">
-                                                                                                                    <table class="table table-striped table-condesed">
-                                                                                                                        <thead>
-                                                                                                                            <tr>
-                                                                                                                                <th width="5%">No</th>
-                                                                                                                                <th width="55%">Sasaran Indikator</th>
-                                                                                                                                <th width="20%">Target</th>
-                                                                                                                                <th width="20%">Satuan</th>
-                                                                                                                            </tr>
-                                                                                                                        </thead>
-                                                                                                                        <tbody>
-                                                                                                                            @php
-                                                                                                                                $get_renstra_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                $a_indikator = 1;
-                                                                                                                            @endphp
-                                                                                                                            @foreach ($get_renstra_sasaran_indikators as $sasaran_indikator)
-                                                                                                                                <tr>
-                                                                                                                                    <td>{{$a_indikator++}}</td>
-                                                                                                                                    <td>
-                                                                                                                                        {{$sasaran_indikator->indikator}}
-                                                                                                                                        <br>
-                                                                                                                                        <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-renstra-tagging">Sasaran {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</span>
-                                                                                                                                    </td>
-                                                                                                                                    <td>{{$sasaran_indikator->target}}</td>
-                                                                                                                                    <td>{{$sasaran_indikator->satuan}}</td>
-                                                                                                                                </tr>
-                                                                                                                            @endforeach
-                                                                                                                        </tbody>
-                                                                                                                    </table>
-                                                                                                                </div>
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                    @endforeach
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endforeach
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    <hr>
+                                    <div id="renstraSasaranNavDiv"></div>
                                 </div>
                                 {{-- Renstra Sasaran End --}}
                                 {{-- Renstra Program Start --}}
                                 <div class="tab-pane fade" id="renstra_program" role="tabpanel">
-                                    <div class="data-table-rows slim">
-                                        <div class="row mb-3">
-                                            <div class="col-12">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraProgram" checked>
-                                                    <label class="form-check-label" for="onOffTaggingRenstraProgram">On / Off Tagging</label>
-                                                </div>
+                                    <div class="row mb-5">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select name="renstra_program_filter_visi" id="renstra_program_filter_visi" class="form-control">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
                                             </div>
                                         </div>
-                                        <div class="data-table-responsive-wrapper">
-                                            <table class="table table-condensed table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th width="5%">Kode</th>
-                                                        <th width="95%">Misi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($misis as $misi)
-                                                        <tr>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['kode']}}
-                                                            </td>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['deskripsi']}}
-                                                                <br>
-                                                                <span class="badge bg-warning text-uppercase program-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="3" class="hiddenRow">
-                                                                <div class="accordion-body collapse" id="renstra_program_misi{{$misi['id']}}">
-                                                                    <table class="table table-striped table-condesed">
-                                                                        <tbody>
-                                                                            @php
-                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
-                                                                                $renstra_tujuans = [];
-                                                                                foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
-                                                                                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
-                                                                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                    if($cek_perubahan_tujuan)
-                                                                                    {
-                                                                                        $renstra_tujuans[] = [
-                                                                                            'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                            'kode' => $cek_perubahan_tujuan->kode,
-                                                                                            'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                            'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
-                                                                                        ];
-                                                                                    } else {
-                                                                                        $renstra_tujuans[] = [
-                                                                                            'id' => $renstra_get_tujuan->id,
-                                                                                            'kode' => $renstra_get_tujuan->kode,
-                                                                                            'deskripsi' => $renstra_get_tujuan->deskripsi,
-                                                                                            'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
-                                                                                        ];
-                                                                                    }
-                                                                                }
-                                                                            @endphp
-                                                                            @foreach ($renstra_tujuans as $renstra_tujuan)
-                                                                                <tr>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="5%">
-                                                                                        {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="95%">
-                                                                                        {{$renstra_tujuan['deskripsi']}}
-                                                                                        <br>
-                                                                                        <span class="badge bg-warning text-uppercase program-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                        <span class="badge bg-secondary text-uppercase program-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="3" class="hiddenRow">
-                                                                                        <div class="accordion-body collapse" id="renstra_program_tujuan{{$renstra_tujuan['id']}}">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>
-                                                                                                    @php
-                                                                                                        $get_renstra_sasarans = Sasaran::where('tujuan_id', $renstra_tujuan['id'])->get();
-                                                                                                        $renstra_sasarans = [];
-                                                                                                        foreach ($get_renstra_sasarans as $get_renstra_sasaran) {
-                                                                                                            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_renstra_sasaran->id)
-                                                                                                                                        ->orderBy('tahun_perubahan', 'desc')
-                                                                                                                                        ->latest()->first();
-                                                                                                            if($cek_perubahan_sasaran)
-                                                                                                            {
-                                                                                                                $renstra_sasarans[] = [
-                                                                                                                    'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                    'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan
-                                                                                                                ];
-                                                                                                            } else {
-                                                                                                                $renstra_sasarans[] = [
-                                                                                                                    'id' => $get_renstra_sasaran->id,
-                                                                                                                    'kode' => $get_renstra_sasaran->kode,
-                                                                                                                    'deskripsi' => $get_renstra_sasaran->deskripsi,
-                                                                                                                    'tahun_perubahan' => $get_renstra_sasaran->tahun_perubahan
-                                                                                                                ];
-                                                                                                            }
-                                                                                                        }
-                                                                                                    @endphp
-                                                                                                    @foreach ($renstra_sasarans as $sasaran)
-                                                                                                        <tr>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="5%">{{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</td>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="95%">
-                                                                                                                {{$sasaran['deskripsi']}}
-                                                                                                                <br>
-                                                                                                                <span class="badge bg-warning text-uppercase program-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                                                <span class="badge bg-secondary text-uppercase program-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                                                <span class="badge bg-danger text-uppercase program-renstra-tagging">Sasaran {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</span>
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                        <tr>
-                                                                                                            <td class="hiddenRow" colspan="3">
-                                                                                                                <div class="accordion-body collapse" id="renstra_program_sasaran{{$sasaran['id']}}">
-                                                                                                                    <table class="table table-striped table-condesed">
-                                                                                                                        <thead>
-                                                                                                                            <tr>
-                                                                                                                                <th width="5%">No</th>
-                                                                                                                                <th width="55%">Sasaran Indikator</th>
-                                                                                                                                <th width="20%">Target</th>
-                                                                                                                                <th width="20%">Satuan</th>
-                                                                                                                            </tr>
-                                                                                                                        </thead>
-                                                                                                                        <tbody>
-                                                                                                                            @php
-                                                                                                                                $get_renstra_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                $b = 1;
-                                                                                                                            @endphp
-                                                                                                                            @foreach ($get_renstra_sasaran_indikators as $sasaran_indikator)
-                                                                                                                                <tr>
-                                                                                                                                    <td>{{$b++}}</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
-                                                                                                                                        {{$sasaran_indikator->indikator}}
-                                                                                                                                        <br>
-                                                                                                                                        <span class="badge bg-warning text-uppercase program-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase program-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase program-renstra-tagging">Sasaran {{$misi['kode']}}.{{$renstra_tujuan['kode']}}.{{$sasaran['kode']}}</span>
-                                                                                                                                    </td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
-                                                                                                                                        {{$sasaran_indikator->target}}
-                                                                                                                                    </td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
-                                                                                                                                        {{$sasaran_indikator->satuan}}
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td class="hiddenRow" colspan="4">
-                                                                                                                                        <div class="accordion-body collapse" id="renstra_program_sasaran_indikator{{$sasaran_indikator['id']}}">
-                                                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%"><strong>No</strong></th>
-                                                                                                                                                        <th width="40%"><strong>Program RPJMD</strong></th>
-                                                                                                                                                        <th width="5%"><strong>Target</strong></th>
-                                                                                                                                                        <th width="5%"><strong>Satuan</strong></th>
-                                                                                                                                                        <th width="10%"><strong>Rp</strong></th>
-                                                                                                                                                        <th width="20%"><strong>OPD</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Pagu</strong></th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>
-                                                                                                                                                    @php
-                                                                                                                                                        $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran_indikator){
-                                                                                                                                                                                        $q->where('sasaran_indikator_id', $sasaran_indikator['id']);
-                                                                                                                                                                                    })->whereHas('program')->get();
-                                                                                                                                                                                    $programs = [];
-                                                                                                                                                                                    foreach ($get_program_rpjmds as $get_program_rpjmd) {
-                                                                                                                                                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
-                                                                                                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                                                                                                                        if($cek_perubahan_program)
-                                                                                                                                                                                        {
-                                                                                                                                                                                            $programs[] = [
-                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
-                                                                                                                                                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
-                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu
-                                                                                                                                                                                            ];
-                                                                                                                                                                                        } else {
-                                                                                                                                                                                            $program = Program::find($get_program_rpjmd->program_id);
-                                                                                                                                                                                            $programs[] = [
-                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
-                                                                                                                                                                                                'deskripsi' => $program->deskripsi,
-                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
-                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu
-                                                                                                                                                                                            ];
-                                                                                                                                                                                        }
-                                                                                                                                                                                    }
-                                                                                                                                                    $c = 1;
-                                                                                                                                                    @endphp
-                                                                                                                                                    @foreach ($programs as $program)
-                                                                                                                                                        <tr>
-                                                                                                                                                            <td>{{$c++}}</td>
-                                                                                                                                                            <td>
-                                                                                                                                                                {{$program['deskripsi']}}
-                                                                                                                                                                @if ($program['status_program'] == "Program Prioritas")
-                                                                                                                                                                    <i title="Program Prioritas" class="fas fa-star text-primary"></i>
-                                                                                                                                                                @endif
-                                                                                                                                                                <br>
-                                                                                                                                                                <span class="badge bg-warning text-uppercase program-renstra-tagging">{{$misi['kode']}} Misi</span>
-                                                                                                                                                                <span class="badge bg-secondary text-uppercase program-renstra-tagging">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                                                                <span class="badge bg-danger text-uppercase program-renstra-tagging">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                                                                            </td>
-                                                                                                                                                            @php
-                                                                                                                                                                $cek_target_rps = TargetRpPertahunProgram::where('program_rpjmd_id', $program['id'])
-                                                                                                                                                                                                                ->where('tahun', $tahun_sekarang)
-                                                                                                                                                                                                                ->first();
-                                                                                                                                                            @endphp
-                                                                                                                                                            @if ($cek_target_rps)
-                                                                                                                                                                @php
-                                                                                                                                                                    $get_target_rps = TargetRpPertahunProgram::where('program_rpjmd_id', $program['id'])
-                                                                                                                                                                                                                    ->where('tahun', $tahun_sekarang)
-                                                                                                                                                                                                                    ->get();
-                                                                                                                                                                                                    $program_target = [];
-                                                                                                                                                                                                    $program_rp = [];
-                                                                                                                                                                                                    foreach ($get_target_rps as $get_target_rp) {
-                                                                                                                                                                                                        $program_target[] = $get_target_rp->target;
-                                                                                                                                                                                                        $program_rp[] = $get_target_rp->rp;
-                                                                                                                                                                                                    }
-                                                                                                                                                                @endphp
-                                                                                                                                                                <td>{{array_sum($program_target)}}</td>
-                                                                                                                                                                <td>{{$get_target_rp->satuan}}</td>
-                                                                                                                                                                <td>Rp. {{number_format(array_sum($program_rp), 2)}}</td>
-                                                                                                                                                            @else
-                                                                                                                                                                <td></td>
-                                                                                                                                                                <td></td>
-                                                                                                                                                                <td></td>
-                                                                                                                                                            @endif
-                                                                                                                                                            <td>
-                                                                                                                                                                @php
-                                                                                                                                                                    $get_opds = PivotOpdProgramRpjmd::whereHas('opd')->where('program_rpjmd_id', $program['id'])->get();
-                                                                                                                                                                @endphp
-                                                                                                                                                                <ul>
-                                                                                                                                                                    @foreach ($get_opds as $get_opd)
-                                                                                                                                                                        <li>{{$get_opd->opd->nama}}</li>
-                                                                                                                                                                    @endforeach
-                                                                                                                                                                </ul>
-                                                                                                                                                            </td>
-                                                                                                                                                            <td>Rp. {{number_format($program['pagu'])}}</td>
-                                                                                                                                                        </tr>
-                                                                                                                                                    @endforeach
-                                                                                                                                                </tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                            @endforeach
-                                                                                                                        </tbody>
-                                                                                                                    </table>
-                                                                                                                </div>
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                    @endforeach
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endforeach
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select name="renstra_program_filter_misi" id="renstra_program_filter_misi" class="form-control" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select name="renstra_program_filter_tujuan" id="renstra_program_filter_tujuan" class="form-control" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select name="renstra_program_filter_sasaran" id="renstra_program_filter_sasaran" class="form-control" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Program</label>
+                                                <select name="renstra_program_filter_program" id="renstra_program_filter_program" class="form-control" disabled>
+                                                    <option value="">--- Pilih Program ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="renstra_program_btn_filter">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_program_btn_reset">Reset</button>
+                                            </div>
                                         </div>
                                     </div>
+                                    <hr>
+                                    <div id="renstraProgramNavDiv"></div>
                                 </div>
                                 {{-- Renstra Program End --}}
                                 {{-- Renstra Kegiatan Start --}}
                                 <div class="tab-pane fade" id="renstra_kegiatan" role="tabpanel">
-                                    <div class="data-table-rows slim">
-                                        <div class="data-table-responsive-wrapper">
-                                            <table class="table table-condensed table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th width="15%">Kode</th>
-                                                        <th width="70%">Misi</th>
-                                                        <th width="15%">Tahun Perubahan</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($misis as $misi)
-                                                        <tr>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['kode']}}
-                                                            </td>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['deskripsi']}}
-                                                                <br>
-                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                            </td>
-                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                {{$misi['tahun_perubahan']}}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="3" class="hiddenRow">
-                                                                <div class="accordion-body collapse" id="renstra_kegiatan_misi{{$misi['id']}}">
-                                                                    <table class="table table-striped table-condesed">
-                                                                        <tbody>
-                                                                            @php
-                                                                                $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
-                                                                                $renstra_tujuans = [];
-                                                                                foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
-                                                                                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
-                                                                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                    if($cek_perubahan_tujuan)
-                                                                                    {
-                                                                                        $renstra_tujuans[] = [
-                                                                                            'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                            'kode' => $cek_perubahan_tujuan->kode,
-                                                                                            'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                            'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
-                                                                                        ];
-                                                                                    } else {
-                                                                                        $renstra_tujuans[] = [
-                                                                                            'id' => $renstra_get_tujuan->id,
-                                                                                            'kode' => $renstra_get_tujuan->kode,
-                                                                                            'deskripsi' => $renstra_get_tujuan->deskripsi,
-                                                                                            'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
-                                                                                        ];
-                                                                                    }
-                                                                                }
-                                                                            @endphp
-                                                                            @foreach ($renstra_tujuans as $renstra_tujuan)
-                                                                                <tr>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
-                                                                                        {{$renstra_tujuan['kode']}}
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="70%">
-                                                                                        {{$renstra_tujuan['deskripsi']}}
-                                                                                        <br>
-                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_tujuan{{$renstra_tujuan['id']}}" class="accordion-toggle" width="15%">
-                                                                                        {{$renstra_tujuan['tahun_perubahan']}}
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="3" class="hiddenRow">
-                                                                                        <div class="accordion-body collapse" id="renstra_kegiatan_tujuan{{$renstra_tujuan['id']}}">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>
-                                                                                                    @php
-                                                                                                        $get_renstra_sasarans = Sasaran::where('tujuan_id', $renstra_tujuan['id'])->get();
-                                                                                                        $renstra_sasarans = [];
-                                                                                                        foreach ($get_renstra_sasarans as $get_renstra_sasaran) {
-                                                                                                            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_renstra_sasaran->id)
-                                                                                                                                        ->orderBy('tahun_perubahan', 'desc')
-                                                                                                                                        ->latest()->first();
-                                                                                                            if($cek_perubahan_sasaran)
-                                                                                                            {
-                                                                                                                $renstra_sasarans[] = [
-                                                                                                                    'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                    'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan
-                                                                                                                ];
-                                                                                                            } else {
-                                                                                                                $renstra_sasarans[] = [
-                                                                                                                    'id' => $get_renstra_sasaran->id,
-                                                                                                                    'kode' => $get_renstra_sasaran->kode,
-                                                                                                                    'deskripsi' => $get_renstra_sasaran->deskripsi,
-                                                                                                                    'tahun_perubahan' => $get_renstra_sasaran->tahun_perubahan
-                                                                                                                ];
-                                                                                                            }
-                                                                                                        }
-                                                                                                    @endphp
-                                                                                                    @foreach ($renstra_sasarans as $sasaran)
-                                                                                                        <tr>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">{{$sasaran['kode']}}</td>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="70%">
-                                                                                                                {{$sasaran['deskripsi']}}
-                                                                                                                <br>
-                                                                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                                                <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                            </td>
-                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_sasaran{{$sasaran['id']}}" class="accordion-toggle" width="15%">
-                                                                                                                {{$sasaran['tahun_perubahan']}}
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                        <tr>
-                                                                                                            <td class="hiddenRow" colspan="3">
-                                                                                                                <div class="accordion-body collapse" id="renstra_kegiatan_sasaran{{$sasaran['id']}}">
-                                                                                                                    <table class="table table-striped table-condesed">
-                                                                                                                        <thead>
-                                                                                                                            <tr>
-                                                                                                                                <th width="60%">Sasaran Indikator</th>
-                                                                                                                                <th width="20%">Target</th>
-                                                                                                                                <th width="20%">Satuan</th>
-                                                                                                                            </tr>
-                                                                                                                        </thead>
-                                                                                                                        <tbody>
-                                                                                                                            @php
-                                                                                                                                $get_renstra_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                            @endphp
-                                                                                                                            @foreach ($get_renstra_sasaran_indikators as $sasaran_indikator)
-                                                                                                                                <tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
-                                                                                                                                        {{$sasaran_indikator->indikator}}
-                                                                                                                                        <br>
-                                                                                                                                        <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                                                        <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
-                                                                                                                                    </td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
-                                                                                                                                        {{$sasaran_indikator->target}}
-                                                                                                                                    </td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_sasaran_indikator{{$sasaran_indikator['id']}}" class="accordion-toggle">
-                                                                                                                                        {{$sasaran_indikator->satuan}}
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td class="hiddenRow" colspan="3">
-                                                                                                                                        <div class="accordion-body collapse" id="renstra_kegiatan_sasaran_indikator{{$sasaran_indikator['id']}}">
-                                                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="45%">Program RPJMD</th>
-                                                                                                                                                        <th width="15%">Status Program</th>
-                                                                                                                                                        <th width="15%">Pagu</th>
-                                                                                                                                                        <th width="15%">OPD</th>
-                                                                                                                                                        <th width="10%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>
-                                                                                                                                                    @php
-                                                                                                                                                        $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran_indikator){
-                                                                                                                                                                                        $q->where('sasaran_indikator_id', $sasaran_indikator['id']);
-                                                                                                                                                                                    })->whereHas('program')->get();
-                                                                                                                                                                                    $programs = [];
-                                                                                                                                                                                    foreach ($get_program_rpjmds as $get_program_rpjmd) {
-                                                                                                                                                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
-                                                                                                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                                                                                                                        if($cek_perubahan_program)
-                                                                                                                                                                                        {
-                                                                                                                                                                                            $programs[] = [
-                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
-                                                                                                                                                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
-                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu,
-                                                                                                                                                                                                'program_id' => $cek_perubahan_program->program_id
-                                                                                                                                                                                            ];
-                                                                                                                                                                                        } else {
-                                                                                                                                                                                            $program = Program::find($get_program_rpjmd->program_id);
-                                                                                                                                                                                            $programs[] = [
-                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
-                                                                                                                                                                                                'deskripsi' => $program->deskripsi,
-                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
-                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu,
-                                                                                                                                                                                                'program_id' => $program->id
-                                                                                                                                                                                            ];
-                                                                                                                                                                                        }
-                                                                                                                                                                                    }
-                                                                                                                                                    @endphp
-                                                                                                                                                    @foreach ($programs as $program)
-                                                                                                                                                        <tr>
-                                                                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_program_rpjmd{{$program['id']}}" class="accordion-toggle">
-                                                                                                                                                                {{$program['deskripsi']}}
-                                                                                                                                                                <br>
-                                                                                                                                                                <span class="badge bg-warning text-uppercase">{{$misi['kode']}} Misi</span>
-                                                                                                                                                                <span class="badge bg-secondary text-uppercase">{{$renstra_tujuan['kode']}} Tujuan</span>
-                                                                                                                                                                <span class="badge bg-danger text-uppercase">{{$sasaran['kode']}} Sasaran</span>
-                                                                                                                                                                <span class="badge bg-info text-uppercase">Sasaran Indikator</span>
-                                                                                                                                                                <span class="badge bg-success text-uppercase">Program RPJMD</span>
-                                                                                                                                                            </td>
-                                                                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_program_rpjmd{{$program['id']}}" class="accordion-toggle">
-                                                                                                                                                                {{$program['status_program']}}
-                                                                                                                                                            </td>
-                                                                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_program_rpjmd{{$program['id']}}" class="accordion-toggle">
-                                                                                                                                                                {{$program['pagu']}}
-                                                                                                                                                            </td>
-                                                                                                                                                            <td data-bs-toggle="collapse" data-bs-target="#renstra_kegiatan_program_rpjmd{{$program['id']}}" class="accordion-toggle">
-                                                                                                                                                                @php
-                                                                                                                                                                    $get_opds = PivotOpdProgramRpjmd::whereHas('opd')->where('program_rpjmd_id', $program['id'])->get();
-                                                                                                                                                                @endphp
-                                                                                                                                                                <ul>
-                                                                                                                                                                    @foreach ($get_opds as $get_opd)
-                                                                                                                                                                        <li>{{$get_opd->opd->nama}}</li>
-                                                                                                                                                                    @endforeach
-                                                                                                                                                                </ul>
-                                                                                                                                                            </td>
-                                                                                                                                                            <td>
-                                                                                                                                                                <button class="btn btn-primary waves-effect waves-light mr-2 renstra_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditRenstraKegiatanModal" title="Tambah Kegiatan" data-program-id="{{$program['program_id']}}" data-program-rpjmd-id="{{$program['id']}}"><i class="fas fa-plus"></i></button>
-                                                                                                                                                            </td>
-                                                                                                                                                        </tr>
-                                                                                                                                                        <tr>
-                                                                                                                                                            <td class="hiddenRow" colspan="5">
-                                                                                                                                                                <div class="accordion-body collapse" id="renstra_kegiatan_program_rpjmd{{$program['id']}}">
-                                                                                                                                                                    <table class="table table-striped table-condesed">
-                                                                                                                                                                        <thead>
-                                                                                                                                                                            <tr>
-                                                                                                                                                                                <th width="85%">Kegiatan</th>
-                                                                                                                                                                                <th width="15%">Tahun Perubahan</th>
-                                                                                                                                                                            </tr>
-                                                                                                                                                                        </thead>
-                                                                                                                                                                        <tbody>
-                                                                                                                                                                            @php
-                                                                                                                                                                                $pivot_kegiatan_renstras = PivotProgramKegiatanRenstra::where('program_rpjmd_id', $program['id'])
-                                                                                                                                                                                                            ->where('program_id', $program['program_id'])
-                                                                                                                                                                                                            ->get();
-                                                                                                                                                                                $kegiatans = [];
-                                                                                                                                                                                foreach ($pivot_kegiatan_renstras as $kegiatan_renstra) {
-                                                                                                                                                                                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $kegiatan_renstra->kegiatan_id)
-                                                                                                                                                                                                                ->orderBy('tahun_perubahan', 'desc')
-                                                                                                                                                                                                                ->latest()->first();
-                                                                                                                                                                                    if($cek_perubahan_kegiatan)
-                                                                                                                                                                                    {
-                                                                                                                                                                                        $kegiatans[] = [
-                                                                                                                                                                                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
-                                                                                                                                                                                            'kode' => $cek_perubahan_kegiatan->kode,
-                                                                                                                                                                                            'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
-                                                                                                                                                                                            'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan
-                                                                                                                                                                                        ];
-                                                                                                                                                                                    } else {
-                                                                                                                                                                                        $kegiatan = Kegiatan::find($kegiatan_renstra->kegiatan_id);
-                                                                                                                                                                                        $kegiatans[] = [
-                                                                                                                                                                                            'id' => $kegiatan->id,
-                                                                                                                                                                                            'kode' => $kegiatan->kode,
-                                                                                                                                                                                            'deskripsi' => $kegiatan->deskripsi,
-                                                                                                                                                                                            'tahun_perubahan' => $kegiatan->tahun_perubahan
-                                                                                                                                                                                        ];
-                                                                                                                                                                                    }
-                                                                                                                                                                                }
-                                                                                                                                                                            @endphp
-                                                                                                                                                                            @foreach ($kegiatans as $kegiatan)
-                                                                                                                                                                            <tr>
-                                                                                                                                                                                <td>{{$kegiatan['deskripsi']}}</td>
-                                                                                                                                                                                <td>{{$kegiatan['tahun_perubahan']}}</td>
-                                                                                                                                                                            </tr>
-                                                                                                                                                                            @endforeach
-                                                                                                                                                                        </tbody>
-                                                                                                                                                                    </table>
-                                                                                                                                                                </div>
-                                                                                                                                                            </td>
-                                                                                                                                                        </tr>
-                                                                                                                                                    @endforeach
-                                                                                                                                                </tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                            @endforeach
-                                                                                                                        </tbody>
-                                                                                                                    </table>
-                                                                                                                </div>
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                    @endforeach
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            @endforeach
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                    <div class="row mb-5">
+                                        <div class="col-6 col-md-8">
+                                            <label for="" class="form-label">Tambah data kegiatan</label>
+                                        </div>
+                                        <div class="col-6 col-md-4" style="text-align: right">
+                                            <button class="btn btn-icon waves-effect waves-light btn-primary" id="renstra_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditRenstraKegiatanModal" title="Tambah Data Kegiatan"><i class="fas fa-plus"></i></button>
                                         </div>
                                     </div>
+                                    <hr>
+                                    <div class="row mb-5">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select name="renstra_kegiatan_filter_visi" id="renstra_kegiatan_filter_visi" class="form-control">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select name="renstra_kegiatan_filter_misi" id="renstra_kegiatan_filter_misi" class="form-control" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select name="renstra_kegiatan_filter_tujuan" id="renstra_kegiatan_filter_tujuan" class="form-control" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select name="renstra_kegiatan_filter_sasaran" id="renstra_kegiatan_filter_sasaran" class="form-control" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Program</label>
+                                                <select name="renstra_kegiatan_filter_program" id="renstra_kegiatan_filter_program" class="form-control" disabled>
+                                                    <option value="">--- Pilih Program ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Kegiatan</label>
+                                                <select name="renstra_kegiatan_filter_kegiatan" id="renstra_kegiatan_filter_kegiatan" class="form-control" disabled>
+                                                    <option value="">--- Pilih Kegiatan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1 mb-2" type="button" id="renstra_kegiatan_btn_filter">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_kegiatan_btn_reset">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div id="renstraKegiatanNavDiv"></div>
                                 </div>
                                 {{-- Renstra Kegiatan End --}}
                             </div>
                         </div>
                     </div>
+                    {{-- Renstra End --}}
                     <div class="tab-pane fade" id="rkpdTab" role="tabpanel">
                         <h5 class="card-title">Third Line Title</h5>
                         <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
@@ -2093,6 +1585,28 @@
             $('#program_filter_misi').select2();
             $('#program_filter_tujuan').select2();
             $('#program_filter_sasaran').select2();
+
+            $('#renstra_tujuan_filter_visi').select2();
+            $('#renstra_tujuan_filter_misi').select2();
+            $('#renstra_tujuan_filter_tujuan').select2();
+
+            $('#renstra_sasaran_filter_visi').select2();
+            $('#renstra_sasaran_filter_misi').select2();
+            $('#renstra_sasaran_filter_tujuan').select2();
+            $('#renstra_sasaran_filter_sasaran').select2();
+
+            $('#renstra_program_filter_visi').select2();
+            $('#renstra_program_filter_misi').select2();
+            $('#renstra_program_filter_tujuan').select2();
+            $('#renstra_program_filter_sasaran').select2();
+            $('#renstra_program_filter_program').select2();
+
+            $('#renstra_kegiatan_filter_visi').select2();
+            $('#renstra_kegiatan_filter_misi').select2();
+            $('#renstra_kegiatan_filter_tujuan').select2();
+            $('#renstra_kegiatan_filter_sasaran').select2();
+            $('#renstra_kegiatan_filter_program').select2();
+            $('#renstra_kegiatan_filter_kegiatan').select2();
 
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');
@@ -3410,33 +2924,6 @@
             }
         });
 
-        $(document).on('change', '#onOffTaggingRenstraTujuan',function(){
-            if($(this).prop('checked') == true)
-            {
-                $('.tujuan-renstra-tagging').show();
-            } else {
-                $('.tujuan-renstra-tagging').hide();
-            }
-        });
-
-        $(document).on('change', '#onOffTaggingRenstraSasaran',function(){
-            if($(this).prop('checked') == true)
-            {
-                $('.sasaran-renstra-tagging').show();
-            } else {
-                $('.sasaran-renstra-tagging').hide();
-            }
-        });
-
-        $(document).on('change', '#onOffTaggingRenstraProgram',function(){
-            if($(this).prop('checked') == true)
-            {
-                $('.program-renstra-tagging').show();
-            } else {
-                $('.program-renstra-tagging').hide();
-            }
-        });
-
         // Filter Data Misi
         $('#misi_filter_visi').on('change', function(){
             if($(this).val() != '')
@@ -3831,6 +3318,688 @@
                 success: function(data)
                 {
                     $('#programNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renstra Tujuan
+        $('#renstra_tujuan_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.get-tujuan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraTujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('change', '#onOffTaggingRenstraTujuan',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.tujuan-renstra-tagging').show();
+            } else {
+                $('.tujuan-renstra-tagging').hide();
+            }
+        });
+
+        // Filter Data Renstra Tujuan
+        $('#renstra_tujuan_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_tujuan_filter_misi').empty();
+                        $('#renstra_tujuan_filter_misi').prop('disabled', false);
+                        $('#renstra_tujuan_filter_tujuan').prop('disabled', true);
+                        $('#renstra_tujuan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_tujuan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_tujuan_filter_misi').prop('disabled', true);
+                $('#renstra_tujuan_filter_tujuan').prop('disabled', true);
+                $("[name='renstra_tujuan_filter_misi']").val('').trigger('change');
+                $("[name='renstra_tujuan_filter_tujuan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_tujuan_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_tujuan_filter_tujuan').empty();
+                        $('#renstra_tujuan_filter_tujuan').prop('disabled', false);
+                        $('#renstra_tujuan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_tujuan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_tujuan_filter_tujuan').prop('disabled', true);
+                $("[name='renstra_tujuan_filter_tujuan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_tujuan_btn_filter').click(function(){
+            var visi = $('#renstra_tujuan_filter_visi').val();
+            var misi = $('#renstra_tujuan_filter_misi').val();
+            var tujuan = $('#renstra_tujuan_filter_tujuan').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.filter.tujuan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan
+                },
+                success: function(data)
+                {
+                    $('#renstraTujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#renstra_tujuan_btn_reset').click(function(){
+            $('#renstra_tujuan_filter_misi').prop('disabled', true);
+            $('#renstra_tujuan_filter_tujuan').prop('disabled', true);
+            $("[name='renstra_tujuan_filter_visi']").val('').trigger('change');
+            $("[name='renstra_tujuan_filter_misi']").val('').trigger('change');
+            $("[name='renstra_tujuan_filter_tujuan']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.reset.tujuan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renstraTujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renstra Sasaran
+        $('#renstra_sasaran_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.get-sasaran') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraSasaranNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('change', '#onOffTaggingRenstraSasaran',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.sasaran-renstra-tagging').show();
+            } else {
+                $('.sasaran-renstra-tagging').hide();
+            }
+        });
+
+        // Filter Data Sasaran
+        $('#renstra_sasaran_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_sasaran_filter_misi').empty();
+                        $('#renstra_sasaran_filter_misi').prop('disabled', false);
+                        $('#renstra_sasaran_filter_tujuan').prop('disabled', true);
+                        $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
+                        $('#renstra_sasaran_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_sasaran_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_sasaran_filter_misi').prop('disabled', true);
+                $('#renstra_sasaran_filter_tujuan').prop('disabled', true);
+                $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_sasaran_filter_misi']").val('').trigger('change');
+                $("[name='renstra_sasaran_filter_tujuan']").val('').trigger('change');
+                $("[name='renstra_sasaran_filter_sasaran']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_sasaran_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_sasaran_filter_tujuan').empty();
+                        $('#renstra_sasaran_filter_tujuan').prop('disabled', false);
+                        $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
+                        $('#renstra_sasaran_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_sasaran_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_sasaran_filter_tujuan').prop('disabled', true);
+                $("[name='renstra_sasaran_filter_tujuan']").val('').trigger('change');
+                $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_sasaran_filter_sasaran']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_sasaran_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_sasaran_filter_sasaran').empty();
+                        $('#renstra_sasaran_filter_sasaran').prop('disabled', false);
+                        $('#renstra_sasaran_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_sasaran_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_sasaran_filter_sasaran']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_sasaran_btn_filter').click(function(){
+            var visi = $('#renstra_sasaran_filter_visi').val();
+            var misi = $('#renstra_sasaran_filter_misi').val();
+            var tujuan = $('#renstra_sasaran_filter_tujuan').val();
+            var sasaran = $('#renstra_sasaran_filter_sasaran').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.filter.sasaran') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran
+                },
+                success: function(data)
+                {
+                    $('#renstraSasaranNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#renstra_sasaran_btn_reset').click(function(){
+            $('#renstra_sasaran_filter_misi').prop('disabled', true);
+            $('#renstra_sasaran_filter_tujuan').prop('disabled', true);
+            $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
+            $("[name='renstra_sasaran_filter_visi']").val('').trigger('change');
+            $("[name='renstra_sasaran_filter_misi']").val('').trigger('change');
+            $("[name='renstra_sasaran_filter_tujuan']").val('').trigger('change');
+            $("[name='renstra_sasaran_filter_sasaran']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.reset.sasaran') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renstraSasaranNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renstra Program
+        $('#renstra_program_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.get-program') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraProgramNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('change', '#onOffTaggingRenstraProgram',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.renstra-program-tagging').show();
+            } else {
+                $('.renstra-program-tagging').hide();
+            }
+        });
+
+        // Filter Data Program
+        $('#renstra_program_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_program_filter_misi').empty();
+                        $('#renstra_program_filter_misi').prop('disabled', false);
+                        $('#renstra_program_filter_tujuan').prop('disabled', true);
+                        $('#renstra_program_filter_sasaran').prop('disabled', true);
+                        $('#renstra_program_filter_program').prop('disabled', true);
+                        $('#renstra_program_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_program_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_program_filter_misi').prop('disabled', true);
+                $('#renstra_program_filter_tujuan').prop('disabled', true);
+                $('#renstra_program_filter_sasaran').prop('disabled', true);
+                $('#renstra_program_filter_program').prop('disabled', true);
+                $("[name='renstra_program_filter_misi']").val('').trigger('change');
+                $("[name='renstra_program_filter_tujuan']").val('').trigger('change');
+                $("[name='renstra_program_filter_sasaran']").val('').trigger('change');
+                $("[name='renstra_program_filter_program']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_program_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_program_filter_tujuan').empty();
+                        $('#renstra_program_filter_tujuan').prop('disabled', false);
+                        $('#renstra_program_filter_sasaran').prop('disabled', true);
+                        $('#renstra_program_filter_program').prop('disabled', true);
+                        $('#renstra_program_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_program_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_program_filter_tujuan').prop('disabled', true);
+                $("[name='renstra_program_filter_tujuan']").val('').trigger('change');
+                $('#renstra_program_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_program_filter_sasaran']").val('').trigger('change');
+                $('#renstra_program_filter_program').prop('disabled', true);
+                $("[name='renstra_program_filter_program']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_program_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_program_filter_sasaran').empty();
+                        $('#renstra_program_filter_sasaran').prop('disabled', false);
+                        $('#renstra_program_filter_program').prop('disabled', true);
+                        $('#renstra_program_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_program_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_program_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_program_filter_sasaran']").val('').trigger('change');
+                $('#renstra_program_filter_program').prop('disabled', true);
+                $("[name='renstra_program_filter_program']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_program_filter_sasaran').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-program') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_program_filter_program').empty();
+                        $('#renstra_program_filter_program').prop('disabled', false);
+                        $('#renstra_program_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_program_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_program_filter_program').prop('disabled', true);
+                $("[name='renstra_program_filter_program']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_program_btn_filter').click(function(){
+            var visi = $('#renstra_program_filter_visi').val();
+            var misi = $('#renstra_program_filter_misi').val();
+            var tujuan = $('#renstra_program_filter_tujuan').val();
+            var sasaran = $('#renstra_program_filter_sasaran').val();
+            var program = $('#renstra_program_filter_program').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.filter.program') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran,
+                    program: program
+                },
+                success: function(data)
+                {
+                    $('#renstraProgramNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#renstra_program_btn_reset').click(function(){
+            $('#renstra_program_filter_misi').prop('disabled', true);
+            $('#renstra_program_filter_tujuan').prop('disabled', true);
+            $('#renstra_program_filter_sasaran').prop('disabled', true);
+            $('#renstra_program_filter_program').prop('disabled', true);
+            $("[name='renstra_program_filter_visi']").val('').trigger('change');
+            $("[name='renstra_program_filter_misi']").val('').trigger('change');
+            $("[name='renstra_program_filter_tujuan']").val('').trigger('change');
+            $("[name='renstra_program_filter_sasaran']").val('').trigger('change');
+            $("[name='renstra_program_filter_program']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.reset.program') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renstraProgramNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renstra Kegiatan
+        $('#renstra_kegiatan_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.get-kegiatan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraKegiatanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('change', '#onOffTaggingRenstraKegiatan',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.renstra-kegiatan-tagging').show();
+            } else {
+                $('.renstra-kegiatan-tagging').hide();
+            }
+        });
+
+        // Filter Data Kegiatan
+        $('#renstra_kegiatan_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_misi').empty();
+                        $('#renstra_kegiatan_filter_misi').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_misi').prop('disabled', true);
+                $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
+                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_misi']").val('').trigger('change');
+                $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
+                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
+                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_tujuan').empty();
+                        $('#renstra_kegiatan_filter_tujuan').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_sasaran').empty();
+                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_filter_sasaran').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-program') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_program').empty();
+                        $('#renstra_kegiatan_filter_program').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.program_rpjmd_id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_filter_program').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-kegiatan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_kegiatan').empty();
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_kegiatan').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_btn_filter').click(function(){
+            var visi = $('#renstra_kegiatan_filter_visi').val();
+            var misi = $('#renstra_kegiatan_filter_misi').val();
+            var tujuan = $('#renstra_kegiatan_filter_tujuan').val();
+            var sasaran = $('#renstra_kegiatan_filter_sasaran').val();
+            var program = $('#renstra_kegiatan_filter_program').val();
+            var kegiatan = $('#renstra_kegiatan_filter_kegiatan').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.filter.kegiatan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran,
+                    program: program,
+                    kegiatan: kegiatan
+                },
+                success: function(data)
+                {
+                    $('#renstraKegiatanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#renstra_kegiatan_btn_reset').click(function(){
+            $('#renstra_kegiatan_filter_misi').prop('disabled', true);
+            $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
+            $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+            $('#renstra_kegiatan_filter_program').prop('disabled', true);
+            $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+            $("[name='renstra_kegiatan_filter_visi']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_misi']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.reset.program') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renstraKegiatanNavDiv').html(data.html);
                 }
             });
         });

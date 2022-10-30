@@ -33,4 +33,9 @@ class ProgramRpjmd extends Model
     {
         return $this->belongsTo('App\Models\Program', 'program_id');
     }
+
+    public function renstra_kegiatan()
+    {
+        return $this->hasMany('App\Models\RenstraKegiatan', 'program_rpjmd_id');
+    }
 }
