@@ -653,15 +653,6 @@
                                 {{-- Renstra Kegiatan Start --}}
                                 <div class="tab-pane fade" id="renstra_kegiatan" role="tabpanel">
                                     <div class="row mb-5">
-                                        <div class="col-6 col-md-8">
-                                            <label for="" class="form-label">Tambah data kegiatan</label>
-                                        </div>
-                                        <div class="col-6 col-md-4" style="text-align: right">
-                                            <button class="btn btn-icon waves-effect waves-light btn-primary" id="renstra_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditRenstraKegiatanModal" title="Tambah Data Kegiatan"><i class="fas fa-plus"></i></button>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row mb-5">
                                         <div class="col-12">
                                             <h2 class="small-title">Filter Data</h2>
                                         </div>
@@ -1517,13 +1508,16 @@
                     <span id="renstra_kegiatan_form_result"></span>
                     <form id="renstra_kegiatan_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="renstra_kegiatan_program_id" id="renstra_kegiatan_program_id">
                         <input type="hidden" name="renstra_kegiatan_program_rpjmd_id" id="renstra_kegiatan_program_rpjmd_id">
                         <div class="form-group position-relative mb-3">
                             <label for="" class="form-label">Kegiatan</label>
                             <select name="renstra_kegiatan_kegiatan_id" id="renstra_kegiatan_kegiatan_id" class="form-control" required>
                                 <option value="">--- Pilih Kegiatan ---</option>
                             </select>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="renstra_kegiatan_opd_id" class="form-label">OPD</label>
+                            <select name="renstra_kegiatan_opd_id[]" id="renstra_kegiatan_opd_id" class="form-control" multiple required></select>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -1568,6 +1562,7 @@
             $('#program_sasaran_indikator_id').select2();
             $('#program_opd_id').select2();
             $('#renstra_kegiatan_kegiatan_id').select2();
+            $('#renstra_kegiatan_opd_id').select2();
 
             $('#misi_filter_visi').select2();
             $('#misi_filter_misi').select2();
@@ -2742,77 +2737,6 @@
         // });
         // Program End
 
-        // Kegiatan Renstra
-        $('.renstra_kegiatan_create').click(function(){
-            $('#renstra_kegiatan_form')[0].reset();
-            $("[name='renstra_kegiatan_kegiatan_id']").val('').trigger('change');
-            $('#renstra_kegiatan_aksi_button').text('Save');
-            $('#renstra_kegiatan_aksi_button').prop('disabled', false);
-            $('.modal-title').text('Add Data Program');
-            $('#renstra_kegiatan_aksi_button').val('Save');
-            $('#renstra_kegiatan_aksi').val('Save');
-            $('#kegiatan_renstra_form_result').html('');
-            $('#renstra_kegiatan_program_id').val($(this).attr('data-program-id'));
-            $('#renstra_kegiatan_program_rpjmd_id').val($(this).attr('data-program-rpjmd-id'));
-            $.ajax({
-                url: "{{ route('admin.renstra.get-kegiatan') }}",
-                method: 'POST',
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    id:$(this).attr('data-program-id')
-                },
-                success: function(response){
-                    $('#renstra_kegiatan_kegiatan_id').empty();
-                    $('#renstra_kegiatan_kegiatan_id').prop('disabled', false);
-                    $('#renstra_kegiatan_kegiatan_id').append('<option value="">--- Pilih Kegiatan ---</option>');
-                    $.each(response, function(key, value){
-                        $('#renstra_kegiatan_kegiatan_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
-                    });
-                }
-            });
-        });
-
-        $('#renstra_kegiatan_form').on('submit', function(e){
-            e.preventDefault();
-            if($('#renstra_kegiatan_aksi').val() == 'Save')
-            {
-                $.ajax({
-                    url: "{{ route('admin.renstra.store') }}",
-                    method: "POST",
-                    data: $(this).serialize(),
-                    dataType: "json",
-                    beforeSend: function()
-                    {
-                        $('#renstra_kegiatan_aksi_button').text('Menyimpan...');
-                        $('#renstra_kegiatan_aksi_button').prop('disabled', true);
-                    },
-                    success: function(data)
-                    {
-                        var html = '';
-                        if(data.errors)
-                        {
-                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
-                            $('#renstra_kegiatan_aksi_button').prop('disabled', false);
-                            $('#renstra_kegiatan_form')[0].reset();
-                            $('#renstra_kegiatan_aksi_button').text('Save');
-                        }
-                        if(data.success)
-                        {
-                            $('#addEditRenstraKegiatanModal').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil Menambahkan Kegiatan',
-                                showConfirmButton: true
-                            });
-                            $('#renstra_kegiatan').html(data.success);
-                        }
-
-                        $('#renstra_kegiatan_form_result').html(html);
-                    }
-                });
-            }
-        });
-
         $(document).on('click', '.button-target-rp-pertahun', function(){
             var tahun = $(this).attr('data-tahun');
             var opd_id = $(this).attr('data-opd-id');
@@ -3793,6 +3717,91 @@
                 $('.renstra-kegiatan-tagging').show();
             } else {
                 $('.renstra-kegiatan-tagging').hide();
+            }
+        });
+
+        $(document).on('click','.renstra_kegiatan_create',function(){
+            $('#renstra_kegiatan_form')[0].reset();
+            $("[name='renstra_kegiatan_kegiatan_id']").val('').trigger('change');
+            $('#renstra_kegiatan_aksi_button').text('Save');
+            $('#renstra_kegiatan_aksi_button').prop('disabled', false);
+            $('.modal-title').text('Add Data Kegiatan');
+            $('#renstra_kegiatan_aksi_button').val('Save');
+            $('#renstra_kegiatan_aksi').val('Save');
+            $('#kegiatan_renstra_form_result').html('');
+            $('#renstra_kegiatan_program_rpjmd_id').val($(this).attr('data-program-rpjmd-id'));
+            $.ajax({
+                url: "{{ route('admin.renstra.get-kegiatan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id:$(this).attr('data-program-id')
+                },
+                success: function(response){
+                    $('#renstra_kegiatan_kegiatan_id').empty();
+                    $('#renstra_kegiatan_kegiatan_id').append('<option value="">--- Pilih Kegiatan ---</option>');
+                    $.each(response, function(key, value){
+                        $('#renstra_kegiatan_kegiatan_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                    });
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('admin.renstra.get-opd') }}",
+                method: 'POST',
+                data: {
+                    "_token" : "{{ csrf_token() }}",
+                    id: $(this).attr('data-program-rpjmd-id')
+                },
+                success: function(response)
+                {
+                    $('#renstra_kegiatan_opd_id').empty();
+                    $('#renstra_kegiatan_opd_id').append('<option value="">--- Pilih OPD ---</option>');
+                    $.each(response, function(key, value){
+                        $('#renstra_kegiatan_opd_id').append(new Option(value.nama, value.id));
+                    });
+                }
+            });
+        });
+
+        $('#renstra_kegiatan_form').on('submit', function(e){
+            e.preventDefault();
+            if($('#renstra_kegiatan_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('admin.renstra.store') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    beforeSend: function()
+                    {
+                        $('#renstra_kegiatan_aksi_button').text('Menyimpan...');
+                        $('#renstra_kegiatan_aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#renstra_kegiatan_aksi_button').prop('disabled', false);
+                            $('#renstra_kegiatan_form')[0].reset();
+                            $('#renstra_kegiatan_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            $('#addEditRenstraKegiatanModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Menambahkan Kegiatan',
+                                showConfirmButton: true
+                            });
+                            $('#renstra_kegiatan').html(data.success);
+                        }
+
+                        $('#renstra_kegiatan_form_result').html(html);
+                    }
+                });
             }
         });
 

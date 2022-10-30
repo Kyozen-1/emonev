@@ -21,6 +21,6 @@ class RenstraKegiatan extends Model
 
     public function pivot_opd_renstra_kegiatan()
     {
-        return $this->belongsTo('App\Models\PivotOpdRenstraKegiatan', 'renstra_kegiatan_id');
+        return $this->belongsTo('App\Models\PivotOpdRenstraKegiatan', 'rentra_kegiatan_id');
     }
 }

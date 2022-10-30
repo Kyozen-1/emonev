@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class PivotOpdRentraKegiatan extends Model
 {
-    protected $table = 'pivot_opd_renstra_kegiatans';
+    protected $table = 'pivot_opd_rentra_kegiatans';
     protected $guarded = 'id';
 
     public function renstra_kegiatan()
     {
-        return $this->belongsTo('App\Models\RenstraKegiatan', 'renstra_kegiatan_id');
+        return $this->belongsTo('App\Models\RenstraKegiatan', 'rentra_kegiatan_id');
     }
 
     public function opd()

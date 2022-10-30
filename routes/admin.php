@@ -254,5 +254,6 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     //Renstra
     Route::post('/admin/renstra/get-kegiatan', 'Admin\RenstraKegiatanController@get_kegiatan')->name('admin.renstra.get-kegiatan');
+    Route::post('/admin/renstra/get-opd', 'Admin\RenstraKegiatanController@get_opd')->name('admin.renstra.get-opd');
     Route::post('/admin/renstra/kegiatan', 'Admin\RenstraKegiatanController@store')->name('admin.renstra.store');
 });

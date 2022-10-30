@@ -34,6 +34,9 @@ use App\Models\PivotPerubahanProgram;
 use App\Models\PivotProgramKegiatanRenstra;
 use App\Models\TargetRpPertahunProgram;
 use App\Models\RenstraKegiatan;
+use App\Models\PivotPerubahanKegiatan;
+use App\Models\Kegiatan;
+use App\Models\PivotOpdRentraKegiatan;
 
 class PerencanaanController extends Controller
 {
@@ -4062,8 +4065,8 @@ class PerencanaanController extends Controller
         $html = '<div class="row mb-3">
                     <div class="col-12">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraProgram" checked>
-                            <label class="form-check-label" for="onOffTaggingRenstraProgram">On / Off Tagging</label>
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraKegiatan" checked>
+                            <label class="form-check-label" for="onOffTaggingRenstraKegiatan">On / Off Tagging</label>
                         </div>
                     </div>
                 </div>
@@ -4083,7 +4086,7 @@ class PerencanaanController extends Controller
                                     <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle">
                                         '.$visi['deskripsi'].'
                                         <br>
-                                        <span class="badge bg-primary text-uppercase renstra-program-tagging">Visi</span>
+                                        <span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -4122,21 +4125,21 @@ class PerencanaanController extends Controller
                                                                         <br>';
                                                                         if($a == 1 || $a == 2)
                                                                         {
-                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Aman]</span>';
+                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
                                                                         }
                                                                         if($a == 3)
                                                                         {
-                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Mandiri]</span>';
+                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
                                                                         }
                                                                         if($a == 4)
                                                                         {
-                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Sejahtera]</span>';
+                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
                                                                         }
                                                                         if($a == 5)
                                                                         {
-                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Berahlak]</span>';
+                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
                                                                         }
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-program-tagging">Misi '.$misi['kode'].'</span>
+                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
@@ -4175,22 +4178,22 @@ class PerencanaanController extends Controller
                                                                                                         <br>';
                                                                                                         if($a == 1 || $a == 2)
                                                                                                         {
-                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Aman]</span>';
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
                                                                                                         }
                                                                                                         if($a == 3)
                                                                                                         {
-                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Mandiri]</span>';
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
                                                                                                         }
                                                                                                         if($a == 4)
                                                                                                         {
-                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Sejahtera]</span>';
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
                                                                                                         }
                                                                                                         if($a == 5)
                                                                                                         {
-                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Berahlak]</span>';
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
                                                                                                         }
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-program-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase renstra-program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                     </td>
                                                                                                 </tr>
                                                                                                 <tr>
@@ -4228,23 +4231,23 @@ class PerencanaanController extends Controller
                                                                                                                                         <br>';
                                                                                                                                         if($a == 1 || $a == 2)
                                                                                                                                         {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Aman]</span>';
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
                                                                                                                                         }
                                                                                                                                         if($a == 3)
                                                                                                                                         {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Mandiri]</span>';
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
                                                                                                                                         }
                                                                                                                                         if($a == 4)
                                                                                                                                         {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
                                                                                                                                         }
                                                                                                                                         if($a == 5)
                                                                                                                                         {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Berahlak]</span>';
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
                                                                                                                                         }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-program-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase renstra-program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase renstra-program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase renstra-kegiatan-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 <tr>
@@ -4270,23 +4273,23 @@ class PerencanaanController extends Controller
                                                                                                                                                                         <br>';
                                                                                                                                                                         if($a == 1 || $a == 2)
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Aman]</span>';
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
                                                                                                                                                                         }
                                                                                                                                                                         if($a == 3)
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
                                                                                                                                                                         }
                                                                                                                                                                         if($a == 4)
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
                                                                                                                                                                         }
                                                                                                                                                                         if($a == 5)
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
                                                                                                                                                                         }
-                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-program-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase renstra-program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase renstra-program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-danger text-uppercase renstra-kegiatan-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                                                     </td>
                                                                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#program_rpjmd'.$sasaran_indikator['id'].'" class="accordion-toggle">
                                                                                                                                                                         '.$sasaran_indikator['target'].'
@@ -4302,12 +4305,13 @@ class PerencanaanController extends Controller
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
                                                                                                                                                                                         <th width="5%"><strong>No</strong></th>
-                                                                                                                                                                                        <th width="45%"><strong>Program RPJMD</strong></th>
+                                                                                                                                                                                        <th width="35%"><strong>Program RPJMD</strong></th>
                                                                                                                                                                                         <th width="5%"><strong>Target</strong></th>
                                                                                                                                                                                         <th width="5%"><strong>Satuan</strong></th>
                                                                                                                                                                                         <th width="10%"><strong>Rp</strong></th>
                                                                                                                                                                                         <th width="20%"><strong>OPD</strong></th>
                                                                                                                                                                                         <th width="10%"><strong>Pagu</strong></th>
+                                                                                                                                                                                        <th width="10%"><strong>Aksi</strong></th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -4325,6 +4329,7 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                 'deskripsi' => $cek_perubahan_program->deskripsi,
                                                                                                                                                                                                 'status_program' => $get_program_rpjmd->status_program,
                                                                                                                                                                                                 'pagu' => $get_program_rpjmd->pagu,
+                                                                                                                                                                                                'program_id' => $get_program_rpjmd->program_id,
                                                                                                                                                                                             ];
                                                                                                                                                                                         } else {
                                                                                                                                                                                             $program = Program::find($get_program_rpjmd->program_id);
@@ -4333,14 +4338,15 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                 'deskripsi' => $program->deskripsi,
                                                                                                                                                                                                 'status_program' => $get_program_rpjmd->status_program,
                                                                                                                                                                                                 'pagu' => $get_program_rpjmd->pagu,
+                                                                                                                                                                                                'program_id' => $get_program_rpjmd->program_id,
                                                                                                                                                                                             ];
                                                                                                                                                                                         }
                                                                                                                                                                                     }
                                                                                                                                                                                     $c = 1;
                                                                                                                                                                                     foreach ($programs as $program) {
                                                                                                                                                                                         $html .= '<tr>
-                                                                                                                                                                                                <td>'.$c++.'</td>
-                                                                                                                                                                                                <td>
+                                                                                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle">'.$c++.'</td>
+                                                                                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle">
                                                                                                                                                                                                     '.$program['deskripsi'];
                                                                                                                                                                                                     if($program['status_program'] == "Program Prioritas")
                                                                                                                                                                                                     {
@@ -4349,23 +4355,23 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                     $html .= ' <br> ';
                                                                                                                                                                                                     if($a == 1 || $a == 2)
                                                                                                                                                                                                     {
-                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Aman]</span>';
+                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     if($a == 3)
                                                                                                                                                                                                     {
-                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     if($a == 4)
                                                                                                                                                                                                     {
-                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     if($a == 5)
                                                                                                                                                                                                     {
-                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-program-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
                                                                                                                                                                                                     }
-                                                                                                                                                                                                    $html .= '<span class="badge bg-warning text-uppercase renstra-program-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                                                                                    <span class="badge bg-secondary text-uppercase renstra-program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                                                                                    <span class="badge bg-danger text-uppercase renstra-program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                                                                                    $html .= '<span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                                                    <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                                                    <span class="badge bg-danger text-uppercase renstra-kegiatan-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                                                                                 </td>';
                                                                                                                                                                                                 $cek_target_rps = TargetRpPertahunProgram::where('program_rpjmd_id', $program['id'])
                                                                                                                                                                                                                     ->where('tahun', $tahun_sekarang)
@@ -4382,14 +4388,14 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                         $program_rp[] = $get_target_rp->rp;
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.array_sum($program_target).'</td>
-                                                                                                                                                                                                <td>'.$get_target_rp->satuan.'</td>
-                                                                                                                                                                                                <td>Rp. '.number_format(array_sum($program_rp), 2).'</td>';
+                                                                                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle">'.$get_target_rp->satuan.'</td>
+                                                                                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle">Rp. '.number_format(array_sum($program_rp), 2).'</td>';
                                                                                                                                                                                                 } else {
-                                                                                                                                                                                                    $html .= '<td></td>
-                                                                                                                                                                                                <td></td>
-                                                                                                                                                                                                <td></td>';
+                                                                                                                                                                                                    $html .= '<td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle"></td>
+                                                                                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle"></td>
+                                                                                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle"></td>';
                                                                                                                                                                                                 }
-                                                                                                                                                                                                $html .= '<td>';
+                                                                                                                                                                                                $html .= '<td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle">';
                                                                                                                                                                                                 $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program['id'])->get();
                                                                                                                                                                                                 $html .= '<ul>';
                                                                                                                                                                                                     foreach ($get_opds as $get_opd) {
@@ -4397,8 +4403,67 @@ class PerencanaanController extends Controller
                                                                                                                                                                                                     }
                                                                                                                                                                                                 $html.='</ul>';
                                                                                                                                                                                                 $html.= '</td>
-                                                                                                                                                                                                <td>
+                                                                                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_renstra'.$program['id'].'" class="accordion-toggle">
                                                                                                                                                                                                     Rp. '.number_format($program['pagu'], 2).'
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    <button class="btn btn-primary waves-effect waves-light renstra_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditRenstraKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['program_id'].'" data-program-rpjmd-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                            </tr>
+                                                                                                                                                                                            <tr>
+                                                                                                                                                                                                <td colspan="8" class="hiddenRow">
+                                                                                                                                                                                                    <div class="collapse" id="kegiatan_renstra'.$program['id'].'">
+                                                                                                                                                                                                        <table class="table table-condensed table-striped">
+                                                                                                                                                                                                            <thead>
+                                                                                                                                                                                                                <tr>
+                                                                                                                                                                                                                    <th width="5%"><strong>No</strong></th>
+                                                                                                                                                                                                                    <th width="75%"><strong>Kegiatan</strong></th>
+                                                                                                                                                                                                                    <th width="20%"><strong>OPD</strong></th>
+                                                                                                                                                                                                                </tr>
+                                                                                                                                                                                                            </thead>
+                                                                                                                                                                                                            <tbody>';
+                                                                                                                                                                                                            $get_renstra_kegiatans = RenstraKegiatan::where('program_rpjmd_id', $program['id'])
+                                                                                                                                                                                                                                    ->get();
+                                                                                                                                                                                                            $kegiatans = [];
+                                                                                                                                                                                                            foreach ($get_renstra_kegiatans as $get_renstra_kegiatan) {
+                                                                                                                                                                                                                $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_renstra_kegiatan->kegiatan_id)
+                                                                                                                                                                                                                                            ->orderBy('tahun_perubahan', 'desc')
+                                                                                                                                                                                                                                            ->latest()->first();
+                                                                                                                                                                                                                if($cek_perubahan_kegiatan)
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    $kegiatans[] = [
+                                                                                                                                                                                                                        'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                                                                                                                                                                                        'kode' => $cek_perubahan_kegiatan->kode,
+                                                                                                                                                                                                                        'deskripsi'  => $cek_perubahan_kegiatan->deskripsi,
+                                                                                                                                                                                                                        'renstra_kegiatan_id' => $get_renstra_kegiatan->id
+                                                                                                                                                                                                                    ];
+                                                                                                                                                                                                                } else {
+                                                                                                                                                                                                                    $kegiatan = Kegiatan::find($get_renstra_kegiatan->kegiatan_id);
+                                                                                                                                                                                                                    $kegiatans[] = [
+                                                                                                                                                                                                                        'id' => $kegiatan->id,
+                                                                                                                                                                                                                        'kode' => $kegiatan->kode,
+                                                                                                                                                                                                                        'deskripsi'  => $kegiatan->deskripsi,
+                                                                                                                                                                                                                        'renstra_kegiatan_id' => $get_renstra_kegiatan->id
+                                                                                                                                                                                                                    ];
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                            $d = 1;
+                                                                                                                                                                                                            foreach ($kegiatans as $kegiatan) {
+                                                                                                                                                                                                                $html .= '<tr>
+                                                                                                                                                                                                                    <td>'.$d++.'</td>
+                                                                                                                                                                                                                    <td>'.$kegiatan['deskripsi'].'</td>';
+
+                                                                                                                                                                                                                $get_opd_renstra_kegiatans = PivotOpdRentraKegiatan::where('rentra_kegiatan_id', $kegiatan['renstra_kegiatan_id'])->get();
+                                                                                                                                                                                                                $html .= '<td><ul>';
+                                                                                                                                                                                                                foreach ($get_opd_renstra_kegiatans as $get_opd_renstra_kegiatan) {
+                                                                                                                                                                                                                    $html .= '<li>'.$get_opd_renstra_kegiatan->opd->nama.'</li>';
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                                $html .='</ul></td>';
+                                                                                                                                                                                                                $html .= '</tr>';
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                            $html .= '</tbody>
+                                                                                                                                                                                                        </table>
+                                                                                                                                                                                                    </div>
                                                                                                                                                                                                 </td>
                                                                                                                                                                                             </tr>';
                                                                                                                                                                                     }
