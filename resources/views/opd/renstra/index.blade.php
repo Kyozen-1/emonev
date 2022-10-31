@@ -1132,5 +1132,213 @@
                                     '</td>';
             $('.tr-target-rp.'+tahun+'.data-opd-'+opd_id+'.data-renstra-kegiatan-'+renstra_kegiatan_id).html(target_rp_pertahun);
         });
+
+        // Filter Data Kegiatan
+        $('#renstra_kegiatan_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.filter-get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_misi').empty();
+                        $('#renstra_kegiatan_filter_misi').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_misi').prop('disabled', true);
+                $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
+                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_misi']").val('').trigger('change');
+                $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
+                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
+                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.filter-get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_tujuan').empty();
+                        $('#renstra_kegiatan_filter_tujuan').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.filter-get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_sasaran').empty();
+                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_filter_sasaran').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.filter-get-program') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_program').empty();
+                        $('#renstra_kegiatan_filter_program').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.program_rpjmd_id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_program').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_filter_program').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.filter-get-kegiatan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_kegiatan_filter_kegiatan').empty();
+                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', false);
+                        $('#renstra_kegiatan_filter_kegiatan').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_kegiatan_filter_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_kegiatan_btn_filter').click(function(){
+            var visi = $('#renstra_kegiatan_filter_visi').val();
+            var misi = $('#renstra_kegiatan_filter_misi').val();
+            var tujuan = $('#renstra_kegiatan_filter_tujuan').val();
+            var sasaran = $('#renstra_kegiatan_filter_sasaran').val();
+            var program = $('#renstra_kegiatan_filter_program').val();
+            var kegiatan = $('#renstra_kegiatan_filter_kegiatan').val();
+
+            $.ajax({
+                url: "{{ route('opd.renstra.filter.get-kegiatan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran,
+                    program: program,
+                    kegiatan: kegiatan
+                },
+                success: function(data)
+                {
+                    $('#renstraKegiatanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#renstra_kegiatan_btn_reset').click(function(){
+            $('#renstra_kegiatan_filter_misi').prop('disabled', true);
+            $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
+            $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
+            $('#renstra_kegiatan_filter_program').prop('disabled', true);
+            $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
+            $("[name='renstra_kegiatan_filter_visi']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_misi']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
+            $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('opd.renstra.reset.get-kegiatan') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renstraKegiatanNavDiv').html(data.html);
+                }
+            });
+        });
     </script>
 @endsection
