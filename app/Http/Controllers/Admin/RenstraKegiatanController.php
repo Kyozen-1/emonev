@@ -87,7 +87,8 @@ class RenstraKegiatanController extends Controller
         $errors = Validator::make($request->all(), [
             'renstra_kegiatan_program_rpjmd_id' => 'required',
             'renstra_kegiatan_kegiatan_id' => 'required',
-            'renstra_kegiatan_opd_id.*' => 'required'
+            'renstra_kegiatan_opd_id.*' => 'required',
+            'renstra_kegiatan_pagu' => 'required'
         ]);
 
         if($errors -> fails())
@@ -98,6 +99,7 @@ class RenstraKegiatanController extends Controller
         $renstra_kegiatan = new RenstraKegiatan;
         $renstra_kegiatan->program_rpjmd_id = $request->renstra_kegiatan_program_rpjmd_id;
         $renstra_kegiatan->kegiatan_id = $request->renstra_kegiatan_kegiatan_id;
+        $renstra_kegiatan->pagu = $request->renstra_kegiatan_pagu;
         $renstra_kegiatan->save();
 
         $opd_id = $request->renstra_kegiatan_opd_id;

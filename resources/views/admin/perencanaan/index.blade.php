@@ -1519,6 +1519,10 @@
                             <label for="renstra_kegiatan_opd_id" class="form-label">OPD</label>
                             <select name="renstra_kegiatan_opd_id[]" id="renstra_kegiatan_opd_id" class="form-control" multiple required></select>
                         </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="renstra_kegiatan_pagu" class="form-label">Pagu</label>
+                            <input type="number" name="renstra_kegiatan_pagu" id="renstra_kegiatan_pagu" class="form-control" required>
+                        </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
