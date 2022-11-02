@@ -94,6 +94,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');
     Route::post('/admin/laporan/tc-19', 'Admin\LaporanController@laporan_tc_19')->name('admin.laporan.tc-19');
     Route::post('/admin/laporan/e-79', 'Admin\LaporanController@laporan_e_79')->name('admin.laporan.e-79');
+    Route::post('/admin/laporan/e-78', 'Admin\LaporanController@laporan_e_78')->name('admin.laporan.e-78');
 
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');
@@ -226,7 +227,6 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/program-rpjmd/get-sasaran/{id}', 'Admin\ProgramRpjmdController@get_sasaran');
     Route::post('/admin/program-rpjmd','Admin\ProgramRpjmdController@store')->name('admin.program-rpjmd.store');
     Route::get('/admin/program-rpjmd/edit/{id}/{sasaran_indikator_id}','Admin\ProgramRpjmdController@edit');
-    Route::post('/admin/program-rpjmd/update','Admin\ProgramRpjmdController@update')->name('admin.program-rpjmd.update');
     Route::get('/admin/program-rpjmd/destroy/{id}','Admin\ProgramRpjmdController@destroy');
     Route::post('/admin/program-rpjmd/get-program', 'Admin\ProgramRpjmdController@get_program')->name('admin.program-rpjmd.get-program');
     Route::post('/admin/program-rpjmd/get-tujuan', 'Admin\ProgramRpjmdController@get_tujuan')->name('admin.program-rpjmd.get-tujuan');
@@ -234,6 +234,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/program-rpjmd/get-sasaran-indikator', 'Admin\ProgramRpjmdController@get_sasaran_indikator')->name('admin.program-rpjmd.get-sasaran-indikator');
     Route::get('/admin/program-rpjmd/detail/{id}','Admin\ProgramRpjmdController@detail');
     Route::post('/admin/program-rpjmd/detail/target-rp-pertahun', 'Admin\ProgramRpjmdController@store_target_rp_pertahun')->name('admin.program-rpjmd.detail.target-rp-pertahun');
+    Route::get('/admin/program-rpjmd/edit/{id}','Admin\ProgramRpjmdController@edit');
+    Route::post('/admin/program-rpjmd/update','Admin\ProgramRpjmdController@update')->name('admin.program-rpjmd.update');
 
     //Tahun Periode
     Route::get('/admin/tahun-periode', 'Admin\TahunPeriodeController@index')->name('admin.tahun-periode.index');

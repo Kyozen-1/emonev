@@ -1408,6 +1408,32 @@
         </div>
     </div>
 
+    <div class="modal fade" id="editProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Edit Program RPJMD</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span id="edit_program_form_result"></span>
+                    <form id="edit_program_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group position-relative">
+                            <label for="" class="form-label">Pagu Program RPJMD</label>
+                            <input type="number" name="edit_program_pagu" id="edit_program_pagu" class="form-control" required>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="edit_program_aksi" id="edit_program_aksi" value="Save">
+                    <input type="hidden" name="edit_program_hidden_id" id="edit_program_hidden_id">
+                    <button type="submit" class="btn btn-primary" name="edit_program_aksi_button" id="edit_program_aksi_button">Edit</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
     {{-- <div class="modal fade" id="editProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -2826,6 +2852,60 @@
         //         }
         //     });
         // });
+
+        $(document).on('click', '.edit-program-rpjmd', function(){
+            var program_rpjmd_id = $(this).attr('data-program-rpjmd-id');
+            $.ajax({
+                url: "{{ url('/admin/program-rpjmd/edit') }}" + '/' + program_rpjmd_id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#edit_program_pagu').val(data.pagu);
+                    $('#edit_program_hidden_id').val(program_rpjmd_id);
+                    $('.modal-title').text('Edit Program RPJMD');
+                    $('#edit_program_aksi').val('Edit');
+                    $('#editProgramModal').modal('show');
+                }
+            });
+        });
+
+        $('#edit_program_form').on('submit', function(e){
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('admin.program-rpjmd.update') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                dataType: "json",
+                beforeSend: function()
+                {
+                    $('#edit_program_aksi_button').text('Menyimpan...');
+                    $('#edit_program_aksi_button').prop('disabled', true);
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                        $('#edit_program_aksi_button').prop('disabled', false);
+                        $('#edit_program_form')[0].reset();
+                        $('#edit_program_aksi_button').text('Save');
+                    }
+                    if(data.success)
+                    {
+                        $('#editProgramModal').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil Merubah Program RPJMD',
+                            showConfirmButton: true
+                        });
+                        $('#programNavDiv').html(data.success);
+                    }
+
+                    $('#edit_program_form_result').html(html);
+                }
+            });
+        });
         // Program End
 
         $(document).on('click', '.button-target-rp-pertahun', function(){

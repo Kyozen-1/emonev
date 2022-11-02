@@ -6,6 +6,42 @@
 @endsection
 
 @section('content')
+@php
+    use Carbon\Carbon;
+    use App\Models\TahunPeriode;
+    use App\Models\Visi;
+    use App\Models\PivotPerubahanVisi;
+    use App\Models\Misi;
+    use App\Models\PivotPerubahanMisi;
+    use App\Models\Tujuan;
+    use App\Models\PivotPerubahanTujuan;
+    use App\Models\Sasaran;
+    use App\Models\PivotPerubahanSasaran;
+    use App\Models\PivotSasaranIndikator;
+    use App\Models\ProgramRpjmd;
+    use App\Models\PivotOpdProgramRpjmd;
+    use App\Models\Urusan;
+    use App\Models\PivotPerubahanUrusan;
+    use App\Models\MasterOpd;
+    use App\Models\PivotSasaranIndikatorProgramRpjmd;
+    use App\Models\Program;
+    use App\Models\PivotPerubahanProgram;
+    use App\Models\PivotProgramKegiatanRenstra;
+    use App\Models\TargetRpPertahunProgram;
+    use App\Models\RenstraKegiatan;
+    use App\Models\PivotPerubahanKegiatan;
+    use App\Models\Kegiatan;
+    use App\Models\PivotOpdRentraKegiatan;
+    use App\Models\TargetRpPertahunRenstraKegiatan;
+
+    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+    $tahun_awal = $get_periode->tahun_awal;
+    $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+    $tahuns = [];
+    for ($i=0; $i < $jarak_tahun + 1; $i++) {
+        $tahuns[] = $tahun_awal + $i;
+    }
+@endphp
 <div class="container">
     <!-- Title and Top Buttons Start -->
     <div class="page-title-container">
@@ -35,48 +71,76 @@
     </ul>
 
     <div class="tab-content">
+        {{-- Visi Misi Start --}}
         <div class="tab-pane fade active show" id="dashboardVisiMisiTab" role="tabpanel">
             <div class="row">
                 <div class="col-12">
                     <div class="card mb-2">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-10">
-                                    <h5 class="card-title mb-3">Visi: "Terwujudnya Kabupaten Madiun Aman, Mandiri, Sejahtera dan Berakhlak"</h5>
-                                </div>
-                                <div class="col-2" style="text-align: right">
-                                    <div class="form-group position-relative">
-                                        <select name="tahun" id="tahun">
-                                            <option value="">Pilih Tahun</option>
-                                        </select>
+                            @php
+                                $get_visis = Visi::all();
+                                $visis = [];
+                                foreach ($get_visis as $get_visi) {
+                                    $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
+                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                    if($cek_perubahan_visi)
+                                    {
+                                        $visis[] = [
+                                            'id' => $cek_perubahan_visi->visi_id,
+                                            'kode' => $cek_perubahan_visi->kode,
+                                            'deskripsi' => $cek_perubahan_visi->deskripsi
+                                        ];
+                                    } else {
+                                        $visis[] = [
+                                            'id' => $get_visi->id,
+                                            'kode' => $get_visi->kode,
+                                            'deskripsi' => $get_visi->deskripsi
+                                        ];
+                                    }
+                                }
+                            @endphp
+                            @foreach ($visis as $visi)
+                                <div class="row">
+                                    <div class="col-10">
+                                        <h5 class="card-title mb-3">Visi: "{!! $visi['deskripsi'] !!}"</h5>
+                                    </div>
+                                    <div class="col-2" style="text-align: right">
+                                        <div class="form-group position-relative">
+                                            <select name="tahun" id="tahun">
+                                                <option value="">Pilih Tahun</option>
+                                                @foreach ($tahuns as $tahun)
+                                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 col-md-4">
-                                    <div class="card">
-                                        <div class="card-body border-1">
-                                            <h2 class="small-title">Total Ketercapaian Misi dan Anggaran</h2>
-                                            <h3 class="card-title mb-3">Baik (71.01)</h3>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <h2 class="small-title">Misi</h2>
-                                                    <div id="grafik_misi"></div>
+                                <div class="row">
+                                    <div class="col-12 col-md-4">
+                                        <div class="card">
+                                            <div class="card-body border-1">
+                                                <h2 class="small-title">Total Ketercapaian Misi dan Anggaran</h2>
+                                                <h3 class="card-title mb-3">Baik (71.01)</h3>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <h2 class="small-title">Misi</h2>
+                                                        <div id="grafik_misi"></div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <h2 class="small-title">Anggaran</h2>
-                                                    <div id="grafik_anggaran"></div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <h2 class="small-title">Anggaran</h2>
+                                                        <div id="grafik_anggaran"></div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-12 col-md-8">
+                                        <div id="grafik_misi_anggaran"></div>
+                                    </div>
                                 </div>
-                                <div class="col-12 col-md-8">
-                                    <div id="grafik_misi_anggaran"></div>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -337,7 +401,9 @@
                 </div>
             </div>
         </div>
+        {{-- Visi Misi End --}}
 
+        {{-- Pendapatan, Pembiayaan, dan Belanja Start --}}
         <div class="tab-pane fade" id="dashboardPendapatanPembiayaanBelanjaTab" role="tabpanel">
             <div class="row mb-3">
                 <div class="col-12 col-md-4">
@@ -513,6 +579,7 @@
                 </div>
             </div>
         </div>
+        {{-- Pendapatan, Pembiayaan, dan Belanja End --}}
     </div>
     <!-- Content End -->
 </div>
@@ -529,7 +596,7 @@
                 autoclose:true
             });
             var grafik_misi = {
-                series: [44, 55, 41, 17, 15],
+                series: [67, 33],
                 chart: {
                     type: 'donut',
                     toolbar: {
@@ -543,6 +610,7 @@
                         fontSize: '2rem',
                     },
                 },
+                labels: ['Sudah Tercapai', 'Belum Tercapai'],
                 responsive: [{
                     breakpoint: 480,
                     options: {
@@ -560,7 +628,7 @@
             chart_grafik_misi.render();
 
             var grafik_anggaran = {
-                series: [44, 55, 41, 17, 15],
+                series: [80, 20],
                 chart: {
                     type: 'donut',
                     toolbar: {
@@ -574,6 +642,7 @@
                         fontSize: '2rem',
                     },
                 },
+                labels: ['Terpakai', 'Belum Terpakai'],
                 responsive: [{
                     breakpoint: 480,
                     options: {
@@ -592,11 +661,11 @@
 
             var grafik_misi_anggaran = {
                 series: [{
-                    name: 'Net Profit',
-                    data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+                    name: 'Sudah Tercapai',
+                    data: [44, 55, 57, 56]
                 }, {
-                    name: 'Revenue',
-                    data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+                    name: 'Belum Tercapai',
+                    data: [76, 85, 101, 98]
                 }],
                 chart: {
                     type: 'bar',
@@ -621,7 +690,7 @@
                     colors: ['transparent']
                 },
                 xaxis: {
-                    categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                    categories: ['Misi 1.1', 'Misi 1.2', 'Misi 1.3', 'Misi 1.4'],
                 },
                 fill: {
                     opacity: 1
@@ -629,7 +698,7 @@
                 tooltip: {
                     y: {
                         formatter: function (val) {
-                        return "$ " + val + " thousands"
+                        return val
                         }
                     },
                     style: {

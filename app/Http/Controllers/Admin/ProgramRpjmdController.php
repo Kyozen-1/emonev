@@ -751,6 +751,7 @@ class ProgramRpjmdController extends Controller
                                                                                                                                                                                                 </td>
                                                                                                                                                                                                 <td>
                                                                                                                                                                                                     <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program-rpjmd" data-program-rpjmd-id="'.$program['id'].'" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
+                                                                                                                                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-program-rpjmd" data-program-rpjmd-id="'.$program['id'].'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
                                                                                                                                                                                                 </td>
                                                                                                                                                                                             </tr>';
                                                                                                                                                                                     }
@@ -1054,5 +1055,435 @@ class ProgramRpjmdController extends Controller
         }
 
         return response()->json(['success' => $target_rp_pertahun]);
+    }
+
+    public function edit($id)
+    {
+        $data = ProgramRpjmd::find($id);
+
+        return response()->json(['result' => $data]);
+    }
+
+    public function update(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'edit_program_pagu' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $program_rpjmd = ProgramRpjmd::find($request->edit_program_hidden_id);
+        $program_rpjmd->pagu = $request->edit_program_pagu;
+        $program_rpjmd->save();
+
+        $get_visis = Visi::all();
+        $visis = [];
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
+        foreach ($get_visis as $get_visi) {
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun_sekarang)
+                                    ->latest()->first();
+            if($cek_perubahan_visi)
+            {
+                $visis[] = [
+                    'id' => $cek_perubahan_visi->visi_id,
+                    'deskripsi' => $cek_perubahan_visi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                ];
+            } else {
+                $visis[] = [
+                    'id' => $get_visi->id,
+                    'deskripsi' => $get_visi->deskripsi,
+                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                ];
+            }
+        }
+
+        $html = '<div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
+                            <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-table-rows slim" id="program_div_table">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Kode</th>
+                                    <th width="95%">Deskripsi</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            foreach ($visis as $visi) {
+                                $html .= '<tr>
+                                    <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle">
+                                        '.$visi['deskripsi'].'
+                                        <br>
+                                        <span class="badge bg-primary text-uppercase program-tagging">Visi</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="hiddenRow">
+                                        <div class=" collapse" id="program_visi'.$visi['id'].'">
+                                            <table class="table table-condensed table-striped">
+                                                <tbody>';
+                                                    $get_misis = Misi::where('visi_id', $visi['id'])->get();
+                                                    $misis = [];
+                                                    foreach ($get_misis as $get_misi) {
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_sekarang)
+                                                                                ->latest()->first();
+                                                        if($cek_perubahan_misi)
+                                                        {
+                                                            $misis[] = [
+                                                                'id' => $cek_perubahan_misi->misi_id,
+                                                                'kode' => $cek_perubahan_misi->kode,
+                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
+                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
+                                                            ];
+                                                        } else {
+                                                            $misis[] = [
+                                                                'id' => $get_misi->id,
+                                                                'kode' => $get_misi->kode,
+                                                                'deskripsi' => $get_misi->deskripsi,
+                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
+                                                            ];
+                                                        }
+                                                    }
+                                                    $a = 1;
+                                                    foreach ($misis as $misi) {
+                                                        $html .= '<tr>
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#program_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
+                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#program_misi'.$misi['id'].'" class="accordion-toggle">
+                                                                        '.$misi['deskripsi'].'
+                                                                        <br>';
+                                                                        if($a == 1 || $a == 2)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Aman]</span>';
+                                                                        }
+                                                                        if($a == 3)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Mandiri]</span>';
+                                                                        }
+                                                                        if($a == 4)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Sejahtera]</span>';
+                                                                        }
+                                                                        if($a == 5)
+                                                                        {
+                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Berahlak]</span>';
+                                                                        }
+                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="4" class="hiddenRow">
+                                                                        <div class=" collapse" id="program_misi'.$misi['id'].'">
+                                                                            <table class="table table-condensed table-striped">
+                                                                                <tbody>';
+                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                                    $tujuans = [];
+                                                                                    foreach ($get_tujuans as $get_tujuan) {
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan', $tahun_sekarang)
+                                                                                                                ->latest()
+                                                                                                                ->first();
+                                                                                        if($cek_perubahan_tujuan)
+                                                                                        {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                                'kode' => $cek_perubahan_tujuan->kode,
+                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        } else {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $get_tujuan->id,
+                                                                                                'kode' => $get_tujuan->kode,
+                                                                                                'deskripsi' => $get_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        }
+                                                                                    }
+                                                                                    foreach ($tujuans as $tujuan) {
+                                                                                        $html .= '<tr>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                                        <br>';
+                                                                                                        if($a == 1 || $a == 2)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Aman]</span>';
+                                                                                                        }
+                                                                                                        if($a == 3)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Mandiri]</span>';
+                                                                                                        }
+                                                                                                        if($a == 4)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Sejahtera]</span>';
+                                                                                                        }
+                                                                                                        if($a == 5)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Berahlak]</span>';
+                                                                                                        }
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                        <div class=" collapse" id="program_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-condensed table-striped">
+                                                                                                                <tbody>';
+                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+                                                                                                                    $sasarans = [];
+                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
+                                                                                                                                                    ->latest()->first();
+                                                                                                                        if($cek_perubahan_sasaran)
+                                                                                                                        {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
+                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
+                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        } else {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $get_sasaran->id,
+                                                                                                                                'kode' => $get_sasaran->kode,
+                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                    foreach ($sasarans as $sasaran) {
+                                                                                                                        $html .= '<tr>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="95%">
+                                                                                                                                        '.$sasaran['deskripsi'].'
+                                                                                                                                        <br>';
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                    </td>
+                                                                                                                                </tr>
+                                                                                                                                <tr>
+                                                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                                                        <div class=" collapse" id="program_sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-condensed table-striped">
+                                                                                                                                                <thead>
+                                                                                                                                                    <tr>
+                                                                                                                                                        <th width="5%"><strong>No</strong></th>
+                                                                                                                                                        <th width="45%"><strong>Sasaran Indikator</strong></th>
+                                                                                                                                                        <th width="25%"><strong>Target</strong></th>
+                                                                                                                                                        <th width="25%"><strong>Satuan</strong></th>
+                                                                                                                                                    </tr>
+                                                                                                                                                </thead>
+                                                                                                                                                <tbody>';
+                                                                                                                                                    $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                    $b = 1;
+                                                                                                                                                    foreach ($sasaran_indikators as $sasaran_indikator) {
+                                                                                                                                                        $html .= '<tr>
+                                                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_rpjmd'.$sasaran_indikator['id'].'" class="accordion-toggle">'.$b++.'</td>
+                                                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_rpjmd'.$sasaran_indikator['id'].'" class="accordion-toggle">
+                                                                                                                                                                        '.$sasaran_indikator['indikator'].'
+                                                                                                                                                                        <br>';
+                                                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Aman]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 3)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 4)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($a == 5)
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                        <span class="badge bg-danger text-uppercase program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                                                    </td>
+                                                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_rpjmd'.$sasaran_indikator['id'].'" class="accordion-toggle">
+                                                                                                                                                                        '.$sasaran_indikator['target'].'
+                                                                                                                                                                    </td>
+                                                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_rpjmd'.$sasaran_indikator['id'].'" class="accordion-toggle">
+                                                                                                                                                                        '.$sasaran_indikator['satuan'].'
+                                                                                                                                                                    </td>
+                                                                                                                                                                </tr>
+                                                                                                                                                                <tr>
+                                                                                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                                                                                        <div class=" collapse" id="program_rpjmd'.$sasaran_indikator['id'].'">
+                                                                                                                                                                            <table class="table table-condensed table-striped">
+                                                                                                                                                                                <thead>
+                                                                                                                                                                                    <tr>
+                                                                                                                                                                                        <th width="5%"><strong>No</strong></th>
+                                                                                                                                                                                        <th width="35%"><strong>Program RPJMD</strong></th>
+                                                                                                                                                                                        <th width="5%"><strong>Target</strong></th>
+                                                                                                                                                                                        <th width="5%"><strong>Satuan</strong></th>
+                                                                                                                                                                                        <th width="10%"><strong>Rp</strong></th>
+                                                                                                                                                                                        <th width="20%"><strong>OPD</strong></th>
+                                                                                                                                                                                        <th width="10%"><strong>Pagu</strong></th>
+                                                                                                                                                                                        <th width="10%"><strong>Aksi</strong></th>
+                                                                                                                                                                                    </tr>
+                                                                                                                                                                                </thead>
+                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                    $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran_indikator){
+                                                                                                                                                                                        $q->where('sasaran_indikator_id', $sasaran_indikator['id']);
+                                                                                                                                                                                    })->get();
+                                                                                                                                                                                    $programs = [];
+                                                                                                                                                                                    foreach ($get_program_rpjmds as $get_program_rpjmd) {
+                                                                                                                                                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                                                                                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                                                                                                                        if($cek_perubahan_program)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $programs[] = [
+                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
+                                                                                                                                                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
+                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
+                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu,
+                                                                                                                                                                                            ];
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $program = Program::find($get_program_rpjmd->program_id);
+                                                                                                                                                                                            $programs[] = [
+                                                                                                                                                                                                'id' => $get_program_rpjmd->id,
+                                                                                                                                                                                                'deskripsi' => $program->deskripsi,
+                                                                                                                                                                                                'status_program' => $get_program_rpjmd->status_program,
+                                                                                                                                                                                                'pagu' => $get_program_rpjmd->pagu,
+                                                                                                                                                                                            ];
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c = 1;
+                                                                                                                                                                                    foreach ($programs as $program) {
+                                                                                                                                                                                        $html .= '<tr>
+                                                                                                                                                                                                <td>'.$c++.'</td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    '.$program['deskripsi'];
+                                                                                                                                                                                                    if($program['status_program'] == "Program Prioritas")
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= ' <i title="Program Prioritas" class="fas fa-star text-primary"></i>';
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    $html .= ' <br> ';
+                                                                                                                                                                                                    if($a == 1 || $a == 2)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Aman]</span>';
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    if($a == 3)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    if($a == 4)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    if($a == 5)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    $html .= '<span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                                                    <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                                                    <span class="badge bg-danger text-uppercase program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                                                                                </td>';
+                                                                                                                                                                                                $cek_target_rps = TargetRpPertahunProgram::where('program_rpjmd_id', $program['id'])
+                                                                                                                                                                                                                    ->where('tahun', $tahun_sekarang)
+                                                                                                                                                                                                                    ->first();
+                                                                                                                                                                                                if($cek_target_rps)
+                                                                                                                                                                                                {
+                                                                                                                                                                                                    $get_target_rps = TargetRpPertahunProgram::where('program_rpjmd_id', $program['id'])
+                                                                                                                                                                                                                    ->where('tahun', $tahun_sekarang)
+                                                                                                                                                                                                                    ->get();
+                                                                                                                                                                                                    $program_target = [];
+                                                                                                                                                                                                    $program_rp = [];
+                                                                                                                                                                                                    foreach ($get_target_rps as $get_target_rp) {
+                                                                                                                                                                                                        $program_target[] = $get_target_rp->target;
+                                                                                                                                                                                                        $program_rp[] = $get_target_rp->rp;
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    $html .= '<td>'.array_sum($program_target).'</td>
+                                                                                                                                                                                                <td>'.$get_target_rp->satuan.'</td>
+                                                                                                                                                                                                <td>Rp. '.number_format(array_sum($program_rp), 2).'</td>';
+                                                                                                                                                                                                } else {
+                                                                                                                                                                                                    $html .= '<td></td>
+                                                                                                                                                                                                <td></td>
+                                                                                                                                                                                                <td></td>';
+                                                                                                                                                                                                }
+                                                                                                                                                                                                $html .= '<td>';
+                                                                                                                                                                                                $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program['id'])->get();
+                                                                                                                                                                                                $html .= '<ul>';
+                                                                                                                                                                                                    foreach ($get_opds as $get_opd) {
+                                                                                                                                                                                                        $html .= '<li>'.$get_opd->opd->nama.'</li>';
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                $html.='</ul>';
+                                                                                                                                                                                                $html.= '</td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    Rp. '.number_format($program['pagu'], 2).'
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program-rpjmd" data-program-rpjmd-id="'.$program['id'].'" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
+                                                                                                                                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-program-rpjmd" data-program-rpjmd-id="'.$program['id'].'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                            </tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                $html .= '</tbody>
+                                                                                                                                                                            </table>
+                                                                                                                                                                        </div>
+                                                                                                                                                                    </td>
+                                                                                                                                                                </tr>';
+                                                                                                                                                    }
+                                                                                                                                                $html .= '</tbody>
+                                                                                                                                            </table>
+                                                                                                                                        </div>
+                                                                                                                                    </td>
+                                                                                                                                </tr>';
+                                                                                                                    }
+                                                                                                                $html .= '</tbody>
+                                                                                                            </table>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>';
+                                                                                    }
+                                                                                $html .= '</tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>';
+                                                        $a++;
+                                                    }
+                                                $html .= '</tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>';
+                            }
+                            $html .='</tbody>
+                        </table>
+                    </div>
+                </div>';
+        return response()->json(['success' => $html]);
     }
 }

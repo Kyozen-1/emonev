@@ -516,5 +516,20 @@
             }
         });
     });
+
+    $('.navE78').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $.ajax({
+            url: "{{ route('admin.laporan.e-78') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun
+            },
+            success: function(data){
+                $('.tbodyE78').html(data.e_78);
+            }
+        });
+    });
 </script>
 @endsection
