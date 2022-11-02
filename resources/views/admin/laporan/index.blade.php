@@ -87,6 +87,7 @@
         <div class="card mb-5">
             <div class="card-body">
                 <div class="tab-content">
+                    {{-- TC 14 Start --}}
                     <div class="tab-pane fade active show" id="tc_14" role="tabpanel">
                         <div class="text-center mb-3">
                             <h1>Tabel T-C.14</h1>
@@ -156,6 +157,9 @@
                             </table>
                         </div>
                     </div>
+                    {{-- TC 14 End --}}
+
+                    {{-- TC 19 Start --}}
                     <div class="tab-pane fade" id="tc_19" role="tabpanel">
                         <div class="border-0 pb-0">
                             <ul class="nav nav-pills responsive-tabs" role="tablist">
@@ -185,8 +189,8 @@
                                                         <th>No</th>
                                                         <th colspan="4">Kode</th>
                                                         <th>Urusan / Bidang Urusan Pemerintah Daerah dan Program / Kegiatan</th>
-                                                        <th>Inidikator Kinerja Program (outcome) / Kegiatan (output)</th>
-                                                        <th colspan="2">Capaian Kinerja RPJMD pada Tahun Akhir Periode RPJMD</th>
+                                                        <th>Indikator Kinerja Program (outcome) / Kegiatan (output)</th>
+                                                        <th colspan="2">Capaian Kinerja RPJMD pada Tahun {{$tahun}} Akhir Periode RPJMD</th>
                                                         <th colspan="2">Realisasi Capaian Kinerja RKPD s/d Tahun Lalu (n-2)</th>
                                                         <th colspan="2">Target Kinerja dan Anggaran RKPD Tahun Berjalan yang dievaluasi (Tahun n-1)</th>
                                                         <th colspan="2">Realisasi Capaian Kinerja dan Anggaran RKPD yang dievaluasi (tahun n-1)</th>
@@ -228,6 +232,9 @@
                                                         <th>Rp</th>
                                                     </tr>
                                                 </thead>
+                                                <tbody class="tbodyTc19" style="text-align: left">
+                                                    {!!$tc_19!!}
+                                                </tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -235,6 +242,9 @@
                             </div>
                         </div>
                     </div>
+                    {{-- TC 19 End --}}
+
+                    {{-- E 79 Start --}}
                     <div class="tab-pane fade" id="e_79" role="tabpanel">
                         <div class="border-0 pb-0">
                             <ul class="nav nav-pills responsive-tabs" role="tablist">
@@ -260,13 +270,13 @@
                                                     <th colspan="4" rowspan="2">Kode</th>
                                                     <th rowspan="2">Urusan / Bidang Urusan Pemerintah Daerah dan Program / Kegiatan</th>
                                                     <th rowspan="2">Indikator Kinerja Program (outcome) / Kegiatan (output)</th>
-                                                    <th colspan="2" rowspan="2">Capaian Kinerja RPJMD pada Tahun  (Akhir Periode RPJMD)</th>
+                                                    <th colspan="2" rowspan="2">Capaian Kinerja RPJMD pada Tahun {{$tahun}} (Akhir Periode RPJMD)</th>
                                                     <th colspan="2" rowspan="2">Realisasi Capaian Kinerja RPJMD Kabupaten/kota sampai dengan RKPD Kabupaten/kota Tahun Lalu (n-2)</th>
                                                     <th colspan="2" rowspan="2">Target Kinerja dan Anggaran RKPD Kabupaten/kota Tahun Berjalan (Tahun n-1) yang dievaluasi</th>
                                                     <th colspan="8" rowspan="1">Realisasi Kinerja Pada Triwulan</th>
                                                     <th colspan="2" rowspan="2">Realisasi Capaian Kinerja dan Anggaran RKPD Kabupaten/kota yang Dievaluasi</th>
-                                                    <th colspan="2" rowspan="2">Realisasi Kinerja dan Anggaran RPJMD Kabupaten/kota s/d Tahun  (Akhir Tahun Pelaksanaan RKPD tahun )</th>
-                                                    <th colspan="2" rowspan="2">Tingkat Capaian Kinerja dan Realisasi Anggaran RPJMD Kabupaten/kota s/d Tahun  (%)</th>
+                                                    <th colspan="2" rowspan="2">Realisasi Kinerja dan Anggaran RPJMD Kabupaten/kota s/d Tahun  {{$tahun}}(Akhir Tahun Pelaksanaan RKPD tahun {{$tahun}})</th>
+                                                    <th colspan="2" rowspan="2">Tingkat Capaian Kinerja dan Realisasi Anggaran RPJMD Kabupaten/kota s/d Tahun {{$tahun}} (%)</th>
                                                     <th rowspan="2">Perangkat Daerah Penanggung Jawab</th>
                                                 </tr>
                                                 <tr>
@@ -317,12 +327,18 @@
                                                     <th></th>
                                                 </tr>
                                             </thead>
+                                            <tbody class="tbodyE79" style="text-align: left">
+                                                {!!$e_79!!}
+                                            </tbody>
                                         </table>
                                     </div>
                                 @endforeach
                             </div>
                         </div>
                     </div>
+                    {{-- E 79 End --}}
+
+                    {{-- E 78 Start --}}
                     <div class="tab-pane fade" id="e_78" role="tabpanel">
                         <div class="border-0 pb-0">
                             <ul class="nav nav-pills responsive-tabs" role="tablist">
@@ -442,6 +458,7 @@
                             </div>
                         </div>
                     </div>
+                    {{-- E 78 End --}}
                 </div>
             </div>
         </div>
@@ -466,4 +483,35 @@
 <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $('.navTc19').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $.ajax({
+            url: "{{ route('admin.laporan.tc-19') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun
+            },
+            success: function(data){
+                $('.tbodyTc19').html(data.tc_19);
+            }
+        });
+    });
+
+    $('.navE79').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $.ajax({
+            url: "{{ route('admin.laporan.e-79') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun
+            },
+            success: function(data){
+                $('.tbodyE79').html(data.e_79);
+            }
+        });
+    });
+</script>
 @endsection

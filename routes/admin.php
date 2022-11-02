@@ -92,6 +92,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');
+    Route::post('/admin/laporan/tc-19', 'Admin\LaporanController@laporan_tc_19')->name('admin.laporan.tc-19');
+    Route::post('/admin/laporan/e-79', 'Admin\LaporanController@laporan_e_79')->name('admin.laporan.e-79');
 
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');

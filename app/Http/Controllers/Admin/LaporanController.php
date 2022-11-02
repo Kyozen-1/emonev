@@ -23,7 +23,6 @@ use App\Models\PivotPerubahanTujuan;
 use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
 use App\Models\PivotSasaranIndikator;
-use App\Models\TargetRpPertahunProgram;
 use App\Models\ProgramRpjmd;
 use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
@@ -33,6 +32,12 @@ use App\Models\PivotSasaranIndikatorProgramRpjmd;
 use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotProgramKegiatanRenstra;
+use App\Models\TargetRpPertahunProgram;
+use App\Models\RenstraKegiatan;
+use App\Models\PivotPerubahanKegiatan;
+use App\Models\Kegiatan;
+use App\Models\PivotOpdRentraKegiatan;
+use App\Models\TargetRpPertahunRenstraKegiatan;
 
 class LaporanController extends Controller
 {
@@ -66,6 +71,7 @@ class LaporanController extends Controller
             }
         }
 
+        // TC 14 Start
         $tc_14 = '';
         foreach ($visis as $visi) {
             $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -257,10 +263,789 @@ class LaporanController extends Controller
                 }
             }
         }
+        // TC 14 End
+
+        // TC 19 Start
+        $tc_19 = '';
+
+        $get_urusans = Urusan::orderBy('kode', 'asc')->where('tahun_perubahan', $tahun_awal)->get();
+        $urusans = [];
+        foreach ($get_urusans as $get_urusan) {
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)
+                                        ->where('tahun_perubahan', $tahun_awal)
+                                        ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $urusans[] = [
+                    'id' => $cek_perubahan_urusan->urusan_id,
+                    'kode' => $cek_perubahan_urusan->kode,
+                    'deskripsi' => $cek_perubahan_urusan->deskripsi
+                ];
+            } else {
+                $urusans[] = [
+                    'id' => $get_urusan->id,
+                    'kode' => $get_urusan->kode,
+                    'deskripsi' => $get_urusan->deskripsi
+                ];
+            }
+        }
+        $a = 1;
+        foreach ($urusans as $urusan) {
+            $tc_19 .= '<tr>';
+                $tc_19 .= '<td colspan="24" style="text-align: left"><strong>Urusan</strong></td>';
+            $tc_19 .= '</tr>';
+            $tc_19 .= '<tr>';
+                $tc_19 .= '<td>'.$a++.'</td>';
+                $tc_19 .= '<td>'.$urusan['kode'].'</td>';
+                $tc_19 .= '<td></td>';
+                $tc_19 .= '<td></td>';
+                $tc_19 .= '<td></td>';
+                $tc_19 .= '<td>'.$urusan['deskripsi'].'</td>';
+            $tc_19 .= '</tr>';
+
+            $get_opd_rpjmds = PivotOpdProgramRpjmd::whereHas('program_rpjmd', function($q) use ($urusan, $tahun_awal){
+                $q->whereHas('program', function($q) use ($urusan, $tahun_awal){
+                    $q->where('urusan_id', $urusan['id']);
+                    $q->where('tahun_perubahan', $tahun_awal);
+                });
+            })->get();
+            foreach ($get_opd_rpjmds as $get_opd_rpjmd) {
+                $tc_19 .= '<tr>';
+                    $tc_19 .= '<td colspan="24" style="text-align: left"><strong>Program</strong></td>';
+                $tc_19 .= '</tr>';
+                $tc_19 .= '<tr>';
+                    $tc_19 .= '<td></td>';
+                    $tc_19 .= '<td>'.$urusan['kode'].'</td>';
+                    $get_program_rpjmd = ProgramRpjmd::whereHas('pivot_opd_program_rpjmd', function($q) use ($get_opd_rpjmd){
+                        $q->where('id', $get_opd_rpjmd->id);
+                    })->first();
+                    $program = [];
+                    $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                    if($cek_perubahan_program)
+                    {
+                        $program = [
+                            'id' => $cek_perubahan_program->program_id,
+                            'kode' => $cek_perubahan_program->kode,
+                            'deskripsi' => $cek_perubahan_program->deskripsi,
+                            'program_rpjmd_id' => $get_program_rpjmd->id
+                        ];
+                    } else {
+                        $get_program = Program::find($get_program_rpjmd->program_id);
+                        $program = [
+                            'id' => $get_program->id,
+                            'kode' => $get_program->kode,
+                            'deskripsi' => $get_program->deskripsi,
+                            'program_rpjmd_id' => $get_program_rpjmd->id
+                        ];
+                    }
+
+                    $tc_19 .= '<td>'.$program['kode'].'</td>';
+                    $tc_19 .= '<td></td>';
+                    $tc_19 .= '<td></td>';
+                    $tc_19 .= '<td>'.$program['deskripsi'].'</td>';
+                    $tc_19 .= '<td></td>';
+                    $get_target_rp_pertahun_program = TargetRpPertahunProgram::where('program_rpjmd_id', $program['program_rpjmd_id'])
+                                                        ->where('opd_id', $get_opd_rpjmd->opd->id)
+                                                        ->where('tahun', $tahun_awal)->first();
+                    if($get_target_rp_pertahun_program)
+                    {
+                        $tc_19 .= '<td>'.$get_target_rp_pertahun_program->target.'/'.$get_target_rp_pertahun_program->satuan.'</td>';
+                        $tc_19 .= '<td>Rp. '.number_format($get_target_rp_pertahun_program->rp, 2).'</td>';
+                    } else {
+                        $tc_19 .= '<td></td>';
+                        $tc_19 .= '<td></td>';
+                    }
+                    $tc_19 .= '<td colspan="12"></td>';
+                    $tc_19 .= '<td>'.$get_opd_rpjmd->opd->nama.'</td>';
+                    $tc_19 .= '<td></td>';
+                $tc_19 .= '</tr>';
+
+                $get_pivot_opd_renstra_kegiatans = PivotOpdRentraKegiatan::whereHas('renstra_kegiatan', function($q) use ($program){
+                    $q->where('program_rpjmd_id', $program['program_rpjmd_id']);
+                })->get();
+
+                foreach ($get_pivot_opd_renstra_kegiatans as $get_pivot_opd_renstra_kegiatan) {
+                    $get_renstra_kegiatan = RenstraKegiatan::find($get_pivot_opd_renstra_kegiatan->rentra_kegiatan_id);
+                    $kegiatan = [];
+                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_renstra_kegiatan->kegiatan_id)
+                                                ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                    if($cek_perubahan_kegiatan)
+                    {
+                        $kegiatan = [
+                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                            'kode' => $cek_perubahan_kegiatan->kode,
+                            'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                            'renstra_kegiatan_id' => $get_renstra_kegiatan->id
+                        ];
+                    } else {
+                        $kegiatan = [
+                            'id' => $get_renstra_kegiatan->kegiatan_id,
+                            'kode' => $get_renstra_kegiatan->kegiatan->kode,
+                            'deskripsi' => $get_renstra_kegiatan->kegiatan->deskripsi,
+                            'renstra_kegiatan_id' => $get_renstra_kegiatan->id
+                        ];
+                    }
+
+                    $tc_19 .= '<tr>';
+                        $tc_19 .= '<td colspan="24" style="text-align: left"><strong>Kegiatan</strong></td>';
+                    $tc_19 .= '</tr>';
+                    $tc_19 .= '<tr>';
+                        $tc_19 .= '<td></td>';
+                        $tc_19 .= '<td>'.$urusan['kode'].'</td>';
+                        $tc_19 .= '<td>'.$program['kode'].'</td>';
+                        $tc_19 .= '<td>'.$kegiatan['kode'].'</td>';
+                        $tc_19 .= '<td></td>';
+                        $tc_19 .= '<td>'.$kegiatan['deskripsi'].'</td>';
+                        $tc_19 .= '<td></td>';
+                        $get_target_rp_pertahun_renstra_kegiatan = TargetRpPertahunRenstraKegiatan::where('renstra_kegiatan_id', $kegiatan['renstra_kegiatan_id'])
+                                                            ->where('opd_id', $get_pivot_opd_renstra_kegiatan->opd->id)
+                                                            ->where('tahun', $tahun_awal)->first();
+                        if($get_target_rp_pertahun_renstra_kegiatan)
+                        {
+                            $tc_19 .= '<td>'.$get_target_rp_pertahun_renstra_kegiatan->target.'/'.$get_target_rp_pertahun_renstra_kegiatan->satuan.'</td>';
+                            $tc_19 .= '<td>Rp. '.number_format($get_target_rp_pertahun_renstra_kegiatan->rp, 2).'</td>';
+                        } else {
+                            $tc_19 .= '<td></td>';
+                            $tc_19 .= '<td></td>';
+                        }
+                        $tc_19 .= '<td colspan="12"></td>';
+                        $tc_19 .= '<td>'.$get_pivot_opd_renstra_kegiatan->opd->nama.'</td>';
+                        $tc_19 .= '<td></td>';
+                    $tc_19 .= '</tr>';
+                }
+            }
+        }
+        // TC 19 End
+
+        // E 79 Start
+        $get_sasarans = Sasaran::where('tahun_perubahan', $tahun_awal)->get();
+        $sasarans = [];
+        foreach ($get_sasarans as $get_sasaran) {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
+                                        ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi
+                ];
+            }
+        }
+        $e_79 = '';
+        $a = 1;
+        $get_opd = [];
+        foreach ($sasarans as $sasaran) {
+            $e_79 .= '<tr>';
+                $e_79 .= '<td colspan="29" style="text-align: left"><strong>Sasaran</strong></td>';
+            $e_79 .='</tr>';
+            $e_79 .= '<tr>';
+                $e_79 .= '<td>'.$a++.'</td>';
+                $e_79 .= '<td>'.$sasaran['deskripsi'].'</td>';
+                $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+
+                $pivot_opd_program_rpjmds = PivotOpdProgramRpjmd::whereHas('program_rpjmd', function($q) use ($sasaran){
+                    $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran){
+                        $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran) {
+                            $q->where('sasaran_id', $sasaran['id']);
+                        });
+                    });
+                })->get();
+
+                $b = 1;
+                foreach ($pivot_opd_program_rpjmds as $pivot_opd_program_rpjmd) {
+                    $get_program_rpjmd = ProgramRpjmd::find($pivot_opd_program_rpjmd->program_rpjmd_id);
+                    $get_program = Program::find($get_program_rpjmd->program_id);
+                    $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_program->urusan_id)->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                    $urusan = [];
+                    if($cek_perubahan_urusan)
+                    {
+                        $urusan = [
+                            'id' => $cek_perubahan_urusan->urusan_id,
+                            'kode' => $cek_perubahan_urusan->kode,
+                            'deskripsi' => $cek_perubahan_urusan->deskripsi
+                        ];
+                    } else {
+                        $get_urusan = Urusan::find($get_program->urusan_id);
+                        $urusan = [
+                            'id' => $get_urusan->id,
+                            'kode' => $get_urusan->kode,
+                            'deskripsi' => $get_urusan->deskripsi
+                        ];
+                    }
+                    if($b == 1)
+                    {
+                            $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$urusan['deskripsi'].'</td>';
+                            $e_79 .= '<td colspan="21"></td>';
+                            $e_79 .= '<td>'.$pivot_opd_program_rpjmd->opd->nama.'</td>';
+                        $e_79 .='</tr>';
+                        $get_program_from_urusans = Program::where('urusan_id', $urusan['id'])
+                                                    ->whereHas('program_rpjmd', function($q) use ($pivot_opd_program_rpjmd){
+                                                        $q->where('id', $pivot_opd_program_rpjmd->program_rpjmd_id);
+                                                    })->first();
+                        $program_from_urusan = [];
+                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_from_urusans->id)
+                                                    ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                        if($cek_perubahan_program)
+                        {
+                            $program_from_urusan = [
+                                'id' => $cek_perubahan_program->program_id,
+                                'kode' => $cek_perubahan_program->kode,
+                                'deskripsi' => $cek_perubahan_program->deskripsi
+                            ];
+                        } else {
+                            $program_from_urusan = [
+                                'id' => $get_program_from_urusans->id,
+                                'kode' => $get_program_from_urusans->kode,
+                                'deskripsi' => $get_program_from_urusans->deskripsi
+                            ];
+                        }
+                        $e_79 .= '<tr>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                            $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                            $e_79 .= '<td>'.$program_from_urusan['kode'].'</td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$program_from_urusan['deskripsi'].'</td>';
+                            $e_79 .= '<td colspan="21"></td>';
+                            $e_79 .= '<td>'.$pivot_opd_program_rpjmd->opd->nama.'</td>';
+                        $e_79 .= '</tr>';
+
+                        $cek_renstra_kegiatan = RenstraKegiatan::where('program_rpjmd_id',  $pivot_opd_program_rpjmd->program_rpjmd_id)->first();
+                        if($cek_renstra_kegiatan)
+                        {
+                            $get_pivot_opd_renstra_kegiatans = PivotOpdRentraKegiatan::where('rentra_kegiatan_id', $cek_renstra_kegiatan->id)->get();
+                            foreach ($get_pivot_opd_renstra_kegiatans as $get_pivot_opd_renstra_kegiatan) {
+                                $get_renstra_kegiatan = RenstraKegiatan::find($get_pivot_opd_renstra_kegiatan->rentra_kegiatan_id);
+                                $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_renstra_kegiatan->kegiatan_id)
+                                                            ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                                $kegiatan = [];
+                                if($cek_perubahan_kegiatan)
+                                {
+                                    $kegiatan = [
+                                        'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                        'kode' => $cek_perubahan_kegiatan->kode,
+                                        'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                                    ];
+                                } else {
+                                    $kegiatan = [
+                                        'id' => $get_renstra_kegiatan->kegiatan_id,
+                                        'kode' => $get_renstra_kegiatan->kegiatan->kode,
+                                        'deskripsi' => $get_renstra_kegiatan->kegiatan->deskripsi
+                                    ];
+                                }
+
+                                $e_79 .= '<tr>';
+                                    $e_79 .= '<td></td>';
+                                    $e_79 .= '<td></td>';
+                                    $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                                    $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$program_from_urusan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$kegiatan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$kegiatan['deskripsi'].'</td>';
+                                    $e_79 .= '<td colspan="21"></td>';
+                                    $e_79 .= '<td>'.$get_pivot_opd_renstra_kegiatan->opd->nama.'</td>';
+                                $e_79 .= '</tr>';
+                            }
+                        }
+                    } else {
+                        $e_79 .= '<tr>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                            $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$urusan['deskripsi'].'</td>';
+                            $e_79 .= '<td colspan="21"></td>';
+                            $e_79 .= '<td>'.$pivot_opd_program_rpjmd->opd->nama.'</td>';
+                        $e_79 .= '</tr>';
+
+                        $get_program_from_urusans = Program::where('urusan_id', $urusan['id'])
+                                                    ->whereHas('program_rpjmd', function($q) use ($pivot_opd_program_rpjmd){
+                                                        $q->where('id', $pivot_opd_program_rpjmd->program_rpjmd_id);
+                                                    })->first();
+                        $program_from_urusan = [];
+                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_from_urusans->id)
+                                                    ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                        if($cek_perubahan_program)
+                        {
+                            $program_from_urusan = [
+                                'id' => $cek_perubahan_program->program_id,
+                                'kode' => $cek_perubahan_program->kode,
+                                'deskripsi' => $cek_perubahan_program->deskripsi
+                            ];
+                        } else {
+                            $program_from_urusan = [
+                                'id' => $get_program_from_urusans->id,
+                                'kode' => $get_program_from_urusans->kode,
+                                'deskripsi' => $get_program_from_urusans->deskripsi
+                            ];
+                        }
+                        $e_79 .= '<tr>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                            $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                            $e_79 .= '<td>'.$program_from_urusan['kode'].'</td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$program_from_urusan['deskripsi'].'</td>';
+                            $e_79 .= '<td colspan="21"></td>';
+                            $e_79 .= '<td>'.$pivot_opd_program_rpjmd->opd->nama.'</td>';
+                        $e_79 .= '</tr>';
+
+                        $cek_renstra_kegiatan = RenstraKegiatan::where('program_rpjmd_id',  $pivot_opd_program_rpjmd->program_rpjmd_id)->first();
+                        if($cek_renstra_kegiatan)
+                        {
+                            $get_pivot_opd_renstra_kegiatans = PivotOpdRentraKegiatan::where('rentra_kegiatan_id', $cek_renstra_kegiatan->id)->get();
+                            foreach ($get_pivot_opd_renstra_kegiatans as $get_pivot_opd_renstra_kegiatan) {
+                                $get_renstra_kegiatan = RenstraKegiatan::find($get_pivot_opd_renstra_kegiatan->rentra_kegiatan_id);
+                                $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_renstra_kegiatan->kegiatan_id)
+                                                            ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                                $kegiatan = [];
+                                if($cek_perubahan_kegiatan)
+                                {
+                                    $kegiatan = [
+                                        'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                        'kode' => $cek_perubahan_kegiatan->kode,
+                                        'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                                    ];
+                                } else {
+                                    $kegiatan = [
+                                        'id' => $get_renstra_kegiatan->kegiatan_id,
+                                        'kode' => $get_renstra_kegiatan->kegiatan->kode,
+                                        'deskripsi' => $get_renstra_kegiatan->kegiatan->deskripsi
+                                    ];
+                                }
+
+                                $e_79 .= '<tr>';
+                                    $e_79 .= '<td></td>';
+                                    $e_79 .= '<td></td>';
+                                    $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                                    $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$program_from_urusan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$kegiatan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$kegiatan['deskripsi'].'</td>';
+                                    $e_79 .= '<td colspan="21"></td>';
+                                    $e_79 .= '<td>'.$get_pivot_opd_renstra_kegiatan->opd->nama.'</td>';
+                                $e_79 .= '</tr>';
+                            }
+                        }
+                    }
+                    $b++;
+                }
+        }
+        // E 79 End
 
         return view('admin.laporan.index', [
             'tahuns' => $tahuns,
-            'tc_14' => $tc_14
+            'tc_14' => $tc_14,
+            'tc_19' => $tc_19,
+            'e_79' => $e_79
         ]);
+    }
+
+    public function laporan_tc_19(Request $request)
+    {
+        $tahun_awal = $request->tahun;
+        // TC 19 Start
+        $tc_19 = '';
+
+        $get_urusans = Urusan::orderBy('kode', 'asc')->where('tahun_perubahan', $tahun_awal)->get();
+        $urusans = [];
+        foreach ($get_urusans as $get_urusan) {
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)
+                                        ->where('tahun_perubahan', $tahun_awal)
+                                        ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $urusans[] = [
+                    'id' => $cek_perubahan_urusan->urusan_id,
+                    'kode' => $cek_perubahan_urusan->kode,
+                    'deskripsi' => $cek_perubahan_urusan->deskripsi
+                ];
+            } else {
+                $urusans[] = [
+                    'id' => $get_urusan->id,
+                    'kode' => $get_urusan->kode,
+                    'deskripsi' => $get_urusan->deskripsi
+                ];
+            }
+        }
+        $a = 1;
+        foreach ($urusans as $urusan) {
+            $tc_19 .= '<tr>';
+                $tc_19 .= '<td colspan="24" style="text-align: left"><strong>Urusan</strong></td>';
+            $tc_19 .= '</tr>';
+            $tc_19 .= '<tr>';
+                $tc_19 .= '<td>'.$a++.'</td>';
+                $tc_19 .= '<td>'.$urusan['kode'].'</td>';
+                $tc_19 .= '<td></td>';
+                $tc_19 .= '<td></td>';
+                $tc_19 .= '<td></td>';
+                $tc_19 .= '<td>'.$urusan['deskripsi'].'</td>';
+            $tc_19 .= '</tr>';
+
+            $get_opd_rpjmds = PivotOpdProgramRpjmd::whereHas('program_rpjmd', function($q) use ($urusan, $tahun_awal){
+                $q->whereHas('program', function($q) use ($urusan, $tahun_awal){
+                    $q->where('urusan_id', $urusan['id']);
+                    $q->where('tahun_perubahan', $tahun_awal);
+                });
+            })->get();
+            foreach ($get_opd_rpjmds as $get_opd_rpjmd) {
+                $tc_19 .= '<tr>';
+                    $tc_19 .= '<td colspan="24" style="text-align: left"><strong>Program</strong></td>';
+                $tc_19 .= '</tr>';
+                $tc_19 .= '<tr>';
+                    $tc_19 .= '<td></td>';
+                    $tc_19 .= '<td>'.$urusan['kode'].'</td>';
+                    $get_program_rpjmd = ProgramRpjmd::whereHas('pivot_opd_program_rpjmd', function($q) use ($get_opd_rpjmd){
+                        $q->where('id', $get_opd_rpjmd->id);
+                    })->first();
+                    $program = [];
+                    $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                    if($cek_perubahan_program)
+                    {
+                        $program = [
+                            'id' => $cek_perubahan_program->program_id,
+                            'kode' => $cek_perubahan_program->kode,
+                            'deskripsi' => $cek_perubahan_program->deskripsi,
+                            'program_rpjmd_id' => $get_program_rpjmd->id
+                        ];
+                    } else {
+                        $get_program = Program::find($get_program_rpjmd->program_id);
+                        $program = [
+                            'id' => $get_program->id,
+                            'kode' => $get_program->kode,
+                            'deskripsi' => $get_program->deskripsi,
+                            'program_rpjmd_id' => $get_program_rpjmd->id
+                        ];
+                    }
+
+                    $tc_19 .= '<td>'.$program['kode'].'</td>';
+                    $tc_19 .= '<td></td>';
+                    $tc_19 .= '<td></td>';
+                    $tc_19 .= '<td>'.$program['deskripsi'].'</td>';
+                    $tc_19 .= '<td></td>';
+                    $get_target_rp_pertahun_program = TargetRpPertahunProgram::where('program_rpjmd_id', $program['program_rpjmd_id'])
+                                                        ->where('opd_id', $get_opd_rpjmd->opd->id)
+                                                        ->where('tahun', $tahun_awal)->first();
+                    if($get_target_rp_pertahun_program)
+                    {
+                        $tc_19 .= '<td>'.$get_target_rp_pertahun_program->target.'/'.$get_target_rp_pertahun_program->satuan.'</td>';
+                        $tc_19 .= '<td>Rp. '.number_format($get_target_rp_pertahun_program->rp, 2).'</td>';
+                    } else {
+                        $tc_19 .= '<td></td>';
+                        $tc_19 .= '<td></td>';
+                    }
+                    $tc_19 .= '<td colspan="12"></td>';
+                    $tc_19 .= '<td>'.$get_opd_rpjmd->opd->nama.'</td>';
+                    $tc_19 .= '<td></td>';
+                $tc_19 .= '</tr>';
+
+                $get_pivot_opd_renstra_kegiatans = PivotOpdRentraKegiatan::whereHas('renstra_kegiatan', function($q) use ($program){
+                    $q->where('program_rpjmd_id', $program['program_rpjmd_id']);
+                })->get();
+
+                foreach ($get_pivot_opd_renstra_kegiatans as $get_pivot_opd_renstra_kegiatan) {
+                    $get_renstra_kegiatan = RenstraKegiatan::find($get_pivot_opd_renstra_kegiatan->rentra_kegiatan_id);
+                    $kegiatan = [];
+                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_renstra_kegiatan->kegiatan_id)
+                                                ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                    if($cek_perubahan_kegiatan)
+                    {
+                        $kegiatan = [
+                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                            'kode' => $cek_perubahan_kegiatan->kode,
+                            'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                            'renstra_kegiatan_id' => $get_renstra_kegiatan->id
+                        ];
+                    } else {
+                        $kegiatan = [
+                            'id' => $get_renstra_kegiatan->kegiatan_id,
+                            'kode' => $get_renstra_kegiatan->kegiatan->kode,
+                            'deskripsi' => $get_renstra_kegiatan->kegiatan->deskripsi,
+                            'renstra_kegiatan_id' => $get_renstra_kegiatan->id
+                        ];
+                    }
+
+                    $tc_19 .= '<tr>';
+                        $tc_19 .= '<td colspan="24" style="text-align: left"><strong>Kegiatan</strong></td>';
+                    $tc_19 .= '</tr>';
+                    $tc_19 .= '<tr>';
+                        $tc_19 .= '<td></td>';
+                        $tc_19 .= '<td>'.$urusan['kode'].'</td>';
+                        $tc_19 .= '<td>'.$program['kode'].'</td>';
+                        $tc_19 .= '<td>'.$kegiatan['kode'].'</td>';
+                        $tc_19 .= '<td></td>';
+                        $tc_19 .= '<td>'.$kegiatan['deskripsi'].'</td>';
+                        $tc_19 .= '<td></td>';
+                        $get_target_rp_pertahun_renstra_kegiatan = TargetRpPertahunRenstraKegiatan::where('renstra_kegiatan_id', $kegiatan['renstra_kegiatan_id'])
+                                                            ->where('opd_id', $get_pivot_opd_renstra_kegiatan->opd->id)
+                                                            ->where('tahun', $tahun_awal)->first();
+                        if($get_target_rp_pertahun_renstra_kegiatan)
+                        {
+                            $tc_19 .= '<td>'.$get_target_rp_pertahun_renstra_kegiatan->target.'/'.$get_target_rp_pertahun_renstra_kegiatan->satuan.'</td>';
+                            $tc_19 .= '<td>Rp. '.number_format($get_target_rp_pertahun_renstra_kegiatan->rp, 2).'</td>';
+                        } else {
+                            $tc_19 .= '<td></td>';
+                            $tc_19 .= '<td></td>';
+                        }
+                        $tc_19 .= '<td colspan="12"></td>';
+                        $tc_19 .= '<td>'.$get_pivot_opd_renstra_kegiatan->opd->nama.'</td>';
+                        $tc_19 .= '<td></td>';
+                    $tc_19 .= '</tr>';
+                }
+            }
+        }
+        // TC 19 End
+
+        return response()->json($tc_19);
+    }
+
+    public function laporan_e_79(Request $request)
+    {
+        $tahun_awal = $request->tahun;
+        // E 79 Start
+        $get_sasarans = Sasaran::where('tahun_perubahan', $tahun_awal)->get();
+        $sasarans = [];
+        foreach ($get_sasarans as $get_sasaran) {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
+                                        ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi
+                ];
+            }
+        }
+        $e_79 = '';
+        $a = 1;
+        $get_opd = [];
+        foreach ($sasarans as $sasaran) {
+            $e_79 .= '<tr>';
+                $e_79 .= '<td colspan="29" style="text-align: left"><strong>Sasaran</strong></td>';
+            $e_79 .='</tr>';
+            $e_79 .= '<tr>';
+                $e_79 .= '<td>'.$a++.'</td>';
+                $e_79 .= '<td>'.$sasaran['deskripsi'].'</td>';
+                $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+
+                $pivot_opd_program_rpjmds = PivotOpdProgramRpjmd::whereHas('program_rpjmd', function($q) use ($sasaran){
+                    $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran){
+                        $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran) {
+                            $q->where('sasaran_id', $sasaran['id']);
+                        });
+                    });
+                })->get();
+
+                $b = 1;
+                foreach ($pivot_opd_program_rpjmds as $pivot_opd_program_rpjmd) {
+                    $get_program_rpjmd = ProgramRpjmd::find($pivot_opd_program_rpjmd->program_rpjmd_id);
+                    $get_program = Program::find($get_program_rpjmd->program_id);
+                    $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_program->urusan_id)->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                    $urusan = [];
+                    if($cek_perubahan_urusan)
+                    {
+                        $urusan = [
+                            'id' => $cek_perubahan_urusan->urusan_id,
+                            'kode' => $cek_perubahan_urusan->kode,
+                            'deskripsi' => $cek_perubahan_urusan->deskripsi
+                        ];
+                    } else {
+                        $get_urusan = Urusan::find($get_program->urusan_id);
+                        $urusan = [
+                            'id' => $get_urusan->id,
+                            'kode' => $get_urusan->kode,
+                            'deskripsi' => $get_urusan->deskripsi
+                        ];
+                    }
+                    if($b == 1)
+                    {
+                            $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$urusan['deskripsi'].'</td>';
+                            $e_79 .= '<td colspan="21"></td>';
+                            $e_79 .= '<td>'.$pivot_opd_program_rpjmd->opd->nama.'</td>';
+                        $e_79 .='</tr>';
+                        $get_program_from_urusans = Program::where('urusan_id', $urusan['id'])
+                                                    ->whereHas('program_rpjmd', function($q) use ($pivot_opd_program_rpjmd){
+                                                        $q->where('id', $pivot_opd_program_rpjmd->program_rpjmd_id);
+                                                    })->first();
+                        $program_from_urusan = [];
+                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_from_urusans->id)
+                                                    ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                        if($cek_perubahan_program)
+                        {
+                            $program_from_urusan = [
+                                'id' => $cek_perubahan_program->program_id,
+                                'kode' => $cek_perubahan_program->kode,
+                                'deskripsi' => $cek_perubahan_program->deskripsi
+                            ];
+                        } else {
+                            $program_from_urusan = [
+                                'id' => $get_program_from_urusans->id,
+                                'kode' => $get_program_from_urusans->kode,
+                                'deskripsi' => $get_program_from_urusans->deskripsi
+                            ];
+                        }
+                        $e_79 .= '<tr>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                            $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                            $e_79 .= '<td>'.$program_from_urusan['kode'].'</td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$program_from_urusan['deskripsi'].'</td>';
+                            $e_79 .= '<td colspan="21"></td>';
+                            $e_79 .= '<td>'.$pivot_opd_program_rpjmd->opd->nama.'</td>';
+                        $e_79 .= '</tr>';
+
+                        $cek_renstra_kegiatan = RenstraKegiatan::where('program_rpjmd_id',  $pivot_opd_program_rpjmd->program_rpjmd_id)->first();
+                        if($cek_renstra_kegiatan)
+                        {
+                            $get_pivot_opd_renstra_kegiatans = PivotOpdRentraKegiatan::where('rentra_kegiatan_id', $cek_renstra_kegiatan->id)->get();
+                            foreach ($get_pivot_opd_renstra_kegiatans as $get_pivot_opd_renstra_kegiatan) {
+                                $get_renstra_kegiatan = RenstraKegiatan::find($get_pivot_opd_renstra_kegiatan->rentra_kegiatan_id);
+                                $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_renstra_kegiatan->kegiatan_id)
+                                                            ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                                $kegiatan = [];
+                                if($cek_perubahan_kegiatan)
+                                {
+                                    $kegiatan = [
+                                        'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                        'kode' => $cek_perubahan_kegiatan->kode,
+                                        'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                                    ];
+                                } else {
+                                    $kegiatan = [
+                                        'id' => $get_renstra_kegiatan->kegiatan_id,
+                                        'kode' => $get_renstra_kegiatan->kegiatan->kode,
+                                        'deskripsi' => $get_renstra_kegiatan->kegiatan->deskripsi
+                                    ];
+                                }
+
+                                $e_79 .= '<tr>';
+                                    $e_79 .= '<td></td>';
+                                    $e_79 .= '<td></td>';
+                                    $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                                    $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$program_from_urusan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$kegiatan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$kegiatan['deskripsi'].'</td>';
+                                    $e_79 .= '<td colspan="21"></td>';
+                                    $e_79 .= '<td>'.$get_pivot_opd_renstra_kegiatan->opd->nama.'</td>';
+                                $e_79 .= '</tr>';
+                            }
+                        }
+                    } else {
+                        $e_79 .= '<tr>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                            $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$urusan['deskripsi'].'</td>';
+                            $e_79 .= '<td colspan="21"></td>';
+                            $e_79 .= '<td>'.$pivot_opd_program_rpjmd->opd->nama.'</td>';
+                        $e_79 .= '</tr>';
+
+                        $get_program_from_urusans = Program::where('urusan_id', $urusan['id'])
+                                                    ->whereHas('program_rpjmd', function($q) use ($pivot_opd_program_rpjmd){
+                                                        $q->where('id', $pivot_opd_program_rpjmd->program_rpjmd_id);
+                                                    })->first();
+                        $program_from_urusan = [];
+                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_from_urusans->id)
+                                                    ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                        if($cek_perubahan_program)
+                        {
+                            $program_from_urusan = [
+                                'id' => $cek_perubahan_program->program_id,
+                                'kode' => $cek_perubahan_program->kode,
+                                'deskripsi' => $cek_perubahan_program->deskripsi
+                            ];
+                        } else {
+                            $program_from_urusan = [
+                                'id' => $get_program_from_urusans->id,
+                                'kode' => $get_program_from_urusans->kode,
+                                'deskripsi' => $get_program_from_urusans->deskripsi
+                            ];
+                        }
+                        $e_79 .= '<tr>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                            $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                            $e_79 .= '<td>'.$program_from_urusan['kode'].'</td>';
+                            $e_79 .= '<td></td>';
+                            $e_79 .= '<td>'.$program_from_urusan['deskripsi'].'</td>';
+                            $e_79 .= '<td colspan="21"></td>';
+                            $e_79 .= '<td>'.$pivot_opd_program_rpjmd->opd->nama.'</td>';
+                        $e_79 .= '</tr>';
+
+                        $cek_renstra_kegiatan = RenstraKegiatan::where('program_rpjmd_id',  $pivot_opd_program_rpjmd->program_rpjmd_id)->first();
+                        if($cek_renstra_kegiatan)
+                        {
+                            $get_pivot_opd_renstra_kegiatans = PivotOpdRentraKegiatan::where('rentra_kegiatan_id', $cek_renstra_kegiatan->id)->get();
+                            foreach ($get_pivot_opd_renstra_kegiatans as $get_pivot_opd_renstra_kegiatan) {
+                                $get_renstra_kegiatan = RenstraKegiatan::find($get_pivot_opd_renstra_kegiatan->rentra_kegiatan_id);
+                                $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_renstra_kegiatan->kegiatan_id)
+                                                            ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                                $kegiatan = [];
+                                if($cek_perubahan_kegiatan)
+                                {
+                                    $kegiatan = [
+                                        'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                        'kode' => $cek_perubahan_kegiatan->kode,
+                                        'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                                    ];
+                                } else {
+                                    $kegiatan = [
+                                        'id' => $get_renstra_kegiatan->kegiatan_id,
+                                        'kode' => $get_renstra_kegiatan->kegiatan->kode,
+                                        'deskripsi' => $get_renstra_kegiatan->kegiatan->deskripsi
+                                    ];
+                                }
+
+                                $e_79 .= '<tr>';
+                                    $e_79 .= '<td></td>';
+                                    $e_79 .= '<td></td>';
+                                    $e_79 .= '<td>'.$sasaran['kode'].'</td>';
+                                    $e_79 .= '<td>'.$urusan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$program_from_urusan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$kegiatan['kode'].'</td>';
+                                    $e_79 .= '<td>'.$kegiatan['deskripsi'].'</td>';
+                                    $e_79 .= '<td colspan="21"></td>';
+                                    $e_79 .= '<td>'.$get_pivot_opd_renstra_kegiatan->opd->nama.'</td>';
+                                $e_79 .= '</tr>';
+                            }
+                        }
+                    }
+                    $b++;
+                }
+        }
+        // E 79 End
+
+        return response()->json(['e_79' => $e_79]);
     }
 }
