@@ -452,6 +452,9 @@
                                                     <th>Rp</th>
                                                 </tr>
                                             </thead>
+                                            <tbody class="tbodyE78" style="text-align: left">
+                                                {!!$e_78!!}
+                                            </tbody>
                                         </table>
                                     </div>
                                 @endforeach

@@ -418,7 +418,7 @@ class LaporanController extends Controller
         // TC 19 End
 
         // E 79 Start
-        $get_sasarans = Sasaran::where('tahun_perubahan', $tahun_awal)->get();
+        $get_sasarans = Sasaran::all();
         $sasarans = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
@@ -647,11 +647,85 @@ class LaporanController extends Controller
         }
         // E 79 End
 
+        // E 78 Start
+
+        $get_sasarans = Sasaran::all();
+        $sasarans = [];
+        foreach ($get_sasarans as $get_sasaran) {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+                                        // ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi
+                ];
+            }
+        }
+        $e_78 = '';
+        $a = 1;
+        foreach ($sasarans as $sasaran) {
+            $e_78 .= '<tr>';
+                $e_78 .= '<td colspan="41" style="text-align: left"><strong>Sasaran</strong></td>';
+            $e_78 .= '</tr>';
+            $e_78 .= '<tr>';
+                $e_78 .= '<td>'.$a++.'</td>';
+                $e_78 .= '<td>'.$sasaran['deskripsi'].'</td>';
+
+            $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran){
+                $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran) {
+                    $q->where('sasaran_id', $sasaran['id']);
+                });
+            })->where('status_program', 'Program Prioritas')->get();
+            $program = [];
+            $urutan_a = 1;
+            foreach ($get_program_rpjmds as $get_program_rpjmd) {
+                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                            ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                if($cek_perubahan_program)
+                {
+                    $program = [
+                        'id' => $cek_perubahan_program->program_id,
+                        'kode' => $cek_perubahan_program->kode,
+                        'deskripsi' => $cek_perubahan_program->deskripsi
+                    ];
+                } else {
+                    $program = [
+                        'id' => $get_program_rpjmd->program_id,
+                        'kode' => $get_program_rpjmd->program->kode,
+                        'deskripsi' => $get_program_rpjmd->program->deskripsi
+                    ];
+                }
+                if($urutan_a == 1)
+                {
+                        $e_78 .= '<td>'.$program['deskripsi'].'</td>';
+                    $e_78 .= '</tr>';
+                } else {
+                    $e_78 .= '<tr>';
+                        $e_78 .= '<td>'.$a++.'</td>';
+                        $e_78 .= '<td>'.$sasaran['deskripsi'].'</td>';
+                        $e_78 .= '<td>'.$program['deskripsi'].'</td>';
+                    $e_78 .= '</tr>';
+                }
+                $urutan_a++;
+            }
+        }
+
+        // E 78 End
+
         return view('admin.laporan.index', [
             'tahuns' => $tahuns,
             'tc_14' => $tc_14,
             'tc_19' => $tc_19,
-            'e_79' => $e_79
+            'e_79' => $e_79,
+            'e_78' => $e_78
         ]);
     }
 
@@ -817,7 +891,7 @@ class LaporanController extends Controller
     {
         $tahun_awal = $request->tahun;
         // E 79 Start
-        $get_sasarans = Sasaran::where('tahun_perubahan', $tahun_awal)->get();
+        $get_sasarans = Sasaran::all();
         $sasarans = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
