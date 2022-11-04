@@ -38,4 +38,8 @@ Route::group(['middleware' => 'auth:opd'], function(){
     // Route::post('/opd/renstra/target-rp-pertahun-program/tambah', 'Opd\RenstraController@tambah_target_rp_pertahun_program')->name('opd.renstra.target-rp-pertahun-program.tambah');
     // Route::get('/opd/renstra/target-rp-pertahun-program/edit/{id}', 'Opd\RenstraController@edit_target_rp_pertahun_program');
     // Route::post('/opd/renstra/target-rp-pertahun-program/update', 'Opd\RenstraController@update_target_rp_pertahun_program')->name('opd.renstra.target-rp-pertahun-program.update');
+
+    Route::get('/opd/renja', 'Opd\RenjaController@index')->name('opd.renja.index');
+
+    Route::get('/opd/laporan', 'Opd\LaporanController@index')->name('opd.laporan.index');
 });

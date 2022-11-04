@@ -6,392 +6,571 @@
 @endsection
 
 @section('content')
-@php
-    use Carbon\Carbon;
-    use App\Models\TahunPeriode;
-    use App\Models\Visi;
-    use App\Models\PivotPerubahanVisi;
-    use App\Models\Misi;
-    use App\Models\PivotPerubahanMisi;
-    use App\Models\Tujuan;
-    use App\Models\PivotPerubahanTujuan;
-    use App\Models\Sasaran;
-    use App\Models\PivotPerubahanSasaran;
-    use App\Models\PivotSasaranIndikator;
-    use App\Models\ProgramRpjmd;
-    use App\Models\PivotOpdProgramRpjmd;
-    use App\Models\Urusan;
-    use App\Models\PivotPerubahanUrusan;
-    use App\Models\MasterOpd;
-    use App\Models\PivotSasaranIndikatorProgramRpjmd;
-    use App\Models\Program;
-    use App\Models\PivotPerubahanProgram;
-    use App\Models\PivotProgramKegiatanRenstra;
-    use App\Models\TargetRpPertahunProgram;
-    use App\Models\RenstraKegiatan;
-    use App\Models\PivotPerubahanKegiatan;
-    use App\Models\Kegiatan;
-    use App\Models\PivotOpdRentraKegiatan;
-    use App\Models\TargetRpPertahunRenstraKegiatan;
+    @php
+        use Carbon\Carbon;
+        use App\Models\TahunPeriode;
+        use App\Models\Visi;
+        use App\Models\PivotPerubahanVisi;
+        use App\Models\Misi;
+        use App\Models\PivotPerubahanMisi;
+        use App\Models\Tujuan;
+        use App\Models\PivotPerubahanTujuan;
+        use App\Models\Sasaran;
+        use App\Models\PivotPerubahanSasaran;
+        use App\Models\PivotSasaranIndikator;
+        use App\Models\ProgramRpjmd;
+        use App\Models\PivotOpdProgramRpjmd;
+        use App\Models\Urusan;
+        use App\Models\PivotPerubahanUrusan;
+        use App\Models\MasterOpd;
+        use App\Models\PivotSasaranIndikatorProgramRpjmd;
+        use App\Models\Program;
+        use App\Models\PivotPerubahanProgram;
+        use App\Models\PivotProgramKegiatanRenstra;
+        use App\Models\TargetRpPertahunProgram;
+        use App\Models\RenstraKegiatan;
+        use App\Models\PivotPerubahanKegiatan;
+        use App\Models\Kegiatan;
+        use App\Models\PivotOpdRentraKegiatan;
+        use App\Models\TargetRpPertahunRenstraKegiatan;
 
-    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-    $tahun_awal = $get_periode->tahun_awal;
-    $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
-    $tahuns = [];
-    for ($i=0; $i < $jarak_tahun + 1; $i++) {
-        $tahuns[] = $tahun_awal + $i;
-    }
-@endphp
-<div class="container">
-    <!-- Title and Top Buttons Start -->
-    <div class="page-title-container">
-        <div class="row">
-        <!-- Title Start -->
-        <div class="col-12 col-md-7">
-            <h1 class="mb-0 pb-0 display-4" id="title">Dashboard</h1>
-            <nav class="breadcrumb-container d-inline-block" aria-label="breadcrumb">
-                <ul class="breadcrumb pt-0">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.index') }}">Dashboard</a></li>
-                </ul>
-            </nav>
-        </div>
-        <!-- Title End -->
-        </div>
-    </div>
-    <!-- Title and Top Buttons End -->
-
-    <!-- Content Start -->
-    <ul class="nav nav-tabs nav-tabs-title nav-tabs-line-title responsive-tabs" id="lineTitleTabsContainer" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" data-bs-toggle="tab" href="#dashboardVisiMisiTab" role="tab" aria-selected="true">Dashboard Visi Misi</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" data-bs-toggle="tab" href="#dashboardPendapatanPembiayaanBelanjaTab" role="tab" aria-selected="false">Dashboard Pendapatan, Pembiayaan, dan Belanja</a>
-        </li>
-    </ul>
-
-    <div class="tab-content">
-        {{-- Visi Misi Start --}}
-        <div class="tab-pane fade active show" id="dashboardVisiMisiTab" role="tabpanel">
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+    @endphp
+    <div class="container">
+        <!-- Title and Top Buttons Start -->
+        <div class="page-title-container">
             <div class="row">
-                <div class="col-12">
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            @php
-                                $get_visis = Visi::all();
-                                $visis = [];
-                                foreach ($get_visis as $get_visi) {
-                                    $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
-                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                    if($cek_perubahan_visi)
-                                    {
-                                        $visis[] = [
-                                            'id' => $cek_perubahan_visi->visi_id,
-                                            'kode' => $cek_perubahan_visi->kode,
-                                            'deskripsi' => $cek_perubahan_visi->deskripsi
-                                        ];
-                                    } else {
-                                        $visis[] = [
-                                            'id' => $get_visi->id,
-                                            'kode' => $get_visi->kode,
-                                            'deskripsi' => $get_visi->deskripsi
-                                        ];
+            <!-- Title Start -->
+            <div class="col-12 col-md-7">
+                <h1 class="mb-0 pb-0 display-4" id="title">Dashboard</h1>
+                <nav class="breadcrumb-container d-inline-block" aria-label="breadcrumb">
+                    <ul class="breadcrumb pt-0">
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.index') }}">Dashboard</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- Title End -->
+            </div>
+        </div>
+        <!-- Title and Top Buttons End -->
+
+        <!-- Content Start -->
+        <ul class="nav nav-tabs nav-tabs-title nav-tabs-line-title responsive-tabs" id="lineTitleTabsContainer" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" data-bs-toggle="tab" href="#dashboardVisiMisiTab" role="tab" aria-selected="true">Dashboard Visi Misi</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#dashboardPendapatanPembiayaanBelanjaTab" role="tab" aria-selected="false">Dashboard Pendapatan, Pembiayaan, dan Belanja</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            {{-- Visi Misi Start --}}
+            <div class="tab-pane fade active show" id="dashboardVisiMisiTab" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                @php
+                                    $get_visis = Visi::all();
+                                    $visis = [];
+                                    foreach ($get_visis as $get_visi) {
+                                        $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
+                                                                ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                        if($cek_perubahan_visi)
+                                        {
+                                            $visis[] = [
+                                                'id' => $cek_perubahan_visi->visi_id,
+                                                'kode' => $cek_perubahan_visi->kode,
+                                                'deskripsi' => $cek_perubahan_visi->deskripsi
+                                            ];
+                                        } else {
+                                            $visis[] = [
+                                                'id' => $get_visi->id,
+                                                'kode' => $get_visi->kode,
+                                                'deskripsi' => $get_visi->deskripsi
+                                            ];
+                                        }
                                     }
-                                }
-                            @endphp
-                            @foreach ($visis as $visi)
-                                <div class="row">
-                                    <div class="col-10">
-                                        <h5 class="card-title mb-3">Visi: "{!! $visi['deskripsi'] !!}"</h5>
-                                    </div>
-                                    <div class="col-2" style="text-align: right">
-                                        <div class="form-group position-relative">
-                                            <select name="tahun" id="tahun">
-                                                <option value="">Pilih Tahun</option>
-                                                @foreach ($tahuns as $tahun)
-                                                    <option value="{{$tahun}}">{{$tahun}}</option>
-                                                @endforeach
-                                            </select>
+                                @endphp
+                                @foreach ($visis as $visi)
+                                    <div class="row">
+                                        <div class="col-10">
+                                            <h5 class="card-title mb-3">Visi: "{!! $visi['deskripsi'] !!}"</h5>
+                                        </div>
+                                        <div class="col-2" style="text-align: right">
+                                            <div class="form-group position-relative">
+                                                <select name="tahun" id="tahun">
+                                                    <option value="">Pilih Tahun</option>
+                                                    @foreach ($tahuns as $tahun)
+                                                        <option value="{{$tahun}}">{{$tahun}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-4">
+                                            <div class="card">
+                                                <div class="card-body border-1">
+                                                    <h2 class="small-title">Total Ketercapaian Misi dan Anggaran</h2>
+                                                    <h3 class="card-title mb-3">Baik (71.01)</h3>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <h2 class="small-title">Misi</h2>
+                                                            <div id="grafik_misi"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <h2 class="small-title">Anggaran</h2>
+                                                            <div id="grafik_anggaran"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-8">
+                                            <div id="grafik_misi_anggaran"></div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
                                 <div class="row">
-                                    <div class="col-12 col-md-4">
-                                        <div class="card">
-                                            <div class="card-body border-1">
-                                                <h2 class="small-title">Total Ketercapaian Misi dan Anggaran</h2>
-                                                <h3 class="card-title mb-3">Baik (71.01)</h3>
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <h2 class="small-title">Misi</h2>
-                                                        <div id="grafik_misi"></div>
+                                    <div class="col-12">
+                                        <h5 class="card-title mb-3">1.1 Mewujudkan Pemerintahan Yang Baik (Good Government) <span class="badge bg-primary">+70.70% <i data-acorn-icon="trend-up"></i> Dari 100%</span></h5>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h5 class="card-title mb-3">Tujuan: <span class="badge bg-primary">1.1.1 Terwujudnya Pemerintahan yang baik</span></h5>
+                                                <h5 class="card-title mb-3">Sasaran: <span class="badge"><select name="" id="" class="form-control bg-primary text-white">
+                                                    <option value="">1.1.1.2 Meningkatnya pengelolaan keuangan dan pengawasan penyelenggaraan pemerintah daerah</option>
+                                                    <option value="1">1.1.1.2 Meningkatnya pengelolaan keuangan dan pengawasan penyelenggaraan pemerintah daerah</option>
+                                                </select></span></h5>
+                                                <hr class="text-primary" style="height: 2px">
+                                                <div class="row mb-3">
+                                                    <div class="col-12 col-md-8">
+                                                        <h5 class="card-title mb-3">Indikator Kinerja Tujuan dan Sasaran</h5>
+                                                        <small class="text-muted">Cat: Pilih salah satu indikator</small>
+                                                        <p class="text-secondary mt-3"><i data-acorn-icon="check-circle"></i> Opini BPK</p>
+                                                        <p class="text-primary"><i data-acorn-icon="check-circle"></i> Meningkatnya pengelolaan keuangan dan pengawasan penyelenggaran pemerintahan daerah</p>
+                                                    </div>
+                                                    <div class="col-12 col-md-4">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title mb-3">Capaian Kinerja RPJMD</h5>
+                                                                <ul class="nav nav-pills responsive-tabs mb-3" role="tablist">
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#first3" role="tab" aria-selected="true" type="button">
+                                                                        2019
+                                                                        </button>
+                                                                    </li>
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#second3" role="tab" aria-selected="false" type="button">2020</button>
+                                                                    </li>
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#third3" role="tab" aria-selected="false" type="button">2021</button>
+                                                                    </li>
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fourth3" role="tab" aria-selected="false" type="button">2022</button>
+                                                                    </li>
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fifth3" role="tab" aria-selected="false" type="button">2023</button>
+                                                                    </li>
+                                                                </ul>
+                                                                <div class="tab-content">
+                                                                    <div class="tab-pane fade active show" id="first3" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_sasaran_indikator_2019"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_sasaran_indikator_2019"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane fade" id="second3" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_sasaran_indikator_2020"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_sasaran_indikator_2020"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane fade" id="third3" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_sasaran_indikator_2021"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_sasaran_indikator_2021"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane fade" id="fourth3" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_sasaran_indikator_2022"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_sasaran_indikator_2022"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane fade" id="fifth3" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_sasaran_indikator_2023"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_sasaran_indikator_2023"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col">
-                                                        <h2 class="small-title">Anggaran</h2>
-                                                        <div id="grafik_anggaran"></div>
+                                                    <div class="col-12 col-md-8">
+                                                        <h5 class="card-title mb-3">Indikator Kinerja Program</h5>
+                                                        <div class="form-group">
+                                                            <label for="" class="form-label">Pilih Program:</label>
+                                                            <h5 class="card-title mb-3"><span class="badge"><select name="" id="" class="form-control bg-primary text-white">
+                                                                <option value="">1.1.1.9 Program Optimalisasi Pengelolaan Pajak Dae...</option>
+                                                                <option value="1">1.1.1.9 Program Optimalisasi Pengelolaan Pajak Dae...</option>
+                                                            </select></span></h5>
+                                                        </div>
+                                                        <h2 class="small-title">Perangkat Daerah Penanggung Jawab: <span class="badge bg-primary">Dinas Pekerjaan Umum dan Tata Ruang</span></h2>
+                                                        <h5 class="card-title mb-3">Riwayat Pencarian</h5>
+                                                        <p class="text-primary mt-3"><i data-acorn-icon="check-circle"></i>1.2.1.1 Program Peningkatan Kualitas Pembangunan..</p>
+                                                        <p class="text-secondary"><i data-acorn-icon="check-circle"></i>1.2.1.2 Program Pembangunan dan Pemeliharan Ja..</p>
+                                                        <p class="text-secondary"><i data-acorn-icon="check-circle"></i>1.2.1.3 Program Pembangunan dan Pemeliharan Salu..</p>
+                                                    </div>
+                                                    <div class="col-12 col-md-4">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title mb-3">Capaian Kinerja RPJMD</h5>
+                                                                <ul class="nav nav-pills responsive-tabs mb-3" role="tablist">
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#first4" role="tab" aria-selected="true" type="button">
+                                                                        2019
+                                                                        </button>
+                                                                    </li>
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#second4" role="tab" aria-selected="false" type="button">2020</button>
+                                                                    </li>
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#third4" role="tab" aria-selected="false" type="button">2021</button>
+                                                                    </li>
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fourth4" role="tab" aria-selected="false" type="button">2022</button>
+                                                                    </li>
+                                                                    <li class="nav-item" role="presentation">
+                                                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fifth5" role="tab" aria-selected="false" type="button">2023</button>
+                                                                    </li>
+                                                                </ul>
+                                                                <div class="tab-content">
+                                                                    <div class="tab-pane fade active show" id="first4" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_program_2019"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_program_2019"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane fade" id="second4" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_program_2020"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_program_2020"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane fade" id="third4" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_program_2021"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_program_2021"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane fade" id="fourth4" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_program_2022"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_program_2022"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane fade" id="fifth5" role="tabpanel">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Kinerja</h5>
+                                                                                <div id="grafik_kinerja_program_2023"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <h5 class="card-title">Anggaran</h5>
+                                                                                <div id="grafik_anggaran_program_2023"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-8">
-                                        <div id="grafik_misi_anggaran"></div>
-                                    </div>
                                 </div>
-                            @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            {{-- Visi Misi End --}}
 
-            <div class="row">
-                <div class="col-12">
+            {{-- Pendapatan, Pembiayaan, dan Belanja Start --}}
+            <div class="tab-pane fade" id="dashboardPendapatanPembiayaanBelanjaTab" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-4">
+                        <div class="card">
+                            <div class="h-100 row g-0 card-body align-items-center">
+                                <div class="col-auto">
+                                    <div class="bg-gradient-light sw-6 sh-6 rounded-md d-flex justify-content-center align-items-center">
+                                        <i data-acorn-icon="loaf" class="text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="col sh-6 ps-3 d-flex flex-column justify-content-center">
+                                    <div class="heading mb-0 d-flex align-items-center lh-1-25">PENDAPATAN DAERAH</div>
+                                    <div class="row g-0">
+                                        <div class="col-auto">
+                                            <div class="cta-2 text-primary">Rp. 54,3 M</div>
+                                        </div>
+                                        <div class="col text-success d-flex align-items-center ps-3">
+                                            <i data-acorn-icon="arrow-top" class="me-1" data-acorn-size="13"></i>
+                                            <span class="text-medium">+18.4% Dari Bulan Kemarin</span>
+                                        </div>
+                                    </div>
+                                    <div class="heading mb-0 d-flex align-items-center lh-1-25"><a href="#" class="text-decoration-none">Selengkapnya</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card">
+                            <div class="h-100 row g-0 card-body align-items-center">
+                                <div class="col-auto">
+                                    <div class="bg-gradient-light sw-6 sh-6 rounded-md d-flex justify-content-center align-items-center">
+                                        <i data-acorn-icon="loaf" class="text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="col sh-6 ps-3 d-flex flex-column justify-content-center">
+                                    <div class="heading mb-0 d-flex align-items-center lh-1-25">PEMBIAYAAN DAERAH</div>
+                                    <div class="row g-0">
+                                        <div class="col-auto">
+                                            <div class="cta-2 text-primary">Rp. 54,3 M</div>
+                                        </div>
+                                        <div class="col text-success d-flex align-items-center ps-3">
+                                            <i data-acorn-icon="arrow-top" class="me-1" data-acorn-size="13"></i>
+                                            <span class="text-medium">+18.4% Dari Bulan Kemarin</span>
+                                        </div>
+                                    </div>
+                                    <div class="heading mb-0 d-flex align-items-center lh-1-25"><a href="#" class="text-decoration-none">Selengkapnya</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card">
+                            <div class="h-100 row g-0 card-body align-items-center">
+                                <div class="col-auto">
+                                    <div class="bg-gradient-light sw-6 sh-6 rounded-md d-flex justify-content-center align-items-center">
+                                        <i data-acorn-icon="loaf" class="text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="col sh-6 ps-3 d-flex flex-column justify-content-center">
+                                    <div class="heading mb-0 d-flex align-items-center lh-1-25">BELANJA DAERAH</div>
+                                    <div class="row g-0">
+                                        <div class="col-auto">
+                                            <div class="cta-2 text-primary">Rp. 54,3 M</div>
+                                        </div>
+                                        <div class="col text-danger d-flex align-items-center ps-3">
+                                            <i data-acorn-icon="trend-down" class="me-1" data-acorn-size="13"></i>
+                                            <span class="text-medium">-2% Dari Bulan Kemarin</span>
+                                        </div>
+                                    </div>
+                                    <div class="heading mb-0 d-flex align-items-center lh-1-25"><a href="#" class="text-decoration-none">Selengkapnya</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
                     <div class="card">
+                        <div class="card-header border-0 pb-0">
+                            <ul class="nav nav-tabs nav-tabs-line card-header-tabs responsive-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#first" role="tab" type="button" aria-selected="true">Pendapatan Daerah</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#second" role="tab" type="button" aria-selected="false">Pembiayaan Daerah</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#third" role="tab" type="button" aria-selected="false">Belanja Daerah</button>
+                                </li>
+                            </ul>
+                        </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-12">
-                                    <h5 class="card-title mb-3">1.1 Mewujudkan Pemerintahan Yang Baik (Good Government) <span class="badge bg-primary">+70.70% <i data-acorn-icon="trend-up"></i> Dari 100%</span></h5>
+                            <div class="tab-content">
+                                <div class="tab-pane fade active show" id="first" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-12 col-md-8">
+                                            <div class="row mb-3">
+                                                <div class="col">
+                                                    <h5 class="card-title mb-3">Tren Pendapatan</h5>
+                                                </div>
+                                                <div class="col d-flex input-daterange">
+                                                    <input type="text" name="from_date" id="from_date" class="form-control" placeholder="From Date" readonly /> - <input type="text" name="to_date" id="to_date" class="form-control" placeholder="To Date" readonly />
+                                                </div>
+                                            </div>
+                                            <div id="grafik_tren_pendapatan"></div>
+                                        </div>
+
+                                        <div class="col-12 col-md-4">
+                                            <h5 class="card-title mb-3">Komposisi Sumber Pendapatan</h5>
+                                            <div id="grafik_komposisi_sumber_pendapatan"></div>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <h5 class="card-title mb-3">Tujuan: <span class="badge bg-primary">1.1.1 Terwujudnya Pemerintahan yang baik</span></h5>
-                                            <h5 class="card-title mb-3">Sasaran: <span class="badge"><select name="" id="" class="form-control bg-primary text-white">
-                                                <option value="">1.1.1.2 Meningkatnya pengelolaan keuangan dan pengawasan penyelenggaraan pemerintah daerah</option>
-                                                <option value="1">1.1.1.2 Meningkatnya pengelolaan keuangan dan pengawasan penyelenggaraan pemerintah daerah</option>
-                                            </select></span></h5>
-                                            <hr class="text-primary" style="height: 2px">
+                                            <h5 class="card-title mb-3">Rencana vs Realisasi Pendapatan Tahun Berjalan</h5>
+                                            <div id="grafik_rencana_realisasi_pendapatan"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="second" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-12 col-md-8">
                                             <div class="row mb-3">
-                                                <div class="col-12 col-md-8">
-                                                    <h5 class="card-title mb-3">Indikator Kinerja Tujuan dan Sasaran</h5>
-                                                    <small class="text-muted">Cat: Pilih salah satu indikator</small>
-                                                    <p class="text-secondary mt-3"><i data-acorn-icon="check-circle"></i> Opini BPK</p>
-                                                    <p class="text-primary"><i data-acorn-icon="check-circle"></i> Meningkatnya pengelolaan keuangan dan pengawasan penyelenggaran pemerintahan daerah</p>
+                                                <div class="col">
+                                                    <h5 class="card-title mb-3">Tren Pendapatan</h5>
                                                 </div>
-                                                <div class="col-12 col-md-4">
-                                                    <div class="card">
-                                                        <div class="card-body">
-                                                            <h5 class="card-title mb-3">Capaian Kinerja RPJMD</h5>
-                                                            <ul class="nav nav-pills responsive-tabs mb-3" role="tablist">
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#first3" role="tab" aria-selected="true" type="button">
-                                                                    2019
-                                                                    </button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#second3" role="tab" aria-selected="false" type="button">2020</button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#third3" role="tab" aria-selected="false" type="button">2021</button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fourth3" role="tab" aria-selected="false" type="button">2022</button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fifth3" role="tab" aria-selected="false" type="button">2023</button>
-                                                                </li>
-                                                            </ul>
-                                                            <div class="tab-content">
-                                                                <div class="tab-pane fade active show" id="first3" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_sasaran_indikator_2019"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_sasaran_indikator_2019"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="second3" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_sasaran_indikator_2020"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_sasaran_indikator_2020"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="third3" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_sasaran_indikator_2021"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_sasaran_indikator_2021"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="fourth3" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_sasaran_indikator_2022"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_sasaran_indikator_2022"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="fifth3" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_sasaran_indikator_2023"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_sasaran_indikator_2023"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                <div class="col d-flex input-daterange">
+                                                    <input type="text" name="from_date" id="from_date" class="form-control" placeholder="From Date" readonly /> - <input type="text" name="to_date" id="to_date" class="form-control" placeholder="To Date" readonly />
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-12 col-md-8">
-                                                    <h5 class="card-title mb-3">Indikator Kinerja Program</h5>
-                                                    <div class="form-group">
-                                                        <label for="" class="form-label">Pilih Program:</label>
-                                                        <h5 class="card-title mb-3"><span class="badge"><select name="" id="" class="form-control bg-primary text-white">
-                                                            <option value="">1.1.1.9 Program Optimalisasi Pengelolaan Pajak Dae...</option>
-                                                            <option value="1">1.1.1.9 Program Optimalisasi Pengelolaan Pajak Dae...</option>
-                                                        </select></span></h5>
-                                                    </div>
-                                                    <h2 class="small-title">Perangkat Daerah Penanggung Jawab: <span class="badge bg-primary">Dinas Pekerjaan Umum dan Tata Ruang</span></h2>
-                                                    <h5 class="card-title mb-3">Riwayat Pencarian</h5>
-                                                    <p class="text-primary mt-3"><i data-acorn-icon="check-circle"></i>1.2.1.1 Program Peningkatan Kualitas Pembangunan..</p>
-                                                    <p class="text-secondary"><i data-acorn-icon="check-circle"></i>1.2.1.2 Program Pembangunan dan Pemeliharan Ja..</p>
-                                                    <p class="text-secondary"><i data-acorn-icon="check-circle"></i>1.2.1.3 Program Pembangunan dan Pemeliharan Salu..</p>
+                                            <div id="grafik_tren_pendapatan_pembiayaan_daerah"></div>
+                                        </div>
+
+                                        <div class="col-12 col-md-4">
+                                            <h5 class="card-title mb-3">Komposisi Sumber Pendapatan</h5>
+                                            <div id="grafik_komposisi_sumber_pendapatan_pembiayaan_daerah"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h5 class="card-title mb-3">Rencana vs Realisasi Pendapatan Tahun Berjalan</h5>
+                                            <div id="grafik_rencana_realisasi_pendapatan_pembiayaan_daerah"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="third" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-12 col-md-8">
+                                            <div class="row mb-3">
+                                                <div class="col">
+                                                    <h5 class="card-title mb-3">Tren Pendapatan</h5>
                                                 </div>
-                                                <div class="col-12 col-md-4">
-                                                    <div class="card">
-                                                        <div class="card-body">
-                                                            <h5 class="card-title mb-3">Capaian Kinerja RPJMD</h5>
-                                                            <ul class="nav nav-pills responsive-tabs mb-3" role="tablist">
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#first4" role="tab" aria-selected="true" type="button">
-                                                                    2019
-                                                                    </button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#second4" role="tab" aria-selected="false" type="button">2020</button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#third4" role="tab" aria-selected="false" type="button">2021</button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fourth4" role="tab" aria-selected="false" type="button">2022</button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fifth5" role="tab" aria-selected="false" type="button">2023</button>
-                                                                </li>
-                                                            </ul>
-                                                            <div class="tab-content">
-                                                                <div class="tab-pane fade active show" id="first4" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_program_2019"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_program_2019"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="second4" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_program_2020"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_program_2020"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="third4" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_program_2021"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_program_2021"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="fourth4" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_program_2022"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_program_2022"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="fifth5" role="tabpanel">
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Kinerja</h5>
-                                                                            <div id="grafik_kinerja_program_2023"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="row">
-                                                                        <div class="col-12">
-                                                                            <h5 class="card-title">Anggaran</h5>
-                                                                            <div id="grafik_anggaran_program_2023"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                <div class="col d-flex input-daterange">
+                                                    <input type="text" name="from_date" id="from_date" class="form-control" placeholder="From Date" readonly /> - <input type="text" name="to_date" id="to_date" class="form-control" placeholder="To Date" readonly />
                                                 </div>
                                             </div>
+                                            <div id="grafik_tren_pendapatan_belanja_daerah"></div>
+                                        </div>
+
+                                        <div class="col-12 col-md-4">
+                                            <h5 class="card-title mb-3">Komposisi Sumber Pendapatan</h5>
+                                            <div id="grafik_komposisi_sumber_pendapatan_belanja_daerah"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h5 class="card-title mb-3">Rencana vs Realisasi Pendapatan Tahun Berjalan</h5>
+                                            <div id="grafik_rencana_realisasi_pendapatan_belanja_daerah"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -400,189 +579,10 @@
                     </div>
                 </div>
             </div>
+            {{-- Pendapatan, Pembiayaan, dan Belanja End --}}
         </div>
-        {{-- Visi Misi End --}}
-
-        {{-- Pendapatan, Pembiayaan, dan Belanja Start --}}
-        <div class="tab-pane fade" id="dashboardPendapatanPembiayaanBelanjaTab" role="tabpanel">
-            <div class="row mb-3">
-                <div class="col-12 col-md-4">
-                    <div class="card">
-                        <div class="h-100 row g-0 card-body align-items-center">
-                            <div class="col-auto">
-                                <div class="bg-gradient-light sw-6 sh-6 rounded-md d-flex justify-content-center align-items-center">
-                                    <i data-acorn-icon="loaf" class="text-white"></i>
-                                </div>
-                            </div>
-                            <div class="col sh-6 ps-3 d-flex flex-column justify-content-center">
-                                <div class="heading mb-0 d-flex align-items-center lh-1-25">PENDAPATAN DAERAH</div>
-                                <div class="row g-0">
-                                    <div class="col-auto">
-                                        <div class="cta-2 text-primary">Rp. 54,3 M</div>
-                                    </div>
-                                    <div class="col text-success d-flex align-items-center ps-3">
-                                        <i data-acorn-icon="arrow-top" class="me-1" data-acorn-size="13"></i>
-                                        <span class="text-medium">+18.4% Dari Bulan Kemarin</span>
-                                    </div>
-                                </div>
-                                <div class="heading mb-0 d-flex align-items-center lh-1-25"><a href="#" class="text-decoration-none">Selengkapnya</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4">
-                    <div class="card">
-                        <div class="h-100 row g-0 card-body align-items-center">
-                            <div class="col-auto">
-                                <div class="bg-gradient-light sw-6 sh-6 rounded-md d-flex justify-content-center align-items-center">
-                                    <i data-acorn-icon="loaf" class="text-white"></i>
-                                </div>
-                            </div>
-                            <div class="col sh-6 ps-3 d-flex flex-column justify-content-center">
-                                <div class="heading mb-0 d-flex align-items-center lh-1-25">PEMBIAYAAN DAERAH</div>
-                                <div class="row g-0">
-                                    <div class="col-auto">
-                                        <div class="cta-2 text-primary">Rp. 54,3 M</div>
-                                    </div>
-                                    <div class="col text-success d-flex align-items-center ps-3">
-                                        <i data-acorn-icon="arrow-top" class="me-1" data-acorn-size="13"></i>
-                                        <span class="text-medium">+18.4% Dari Bulan Kemarin</span>
-                                    </div>
-                                </div>
-                                <div class="heading mb-0 d-flex align-items-center lh-1-25"><a href="#" class="text-decoration-none">Selengkapnya</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4">
-                    <div class="card">
-                        <div class="h-100 row g-0 card-body align-items-center">
-                            <div class="col-auto">
-                                <div class="bg-gradient-light sw-6 sh-6 rounded-md d-flex justify-content-center align-items-center">
-                                    <i data-acorn-icon="loaf" class="text-white"></i>
-                                </div>
-                            </div>
-                            <div class="col sh-6 ps-3 d-flex flex-column justify-content-center">
-                                <div class="heading mb-0 d-flex align-items-center lh-1-25">BELANJA DAERAH</div>
-                                <div class="row g-0">
-                                    <div class="col-auto">
-                                        <div class="cta-2 text-primary">Rp. 54,3 M</div>
-                                    </div>
-                                    <div class="col text-danger d-flex align-items-center ps-3">
-                                        <i data-acorn-icon="trend-down" class="me-1" data-acorn-size="13"></i>
-                                        <span class="text-medium">-2% Dari Bulan Kemarin</span>
-                                    </div>
-                                </div>
-                                <div class="heading mb-0 d-flex align-items-center lh-1-25"><a href="#" class="text-decoration-none">Selengkapnya</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="card">
-                    <div class="card-header border-0 pb-0">
-                        <ul class="nav nav-tabs nav-tabs-line card-header-tabs responsive-tabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#first" role="tab" type="button" aria-selected="true">Pendapatan Daerah</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#second" role="tab" type="button" aria-selected="false">Pembiayaan Daerah</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#third" role="tab" type="button" aria-selected="false">Belanja Daerah</button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body">
-                        <div class="tab-content">
-                            <div class="tab-pane fade active show" id="first" role="tabpanel">
-                                <div class="row mb-3">
-                                    <div class="col-12 col-md-8">
-                                        <div class="row mb-3">
-                                            <div class="col">
-                                                <h5 class="card-title mb-3">Tren Pendapatan</h5>
-                                            </div>
-                                            <div class="col d-flex input-daterange">
-                                                <input type="text" name="from_date" id="from_date" class="form-control" placeholder="From Date" readonly /> - <input type="text" name="to_date" id="to_date" class="form-control" placeholder="To Date" readonly />
-                                            </div>
-                                        </div>
-                                        <div id="grafik_tren_pendapatan"></div>
-                                    </div>
-
-                                    <div class="col-12 col-md-4">
-                                        <h5 class="card-title mb-3">Komposisi Sumber Pendapatan</h5>
-                                        <div id="grafik_komposisi_sumber_pendapatan"></div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <h5 class="card-title mb-3">Rencana vs Realisasi Pendapatan Tahun Berjalan</h5>
-                                        <div id="grafik_rencana_realisasi_pendapatan"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="second" role="tabpanel">
-                                <div class="row mb-3">
-                                    <div class="col-12 col-md-8">
-                                        <div class="row mb-3">
-                                            <div class="col">
-                                                <h5 class="card-title mb-3">Tren Pendapatan</h5>
-                                            </div>
-                                            <div class="col d-flex input-daterange">
-                                                <input type="text" name="from_date" id="from_date" class="form-control" placeholder="From Date" readonly /> - <input type="text" name="to_date" id="to_date" class="form-control" placeholder="To Date" readonly />
-                                            </div>
-                                        </div>
-                                        <div id="grafik_tren_pendapatan_pembiayaan_daerah"></div>
-                                    </div>
-
-                                    <div class="col-12 col-md-4">
-                                        <h5 class="card-title mb-3">Komposisi Sumber Pendapatan</h5>
-                                        <div id="grafik_komposisi_sumber_pendapatan_pembiayaan_daerah"></div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <h5 class="card-title mb-3">Rencana vs Realisasi Pendapatan Tahun Berjalan</h5>
-                                        <div id="grafik_rencana_realisasi_pendapatan_pembiayaan_daerah"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="third" role="tabpanel">
-                                <div class="row mb-3">
-                                    <div class="col-12 col-md-8">
-                                        <div class="row mb-3">
-                                            <div class="col">
-                                                <h5 class="card-title mb-3">Tren Pendapatan</h5>
-                                            </div>
-                                            <div class="col d-flex input-daterange">
-                                                <input type="text" name="from_date" id="from_date" class="form-control" placeholder="From Date" readonly /> - <input type="text" name="to_date" id="to_date" class="form-control" placeholder="To Date" readonly />
-                                            </div>
-                                        </div>
-                                        <div id="grafik_tren_pendapatan_belanja_daerah"></div>
-                                    </div>
-
-                                    <div class="col-12 col-md-4">
-                                        <h5 class="card-title mb-3">Komposisi Sumber Pendapatan</h5>
-                                        <div id="grafik_komposisi_sumber_pendapatan_belanja_daerah"></div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <h5 class="card-title mb-3">Rencana vs Realisasi Pendapatan Tahun Berjalan</h5>
-                                        <div id="grafik_rencana_realisasi_pendapatan_belanja_daerah"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {{-- Pendapatan, Pembiayaan, dan Belanja End --}}
+        <!-- Content End -->
     </div>
-    <!-- Content End -->
-</div>
 @endsection
 
 @section('js')

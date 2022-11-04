@@ -82,6 +82,12 @@
             <li class="nav-item" role="presentation">
                 <a class="nav-link" data-bs-toggle="tab" href="#e_78" role="tab" aria-selected="false">E. 78</a>
             </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#e_80" role="tab" aria-selected="false">E 80</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#e_81" role="tab" aria-selected="false">E 81</a>
+            </li>
         </ul>
 
         <div class="card mb-5">
@@ -462,6 +468,232 @@
                         </div>
                     </div>
                     {{-- E 78 End --}}
+
+                    {{-- E 80 Start --}}
+                    <div class="tab-pane fade" id="e_80" role="tabpanel">
+                        <div class="border-0 pb-0">
+                            <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                @foreach ($tahuns as $tahun)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link {{$loop->first ? 'active' : ''}} navE80" data-bs-toggle="tab" data-bs-target="#e_80_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                            {{$tahun}}
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                @foreach ($tahuns as $tahun)
+                                    <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_80_{{$tahun}}" role="tabpanel">
+                                        {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
+                                        <div class="data-table-responsive-wrapper">
+                                            <div class="text-center">
+                                                <h1>Tabel E.80</h1>
+                                                <h3>Evaluasi Terhadap Hasil Renstra Perangkat Daerah Lingkup </h3>
+                                                <h3>Renstra Perangkat Daerah</h3>
+                                                <h3>Periode Pelaksanaan {{ $tahun }}</h3>
+                                            </div>
+                                            <table class="table table-striped table-bordered text-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th rowspan="2">No</th>
+                                                        <th rowspan="2">Sasaran</th>
+                                                        <th rowspan="2">Program/Kegiatan</th>
+                                                        <th rowspan="2">Indikator Kinerja</th>
+                                                        <th rowspan="2">Data Capaian Pada Awal Tahun Perencanaan</th>
+                                                        <th rowspan="2" colspan="2">Target Capaian pada Akhir Tahun Perencanaan</th>
+                                                        <th colspan="10">Target Renstra Perangkat Daerah kabupaten/kota Tahun ke- </th>
+                                                        <th colspan="10">Realisasi Capaian Tahun ke- </th>
+                                                        <th colspan="10">Rasio Capaian pada Tahun ke- </th>
+                                                        <th rowspan="2">Unit Penanggung Jawab </th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="2">1</th>
+                                                        <th colspan="2">2</th>
+                                                        <th colspan="2">3</th>
+                                                        <th colspan="2">4</th>
+                                                        <th colspan="2">5</th>
+                                                        <th colspan="2">1</th>
+                                                        <th colspan="2">2</th>
+                                                        <th colspan="2">3</th>
+                                                        <th colspan="2">4</th>
+                                                        <th colspan="2">5</th>
+                                                        <th colspan="2">1</th>
+                                                        <th colspan="2">2</th>
+                                                        <th colspan="2">3</th>
+                                                        <th colspan="2">4</th>
+                                                        <th colspan="2">5</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th rowspan="2">(1)</th>
+                                                        <th rowspan="2">(2)</th>
+                                                        <th rowspan="2">(3)</th>
+                                                        <th rowspan="2">(4)</th>
+                                                        <th rowspan="2">(5)</th>
+                                                        <th colspan="2">(6)</th>
+                                                        <th colspan="2">(7)</th>
+                                                        <th colspan="2">(8)</th>
+                                                        <th colspan="2">(9)</th>
+                                                        <th colspan="2">(10)</th>
+                                                        <th colspan="2">(11)</th>
+                                                        <th colspan="2">(12)</th>
+                                                        <th colspan="2">(13)</th>
+                                                        <th colspan="2">(14)</th>
+                                                        <th colspan="2">(15)</th>
+                                                        <th colspan="2">(16)</th>
+                                                        <th colspan="2">(17)</th>
+                                                        <th colspan="2">(18)</th>
+                                                        <th colspan="2">(19)</th>
+                                                        <th colspan="2">(20)</th>
+                                                        <th colspan="2">(21)</th>
+                                                        <th colspan="2">(22)</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="tbodyE80" style="text-align: left">
+                                                    {!!$e_80!!}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    {{-- E 80 End --}}
+
+                    {{-- E 81 Start --}}
+                    <div class="tab-pane fade" id="e_81" role="tabpanel">
+                        <div class="border-0 pb-0">
+                            <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                @foreach ($tahuns as $tahun)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link {{$loop->first ? 'active' : ''}} navE81" data-bs-toggle="tab" data-bs-target="#e_81_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                            {{$tahun}}
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                @foreach ($tahuns as $tahun)
+                                    <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_81_{{$tahun}}" role="tabpanel">
+                                        {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
+                                        <div class="data-table-responsive-wrapper">
+                                            <div class="text-center">
+                                                <h1>Tabel E.81</h1>
+                                                <h3>Evaluasi Terhadap Hasil Renja Perangkat Daerah Lingkup </h3>
+                                                <h3>Renstra Perangkat Daerah</h3>
+                                                <h3>Periode Pelaksanaan {{ $tahun }}</h3>
+                                            </div>
+                                            <table class="table table-striped table-bordered text-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th rowspan="2">No</th>
+                                                        <th rowspan="2">Sasaran</th>
+                                                        <th rowspan="2">Program / Kegiatan</th>
+                                                        <th rowspan="2">Indikator Kinerja Program (outcome)/ Kegiatan (output)</th>
+                                                        <th rowspan="2" colspan="2">Target Renstra Perangkat Daerah pada Tahun {{$tahun}} (Akhir Periode Renstra Perangkat Daerah) </th>
+                                                        <th rowspan="2" colspan="2">Realisasi Capaian Kinerja Renstra Perangkat Daerah sampai dengan Renja Perangkat Daerah Tahun Lalu (n-2)</th>
+                                                        <th rowspan="2" colspan="2">Target Kinerja dan Anggaran Renja Perangkat Daerah Tahun berjalan (Tahun n-1) yang dievaluasi</th>
+                                                        <th colspan="8">Realisasi Kinerja Pada Triwulan</th>
+                                                        <th rowspan="2" colspan="2">Realisasi Capaian Kinerja dan Anggaran Renja Perangkat Daerah yang dievaluasi </th>
+                                                        <th rowspan="2" colspan="2">Realisasi Kinerja dan Anggaran Renstra Perangkat Daerah s/d tahun {{$tahun}} (Akhir Tahun Pelaksanaan Renja Perangkat Daerah Tahun {{$tahun}}) </th>
+                                                        <th rowspan="2" colspan="2">Tingkat Capaian Kinerja Dan Realisasi Anggaran Renstra Perangkat Daerah s/d tahun {{$tahun}} (%)</th>
+                                                        <th rowspan="2">Unit Perangkat Daerah Penanggung Jawab</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="2">I</th>
+                                                        <th colspan="2">II</th>
+                                                        <th colspan="2">III</th>
+                                                        <th colspan="2">IV</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th rowspan="2">1</th>
+                                                        <th rowspan="2">2</th>
+                                                        <th rowspan="2">3</th>
+                                                        <th rowspan="2">4</th>
+                                                        <th colspan="2">5</th>
+                                                        <th colspan="2">6</th>
+                                                        <th colspan="2">7</th>
+                                                        <th colspan="2">8</th>
+                                                        <th colspan="2">9</th>
+                                                        <th colspan="2">10</th>
+                                                        <th colspan="2">11</th>
+                                                        <th colspan="2">12</th>
+                                                        <th colspan="2">13 = 6 + 12</th>
+                                                        <th colspan="2">14=13/5 x100%</th>
+                                                        <th rowspan="2">15</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="tbodyE81" style="text-align: left">
+                                                    {!!$e_81!!}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    {{-- E 81 End --}}
                 </div>
             </div>
         </div>
@@ -528,6 +760,36 @@
             },
             success: function(data){
                 $('.tbodyE78').html(data.e_78);
+            }
+        });
+    });
+
+    $('.navE80').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $.ajax({
+            url: "{{ route('admin.laporan.e-80') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun
+            },
+            success: function(data){
+                $('.tbodyE80').html(data.e_80);
+            }
+        });
+    });
+
+    $('.navE81').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $.ajax({
+            url: "{{ route('admin.laporan.e-81') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun
+            },
+            success: function(data){
+                $('.tbodyE81').html(data.e_81);
             }
         });
     });

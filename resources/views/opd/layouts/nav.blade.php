@@ -207,6 +207,26 @@
                     <span class="label">Renstra</span>
                 </a>
             </li>
+            <li>
+                @if (request()->routeIs('opd.renja.index'))
+                    <a href="{{ route('opd.renja.index') }}" class="active">
+                @else
+                    <a href="{{ route('opd.renja.index') }}">
+                @endif
+                    <i data-acorn-icon="file-data" class="icon" data-acorn-size="18"></i>
+                    <span class="label">Renja</span>
+                </a>
+            </li>
+            <li>
+                @if (request()->routeIs('opd.laporan.index'))
+                    <a href="{{ route('opd.laporan.index') }}" class="active">
+                @else
+                    <a href="{{ route('opd.laporan.index') }}">
+                @endif
+                    <i data-acorn-icon="file-data" class="icon" data-acorn-size="18"></i>
+                    <span class="label">Laporan</span>
+                </a>
+            </li>
             {{-- <li>
                 <a href="#manajemenakun">
                     <i data-acorn-icon="user" class="icon" data-acorn-size="18"></i>

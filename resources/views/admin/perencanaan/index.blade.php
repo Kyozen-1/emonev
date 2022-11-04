@@ -115,6 +115,7 @@
         <div class="card mb-5">
             <div class="card-body">
                 <div class="tab-content">
+                    {{-- RPJMD Start --}}
                     <div class="tab-pane fade active show" id="rpjmdTab" role="tabpanel">
                         <div class="border-0 pb-0">
                             <ul class="nav nav-pills responsive-tabs" role="tablist">
@@ -389,6 +390,7 @@
                             </div>
                         </div>
                     </div>
+                    {{-- RPJMD End --}}
                     {{-- Renstra Start --}}
                     <div class="tab-pane fade" id="renstraTab" role="tabpanel">
                         <div class="border-0 pb-0">
@@ -723,14 +725,219 @@
                         </div>
                     </div>
                     {{-- Renstra End --}}
+                    {{-- RKPD Start --}}
                     <div class="tab-pane fade" id="rkpdTab" role="tabpanel">
-                        <h5 class="card-title">Third Line Title</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <div class="row g-2 mb-5">
+                            <div class="col">
+                                <div class="card sh-11 hover-scale-up cursor-pointer">
+                                    <div class="h-100 row g-0 card-body align-items-center py-3">
+                                        <div class="col-auto pe-3">
+                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
+                                                <i data-acorn-icon="wallet" class="text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center lh-1-25">Batasan Pagu</div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="cta-2 text-primary">Rp. 3.412.567.331</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card sh-11 hover-scale-up cursor-pointer">
+                                    <div class="h-100 row g-0 card-body align-items-center py-3">
+                                        <div class="col-auto pe-3">
+                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
+                                                <i class="fas fa-shopping-cart text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center lh-1-25">Pagu Validasi</div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="cta-2 text-primary">Rp. 0</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card sh-11 hover-scale-up cursor-pointer">
+                                    <div class="h-100 row g-0 card-body align-items-center py-3">
+                                        <div class="col-auto pe-3">
+                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
+                                                <i class="fas fa-suitcase text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center lh-1-25">Rincian</div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="cta-2 text-primary">Rp. 0</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-table-rows slim">
+                            <!-- Table Start -->
+                            <div class="data-table-responsive-wrapper">
+                                <table id="renja_table" class="data-table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>Kode</th>
+                                            <th>Deskripsi</th>
+                                            <th>Pagu Validasi</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <!-- Table End -->
+                        </div>
                     </div>
+                    {{-- RKPD End --}}
+                    {{-- Renja Start --}}
                     <div class="tab-pane fade" id="renjaTab" role="tabpanel">
-                        <h5 class="card-title">Fourth Line Title</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <div class="row g-2 mb-5">
+                            <div class="col">
+                                <div class="card sh-11 hover-scale-up cursor-pointer">
+                                    <div class="h-100 row g-0 card-body align-items-center py-3">
+                                        <div class="col-auto pe-3">
+                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
+                                                <i data-acorn-icon="wallet" class="text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center lh-1-25">Batasan Pagu</div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="cta-2 text-primary">Rp. 3.412.567.331</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card sh-11 hover-scale-up cursor-pointer">
+                                    <div class="h-100 row g-0 card-body align-items-center py-3">
+                                        <div class="col-auto pe-3">
+                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
+                                                <i class="fas fa-shopping-cart text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center lh-1-25">Pagu Validasi</div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="cta-2 text-primary">Rp. 0</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card sh-11 hover-scale-up cursor-pointer">
+                                    <div class="h-100 row g-0 card-body align-items-center py-3">
+                                        <div class="col-auto pe-3">
+                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
+                                                <i class="fas fa-suitcase text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="d-flex align-items-center lh-1-25">Rincian</div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="cta-2 text-primary">Rp. 0</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h2 class="small-title">Filter Data</h2>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group position-relative row mb-3">
+                                    <label for="renja_filter_opd" class="form-label col-4">OPD</label>
+                                    <div class="col-8">
+                                        <select name="renja_filter_opd" id="renja_filter_opd" class="form-control" required>
+                                            <option value="">--- Pilih OPD ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group position-relative row mb-3">
+                                    <label for="renja_filter_program" class="form-label col-4">Program</label>
+                                    <div class="col-8">
+                                        <select name="renja_filter_program" id="renja_filter_program" class="form-control" required>
+                                            <option value="">--- Pilih Program ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group position-relative row mb-3">
+                                    <label for="renja_filter_kegiatan" class="form-label col-4">Kegiatan</label>
+                                    <div class="col-8">
+                                        <select name="renja_filter_kegiatan" id="renja_filter_kegiatan" class="form-control" required>
+                                            <option value="">--- Pilih Kegiatan ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group position-relative row mb-3">
+                                    <label for="renja_filter_sub_kegiatan" class="form-label col-4">Sub Kegiatan</label>
+                                    <div class="col-8">
+                                        <select name="renja_filter_sub_kegiatan" id="renja_filter_sub_kegiatan" class="form-control" required>
+                                            <option value="">--- Pilih Sub Kegiatan ---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="data-table-rows slim">
+                            <!-- Table Start -->
+                            <div class="data-table-responsive-wrapper">
+                                <table id="renja_table" class="data-table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>Kode</th>
+                                            <th>Deskripsi</th>
+                                            <th>Pagu Indikatif</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <!-- Table End -->
+                        </div>
                     </div>
+                    {{-- Renja End --}}
                 </div>
             </div>
         </div>
@@ -1719,6 +1926,11 @@
             $('#renstra_kegiatan_filter_sasaran').select2();
             $('#renstra_kegiatan_filter_program').select2();
             $('#renstra_kegiatan_filter_kegiatan').select2();
+
+            $('#renja_filter_opd').select2();
+            $('#renja_filter_program').select2();
+            $('#renja_filter_kegiatan').select2();
+            $('#renja_filter_sub_kegiatan').select2();
 
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');

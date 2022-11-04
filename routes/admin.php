@@ -95,6 +95,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/laporan/tc-19', 'Admin\LaporanController@laporan_tc_19')->name('admin.laporan.tc-19');
     Route::post('/admin/laporan/e-79', 'Admin\LaporanController@laporan_e_79')->name('admin.laporan.e-79');
     Route::post('/admin/laporan/e-78', 'Admin\LaporanController@laporan_e_78')->name('admin.laporan.e-78');
+    Route::post('/admin/laporan/e-80', 'Admin\LaporanController@laporan_e_80')->name('admin.laporan.e-80');
+    Route::post('/admin/laporan/e-81', 'Admin\LaporanController@laporan_e_81')->name('admin.laporan.e-81');
 
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');
