@@ -167,7 +167,7 @@
 
                         {{-- Program Start --}}
                         <div class="tab-pane fade" id="program" role="tabpanel">
-                            <div class="row mb-5">
+                            <div class="row mb-2">
                                 <div class="col-12">
                                     <h2 class="small-title">Filter Data</h2>
                                 </div>
@@ -191,9 +191,18 @@
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                    <label for="" class="form-label">Aksi Filter</label>
+                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
                                         <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="program_btn_filter">Filter Data</button>
                                         <button class="btn btn-secondary waves-effect waves-light" type="button" id="program_btn_reset">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
+                                        <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
                                     </div>
                                 </div>
                             </div>
@@ -204,7 +213,7 @@
 
                         {{-- Kegiatan Start --}}
                         <div class="tab-pane fade" id="kegiatan" role="tabpanel">
-                            <div class="row mb-5">
+                            <div class="row mb-2">
                                 <div class="col-12">
                                     <h2 class="small-title">Filter Data</h2>
                                 </div>
@@ -236,9 +245,18 @@
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                    <label for="" class="form-label">Aksi Filter</label>
+                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
                                         <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="kegiatan_btn_filter">Filter Data</button>
                                         <button class="btn btn-secondary waves-effect waves-light" type="button" id="kegiatan_btn_reset">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="onOffTaggingKegiatan" checked>
+                                        <label class="form-check-label" for="onOffTaggingKegiatan">On / Off Tagging</label>
                                     </div>
                                 </div>
                             </div>
@@ -249,7 +267,7 @@
 
                         {{-- Sub Kegiatan Start --}}
                         <div class="tab-pane fade" id="sub_kegiatan" role="tabpanel">
-                            <div class="row mb-5">
+                            <div class="row mb-2">
                                 <div class="col-12">
                                     <h2 class="small-title">Filter Data</h2>
                                 </div>
@@ -289,9 +307,18 @@
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                    <label for="" class="form-label">Aksi Filter</label>
+                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
                                         <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="sub_kegiatan_btn_filter">Filter Data</button>
                                         <button class="btn btn-secondary waves-effect waves-light" type="button" id="sub_kegiatan_btn_reset">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="onOffTaggingSubKegiatan" checked>
+                                        <label class="form-check-label" for="onOffTaggingSubKegiatan">On / Off Tagging</label>
                                     </div>
                                 </div>
                             </div>

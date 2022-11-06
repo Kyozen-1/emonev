@@ -75,8 +75,6 @@
         use App\Models\Kegiatan;
         use App\Models\PivotPerubahanKegiatan;
         use App\Models\TargetRpPertahunProgram;
-
-        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
     @endphp
     <div class="container">
         <!-- Title and Top Buttons Start -->
@@ -150,243 +148,358 @@
                             <div class="tab-content">
                                 {{-- Visi Start --}}
                                 <div class="tab-pane fade active show" id="visiNav" role="tabpanel">
-                                    <div class="row mb-3">
-                                        <div class="col-12" style="text-align: right">
-                                            <button class="btn btn-outline-primary waves-effect waves-light mr-2" id="visi_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditVisiModal" title="Tambah Data"><i class="fas fa-plus"></i></button>
-                                        </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRpjmdVisi" data-bs-toggle="tab" data-bs-target="#rpjmd_visi_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </div>
-
-                                    <div class="data-table-rows slim">
-                                        <!-- Table Start -->
-                                        <div class="data-table-responsive-wrapper">
-                                            <table id="visi_table" class="data-table w-100">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-muted text-small text-uppercase" width="10%">No</th>
-                                                        <th class="text-muted text-small text-uppercase" width="70%">Deskripsi</th>
-                                                        {{-- <th class="text-muted text-small text-uppercase" width="15%">Tahun Perubahan</th> --}}
-                                                        <th class="text-muted text-small text-uppercase" width="20%">Aksi</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="rpjmd_visi_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-3">
+                                                        <div class="col-12" style="text-align: right">
+                                                            <button class="btn btn-outline-primary waves-effect waves-light mr-2" id="visi_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditVisiModal" title="Tambah Data"><i class="fas fa-plus"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="data-table-rows slim">
+                                                        <!-- Table Start -->
+                                                        <div class="data-table-responsive-wrapper">
+                                                            <table id="visi_table_{{$tahun}}" class="data-table w-100">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="text-muted text-small text-uppercase">No</th>
+                                                                        <th class="text-muted text-small text-uppercase">Deskripsi</th>
+                                                                        <th class="text-muted text-small text-uppercase">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                            </table>
+                                                        </div>
+                                                        <!-- Table End -->
+                                                    </div>
+                                                </div>
+                                            @endforeach
                                         </div>
-                                        <!-- Table End -->
                                     </div>
                                 </div>
                                 {{-- Visi End --}}
 
                                 {{-- Misi Start --}}
                                 <div class="tab-pane fade" id="misiNav" role="tabpanel">
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <h2 class="small-title">Filter Data</h2>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Visi</label>
-                                                <select name="misi_filter_visi" id="misi_filter_visi" class="form-control">
-                                                    <option value="">--- Pilih Visi ---</option>
-                                                    <option value="aman">Aman</option>
-                                                    <option value="mandiri">Mandiri</option>
-                                                    <option value="sejahtera">Sejahtera</option>
-                                                    <option value="berahlak">Berahlak</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Misi</label>
-                                                <select name="misi_filter_misi" id="misi_filter_misi" class="form-control" disabled>
-                                                    <option value="">--- Pilih Misi ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="misi_btn_filter">Filter Data</button>
-                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="misi_btn_reset">Reset</button>
-                                            </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRpjmdMisi" data-bs-toggle="tab" data-bs-target="#rpjmd_misi_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="rpjmd_misi_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-2">
+                                                        <div class="col-12">
+                                                            <h2 class="small-title">Filter Data</h2>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Visi</label>
+                                                                <select id="misi_filter_visi_{{$tahun}}" class="form-control misi_filter_visi" data-tahun="{{$tahun}}">
+                                                                    <option value="">--- Pilih Visi ---</option>
+                                                                    <option value="aman">Aman</option>
+                                                                    <option value="mandiri">Mandiri</option>
+                                                                    <option value="sejahtera">Sejahtera</option>
+                                                                    <option value="berahlak">Berahlak</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Misi</label>
+                                                                <select id="misi_filter_misi_{{$tahun}}" class="form-control" disabled>
+                                                                    <option value="">--- Pilih Misi ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="" class="form-label">Filter Aksi</label>
+                                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                                <button class="btn btn-primary waves-effect waves-light mr-1 misi_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                                <button class="btn btn-secondary waves-effect waves-light misi_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="onOffTaggingMisi" checked>
+                                                                <label class="form-check-label" for="onOffTaggingMisi">On / Off Tagging</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div id="misiNavDiv{{$tahun}}"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <hr>
-                                    {{-- <div class="d-flex align-items-center mb-5" id="misiLoading">
-                                        <strong>Loading...</strong>
-                                        <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
-                                    </div> --}}
-                                    <div id="misiNavDiv"></div>
                                 </div>
                                 {{-- Misi End --}}
 
                                 {{-- Tujuan Start --}}
                                 <div class="tab-pane fade" id="tujuanNav" role="tabpanel">
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <h2 class="small-title">Filter Data</h2>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Visi</label>
-                                                <select name="tujuan_filter_visi" id="tujuan_filter_visi" class="form-control">
-                                                    <option value="">--- Pilih Visi ---</option>
-                                                    <option value="aman">Aman</option>
-                                                    <option value="mandiri">Mandiri</option>
-                                                    <option value="sejahtera">Sejahtera</option>
-                                                    <option value="berahlak">Berahlak</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Misi</label>
-                                                <select name="tujuan_filter_misi" id="tujuan_filter_misi" class="form-control" disabled>
-                                                    <option value="">--- Pilih Misi ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Tujuan</label>
-                                                <select name="tujuan_filter_tujuan" id="tujuan_filter_tujuan" class="form-control" disabled>
-                                                    <option value="">--- Pilih Tujuan ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="tujuan_btn_filter">Filter Data</button>
-                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="tujuan_btn_reset">Reset</button>
-                                            </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRpjmdTujuan" data-bs-toggle="tab" data-bs-target="#rpjmd_tujuan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="rpjmd_tujuan_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-2">
+                                                        <div class="col-12">
+                                                            <h2 class="small-title">Filter Data</h2>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Visi</label>
+                                                                <select id="tujuan_filter_visi_{{$tahun}}" class="form-control tujuan_filter_visi" data-tahun="{{$tahun}}">
+                                                                    <option value="">--- Pilih Visi ---</option>
+                                                                    <option value="aman">Aman</option>
+                                                                    <option value="mandiri">Mandiri</option>
+                                                                    <option value="sejahtera">Sejahtera</option>
+                                                                    <option value="berahlak">Berahlak</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Misi</label>
+                                                                <select id="tujuan_filter_misi_{{$tahun}}" class="form-control tujuan_filter_misi" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Misi ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Tujuan</label>
+                                                                <select id="tujuan_filter_tujuan_{{$tahun}}" class="form-control tujuan_filter_tujuan" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="" class="form-label">Aksi Filter</label>
+                                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                                <button class="btn btn-primary waves-effect waves-light mr-1 tujuan_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                                <button class="btn btn-secondary waves-effect waves-light tujuan_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="onOffTaggingTujuan" checked>
+                                                                <label class="form-check-label" for="onOffTaggingTujuan">On / Off Tagging</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div id="tujuanNavDiv{{$tahun}}"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <hr>
-                                    {{-- <div class="d-flex align-items-center mb-5" id="tujuanLoading">
-                                        <strong>Loading...</strong>
-                                        <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
-                                    </div> --}}
-                                    <div id="tujuanNavDiv"></div>
                                 </div>
                                 {{-- Tujuan End --}}
 
                                 {{-- Sasaran Start --}}
                                 <div class="tab-pane fade" id="sasaranNav" role="tabpanel">
-                                    {{-- <div class="d-flex align-items-center mb-5" id="sasaranLoading">
-                                        <strong>Loading...</strong>
-                                        <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
-                                    </div> --}}
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <h2 class="small-title">Filter Data</h2>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Visi</label>
-                                                <select name="sasaran_filter_visi" id="sasaran_filter_visi" class="form-control">
-                                                    <option value="">--- Pilih Visi ---</option>
-                                                    <option value="aman">Aman</option>
-                                                    <option value="mandiri">Mandiri</option>
-                                                    <option value="sejahtera">Sejahtera</option>
-                                                    <option value="berahlak">Berahlak</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Misi</label>
-                                                <select name="sasaran_filter_misi" id="sasaran_filter_misi" class="form-control" disabled>
-                                                    <option value="">--- Pilih Misi ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Tujuan</label>
-                                                <select name="sasaran_filter_tujuan" id="sasaran_filter_tujuan" class="form-control" disabled>
-                                                    <option value="">--- Pilih Tujuan ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Sasaran</label>
-                                                <select name="sasaran_filter_sasaran" id="sasaran_filter_sasaran" class="form-control" disabled>
-                                                    <option value="">--- Pilih Sasaran ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="sasaran_btn_filter">Filter Data</button>
-                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="sasaran_btn_reset">Reset</button>
-                                            </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRpjmdSasaran" data-bs-toggle="tab" data-bs-target="#rpjmd_sasaran_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="rpjmd_sasaran_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-2">
+                                                        <div class="col-12">
+                                                            <h2 class="small-title">Filter Data</h2>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Visi</label>
+                                                                <select id="sasaran_filter_visi_{{$tahun}}" class="form-control sasaran_filter_visi" data-tahun="{{$tahun}}">
+                                                                    <option value="">--- Pilih Visi ---</option>
+                                                                    <option value="aman">Aman</option>
+                                                                    <option value="mandiri">Mandiri</option>
+                                                                    <option value="sejahtera">Sejahtera</option>
+                                                                    <option value="berahlak">Berahlak</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Misi</label>
+                                                                <select id="sasaran_filter_misi_{{$tahun}}" class="form-control sasaran_filter_misi" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Misi ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Tujuan</label>
+                                                                <select id="sasaran_filter_tujuan_{{$tahun}}" class="form-control sasaran_filter_tujuan" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Sasaran</label>
+                                                                <select id="sasaran_filter_sasaran_{{$tahun}}" class="form-control sasaran_filter_sasaran" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="" class="form-label">Aksi Filter</label>
+                                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                                <button class="btn btn-primary waves-effect waves-light mr-1 sasaran_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                                <button class="btn btn-secondary waves-effect waves-light sasaran_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="onOffTaggingSasaran" checked>
+                                                                <label class="form-check-label" for="onOffTaggingSasaran">On / Off Tagging</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div id="sasaranNavDiv{{$tahun}}"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <hr>
-                                    <div id="sasaranNavDiv"></div>
                                 </div>
                                 {{-- Sasaran End --}}
+                                {{-- Program RPJMD Start --}}
                                 <div class="tab-pane fade" id="programNav" role="tabpanel">
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <h2 class="small-title">Filter Data</h2>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Visi</label>
-                                                <select name="program_filter_visi" id="program_filter_visi" class="form-control">
-                                                    <option value="">--- Pilih Visi ---</option>
-                                                    <option value="aman">Aman</option>
-                                                    <option value="mandiri">Mandiri</option>
-                                                    <option value="sejahtera">Sejahtera</option>
-                                                    <option value="berahlak">Berahlak</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Misi</label>
-                                                <select name="program_filter_misi" id="program_filter_misi" class="form-control" disabled>
-                                                    <option value="">--- Pilih Misi ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Tujuan</label>
-                                                <select name="program_filter_tujuan" id="program_filter_tujuan" class="form-control" disabled>
-                                                    <option value="">--- Pilih Tujuan ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Sasaran</label>
-                                                <select name="program_filter_sasaran" id="program_filter_sasaran" class="form-control" disabled>
-                                                    <option value="">--- Pilih Sasaran ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="program_btn_filter">Filter Data</button>
-                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="program_btn_reset">Reset</button>
-                                            </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRpjmdProgram" data-bs-toggle="tab" data-bs-target="#rpjmd_program_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="rpjmd_program_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-2">
+                                                        <div class="col-12">
+                                                            <h2 class="small-title">Filter Data</h2>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Visi</label>
+                                                                <select id="program_filter_visi_{{$tahun}}" class="form-control program_filter_visi" data-tahun="{{$tahun}}">
+                                                                    <option value="">--- Pilih Visi ---</option>
+                                                                    <option value="aman">Aman</option>
+                                                                    <option value="mandiri">Mandiri</option>
+                                                                    <option value="sejahtera">Sejahtera</option>
+                                                                    <option value="berahlak">Berahlak</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Misi</label>
+                                                                <select id="program_filter_misi_{{$tahun}}" class="form-control program_filter_misi" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Misi ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Tujuan</label>
+                                                                <select id="program_filter_tujuan_{{$tahun}}" class="form-control program_filter_tujuan" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Sasaran</label>
+                                                                <select id="program_filter_sasaran_{{$tahun}}" class="form-control program_filter_sasaran" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="" class="form-label">Aksi Filter</label>
+                                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                                <button class="btn btn-primary waves-effect waves-light mr-1 program_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                                <button class="btn btn-secondary waves-effect waves-light program_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
+                                                                <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-6 justify-content-center align-self-center">
+                                                            <label for="" class="form-label">Tambah Program</label>
+                                                        </div>
+                                                        <div class="col-6" style="text-align: right">
+                                                            <button class="btn btn-primary waves-effect waves-light btn-icon program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program"><i class="fas fa-plus"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <div id="programNavDiv{{$tahun}}"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <hr>
-                                    <div class="d-flex align-items-center mb-5" id="programLoading">
-                                        <strong>Loading...</strong>
-                                        <div class="spinner-border ms-auto text-primary" role="status" aria-hidden="true"></div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6 justify-content-center align-self-center">
-                                            <label for="" class="form-label">Tambah Program</label>
-                                        </div>
-                                        <div class="col-6" style="text-align: right">
-                                            <button class="btn btn-primary waves-effect waves-light btn-icon" id="program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program"><i class="fas fa-plus"></i></button>
-                                        </div>
-                                    </div>
-                                    <div id="programNavDiv"></div>
                                 </div>
+                                {{-- Program RPJMD End --}}
                             </div>
                         </div>
                     </div>
@@ -413,312 +526,416 @@
                             <div class="tab-content">
                                 {{-- Renstra Tujuan Start --}}
                                 <div class="tab-pane fade active show" id="renstra_tujuan_pd" role="tabpanel">
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <h2 class="small-title">Filter Data</h2>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Visi</label>
-                                                <select name="renstra_tujuan_filter_visi" id="renstra_tujuan_filter_visi" class="form-control">
-                                                    <option value="">--- Pilih Visi ---</option>
-                                                    <option value="aman">Aman</option>
-                                                    <option value="mandiri">Mandiri</option>
-                                                    <option value="sejahtera">Sejahtera</option>
-                                                    <option value="berahlak">Berahlak</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Misi</label>
-                                                <select name="renstra_tujuan_filter_misi" id="renstra_tujuan_filter_misi" class="form-control" disabled>
-                                                    <option value="">--- Pilih Misi ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Tujuan</label>
-                                                <select name="renstra_tujuan_filter_tujuan" id="renstra_tujuan_filter_tujuan" class="form-control" disabled>
-                                                    <option value="">--- Pilih Tujuan ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="renstra_tujuan_btn_filter">Filter Data</button>
-                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_tujuan_btn_reset">Reset</button>
-                                            </div>
-                                        </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRenstraTujuan" data-bs-toggle="tab" data-bs-target="#renstra_tujuan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </div>
-                                    <hr>
-                                    <div id="renstraTujuanNavDiv">
-                                        <div class="row mb-3">
-                                            <div class="col-12">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraTujuan" checked>
-                                                    <label class="form-check-label" for="onOffTaggingRenstraTujuan">On / Off Tagging</label>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="renstra_tujuan_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-2">
+                                                        <div class="col-12">
+                                                            <h2 class="small-title">Filter Data</h2>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Visi</label>
+                                                                <select id="renstra_tujuan_filter_visi_{{$tahun}}" class="form-control renstra_tujuan_filter_visi" data-tahun="{{$tahun}}">
+                                                                    <option value="">--- Pilih Visi ---</option>
+                                                                    <option value="aman">Aman</option>
+                                                                    <option value="mandiri">Mandiri</option>
+                                                                    <option value="sejahtera">Sejahtera</option>
+                                                                    <option value="berahlak">Berahlak</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Misi</label>
+                                                                <select id="renstra_tujuan_filter_misi_{{$tahun}}" class="form-control renstra_tujuan_filter_misi" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Misi ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Tujuan</label>
+                                                                <select id="renstra_tujuan_filter_tujuan_{{$tahun}}" class="form-control renstra_tujuan_filter_tujuan" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="" class="form-label">Aksi Filter</label>
+                                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                                <button class="btn btn-primary waves-effect waves-light mr-1 renstra_tujuan_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                                <button class="btn btn-secondary waves-effect waves-light renstra_tujuan_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraTujuan" checked>
+                                                                <label class="form-check-label" for="onOffTaggingRenstraTujuan">On / Off Tagging</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div id="renstraTujuanNavDiv{{$tahun}}">
+                                                        <div class="data-table-rows slim">
+                                                            <div class="data-table-responsive-wrapper">
+                                                                <table class="table table-condensed table-striped">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th width="5%">Kode</th>
+                                                                            <th width="95%">Deskripsi</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($misis as $misi)
+                                                                            <tr>
+                                                                                <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                                    {{$misi['kode']}}
+                                                                                </td>
+                                                                                <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
+                                                                                    {{$misi['deskripsi']}}
+                                                                                    <br>
+                                                                                    <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="3" class="hiddenRow">
+                                                                                    <div class="collapse" id="renstra_misi{{$misi['id']}}">
+                                                                                        <table class="table table-striped table-condesed">
+                                                                                            <tbody>
+                                                                                                @php
+                                                                                                    $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+                                                                                                    $renstra_tujuans = [];
+                                                                                                    foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
+                                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
+                                                                                                                                ->where('tahun_perubahan', $tahun)->latest()->first();
+                                                                                                        if($cek_perubahan_tujuan)
+                                                                                                        {
+                                                                                                            $renstra_tujuans[] = [
+                                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                                                'kode' => $cek_perubahan_tujuan->kode,
+                                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
+                                                                                                            ];
+                                                                                                        } else {
+                                                                                                            $renstra_tujuans[] = [
+                                                                                                                'id' => $renstra_get_tujuan->id,
+                                                                                                                'kode' => $renstra_get_tujuan->kode,
+                                                                                                                'deskripsi' => $renstra_get_tujuan->deskripsi,
+                                                                                                                'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
+                                                                                                            ];
+                                                                                                        }
+                                                                                                    }
+                                                                                                @endphp
+                                                                                                @foreach ($renstra_tujuans as $renstra_tujuan)
+                                                                                                    <tr>
+                                                                                                        <td>
+                                                                                                            {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            {{$renstra_tujuan['deskripsi']}}
+                                                                                                            <br>
+                                                                                                            <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
+                                                                                                            <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                @endforeach
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="data-table-rows slim">
-                                            <div class="data-table-responsive-wrapper">
-                                                <table class="table table-condensed table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th width="5%">Kode</th>
-                                                            <th width="95%">Deskripsi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($misis as $misi)
-                                                            <tr>
-                                                                <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                    {{$misi['kode']}}
-                                                                </td>
-                                                                <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                    {{$misi['deskripsi']}}
-                                                                    <br>
-                                                                    <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colspan="3" class="hiddenRow">
-                                                                    <div class="collapse" id="renstra_misi{{$misi['id']}}">
-                                                                        <table class="table table-striped table-condesed">
-                                                                            <tbody>
-                                                                                @php
-                                                                                    $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
-                                                                                    $renstra_tujuans = [];
-                                                                                    foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
-                                                                                                                ->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $renstra_tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $renstra_tujuans[] = [
-                                                                                                'id' => $renstra_get_tujuan->id,
-                                                                                                'kode' => $renstra_get_tujuan->kode,
-                                                                                                'deskripsi' => $renstra_get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
-                                                                                            ];
-                                                                                        }
-                                                                                    }
-                                                                                @endphp
-                                                                                @foreach ($renstra_tujuans as $renstra_tujuan)
-                                                                                    <tr>
-                                                                                        <td>
-                                                                                            {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
-                                                                                        </td>
-                                                                                        <td>
-                                                                                            {{$renstra_tujuan['deskripsi']}}
-                                                                                            <br>
-                                                                                            <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                            <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                @endforeach
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
                                 {{-- Renstra Tujuan End --}}
                                 {{-- Renstra Sasaran Start --}}
                                 <div class="tab-pane fade" id="renstra_sasaran_pd" role="tabpanel">
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <h2 class="small-title">Filter Data</h2>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Visi</label>
-                                                <select name="renstra_sasaran_filter_visi" id="renstra_sasaran_filter_visi" class="form-control">
-                                                    <option value="">--- Pilih Visi ---</option>
-                                                    <option value="aman">Aman</option>
-                                                    <option value="mandiri">Mandiri</option>
-                                                    <option value="sejahtera">Sejahtera</option>
-                                                    <option value="berahlak">Berahlak</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Misi</label>
-                                                <select name="renstra_sasaran_filter_misi" id="renstra_sasaran_filter_misi" class="form-control" disabled>
-                                                    <option value="">--- Pilih Misi ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Tujuan</label>
-                                                <select name="renstra_sasaran_filter_tujuan" id="renstra_sasaran_filter_tujuan" class="form-control" disabled>
-                                                    <option value="">--- Pilih Tujuan ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Sasaran</label>
-                                                <select name="renstra_sasaran_filter_sasaran" id="renstra_sasaran_filter_sasaran" class="form-control" disabled>
-                                                    <option value="">--- Pilih Sasaran ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="renstra_sasaran_btn_filter">Filter Data</button>
-                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_sasaran_btn_reset">Reset</button>
-                                            </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRenstraSasaran" data-bs-toggle="tab" data-bs-target="#renstra_sasaran_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="renstra_sasaran_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-2">
+                                                        <div class="col-12">
+                                                            <h2 class="small-title">Filter Data</h2>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Visi</label>
+                                                                <select id="renstra_sasaran_filter_visi_{{$tahun}}" class="form-control renstra_sasaran_filter_visi" data-tahun="{{$tahun}}">
+                                                                    <option value="">--- Pilih Visi ---</option>
+                                                                    <option value="aman">Aman</option>
+                                                                    <option value="mandiri">Mandiri</option>
+                                                                    <option value="sejahtera">Sejahtera</option>
+                                                                    <option value="berahlak">Berahlak</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Misi</label>
+                                                                <select id="renstra_sasaran_filter_misi_{{$tahun}}" class="form-control renstra_sasaran_filter_misi" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Misi ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Tujuan</label>
+                                                                <select id="renstra_sasaran_filter_tujuan_{{$tahun}}" class="form-control renstra_sasaran_filter_tujuan" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Sasaran</label>
+                                                                <select id="renstra_sasaran_filter_sasaran_{{$tahun}}" class="form-control renstra_sasaran_filter_sasaran" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="" class="form-label">Aksi Filter</label>
+                                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                                <button class="btn btn-primary waves-effect waves-light mr-1 renstra_sasaran_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                                <button class="btn btn-secondary waves-effect waves-light renstra_sasaran_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraSasaran" checked>
+                                                                <label class="form-check-label" for="onOffTaggingRenstraSasaran">On / Off Tagging</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div id="renstraSasaranNavDiv{{$tahun}}"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <hr>
-                                    <div id="renstraSasaranNavDiv"></div>
                                 </div>
                                 {{-- Renstra Sasaran End --}}
                                 {{-- Renstra Program Start --}}
                                 <div class="tab-pane fade" id="renstra_program" role="tabpanel">
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <h2 class="small-title">Filter Data</h2>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Visi</label>
-                                                <select name="renstra_program_filter_visi" id="renstra_program_filter_visi" class="form-control">
-                                                    <option value="">--- Pilih Visi ---</option>
-                                                    <option value="aman">Aman</option>
-                                                    <option value="mandiri">Mandiri</option>
-                                                    <option value="sejahtera">Sejahtera</option>
-                                                    <option value="berahlak">Berahlak</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Misi</label>
-                                                <select name="renstra_program_filter_misi" id="renstra_program_filter_misi" class="form-control" disabled>
-                                                    <option value="">--- Pilih Misi ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Tujuan</label>
-                                                <select name="renstra_program_filter_tujuan" id="renstra_program_filter_tujuan" class="form-control" disabled>
-                                                    <option value="">--- Pilih Tujuan ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Sasaran</label>
-                                                <select name="renstra_program_filter_sasaran" id="renstra_program_filter_sasaran" class="form-control" disabled>
-                                                    <option value="">--- Pilih Sasaran ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Program</label>
-                                                <select name="renstra_program_filter_program" id="renstra_program_filter_program" class="form-control" disabled>
-                                                    <option value="">--- Pilih Program ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="renstra_program_btn_filter">Filter Data</button>
-                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_program_btn_reset">Reset</button>
-                                            </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRenstraProgram" data-bs-toggle="tab" data-bs-target="#renstra_program_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="renstra_program_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-2">
+                                                        <div class="col-12">
+                                                            <h2 class="small-title">Filter Data</h2>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Visi</label>
+                                                                <select id="renstra_program_filter_visi_{{$tahun}}" class="form-control renstra_program_filter_visi" data-tahun="{{$tahun}}">
+                                                                    <option value="">--- Pilih Visi ---</option>
+                                                                    <option value="aman">Aman</option>
+                                                                    <option value="mandiri">Mandiri</option>
+                                                                    <option value="sejahtera">Sejahtera</option>
+                                                                    <option value="berahlak">Berahlak</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Misi</label>
+                                                                <select id="renstra_program_filter_misi_{{$tahun}}" class="form-control renstra_program_filter_misi" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Misi ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Tujuan</label>
+                                                                <select id="renstra_program_filter_tujuan_{{$tahun}}" class="form-control renstra_program_filter_tujuan" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Sasaran</label>
+                                                                <select id="renstra_program_filter_sasaran_{{$tahun}}" class="form-control renstra_program_filter_sasaran" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Program</label>
+                                                                <select id="renstra_program_filter_program_{{$tahun}}" class="form-control renstra_program_filter_program" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Program ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="" class="form-label">Aksi Filter</label>
+                                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                                <button class="btn btn-primary waves-effect waves-light mr-1 renstra_program_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                                <button class="btn btn-secondary waves-effect waves-light renstra_program_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraProgram" checked>
+                                                                <label class="form-check-label" for="onOffTaggingRenstraProgram">On / Off Tagging</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div id="renstraProgramNavDiv{{$tahun}}"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <hr>
-                                    <div id="renstraProgramNavDiv"></div>
                                 </div>
                                 {{-- Renstra Program End --}}
                                 {{-- Renstra Kegiatan Start --}}
                                 <div class="tab-pane fade" id="renstra_kegiatan" role="tabpanel">
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <h2 class="small-title">Filter Data</h2>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Visi</label>
-                                                <select name="renstra_kegiatan_filter_visi" id="renstra_kegiatan_filter_visi" class="form-control">
-                                                    <option value="">--- Pilih Visi ---</option>
-                                                    <option value="aman">Aman</option>
-                                                    <option value="mandiri">Mandiri</option>
-                                                    <option value="sejahtera">Sejahtera</option>
-                                                    <option value="berahlak">Berahlak</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Misi</label>
-                                                <select name="renstra_kegiatan_filter_misi" id="renstra_kegiatan_filter_misi" class="form-control" disabled>
-                                                    <option value="">--- Pilih Misi ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Tujuan</label>
-                                                <select name="renstra_kegiatan_filter_tujuan" id="renstra_kegiatan_filter_tujuan" class="form-control" disabled>
-                                                    <option value="">--- Pilih Tujuan ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Sasaran</label>
-                                                <select name="renstra_kegiatan_filter_sasaran" id="renstra_kegiatan_filter_sasaran" class="form-control" disabled>
-                                                    <option value="">--- Pilih Sasaran ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Program</label>
-                                                <select name="renstra_kegiatan_filter_program" id="renstra_kegiatan_filter_program" class="form-control" disabled>
-                                                    <option value="">--- Pilih Program ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3">
-                                                <label for="" class="form-label">Kegiatan</label>
-                                                <select name="renstra_kegiatan_filter_kegiatan" id="renstra_kegiatan_filter_kegiatan" class="form-control" disabled>
-                                                    <option value="">--- Pilih Kegiatan ---</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                <button class="btn btn-primary waves-effect waves-light mr-1 mb-2" type="button" id="renstra_kegiatan_btn_filter">Filter Data</button>
-                                                <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_kegiatan_btn_reset">Reset</button>
-                                            </div>
+                                    <div class="border-0 pb-0">
+                                        <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            @foreach ($tahuns as $tahun)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRenstraKegiatan" data-bs-toggle="tab" data-bs-target="#renstra_kegiatan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                        {{$tahun}}
+                                                    </button>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            @foreach ($tahuns as $tahun)
+                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="renstra_kegiatan_{{$tahun}}" role="tabpanel">
+                                                    <div class="row mb-2">
+                                                        <div class="col-12">
+                                                            <h2 class="small-title">Filter Data</h2>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Visi</label>
+                                                                <select id="renstra_kegiatan_filter_visi_{{$tahun}}" class="form-control renstra_kegiatan_filter_visi" data-tahun="{{$tahun}}">
+                                                                    <option value="">--- Pilih Visi ---</option>
+                                                                    <option value="aman">Aman</option>
+                                                                    <option value="mandiri">Mandiri</option>
+                                                                    <option value="sejahtera">Sejahtera</option>
+                                                                    <option value="berahlak">Berahlak</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Misi</label>
+                                                                <select id="renstra_kegiatan_filter_misi_{{$tahun}}" class="form-control renstra_kegiatan_filter_misi" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Misi ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Tujuan</label>
+                                                                <select id="renstra_kegiatan_filter_tujuan_{{$tahun}}" class="form-control renstra_kegiatan_filter_tujuan" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Sasaran</label>
+                                                                <select id="renstra_kegiatan_filter_sasaran_{{$tahun}}" class="form-control renstra_kegiatan_filter_sasaran" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Program</label>
+                                                                <select id="renstra_kegiatan_filter_program_{{$tahun}}" class="form-control renstra_kegiatan_filter_program" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Program ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group position-relative mb-3">
+                                                                <label for="" class="form-label">Kegiatan</label>
+                                                                <select id="renstra_kegiatan_filter_kegiatan_{{$tahun}}" class="form-control renstra_kegiatan_filter_kegiatan" data-tahun="{{$tahun}}" disabled>
+                                                                    <option value="">--- Pilih Kegiatan ---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="" class="form-label">Aksi Filter</label>
+                                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                                <button class="btn btn-primary btn-icon waves-effect waves-light mr-1 renstra_kegiatan_btn_filter" type="button" data-tahun="{{$tahun}}"><i class="fas fa-filter"></i></button>
+                                                                <button class="btn btn-secondary btn-icon waves-effect waves-light renstra_kegiatan_btn_reset" type="button" data-tahun="{{$tahun}}"><i class="fas fa-recycle"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraKegiatan" checked>
+                                                                <label class="form-check-label" for="onOffTaggingRenstraKegiatan">On / Off Tagging</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div id="renstraKegiatanNavDiv{{$tahun}}"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <hr>
-                                    <div id="renstraKegiatanNavDiv"></div>
                                 </div>
                                 {{-- Renstra Kegiatan End --}}
                             </div>
@@ -739,10 +956,10 @@
                                         <div class="col">
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Batasan Pagu</div>
+                                                    <div class="d-flex align-items-center lh-1-25">Pagu Renstra</div>
                                                 </div>
                                                 <div class="col-12">
-                                                    <div class="cta-2 text-primary">Rp. 3.412.567.331</div>
+                                                    <div class="cta-2 text-primary">Rp. 0</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -760,7 +977,7 @@
                                         <div class="col">
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Pagu Validasi</div>
+                                                    <div class="d-flex align-items-center lh-1-25">Pagu Renja</div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="cta-2 text-primary">Rp. 0</div>
@@ -781,7 +998,7 @@
                                         <div class="col">
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Rincian</div>
+                                                    <div class="d-flex align-items-center lh-1-25">Sisa</div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="cta-2 text-primary">Rp. 0</div>
@@ -799,9 +1016,11 @@
                                     <thead>
                                         <tr>
                                             <th>Kode</th>
-                                            <th>Deskripsi</th>
-                                            <th>Pagu Validasi</th>
-                                            <th>Aksi</th>
+                                            <th>Urusan/Program/Kegiatan/Sub Kegiatan</th>
+                                            <th>Pagu RPJMD</th>
+                                            <th>Pagu Renstra</th>
+                                            <th>Pagu Renja</th>
+                                            <th>OPD</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -812,7 +1031,7 @@
                     {{-- RKPD End --}}
                     {{-- Renja Start --}}
                     <div class="tab-pane fade" id="renjaTab" role="tabpanel">
-                        <div class="row g-2 mb-5">
+                        {{-- <div class="row g-2 mb-5">
                             <div class="col">
                                 <div class="card sh-11 hover-scale-up cursor-pointer">
                                     <div class="h-100 row g-0 card-body align-items-center py-3">
@@ -827,7 +1046,7 @@
                                                     <div class="d-flex align-items-center lh-1-25">Batasan Pagu</div>
                                                 </div>
                                                 <div class="col-12">
-                                                    <div class="cta-2 text-primary">Rp. 3.412.567.331</div>
+                                                    <div class="cta-2 text-primary">Rp. 0</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -935,7 +1154,7 @@
                                 </table>
                             </div>
                             <!-- Table End -->
-                        </div>
+                        </div> --}}
                     </div>
                     {{-- Renja End --}}
                 </div>
@@ -1876,6 +2095,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        var tahun_awal = "{{$tahun_awal}}";
         // Visi Start
         $(document).ready(function(){
             $('#program_urusan_id').select2();
@@ -1888,45 +2108,6 @@
             $('#renstra_kegiatan_kegiatan_id').select2();
             $('#renstra_kegiatan_opd_id').select2();
 
-            $('#misi_filter_visi').select2();
-            $('#misi_filter_misi').select2();
-
-            $('#tujuan_filter_visi').select2();
-            $('#tujuan_filter_misi').select2();
-            $('#tujuan_filter_tujuan').select2();
-
-            $('#sasaran_filter_visi').select2();
-            $('#sasaran_filter_misi').select2();
-            $('#sasaran_filter_tujuan').select2();
-            $('#sasaran_filter_sasaran').select2();
-
-            $('#program_filter_visi').select2();
-            $('#program_filter_misi').select2();
-            $('#program_filter_tujuan').select2();
-            $('#program_filter_sasaran').select2();
-
-            $('#renstra_tujuan_filter_visi').select2();
-            $('#renstra_tujuan_filter_misi').select2();
-            $('#renstra_tujuan_filter_tujuan').select2();
-
-            $('#renstra_sasaran_filter_visi').select2();
-            $('#renstra_sasaran_filter_misi').select2();
-            $('#renstra_sasaran_filter_tujuan').select2();
-            $('#renstra_sasaran_filter_sasaran').select2();
-
-            $('#renstra_program_filter_visi').select2();
-            $('#renstra_program_filter_misi').select2();
-            $('#renstra_program_filter_tujuan').select2();
-            $('#renstra_program_filter_sasaran').select2();
-            $('#renstra_program_filter_program').select2();
-
-            $('#renstra_kegiatan_filter_visi').select2();
-            $('#renstra_kegiatan_filter_misi').select2();
-            $('#renstra_kegiatan_filter_tujuan').select2();
-            $('#renstra_kegiatan_filter_sasaran').select2();
-            $('#renstra_kegiatan_filter_program').select2();
-            $('#renstra_kegiatan_filter_kegiatan').select2();
-
             $('#renja_filter_opd').select2();
             $('#renja_filter_program').select2();
             $('#renja_filter_kegiatan').select2();
@@ -1934,32 +2115,74 @@
 
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');
+            @foreach ($tahuns as $tahun)
+                var tahun = "{{$tahun}}";
 
-            var dataTables = $('#visi_table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('admin.visi.index') }}",
-                },
-                columns:[
-                    {
-                        data: 'DT_RowIndex'
+                $('#misi_filter_visi_'+tahun).select2();
+                $('#misi_filter_misi_'+tahun).select2();
+
+                $('#tujuan_filter_visi_'+tahun).select2();
+                $('#tujuan_filter_misi_'+tahun).select2();
+                $('#tujuan_filter_tujuan_'+tahun).select2();
+
+                $('#sasaran_filter_visi_'+tahun).select2();
+                $('#sasaran_filter_misi_'+tahun).select2();
+                $('#sasaran_filter_tujuan_'+tahun).select2();
+                $('#sasaran_filter_sasaran_'+tahun).select2();
+
+                $('#program_filter_visi_'+tahun).select2();
+                $('#program_filter_misi_'+tahun).select2();
+                $('#program_filter_tujuan_'+tahun).select2();
+                $('#program_filter_sasaran_'+tahun).select2();
+
+                $('#renstra_tujuan_filter_visi_'+tahun).select2();
+                $('#renstra_tujuan_filter_misi_'+tahun).select2();
+                $('#renstra_tujuan_filter_tujuan_'+tahun).select2();
+
+                $('#renstra_sasaran_filter_visi_'+tahun).select2();
+                $('#renstra_sasaran_filter_misi_'+tahun).select2();
+                $('#renstra_sasaran_filter_tujuan_'+tahun).select2();
+                $('#renstra_sasaran_filter_sasaran_'+tahun).select2();
+
+                $('#renstra_program_filter_visi_'+tahun).select2();
+                $('#renstra_program_filter_misi_'+tahun).select2();
+                $('#renstra_program_filter_tujuan_'+tahun).select2();
+                $('#renstra_program_filter_sasaran_'+tahun).select2();
+                $('#renstra_program_filter_program_'+tahun).select2();
+
+                $('#renstra_kegiatan_filter_visi_'+tahun).select2();
+                $('#renstra_kegiatan_filter_misi_'+tahun).select2();
+                $('#renstra_kegiatan_filter_tujuan_'+tahun).select2();
+                $('#renstra_kegiatan_filter_sasaran_'+tahun).select2();
+                $('#renstra_kegiatan_filter_program_'+tahun).select2();
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).select2();
+
+                var dataTables = $('#visi_table_'+tahun).DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ url('/admin/visi/get-visi') }}" + '/' + tahun,
                     },
-                    {
-                        data: 'deskripsi',
-                        name: 'deskripsi'
-                    },
-                    // {
-                    //     data: 'tahun_perubahan',
-                    //     name: 'tahun_perubahan'
-                    // },
-                    {
-                        data: 'aksi',
-                        name: 'aksi',
-                        orderable: false
-                    },
-                ]
-            });
+                    columns:[
+                        {
+                            data: 'DT_RowIndex'
+                        },
+                        {
+                            data: 'deskripsi',
+                            name: 'deskripsi'
+                        },
+                        // {
+                        //     data: 'tahun_perubahan',
+                        //     name: 'tahun_perubahan'
+                        // },
+                        {
+                            data: 'aksi',
+                            name: 'aksi',
+                            orderable: false
+                        },
+                    ]
+                });
+            @endforeach
         });
         $(document).on('click', '.visi_detail', function(){
             var id = $(this).attr('id');
@@ -2008,17 +2231,17 @@
                         {
                             html = '<div class="alert alert-danger">'+data.errors+'</div>';
                             $('#visi_aksi_button').prop('disabled', false);
-                            $('#visi_form')[0].reset();
                             $('#visi_aksi_button').text('Save');
-                            $('#visi_table').DataTable().ajax.reload();
                         }
                         if(data.success)
                         {
-                            html = '<div class="alert alert-success">'+data.success+'</div>';
-                            $('#visi_aksi_button').prop('disabled', false);
-                            $('#visi_form')[0].reset();
-                            $('#visi_aksi_button').text('Save');
-                            $('#visi_table').DataTable().ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Menambahkan Visi',
+                            },
+                            function(){
+                                location.reload();
+                            });
                         }
 
                         $('#visi_form_result').html(html);
@@ -2091,14 +2314,21 @@
             $.ajax({
                 url: "{{ route('admin.perencanaan.get-misi') }}",
                 dataType: "json",
-                beforeSend: function()
-                {
-                    $('#misiLoading').show();
-                },
                 success: function(data)
                 {
-                    $('#misiLoading').hide();
-                    $('#misiNavDiv').html(data.html);
+                    $('#misiNavDiv'+tahun_awal).html(data.html);
+                }
+            });
+        });
+
+        $('.navRpjmdMisi').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/get-misi') }}" + '/' + tahun,
+                dataType: "json",
+                success: function (data)
+                {
+                    $('#misiNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -2140,13 +2370,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditMisiModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil Menambahkan Misi',
-                                showConfirmButton: true
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#misiNavDiv').html(data.success);
                         }
 
                         $('#misi_form_result').html(html);
@@ -2178,13 +2408,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditMisiModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil Merubah Misi',
-                                showConfirmButton: true
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#misiNavDiv').html(data.success);
                         }
 
                         $('#misi_form_result').html(html);
@@ -2242,14 +2472,21 @@
             $.ajax({
                 url: "{{ route('admin.perencanaan.get-tujuan') }}",
                 dataType: "json",
-                beforeSend: function()
-                {
-                    $('#tujuanLoading').show();
-                },
                 success: function(data)
                 {
-                    $('#tujuanLoading').hide();
-                    $('#tujuanNavDiv').html(data.html);
+                    $('#tujuanNavDiv'+tahun_awal).html(data.html);
+                }
+            });
+        });
+
+        $('.navRpjmdTujuan').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/get-tujuan') }}" + '/' + tahun,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#tujuanNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -2291,13 +2528,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditTujuanModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil Menambahkan Tujuan',
-                                showConfirmButton: true
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#tujuanNavDiv').html(data.success);
                         }
 
                         $('#tujuan_form_result').html(html);
@@ -2329,13 +2566,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditTujuanModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Merubah Tujuan',
-                                showConfirmButton: true
+                                title: 'Berhasil Menambahkan Tujuan',
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#tujuanNavDiv').html(data.success);
                         }
 
                         $('#tujuan_form_result').html(html);
@@ -2400,14 +2637,21 @@
             $.ajax({
                 url: "{{ route('admin.perencanaan.get-sasaran') }}",
                 dataType: "json",
-                beforeSend: function()
-                {
-                    $('#sasaranLoading').show();
-                },
                 success: function(data)
                 {
-                    $('#sasaranLoading').hide();
-                    $('#sasaranNavDiv').html(data.html);
+                    $('#sasaranNavDiv'+tahun_awal).html(data.html);
+                }
+            });
+        });
+
+        $('.navRpjmdSasaran').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/get-sasaran') }}" + '/' + tahun,
+                dataType: "json",
+                success:function(data)
+                {
+                    $('#sasaranNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -2449,13 +2693,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditSasaranModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil Menambahkan Sasaran',
-                                showConfirmButton: true
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#sasaranNav').html(data.success);
                         }
 
                         $('#sasaran_form_result').html(html);
@@ -2487,13 +2731,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditSasaranModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil Merubah Sasaran',
-                                showConfirmButton: true
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#sasaranNav').html(data.success);
                         }
 
                         $('#sasaran_form_result').html(html);
@@ -2595,13 +2839,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditSasaranIndikatorModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil Menambahkan Sasaran Indikator',
-                                showConfirmButton: true
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#sasaranNav').html(data.success);
                         }
 
                         $('#sasaran_indikator_form_result').html(html);
@@ -2633,13 +2877,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditSasaranIndikatorModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Merubah Sasaran Indikator',
-                                showConfirmButton: true
+                                title: 'Berhasil Merubahan Sasaran Indikator',
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#sasaranNav').html(data.success);
                         }
 
                         $('#sasaran_indikator_form_result').html(html);
@@ -2682,14 +2926,21 @@
             $.ajax({
                 url: "{{ route('admin.perencanaan.get-program') }}",
                 dataType: "json",
-                beforeSend: function()
-                {
-                    $('#programLoading').show();
-                },
                 success: function(data)
                 {
-                    $('#programLoading').remove();
-                    $('#programNavDiv').html(data.html);
+                    $('#programNavDiv'+tahun_awal).html(data.html);
+                }
+            });
+        });
+
+        $('.navRpjmdProgram').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/get-program') }}" + '/' + tahun,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#programNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -2796,7 +3047,7 @@
             }
         });
 
-        $('#program_create').click(function(){
+        $('.program_create').click(function(){
             program_edit_program_id = 0;
             program_edit_tujuan_id = 0;
             program_edit_sasaran_id = 0;
@@ -2857,13 +3108,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditProgramModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Menambahkan Program RPJMD',
-                                showConfirmButton: true
+                                title: 'Berhasil Menambahkan Program',
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#programNavDiv').html(data.success);
                         }
 
                         $('#program_form_result').html(html);
@@ -2895,13 +3146,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditProgramModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Merubah Program RPJMD',
-                                showConfirmButton: true
+                                title: 'Berhasil Menambahkan Program',
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#programNavDiv').html(data.success);
                         }
 
                         $('#program_form_result').html(html);
@@ -2933,137 +3184,6 @@
                 }
             });
         });
-
-        // $('#program_edit_urusan_id').on('change', function(){
-        //     if($(this).val() != '')
-        //     {
-        //         $.ajax({
-        //             url: "{{ route('admin.program-rpjmd.get-program') }}",
-        //             method: 'POST',
-        //             data: {
-        //                 "_token": "{{ csrf_token() }}",
-        //                 id:$(this).val()
-        //             },
-        //             success: function(response){
-        //                 $('#program_edit_program_id').empty();
-        //                 $('#program_edit_program_id').prop('disabled', false);
-        //                 $('#program_edit_program_id').append('<option value="">--- Pilih Program ---</option>');
-        //                 $.each(response, function(key, value){
-        //                     $('#program_edit_program_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
-        //                 });
-        //             }
-        //         });
-        //     } else {
-        //         $('#program_edit_program_id').prop('disabled', true);
-        //     }
-        // });
-
-        // $('#program_edit_misi_id').on('change', function(){
-        //     if($(this).val() != '')
-        //     {
-        //         $.ajax({
-        //             url: "{{ route('admin.program-rpjmd.get-tujuan') }}",
-        //             method: 'POST',
-        //             data: {
-        //                 "_token": "{{ csrf_token() }}",
-        //                 id:$(this).val()
-        //             },
-        //             success: function(response){
-        //                 $('#program_edit_tujuan_id').empty();
-        //                 $('#program_edit_tujuan_id').prop('disabled', false);
-        //                 $('#program_edit_sasaran_id').prop('disabled', true);
-        //                 $('#program_edit_sasaran_indikator_id').prop('disabled', true);
-        //                 $('#program_edit_tujuan_id').append('<option value="">--- Pilih Tujuan ---</option>');
-        //                 $.each(response, function(key, value){
-        //                     $('#program_edit_tujuan_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
-        //                 });
-        //             }
-        //         });
-        //     } else {
-        //         $('#program_edit_tujuan_id').prop('disabled', true);
-        //         $('#program_edit_sasaran_id').prop('disabled', true);
-        //         $('#program_edit_sasaran_indikator_id').prop('disabled', true);
-        //     }
-        // });
-
-        // $('#program_edit_tujuan_id').on('change', function(){
-        //     if($(this).val() != '')
-        //     {
-        //         $.ajax({
-        //             url: "{{ route('admin.program-rpjmd.get-sasaran') }}",
-        //             method: 'POST',
-        //             data: {
-        //                 "_token": "{{ csrf_token() }}",
-        //                 id:$(this).val()
-        //             },
-        //             success: function(response){
-        //                 $('#program_edit_sasaran_id').empty();
-        //                 $('#program_edit_sasaran_id').prop('disabled', false);
-        //                 $('#program_edit_sasaran_indikator_id').prop('disabled', true);
-        //                 $('#program_edit_sasaran_id').append('<option value="">--- Pilih Sasaran ---</option>');
-        //                 $.each(response, function(key, value){
-        //                     $('#program_edit_sasaran_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
-        //                 });
-        //             }
-        //         });
-        //     } else {
-        //         $('#program_edit_sasaran_id').prop('disabled', true);
-        //         $('#program_edit_sasaran_indikator_id').prop('disabled', true);
-        //     }
-        // });
-
-        // $('#program_edit_sasaran_id').on('change', function(){
-        //     if($(this).val() != '')
-        //     {
-        //         $.ajax({
-        //             url: "{{ route('admin.program-rpjmd.get-sasaran-indikator') }}",
-        //             method: 'POST',
-        //             data: {
-        //                 "_token": "{{ csrf_token() }}",
-        //                 id:$(this).val()
-        //             },
-        //             success: function(response){
-        //                 $('#program_edit_sasaran_indikator_id').empty();
-        //                 $('#program_edit_sasaran_indikator_id').prop('disabled', false);
-        //                 $('#program_edit_sasaran_indikator_id').append('<option value="">--- Pilih Sasaran Indikator ---</option>');
-        //                 $.each(response, function(key, value){
-        //                     $('#program_edit_sasaran_indikator_id').append(new Option(value.indikator, value.id));
-        //                 });
-        //             }
-        //         });
-        //     } else {
-        //         $('#program_edit_sasaran_indikator_id').prop('disabled', true);
-        //     }
-        // });
-
-        // $(document).on('click', '.edit-sasaran-indikator', function(){
-        //     var sasaran_indikator_id = $(this).attr('data-sasaran-indikator-id');
-        //     var id = $(this).attr('data-id');
-        //     $('#program_edit_form_result').html('');
-        //     $.ajax({
-        //         url: "{{ url('/admin/program-rpjmd/edit') }}"+'/'+id+'/'+sasaran_indikator_id,
-        //         dataType: "json",
-        //         success: function(data)
-        //         {
-        //             $("[name='program_edit_urusan_id']").val(data.result.urusan_id).trigger('change');
-        //             program_edit_program_id = data.result.program_id;
-        //             $("[name='program_edit_status_program']").val(data.result.status_program).trigger('change');
-        //             $('#program_edit_pagu').val(data.result.pagu);
-        //             $("[name='program_edit_misi_id']").val(data.result.misi_id).trigger('change');
-        //             program_edit_tujuan_id = data.result.tujuan_id;
-        //             program_edit_sasaran_id = data.result.sasaran_id;
-        //             program_edit_sasaran_indikator_id = data.result.sasaran_indikator_id;
-        //             $("[name='program_edit_opd_id']").val(data.result.opd_id).trigger('change');
-        //             $('#program_edit_hidden_id').val(id);
-        //             $('.modal-title').text('Edit Data Program RPJMD');
-        //             $('#program_edit_aksi_button').text('Edit');
-        //             $('#program_edit_aksi_button').prop('disabled', false);
-        //             $('#program_edit_aksi_button').val('Edit');
-        //             $('#program_edit_aksi').val('Edit');
-        //             $('#editProgramModal').modal('show');
-        //         }
-        //     });
-        // });
 
         $(document).on('click', '.edit-program-rpjmd', function(){
             var program_rpjmd_id = $(this).attr('data-program-rpjmd-id');
@@ -3105,13 +3225,13 @@
                     }
                     if(data.success)
                     {
-                        $('#editProgramModal').modal('hide');
                         Swal.fire({
                             icon: 'success',
-                            title: 'Berhasil Merubah Program RPJMD',
-                            showConfirmButton: true
+                            title: 'Berhasil Merubah Program',
+                        },
+                        function(){
+                            location.reload();
                         });
-                        $('#programNavDiv').html(data.success);
                     }
 
                     $('#edit_program_form_result').html(html);
@@ -3232,7 +3352,8 @@
         });
 
         // Filter Data Misi
-        $('#misi_filter_visi').on('change', function(){
+        $('.misi_filter_visi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3243,23 +3364,23 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#misi_filter_misi').empty();
-                        $('#misi_filter_misi').prop('disabled', false);
-                        $('#misi_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $('#misi_filter_misi_'+tahun).empty();
+                        $('#misi_filter_misi_'+tahun).prop('disabled', false);
+                        $('#misi_filter_misi_'+tahun).append('<option value="">--- Pilih Misi ---</option>');
                         $.each(response, function(key, value){
-                            $('#misi_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#misi_filter_misi_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#misi_filter_misi').prop('disabled', true);
+                $('#misi_filter_misi_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#misi_btn_filter').click(function(){
-            var visi = $('#misi_filter_visi').val();
-            var misi = $('#misi_filter_misi').val();
-
+        $('.misi_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#misi_filter_visi_'+tahun).val();
+            var misi = $('#misi_filter_misi_'+tahun).val();
             $.ajax({
                 url: "{{ route('admin.perencanaan.filter.misi') }}",
                 method: 'POST',
@@ -3267,33 +3388,37 @@
                     "_token": "{{ csrf_token() }}",
                     visi: visi,
                     misi: misi,
+                    tahun: tahun,
                 },
                 success: function(data)
                 {
-                    $('#misiNavDiv').html(data.html);
+                    $('#misiNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
-        $('#misi_btn_reset').click(function(){
+        $('.misi_btn_reset').click(function(){
             $('#misi_filter_misi').prop('disabled', true);
             $("[name='misi_filter_visi']").val('').trigger('change');
             $("[name='misi_filter_misi']").val('').trigger('change');
+            var tahun = $(this).attr('data-tahun');
             $.ajax({
                 url: "{{ route('admin.perencanaan.reset.misi') }}",
                 method: 'POST',
                 data: {
-                    "_token": "{{ csrf_token() }}"
+                    "_token": "{{ csrf_token() }}",
+                    tahun:tahun
                 },
                 success: function(data)
                 {
-                    $('#misiNavDiv').html(data.html);
+                    $('#misiNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
         // Filter Data Tujuan
-        $('#tujuan_filter_visi').on('change', function(){
+        $('.tujuan_filter_visi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3304,22 +3429,23 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#tujuan_filter_misi').empty();
-                        $('#tujuan_filter_misi').prop('disabled', false);
-                        $('#tujuan_filter_tujuan').prop('disabled', true);
-                        $('#tujuan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $('#tujuan_filter_misi_'+tahun).empty();
+                        $('#tujuan_filter_misi_'+tahun).prop('disabled', false);
+                        $('#tujuan_filter_tujuan_'+tahun).prop('disabled', true);
+                        $('#tujuan_filter_misi_'+tahun).append('<option value="">--- Pilih Misi ---</option>');
                         $.each(response, function(key, value){
-                            $('#tujuan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#tujuan_filter_misi_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#tujuan_filter_misi').prop('disabled', true);
-                $('#tujuan_filter_tujuan').prop('disabled', true);
+                $('#tujuan_filter_misi_'+tahun).prop('disabled', true);
+                $('#tujuan_filter_tujuan_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#tujuan_filter_misi').on('change', function(){
+        $('.tujuan_filter_misi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3330,24 +3456,24 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#tujuan_filter_tujuan').empty();
-                        $('#tujuan_filter_tujuan').prop('disabled', false);
-                        $('#tujuan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $('#tujuan_filter_tujuan_'+tahun).empty();
+                        $('#tujuan_filter_tujuan_'+tahun).prop('disabled', false);
+                        $('#tujuan_filter_tujuan_'+tahun).append('<option value="">--- Pilih Tujuan ---</option>');
                         $.each(response, function(key, value){
-                            $('#tujuan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#tujuan_filter_tujuan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#tujuan_filter_tujuan').prop('disabled', true);
+                $('#tujuan_filter_tujuan_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#tujuan_btn_filter').click(function(){
-            var visi = $('#tujuan_filter_visi').val();
-            var misi = $('#tujuan_filter_misi').val();
-            var tujuan = $('#tujuan_filter_tujuan').val();
-            var sasaran = $('#tujuan_filter_sasaran').val();
+        $('.tujuan_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#tujuan_filter_visi_'+tahun).val();
+            var misi = $('#tujuan_filter_misi_'+tahun).val();
+            var tujuan = $('#tujuan_filter_tujuan_'+tahun).val();
 
             $.ajax({
                 url: "{{ route('admin.perencanaan.filter.tujuan') }}",
@@ -3356,21 +3482,23 @@
                     "_token": "{{ csrf_token() }}",
                     visi: visi,
                     misi: misi,
-                    tujuan: tujuan
+                    tujuan: tujuan,
+                    tahun:tahun
                 },
                 success: function(data)
                 {
-                    $('#tujuanNavDiv').html(data.html);
+                    $('#tujuanNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
-        $('#tujuan_btn_reset').click(function(){
-            $('#tujuan_filter_misi').prop('disabled', true);
-            $('#tujuan_filter_tujuan').prop('disabled', true);
-            $("[name='tujuan_filter_visi']").val('').trigger('change');
-            $("[name='tujuan_filter_misi']").val('').trigger('change');
-            $("[name='tujuan_filter_tujuan']").val('').trigger('change');
+        $('.tujuan_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#tujuan_filter_misi_'+tahun).prop('disabled', true);
+            $('#tujuan_filter_tujuan_'+tahun).prop('disabled', true);
+            $('#tujuan_filter_visi_'+tahun).val('').trigger('change');
+            $('#tujuan_filter_misi_'+tahun).val('').trigger('change');
+            $('#tujuan_filter_tujuan_'+tahun).val('').trigger('change');
             $.ajax({
                 url: "{{ route('admin.perencanaan.reset.tujuan') }}",
                 method: 'POST',
@@ -3379,13 +3507,14 @@
                 },
                 success: function(data)
                 {
-                    $('#tujuanNavDiv').html(data.html);
+                    $('#tujuanNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
         // Filter Data Sasaran
-        $('#sasaran_filter_visi').on('change', function(){
+        $('.sasaran_filter_visi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3396,24 +3525,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#sasaran_filter_misi').empty();
-                        $('#sasaran_filter_misi').prop('disabled', false);
-                        $('#sasaran_filter_tujuan').prop('disabled', true);
-                        $('#sasaran_filter_sasaran').prop('disabled', true);
-                        $('#sasaran_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $('#sasaran_filter_misi_'+tahun).empty();
+                        $('#sasaran_filter_misi_'+tahun).prop('disabled', false);
+                        $('#sasaran_filter_tujuan_'+tahun).prop('disabled', true);
+                        $('#sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#sasaran_filter_misi_'+tahun).append('<option value="">--- Pilih Misi ---</option>');
                         $.each(response, function(key, value){
-                            $('#sasaran_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#sasaran_filter_misi_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#sasaran_filter_misi').prop('disabled', true);
-                $('#sasaran_filter_tujuan').prop('disabled', true);
-                $('#sasaran_filter_sasaran').prop('disabled', true);
+                $('#sasaran_filter_misi_'+tahun).prop('disabled', true);
+                $('#sasaran_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#sasaran_filter_sasaran_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#sasaran_filter_misi').on('change', function(){
+        $('.sasaran_filter_misi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3424,22 +3554,23 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#sasaran_filter_tujuan').empty();
-                        $('#sasaran_filter_tujuan').prop('disabled', false);
-                        $('#sasaran_filter_sasaran').prop('disabled', true);
-                        $('#sasaran_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $('#sasaran_filter_tujuan_'+tahun).empty();
+                        $('#sasaran_filter_tujuan_'+tahun).prop('disabled', false);
+                        $('#sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#sasaran_filter_tujuan_'+tahun).append('<option value="">--- Pilih Tujuan ---</option>');
                         $.each(response, function(key, value){
-                            $('#sasaran_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#sasaran_filter_tujuan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#sasaran_filter_tujuan').prop('disabled', true);
-                $('#sasaran_filter_sasaran').prop('disabled', true);
+                $('#sasaran_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#sasaran_filter_sasaran_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#sasaran_filter_tujuan').on('change', function(){
+        $('.sasaran_filter_tujuan').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3450,24 +3581,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#sasaran_filter_sasaran').empty();
-                        $('#sasaran_filter_sasaran').prop('disabled', false);
-                        $('#sasaran_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $('#sasaran_filter_sasaran_'+tahun).empty();
+                        $('#sasaran_filter_sasaran_'+tahun).prop('disabled', false);
+                        $('#sasaran_filter_sasaran_'+tahun).append('<option value="">--- Pilih Sasaran ---</option>');
                         $.each(response, function(key, value){
-                            $('#sasaran_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#sasaran_filter_sasaran_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#sasaran_filter_sasaran').prop('disabled', true);
+                $('#sasaran_filter_sasaran_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#sasaran_btn_filter').click(function(){
-            var visi = $('#sasaran_filter_visi').val();
-            var misi = $('#sasaran_filter_misi').val();
-            var tujuan = $('#sasaran_filter_tujuan').val();
-            var sasaran = $('#sasaran_filter_sasaran').val();
+        $('.sasaran_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#sasaran_filter_visi_'+tahun).val();
+            var misi = $('#sasaran_filter_misi_'+tahun).val();
+            var tujuan = $('#sasaran_filter_tujuan_'+tahun).val();
+            var sasaran = $('#sasaran_filter_sasaran_'+tahun).val();
 
             $.ajax({
                 url: "{{ route('admin.perencanaan.filter.sasaran') }}",
@@ -3478,22 +3610,24 @@
                     misi: misi,
                     tujuan: tujuan,
                     sasaran: sasaran,
+                    tahun: tahun
                 },
                 success: function(data)
                 {
-                    $('#sasaranNavDiv').html(data.html);
+                    $('#sasaranNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
-        $('#sasaran_btn_reset').click(function(){
-            $('#sasaran_filter_misi').prop('disabled', true);
-            $('#sasaran_filter_tujuan').prop('disabled', true);
-            $('#sasaran_filter_sasaran').prop('disabled', true);
-            $("[name='sasaran_filter_visi']").val('').trigger('change');
-            $("[name='sasaran_filter_misi']").val('').trigger('change');
-            $("[name='sasaran_filter_tujuan']").val('').trigger('change');
-            $("[name='sasaran_filter_sasaran']").val('').trigger('change');
+        $('.sasaran_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#sasaran_filter_misi_'+tahun).prop('disabled', true);
+            $('#sasaran_filter_tujuan_'+tahun).prop('disabled', true);
+            $('#sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+            $('#sasaran_filter_visi_'+tahun).val('').trigger('change');
+            $('#sasaran_filter_misi_'+tahun).val('').trigger('change');
+            $('#sasaran_filter_tujuan_'+tahun).val('').trigger('change');
+            $('#sasaran_filter_sasaran_'+tahun).val('').trigger('change');
             $.ajax({
                 url: "{{ route('admin.perencanaan.reset.sasaran') }}",
                 method: 'POST',
@@ -3502,12 +3636,13 @@
                 },
                 success: function(data)
                 {
-                    $('#sasaranNavDiv').html(data.html);
+                    $('#sasaranNavDiv'+tahun).html(data.html);
                 }
             });
         });
         // Filter Data Program
-        $('#program_filter_visi').on('change', function(){
+        $('.program_filter_visi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3518,24 +3653,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#program_filter_misi').empty();
-                        $('#program_filter_misi').prop('disabled', false);
-                        $('#program_filter_tujuan').prop('disabled', true);
-                        $('#program_filter_sasaran').prop('disabled', true);
-                        $('#program_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $('#program_filter_misi_'+tahun).empty();
+                        $('#program_filter_misi_'+tahun).prop('disabled', false);
+                        $('#program_filter_tujuan_'+tahun).prop('disabled', true);
+                        $('#program_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#program_filter_misi_'+tahun).append('<option value="">--- Pilih Misi ---</option>');
                         $.each(response, function(key, value){
-                            $('#program_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#program_filter_misi_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#program_filter_misi').prop('disabled', true);
-                $('#program_filter_tujuan').prop('disabled', true);
-                $('#program_filter_sasaran').prop('disabled', true);
+                $('#program_filter_misi_'+tahun).prop('disabled', true);
+                $('#program_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#program_filter_sasaran_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#program_filter_misi').on('change', function(){
+        $('.program_filter_misi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3546,22 +3682,23 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#program_filter_tujuan').empty();
-                        $('#program_filter_tujuan').prop('disabled', false);
-                        $('#program_filter_sasaran').prop('disabled', true);
-                        $('#program_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $('#program_filter_tujuan_'+tahun).empty();
+                        $('#program_filter_tujuan_'+tahun).prop('disabled', false);
+                        $('#program_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#program_filter_tujuan_'+tahun).append('<option value="">--- Pilih Tujuan ---</option>_'+tahun);
                         $.each(response, function(key, value){
-                            $('#program_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#program_filter_tujuan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#program_filter_tujuan').prop('disabled', true);
-                $('#program_filter_sasaran').prop('disabled', true);
+                $('#program_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#program_filter_sasaran_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#program_filter_tujuan').on('change', function(){
+        $('.program_filter_tujuan').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3572,24 +3709,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#program_filter_sasaran').empty();
-                        $('#program_filter_sasaran').prop('disabled', false);
-                        $('#program_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $('#program_filter_sasaran_'+tahun).empty();
+                        $('#program_filter_sasaran_'+tahun).prop('disabled', false);
+                        $('#program_filter_sasaran_'+tahun).append('<option value="">--- Pilih Sasaran ---</option>_'+tahun);
                         $.each(response, function(key, value){
-                            $('#program_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#program_filter_sasaran_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#program_filter_sasaran').prop('disabled', true);
+                $('#program_filter_sasaran_'+tahun).prop('disabled', true);
             }
         });
 
-        $('#program_btn_filter').click(function(){
-            var visi = $('#program_filter_visi').val();
-            var misi = $('#program_filter_misi').val();
-            var tujuan = $('#program_filter_tujuan').val();
-            var sasaran = $('#program_filter_sasaran').val();
+        $('.program_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#program_filter_visi_'+tahun).val();
+            var misi = $('#program_filter_misi_'+tahun).val();
+            var tujuan = $('#program_filter_tujuan_'+tahun).val();
+            var sasaran = $('#program_filter_sasaran_'+tahun).val();
 
             $.ajax({
                 url: "{{ route('admin.perencanaan.filter.program') }}",
@@ -3600,22 +3738,24 @@
                     misi: misi,
                     tujuan: tujuan,
                     sasaran: sasaran,
+                    tahun:tahun
                 },
                 success: function(data)
                 {
-                    $('#programNavDiv').html(data.html);
+                    $('#programNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
-        $('#program_btn_reset').click(function(){
-            $('#program_filter_misi').prop('disabled', true);
-            $('#program_filter_tujuan').prop('disabled', true);
-            $('#program_filter_sasaran').prop('disabled', true);
-            $("[name='program_filter_visi']").val('').trigger('change');
-            $("[name='program_filter_misi']").val('').trigger('change');
-            $("[name='program_filter_tujuan']").val('').trigger('change');
-            $("[name='program_filter_sasaran']").val('').trigger('change');
+        $('.program_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#program_filter_misi_'+tahun).prop('disabled', true);
+            $('#program_filter_tujuan_'+tahun).prop('disabled', true);
+            $('#program_filter_sasaran_'+tahun).prop('disabled', true);
+            $('#program_filter_visi_'+tahun).val('').trigger('change');
+            $('#program_filter_misi_'+tahun).val('').trigger('change');
+            $('#program_filter_tujuan_'+tahun).val('').trigger('change');
+            $('#program_filter_sasaran_'+tahun).val('').trigger('change');
             $.ajax({
                 url: "{{ route('admin.perencanaan.reset.program') }}",
                 method: 'POST',
@@ -3624,7 +3764,7 @@
                 },
                 success: function(data)
                 {
-                    $('#programNavDiv').html(data.html);
+                    $('#programNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -3636,7 +3776,19 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#renstraTujuanNavDiv').html(data.html);
+                    $('#renstraTujuanNavDiv'+tahun_awal).html(data.html);
+                }
+            });
+        });
+
+        $('.navRenstraTujuan').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/renstra/get-tujuan') }}" + '/' + tahun,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraTujuanNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -3651,7 +3803,8 @@
         });
 
         // Filter Data Renstra Tujuan
-        $('#renstra_tujuan_filter_visi').on('change', function(){
+        $('.renstra_tujuan_filter_visi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3662,24 +3815,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_tujuan_filter_misi').empty();
-                        $('#renstra_tujuan_filter_misi').prop('disabled', false);
-                        $('#renstra_tujuan_filter_tujuan').prop('disabled', true);
-                        $('#renstra_tujuan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $('#renstra_tujuan_filter_misi_'+tahun).empty();
+                        $('#renstra_tujuan_filter_misi_'+tahun).prop('disabled', false);
+                        $('#renstra_tujuan_filter_tujuan_'+tahun).prop('disabled', true);
+                        $('#renstra_tujuan_filter_misi_'+tahun).append('<option value="">--- Pilih Misi ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_tujuan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_tujuan_filter_misi_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_tujuan_filter_misi').prop('disabled', true);
-                $('#renstra_tujuan_filter_tujuan').prop('disabled', true);
-                $("[name='renstra_tujuan_filter_misi']").val('').trigger('change');
-                $("[name='renstra_tujuan_filter_tujuan']").val('').trigger('change');
+                $('#renstra_tujuan_filter_misi_'+tahun).prop('disabled', true);
+                $('#renstra_tujuan_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#renstra_tujuan_filter_misi_'+tahun).val('').trigger('change');
+                $('#renstra_tujuan_filter_tujuan_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_tujuan_filter_misi').on('change', function(){
+        $('.renstra_tujuan_filter_misi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3690,24 +3844,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_tujuan_filter_tujuan').empty();
-                        $('#renstra_tujuan_filter_tujuan').prop('disabled', false);
-                        $('#renstra_tujuan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $('#renstra_tujuan_filter_tujuan_'+tahun).empty();
+                        $('#renstra_tujuan_filter_tujuan_'+tahun).prop('disabled', false);
+                        $('#renstra_tujuan_filter_tujuan_'+tahun).append('<option value="">--- Pilih Tujuan ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_tujuan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_tujuan_filter_tujuan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_tujuan_filter_tujuan').prop('disabled', true);
-                $("[name='renstra_tujuan_filter_tujuan']").val('').trigger('change');
+                $('#renstra_tujuan_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#renstra_tujuan_filter_tujuan_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_tujuan_btn_filter').click(function(){
-            var visi = $('#renstra_tujuan_filter_visi').val();
-            var misi = $('#renstra_tujuan_filter_misi').val();
-            var tujuan = $('#renstra_tujuan_filter_tujuan').val();
+        $('.renstra_tujuan_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#renstra_tujuan_filter_visi_'+tahun).val();
+            var misi = $('#renstra_tujuan_filter_misi_'+tahun).val();
+            var tujuan = $('#renstra_tujuan_filter_tujuan_'+tahun).val();
 
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.filter.tujuan') }}",
@@ -3716,21 +3871,23 @@
                     "_token": "{{ csrf_token() }}",
                     visi: visi,
                     misi: misi,
-                    tujuan: tujuan
+                    tujuan: tujuan,
+                    tahun: tahun
                 },
                 success: function(data)
                 {
-                    $('#renstraTujuanNavDiv').html(data.html);
+                    $('#renstraTujuanNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
-        $('#renstra_tujuan_btn_reset').click(function(){
-            $('#renstra_tujuan_filter_misi').prop('disabled', true);
-            $('#renstra_tujuan_filter_tujuan').prop('disabled', true);
-            $("[name='renstra_tujuan_filter_visi']").val('').trigger('change');
-            $("[name='renstra_tujuan_filter_misi']").val('').trigger('change');
-            $("[name='renstra_tujuan_filter_tujuan']").val('').trigger('change');
+        $('.renstra_tujuan_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#renstra_tujuan_filter_misi_'+tahun).prop('disabled', true);
+            $('#renstra_tujuan_filter_tujuan_'+tahun).prop('disabled', true);
+            $('#renstra_tujuan_filter_visi_'+tahun).val('').trigger('change');
+            $('#renstra_tujuan_filter_misi_'+tahun).val('').trigger('change');
+            $('#renstra_tujuan_filter_tujuan_'+tahun).val('').trigger('change');
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.reset.tujuan') }}",
                 method: 'POST',
@@ -3739,7 +3896,7 @@
                 },
                 success: function(data)
                 {
-                    $('#renstraTujuanNavDiv').html(data.html);
+                    $('#renstraTujuanNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -3751,7 +3908,19 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#renstraSasaranNavDiv').html(data.html);
+                    $('#renstraSasaranNavDiv'+tahun_awal).html(data.html);
+                }
+            });
+        });
+
+        $('.navRenstraSasaran').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/renstra/get-sasaran') }}" + '/' + tahun,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraSasaranNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -3766,7 +3935,8 @@
         });
 
         // Filter Data Sasaran
-        $('#renstra_sasaran_filter_visi').on('change', function(){
+        $('.renstra_sasaran_filter_visi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3777,27 +3947,28 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_sasaran_filter_misi').empty();
-                        $('#renstra_sasaran_filter_misi').prop('disabled', false);
-                        $('#renstra_sasaran_filter_tujuan').prop('disabled', true);
-                        $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
-                        $('#renstra_sasaran_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $('#renstra_sasaran_filter_misi_'+tahun).empty();
+                        $('#renstra_sasaran_filter_misi_'+tahun).prop('disabled', false);
+                        $('#renstra_sasaran_filter_tujuan_'+tahun).prop('disabled', true);
+                        $('#renstra_sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#renstra_sasaran_filter_misi_'+tahun).append('<option value="">--- Pilih Misi ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_sasaran_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_sasaran_filter_misi_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_sasaran_filter_misi').prop('disabled', true);
-                $('#renstra_sasaran_filter_tujuan').prop('disabled', true);
-                $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
-                $("[name='renstra_sasaran_filter_misi']").val('').trigger('change');
-                $("[name='renstra_sasaran_filter_tujuan']").val('').trigger('change');
-                $("[name='renstra_sasaran_filter_sasaran']").val('').trigger('change');
+                $('#renstra_sasaran_filter_misi_'+tahun).prop('disabled', true);
+                $('#renstra_sasaran_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#renstra_sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_sasaran_filter_misi_'+tahun).val('').trigger('change');
+                $('#renstra_sasaran_filter_tujuan_'+tahun).val('').trigger('change');
+                $('#renstra_sasaran_filter_sasaran_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_sasaran_filter_misi').on('change', function(){
+        $('.renstra_sasaran_filter_misi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3808,24 +3979,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_sasaran_filter_tujuan').empty();
-                        $('#renstra_sasaran_filter_tujuan').prop('disabled', false);
-                        $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
-                        $('#renstra_sasaran_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $('#renstra_sasaran_filter_tujuan_'+tahun).empty();
+                        $('#renstra_sasaran_filter_tujuan_'+tahun).prop('disabled', false);
+                        $('#renstra_sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#renstra_sasaran_filter_tujuan_'+tahun).append('<option value="">--- Pilih Tujuan ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_sasaran_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_sasaran_filter_tujuan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_sasaran_filter_tujuan').prop('disabled', true);
-                $("[name='renstra_sasaran_filter_tujuan']").val('').trigger('change');
-                $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
-                $("[name='renstra_sasaran_filter_sasaran']").val('').trigger('change');
+                $('#renstra_sasaran_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#renstra_sasaran_filter_tujuan_'+tahun).val('').trigger('change');
+                $('#renstra_sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_sasaran_filter_sasaran_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_sasaran_filter_tujuan').on('change', function(){
+        $('.renstra_sasaran_filter_tujuan').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3836,25 +4008,26 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_sasaran_filter_sasaran').empty();
-                        $('#renstra_sasaran_filter_sasaran').prop('disabled', false);
-                        $('#renstra_sasaran_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $('#renstra_sasaran_filter_sasaran_'+tahun).empty();
+                        $('#renstra_sasaran_filter_sasaran_'+tahun).prop('disabled', false);
+                        $('#renstra_sasaran_filter_sasaran_'+tahun).append('<option value="">--- Pilih Sasaran ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_sasaran_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_sasaran_filter_sasaran_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
-                $("[name='renstra_sasaran_filter_sasaran']").val('').trigger('change');
+                $('#renstra_sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_sasaran_filter_sasaran_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_sasaran_btn_filter').click(function(){
-            var visi = $('#renstra_sasaran_filter_visi').val();
-            var misi = $('#renstra_sasaran_filter_misi').val();
-            var tujuan = $('#renstra_sasaran_filter_tujuan').val();
-            var sasaran = $('#renstra_sasaran_filter_sasaran').val();
+        $('.renstra_sasaran_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#renstra_sasaran_filter_visi_'+tahun).val();
+            var misi = $('#renstra_sasaran_filter_misi_'+tahun).val();
+            var tujuan = $('#renstra_sasaran_filter_tujuan_'+tahun).val();
+            var sasaran = $('#renstra_sasaran_filter_sasaran_'+tahun).val();
 
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.filter.sasaran') }}",
@@ -3864,23 +4037,25 @@
                     visi: visi,
                     misi: misi,
                     tujuan: tujuan,
-                    sasaran: sasaran
+                    sasaran: sasaran,
+                    tahun: tahun
                 },
                 success: function(data)
                 {
-                    $('#renstraSasaranNavDiv').html(data.html);
+                    $('#renstraSasaranNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
-        $('#renstra_sasaran_btn_reset').click(function(){
-            $('#renstra_sasaran_filter_misi').prop('disabled', true);
-            $('#renstra_sasaran_filter_tujuan').prop('disabled', true);
-            $('#renstra_sasaran_filter_sasaran').prop('disabled', true);
-            $("[name='renstra_sasaran_filter_visi']").val('').trigger('change');
-            $("[name='renstra_sasaran_filter_misi']").val('').trigger('change');
-            $("[name='renstra_sasaran_filter_tujuan']").val('').trigger('change');
-            $("[name='renstra_sasaran_filter_sasaran']").val('').trigger('change');
+        $('.renstra_sasaran_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#renstra_sasaran_filter_misi_'+tahun).prop('disabled', true);
+            $('#renstra_sasaran_filter_tujuan_'+tahun).prop('disabled', true);
+            $('#renstra_sasaran_filter_sasaran_'+tahun).prop('disabled', true);
+            $('#renstra_sasaran_filter_visi_'+tahun).val('').trigger('change');
+            $('#renstra_sasaran_filter_misi_'+tahun).val('').trigger('change');
+            $('#renstra_sasaran_filter_tujuan_'+tahun).val('').trigger('change');
+            $('#renstra_sasaran_filter_sasaran_'+tahun).val('').trigger('change');
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.reset.sasaran') }}",
                 method: 'POST',
@@ -3889,7 +4064,7 @@
                 },
                 success: function(data)
                 {
-                    $('#renstraSasaranNavDiv').html(data.html);
+                    $('#renstraSasaranNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -3901,7 +4076,19 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#renstraProgramNavDiv').html(data.html);
+                    $('#renstraProgramNavDiv'+tahun_awal).html(data.html);
+                }
+            });
+        });
+
+        $('.navRenstraProgram').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/renstra/get-program') }}" + '/' + tahun,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraProgramNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -3916,7 +4103,8 @@
         });
 
         // Filter Data Program
-        $('#renstra_program_filter_visi').on('change', function(){
+        $('.renstra_program_filter_visi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3927,30 +4115,31 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_program_filter_misi').empty();
-                        $('#renstra_program_filter_misi').prop('disabled', false);
-                        $('#renstra_program_filter_tujuan').prop('disabled', true);
-                        $('#renstra_program_filter_sasaran').prop('disabled', true);
-                        $('#renstra_program_filter_program').prop('disabled', true);
-                        $('#renstra_program_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $('#renstra_program_filter_misi_'+tahun).empty();
+                        $('#renstra_program_filter_misi_'+tahun).prop('disabled', false);
+                        $('#renstra_program_filter_tujuan_'+tahun).prop('disabled', true);
+                        $('#renstra_program_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#renstra_program_filter_program_'+tahun).prop('disabled', true);
+                        $('#renstra_program_filter_misi_'+tahun).append('<option value="">--- Pilih Misi ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_program_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_program_filter_misi_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_program_filter_misi').prop('disabled', true);
-                $('#renstra_program_filter_tujuan').prop('disabled', true);
-                $('#renstra_program_filter_sasaran').prop('disabled', true);
-                $('#renstra_program_filter_program').prop('disabled', true);
-                $("[name='renstra_program_filter_misi']").val('').trigger('change');
-                $("[name='renstra_program_filter_tujuan']").val('').trigger('change');
-                $("[name='renstra_program_filter_sasaran']").val('').trigger('change');
-                $("[name='renstra_program_filter_program']").val('').trigger('change');
+                $('#renstra_program_filter_misi_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_program_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_misi_'+tahun).val('').trigger('change');
+                $('#renstra_program_filter_tujuan_'+tahun).val('').trigger('change');
+                $('#renstra_program_filter_sasaran_'+tahun).val('').trigger('change');
+                $('#renstra_program_filter_program_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_program_filter_misi').on('change', function(){
+        $('.renstra_program_filter_misi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3961,27 +4150,28 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_program_filter_tujuan').empty();
-                        $('#renstra_program_filter_tujuan').prop('disabled', false);
-                        $('#renstra_program_filter_sasaran').prop('disabled', true);
-                        $('#renstra_program_filter_program').prop('disabled', true);
-                        $('#renstra_program_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $('#renstra_program_filter_tujuan_'+tahun).empty();
+                        $('#renstra_program_filter_tujuan_'+tahun).prop('disabled', false);
+                        $('#renstra_program_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#renstra_program_filter_program_'+tahun).prop('disabled', true);
+                        $('#renstra_program_filter_tujuan_'+tahun).append('<option value="">--- Pilih Tujuan ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_program_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_program_filter_tujuan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_program_filter_tujuan').prop('disabled', true);
-                $("[name='renstra_program_filter_tujuan']").val('').trigger('change');
-                $('#renstra_program_filter_sasaran').prop('disabled', true);
-                $("[name='renstra_program_filter_sasaran']").val('').trigger('change');
-                $('#renstra_program_filter_program').prop('disabled', true);
-                $("[name='renstra_program_filter_program']").val('').trigger('change');
+                $('#renstra_program_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_tujuan_'+tahun).val('').trigger('change');
+                $('#renstra_program_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_sasaran_'+tahun).val('').trigger('change');
+                $('#renstra_program_filter_program_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_program_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_program_filter_tujuan').on('change', function(){
+        $('.renstra_program_filter_tujuan').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -3992,24 +4182,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_program_filter_sasaran').empty();
-                        $('#renstra_program_filter_sasaran').prop('disabled', false);
-                        $('#renstra_program_filter_program').prop('disabled', true);
-                        $('#renstra_program_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $('#renstra_program_filter_sasaran_'+tahun).empty();
+                        $('#renstra_program_filter_sasaran_'+tahun).prop('disabled', false);
+                        $('#renstra_program_filter_program_'+tahun).prop('disabled', true);
+                        $('#renstra_program_filter_sasaran_'+tahun).append('<option value="">--- Pilih Sasaran ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_program_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_program_filter_sasaran_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_program_filter_sasaran').prop('disabled', true);
-                $("[name='renstra_program_filter_sasaran']").val('').trigger('change');
-                $('#renstra_program_filter_program').prop('disabled', true);
-                $("[name='renstra_program_filter_program']").val('').trigger('change');
+                $('#renstra_program_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_sasaran_'+tahun).val('').trigger('change');
+                $('#renstra_program_filter_program_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_program_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_program_filter_sasaran').on('change', function(){
+        $('.renstra_program_filter_sasaran').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -4020,26 +4211,27 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_program_filter_program').empty();
-                        $('#renstra_program_filter_program').prop('disabled', false);
-                        $('#renstra_program_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                        $('#renstra_program_filter_program_'+tahun).empty();
+                        $('#renstra_program_filter_program_'+tahun).prop('disabled', false);
+                        $('#renstra_program_filter_program_'+tahun).append('<option value="">--- Pilih Program ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_program_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_program_filter_program_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_program_filter_program').prop('disabled', true);
-                $("[name='renstra_program_filter_program']").val('').trigger('change');
+                $('#renstra_program_filter_program_'+tahun).prop('disabled', true);
+                $('#renstra_program_filter_program_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_program_btn_filter').click(function(){
-            var visi = $('#renstra_program_filter_visi').val();
-            var misi = $('#renstra_program_filter_misi').val();
-            var tujuan = $('#renstra_program_filter_tujuan').val();
-            var sasaran = $('#renstra_program_filter_sasaran').val();
-            var program = $('#renstra_program_filter_program').val();
+        $('.renstra_program_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#renstra_program_filter_visi_'+tahun).val();
+            var misi = $('#renstra_program_filter_misi_'+tahun).val();
+            var tujuan = $('#renstra_program_filter_tujuan_'+tahun).val();
+            var sasaran = $('#renstra_program_filter_sasaran_'+tahun).val();
+            var program = $('#renstra_program_filter_program_'+tahun).val();
 
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.filter.program') }}",
@@ -4050,25 +4242,27 @@
                     misi: misi,
                     tujuan: tujuan,
                     sasaran: sasaran,
-                    program: program
+                    program: program,
+                    tahun: tahun
                 },
                 success: function(data)
                 {
-                    $('#renstraProgramNavDiv').html(data.html);
+                    $('#renstraProgramNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
-        $('#renstra_program_btn_reset').click(function(){
-            $('#renstra_program_filter_misi').prop('disabled', true);
-            $('#renstra_program_filter_tujuan').prop('disabled', true);
-            $('#renstra_program_filter_sasaran').prop('disabled', true);
-            $('#renstra_program_filter_program').prop('disabled', true);
-            $("[name='renstra_program_filter_visi']").val('').trigger('change');
-            $("[name='renstra_program_filter_misi']").val('').trigger('change');
-            $("[name='renstra_program_filter_tujuan']").val('').trigger('change');
-            $("[name='renstra_program_filter_sasaran']").val('').trigger('change');
-            $("[name='renstra_program_filter_program']").val('').trigger('change');
+        $('.renstra_program_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#renstra_program_filter_misi_'+tahun).prop('disabled', true);
+            $('#renstra_program_filter_tujuan_'+tahun).prop('disabled', true);
+            $('#renstra_program_filter_sasaran_'+tahun).prop('disabled', true);
+            $('#renstra_program_filter_program_'+tahun).prop('disabled', true);
+            $('#renstra_program_filter_visi_'+tahun).val('').trigger('change');
+            $('#renstra_program_filter_misi_'+tahun).val('').trigger('change');
+            $('#renstra_program_filter_tujuan_'+tahun).val('').trigger('change');
+            $('#renstra_program_filter_sasaran_'+tahun).val('').trigger('change');
+            $('#renstra_program_filter_program_'+tahun).val('').trigger('change');
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.reset.program') }}",
                 method: 'POST',
@@ -4077,7 +4271,7 @@
                 },
                 success: function(data)
                 {
-                    $('#renstraProgramNavDiv').html(data.html);
+                    $('#renstraProgramNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -4089,7 +4283,18 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#renstraKegiatanNavDiv').html(data.html);
+                    $('#renstraKegiatanNavDiv'+tahun_awal).html(data.html);
+                }
+            });
+        });
+        $('.navRenstraKegiatan').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/renstra/get-kegiatan') }}" + '/' + tahun,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraKegiatanNavDiv'+tahun).html(data.html);
                 }
             });
         });
@@ -4173,13 +4378,13 @@
                         }
                         if(data.success)
                         {
-                            $('#addEditRenstraKegiatanModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Menambahkan Kegiatan',
-                                showConfirmButton: true
+                                title: 'Berhasil Menambahkan Kegiatan Renstra',
+                            },
+                            function(){
+                                location.reload();
                             });
-                            $('#renstra_kegiatan').html(data.success);
                         }
 
                         $('#renstra_kegiatan_form_result').html(html);
@@ -4290,7 +4495,8 @@
         });
 
         // Filter Data Kegiatan
-        $('#renstra_kegiatan_filter_visi').on('change', function(){
+        $('.renstra_kegiatan_filter_visi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -4301,33 +4507,34 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_kegiatan_filter_misi').empty();
-                        $('#renstra_kegiatan_filter_misi').prop('disabled', false);
-                        $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $('#renstra_kegiatan_filter_misi_'+tahun).empty();
+                        $('#renstra_kegiatan_filter_misi_'+tahun).prop('disabled', false);
+                        $('#renstra_kegiatan_filter_tujuan_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_misi_'+tahun).append('<option value="">--- Pilih Misi ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_kegiatan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_kegiatan_filter_misi_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_kegiatan_filter_misi').prop('disabled', true);
-                $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
-                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
-                $('#renstra_kegiatan_filter_program').prop('disabled', true);
-                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_misi']").val('').trigger('change');
-                $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
-                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
-                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
-                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_misi_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_misi_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_tujuan_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_sasaran_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_program_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_kegiatan_filter_misi').on('change', function(){
+        $('.renstra_kegiatan_filter_misi').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -4338,30 +4545,31 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_kegiatan_filter_tujuan').empty();
-                        $('#renstra_kegiatan_filter_tujuan').prop('disabled', false);
-                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $('#renstra_kegiatan_filter_tujuan_'+tahun).empty();
+                        $('#renstra_kegiatan_filter_tujuan_'+tahun).prop('disabled', false);
+                        $('#renstra_kegiatan_filter_sasaran_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_tujuan_'+tahun).append('<option value="">--- Pilih Tujuan ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_kegiatan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_kegiatan_filter_tujuan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
-                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
-                $('#renstra_kegiatan_filter_program').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
-                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_tujuan_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_tujuan_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_sasaran_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_program_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_kegiatan_filter_tujuan').on('change', function(){
+        $('.renstra_kegiatan_filter_tujuan').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -4372,27 +4580,28 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_kegiatan_filter_sasaran').empty();
-                        $('#renstra_kegiatan_filter_sasaran').prop('disabled', false);
-                        $('#renstra_kegiatan_filter_program').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $('#renstra_kegiatan_filter_sasaran_'+tahun).empty();
+                        $('#renstra_kegiatan_filter_sasaran_'+tahun).prop('disabled', false);
+                        $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_sasaran_'+tahun).append('<option value="">--- Pilih Sasaran ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_kegiatan_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_kegiatan_filter_sasaran_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
-                $('#renstra_kegiatan_filter_program').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
-                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_sasaran_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_sasaran_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_program_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_kegiatan_filter_sasaran').on('change', function(){
+        $('.renstra_kegiatan_filter_sasaran').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -4403,24 +4612,25 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_kegiatan_filter_program').empty();
-                        $('#renstra_kegiatan_filter_program').prop('disabled', false);
-                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                        $('#renstra_kegiatan_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                        $('#renstra_kegiatan_filter_program_'+tahun).empty();
+                        $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', false);
+                        $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                        $('#renstra_kegiatan_filter_program_'+tahun).append('<option value="">--- Pilih Program ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_kegiatan_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.program_rpjmd_id));
+                            $('#renstra_kegiatan_filter_program_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.program_rpjmd_id));
                         });
                     }
                 });
             } else {
-                $('#renstra_kegiatan_filter_program').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
-                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_program_'+tahun).val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_kegiatan_filter_program').on('change', function(){
+        $('.renstra_kegiatan_filter_program').on('change', function(){
+            var tahun = $(this).attr('data-tahun');
             if($(this).val() != '')
             {
                 $.ajax({
@@ -4431,27 +4641,28 @@
                         id:$(this).val()
                     },
                     success: function(response){
-                        $('#renstra_kegiatan_filter_kegiatan').empty();
-                        $('#renstra_kegiatan_filter_kegiatan').prop('disabled', false);
-                        $('#renstra_kegiatan_filter_kegiatan').append('<option value="">--- Pilih Program ---</option>');
+                        $('#renstra_kegiatan_filter_kegiatan_'+tahun).empty();
+                        $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', false);
+                        $('#renstra_kegiatan_filter_kegiatan_'+tahun).append('<option value="">--- Pilih Program ---</option>');
                         $.each(response, function(key, value){
-                            $('#renstra_kegiatan_filter_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            $('#renstra_kegiatan_filter_kegiatan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                         });
                     }
                 });
             } else {
-                $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-                $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                $('#renstra_kegiatan_filter_kegiatan_'+tahun).val('').trigger('change');
             }
         });
 
-        $('#renstra_kegiatan_btn_filter').click(function(){
-            var visi = $('#renstra_kegiatan_filter_visi').val();
-            var misi = $('#renstra_kegiatan_filter_misi').val();
-            var tujuan = $('#renstra_kegiatan_filter_tujuan').val();
-            var sasaran = $('#renstra_kegiatan_filter_sasaran').val();
-            var program = $('#renstra_kegiatan_filter_program').val();
-            var kegiatan = $('#renstra_kegiatan_filter_kegiatan').val();
+        $('.renstra_kegiatan_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#renstra_kegiatan_filter_visi_'+tahun).val();
+            var misi = $('#renstra_kegiatan_filter_misi_'+tahun).val();
+            var tujuan = $('#renstra_kegiatan_filter_tujuan_'+tahun).val();
+            var sasaran = $('#renstra_kegiatan_filter_sasaran_'+tahun).val();
+            var program = $('#renstra_kegiatan_filter_program_'+tahun).val();
+            var kegiatan = $('#renstra_kegiatan_filter_kegiatan_'+tahun).val();
 
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.filter.kegiatan') }}",
@@ -4463,27 +4674,29 @@
                     tujuan: tujuan,
                     sasaran: sasaran,
                     program: program,
-                    kegiatan: kegiatan
+                    kegiatan: kegiatan,
+                    tahun: tahun
                 },
                 success: function(data)
                 {
-                    $('#renstraKegiatanNavDiv').html(data.html);
+                    $('#renstraKegiatanNavDiv'+tahun).html(data.html);
                 }
             });
         });
 
-        $('#renstra_kegiatan_btn_reset').click(function(){
-            $('#renstra_kegiatan_filter_misi').prop('disabled', true);
-            $('#renstra_kegiatan_filter_tujuan').prop('disabled', true);
-            $('#renstra_kegiatan_filter_sasaran').prop('disabled', true);
-            $('#renstra_kegiatan_filter_program').prop('disabled', true);
-            $('#renstra_kegiatan_filter_kegiatan').prop('disabled', true);
-            $("[name='renstra_kegiatan_filter_visi']").val('').trigger('change');
-            $("[name='renstra_kegiatan_filter_misi']").val('').trigger('change');
-            $("[name='renstra_kegiatan_filter_tujuan']").val('').trigger('change');
-            $("[name='renstra_kegiatan_filter_sasaran']").val('').trigger('change');
-            $("[name='renstra_kegiatan_filter_program']").val('').trigger('change');
-            $("[name='renstra_kegiatan_filter_kegiatan']").val('').trigger('change');
+        $('.renstra_kegiatan_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#renstra_kegiatan_filter_misi_'+tahun).prop('disabled', true);
+            $('#renstra_kegiatan_filter_tujuan_'+tahun).prop('disabled', true);
+            $('#renstra_kegiatan_filter_sasaran_'+tahun).prop('disabled', true);
+            $('#renstra_kegiatan_filter_program_'+tahun).prop('disabled', true);
+            $('#renstra_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+            $('#renstra_kegiatan_filter_visi_'+tahun).val('').trigger('change');
+            $('#renstra_kegiatan_filter_misi_'+tahun).val('').trigger('change');
+            $('#renstra_kegiatan_filter_tujuan_'+tahun).val('').trigger('change');
+            $('#renstra_kegiatan_filter_sasaran_'+tahun).val('').trigger('change');
+            $('#renstra_kegiatan_filter_program_'+tahun).val('').trigger('change');
+            $('#renstra_kegiatan_filter_kegiatan_'+tahun).val('').trigger('change');
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.reset.program') }}",
                 method: 'POST',
@@ -4492,7 +4705,7 @@
                 },
                 success: function(data)
                 {
-                    $('#renstraKegiatanNavDiv').html(data.html);
+                    $('#renstraKegiatanNavDiv'+tahun).html(data.html);
                 }
             });
         });

@@ -61,9 +61,13 @@ Route::group(['middleware' => 'auth:admin'], function(){
     // Perencanaan
     Route::get('/admin/perencanaan', 'Admin\PerencanaanController@index')->name('admin.perencanaan.index');
     Route::get('/admin/perencanaan/get-misi', 'Admin\PerencanaanController@get_misi')->name('admin.perencanaan.get-misi');
+    Route::get('/admin/perencanaan/get-misi/{tahun}', 'Admin\PerencanaanController@get_misi_tahun');
     Route::get('/admin/perencanaan/get-tujuan', 'Admin\PerencanaanController@get_tujuan')->name('admin.perencanaan.get-tujuan');
+    Route::get('/admin/perencanaan/get-tujuan/{tahun}', 'Admin\PerencanaanController@get_tujuan_tahun');
     Route::get('/admin/perencanaan/get-sasaran', 'Admin\PerencanaanController@get_sasaran')->name('admin.perencanaan.get-sasaran');
+    Route::get('/admin/perencanaan/get-sasaran/{tahun}', 'Admin\PerencanaanController@get_sasaran_tahun');
     Route::get('/admin/perencanaan/get-program', 'Admin\PerencanaanController@get_program')->name('admin.perencanaan.get-program');
+    Route::get('/admin/perencanaan/get-program/{tahun}', 'Admin\PerencanaanController@get_program_tahun');
     Route::post('/admin/perencanaan/filter/get-misi', 'Admin\PerencanaanController@filter_get_misi')->name('admin.perencanaan.filter.get-misi');
     Route::post('/admin/perencanaan/filter/get-tujuan', 'Admin\PerencanaanController@filter_get_tujuan')->name('admin.perencanaan.filter.get-tujuan');
     Route::post('/admin/perencanaan/filter/get-sasaran', 'Admin\PerencanaanController@filter_get_sasaran')->name('admin.perencanaan.filter.get-sasaran');
@@ -78,15 +82,19 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/perencanaan/filter/misi', 'Admin\PerencanaanController@filter_misi')->name('admin.perencanaan.filter.misi');
     Route::post('/admin/perencanaan/reset/misi', 'Admin\PerencanaanController@get_misi')->name('admin.perencanaan.reset.misi');
     Route::get('/admin/perencanaan/renstra/get-tujuan', 'Admin\PerencanaanController@renstra_get_tujuan')->name('admin.perencanaan.renstra.get-tujuan');
+    Route::get('/admin/perencanaan/renstra/get-tujuan/{tahun}', 'Admin\PerencanaanController@renstra_get_tujuan_tahun');
     Route::post('/admin/perencanaan/renstra/filter/tujuan', 'Admin\PerencanaanController@renstra_filter_tujuan')->name('admin.perencanaan.renstra.filter.tujuan');
     Route::post('/admin/perencanaan/renstra/reset/tujuan', 'Admin\PerencanaanController@renstra_get_tujuan')->name('admin.perencanaan.renstra.reset.tujuan');
     Route::get('/admin/perencanaan/renstra/get-sasaran', 'Admin\PerencanaanController@renstra_get_sasaran')->name('admin.perencanaan.renstra.get-sasaran');
+    Route::get('/admin/perencanaan/renstra/get-sasaran/{tahun}', 'Admin\PerencanaanController@renstra_get_sasaran_tahun');
     Route::post('/admin/perencanaan/renstra/filter/sasaran', 'Admin\PerencanaanController@renstra_filter_sasaran')->name('admin.perencanaan.renstra.filter.sasaran');
     Route::post('/admin/perencanaan/renstra/reset/sasaran', 'Admin\PerencanaanController@renstra_get_sasaran')->name('admin.perencanaan.renstra.reset.sasaran');
     Route::get('/admin/perencanaan/renstra/get-program', 'Admin\PerencanaanController@renstra_get_program')->name('admin.perencanaan.renstra.get-program');
+    Route::get('/admin/perencanaan/renstra/get-program/{tahun}', 'Admin\PerencanaanController@renstra_get_program_tahun');
     Route::post('/admin/perencanaan/renstra/filter/program', 'Admin\PerencanaanController@renstra_filter_program')->name('admin.perencanaan.renstra.filter.program');
     Route::post('/admin/perencanaan/renstra/reset/program', 'Admin\PerencanaanController@renstra_get_program')->name('admin.perencanaan.renstra.reset.program');
     Route::get('/admin/perencanaan/renstra/get-kegiatan', 'Admin\PerencanaanController@renstra_get_kegiatan')->name('admin.perencanaan.renstra.get-kegiatan');
+    Route::get('/admin/perencanaan/renstra/get-kegiatan/{tahun}', 'Admin\PerencanaanController@renstra_get_kegiatan_tahun');
     Route::post('/admin/perencanaan/renstra/filter/kegiatan', 'Admin\PerencanaanController@renstra_filter_kegiatan')->name('admin.perencanaan.renstra.filter.kegiatan');
     Route::post('/admin/perencanaan/renstra/reset/kegiatan', 'Admin\PerencanaanController@renstra_get_kegiatan')->name('admin.perencanaan.renstra.reset.kegiatan');
 
@@ -166,6 +174,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     //Visi
     Route::get('/admin/visi', 'Admin\VisiController@index')->name('admin.visi.index');
+    Route::get('/admin/visi/get-visi/{tahun}', 'Admin\VisiController@get_visi');
     Route::get('/admin/visi/detail/{id}', 'Admin\VisiController@show');
     Route::post('/admin/visi','Admin\VisiController@store')->name('admin.visi.store');
     Route::get('/admin/visi/edit/{id}','Admin\VisiController@edit');

@@ -62,10 +62,10 @@
                     <tr>
                         <th class="text-muted text-small text-uppercase">No</th>
                         <th class="text-muted text-small text-uppercase">OPD</th>
-                        <th class="text-muted text-small text-uppercase">Name</th>
+                        <th class="text-muted text-small text-uppercase">Nama Admin</th>
                         <th class="text-muted text-small text-uppercase">Email</th>
                         <th class="text-muted text-small text-uppercase">Telp</th>
-                        <th class="text-muted text-small text-uppercase">Logo</th>
+                        <th class="text-muted text-small text-uppercase">Foto Admin</th>
                         <th class="text-muted text-small text-uppercase">Aksi</th>
                     </tr>
                 </thead>
@@ -119,6 +119,7 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-5">
+                            <label for="" class="form-label">Foto Admin</label>
                             <input type="file" class="dropify" name="foto" data-height="300" data-allowed-file-extensions="png jpg jpeg webp" data-show-errors="true" required>
                         </div>
                     </div>

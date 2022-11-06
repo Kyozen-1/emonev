@@ -15,6 +15,7 @@ use Excel;
 use Carbon\Carbon;
 use App\Models\Visi;
 use App\Models\PivotPerubahanVisi;
+use App\Models\TahunPeriode;
 
 class VisiController extends Controller
 {
@@ -27,13 +28,40 @@ class VisiController extends Controller
     {
         if(request()->ajax())
         {
-            $data = Visi::latest()->get();
+            $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+            $tahun_awal = $get_periode->tahun_awal;
+            $get_visis = Visi::latest()->get();
+            $data = [];
+            foreach ($get_visis as $get_visi) {
+                $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
+                if(request()->filter_tahun)
+                {
+                    $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', request()->filter_tahun);
+                } else {
+                    $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $tahun_awal);
+                }
+                $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
+                if($cek_perubahan_visi)
+                {
+                    $data[] = [
+                        'id' => $get_visi->id,
+                        'deskripsi' => $cek_perubahan_visi->deskripsi,
+                        'kode' => $cek_perubahan_visi->kode
+                    ];
+                } else {
+                    $data[] = [
+                        'id' => $get_visi->id,
+                        'deskripsi' => $get_visi->deskripsi,
+                        'kode' => $get_visi->kode
+                    ];
+                }
+            }
             $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
-                    $button_show = '<button type="button" name="visi_detail" id="'.$data->id.'" class="visi_detail btn btn-icon waves-effect btn-success" title="Detail Data"><i class="fas fa-eye"></i></button>';
-                    $button_edit = '<button type="button" name="visi_edit" id="'.$data->id.'"
+                    $button_show = '<button type="button" name="visi_detail" id="'.$data['id'].'" class="visi_detail btn btn-icon waves-effect btn-success" title="Detail Data"><i class="fas fa-eye"></i></button>';
+                    $button_edit = '<button type="button" name="visi_edit" id="'.$data['id'].'"
                     class="visi_edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
                     // $button_delete = '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-icon waves-effect btn-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
                     // $button = $button_show . ' ' . $button_edit . ' ' . $button_delete;
@@ -41,12 +69,12 @@ class VisiController extends Controller
                     return $button;
                 })
                 ->editColumn('deskripsi', function($data) use ($tahun_sekarang){
-                    $cek_perubahan = PivotPerubahanVisi::where('visi_id',$data->id)->where('tahun_perubahan', $tahun_sekarang)->latest()->first();
+                    $cek_perubahan = PivotPerubahanVisi::where('visi_id',$data['id'])->where('tahun_perubahan', $tahun_sekarang)->latest()->first();
                     if($cek_perubahan)
                     {
                         return $cek_perubahan->deskripsi;
                     } else {
-                        return $data->deskripsi;
+                        return $data['deskripsi'];
                     }
                 })
                 // ->editColumn('tahun_perubahan', function($data) use ($tahun_sekarang){
@@ -62,6 +90,66 @@ class VisiController extends Controller
                 ->make(true);
         }
         return view('admin.visi.index');
+    }
+
+    public function get_visi($tahun)
+    {
+        if(request()->ajax())
+        {
+            $get_visis = Visi::latest()->get();
+            $data = [];
+            foreach ($get_visis as $get_visi) {
+                $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
+                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $tahun);
+                $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
+                if($cek_perubahan_visi)
+                {
+                    $data[] = [
+                        'id' => $get_visi->id,
+                        'deskripsi' => $cek_perubahan_visi->deskripsi,
+                        'kode' => $cek_perubahan_visi->kode
+                    ];
+                } else {
+                    $data[] = [
+                        'id' => $get_visi->id,
+                        'deskripsi' => $get_visi->deskripsi,
+                        'kode' => $get_visi->kode
+                    ];
+                }
+            }
+            $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('aksi', function($data){
+                    $button_show = '<button type="button" name="visi_detail" id="'.$data['id'].'" class="visi_detail btn btn-icon waves-effect btn-success" title="Detail Data"><i class="fas fa-eye"></i></button>';
+                    $button_edit = '<button type="button" name="visi_edit" id="'.$data['id'].'"
+                    class="visi_edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
+                    // $button_delete = '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-icon waves-effect btn-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
+                    // $button = $button_show . ' ' . $button_edit . ' ' . $button_delete;
+                    $button = $button_show . ' ' . $button_edit;
+                    return $button;
+                })
+                ->editColumn('deskripsi', function($data) use ($tahun_sekarang){
+                    $cek_perubahan = PivotPerubahanVisi::where('visi_id',$data['id'])->where('tahun_perubahan', $tahun_sekarang)->latest()->first();
+                    if($cek_perubahan)
+                    {
+                        return $cek_perubahan->deskripsi;
+                    } else {
+                        return $data['deskripsi'];
+                    }
+                })
+                // ->editColumn('tahun_perubahan', function($data) use ($tahun_sekarang){
+                //     $cek_perubahan = PivotPerubahanVisi::where('visi_id', $data->id)->where('tahun_perubahan', $tahun_sekarang)->latest()->first();
+                //     if($cek_perubahan)
+                //     {
+                //         return $cek_perubahan->tahun_perubahan;
+                //     } else {
+                //         return $data->tahun_perubahan;
+                //     }
+                // })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        }
     }
 
     /**

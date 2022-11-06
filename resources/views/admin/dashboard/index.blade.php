@@ -61,18 +61,18 @@
         <!-- Title and Top Buttons End -->
 
         <!-- Content Start -->
-        <ul class="nav nav-tabs nav-tabs-title nav-tabs-line-title responsive-tabs" id="lineTitleTabsContainer" role="tablist">
+        {{-- <ul class="nav nav-tabs nav-tabs-title nav-tabs-line-title responsive-tabs" id="lineTitleTabsContainer" role="tablist">
             <li class="nav-item" role="presentation">
                 <a class="nav-link active" data-bs-toggle="tab" href="#dashboardVisiMisiTab" role="tab" aria-selected="true">Dashboard Visi Misi</a>
             </li>
             <li class="nav-item" role="presentation">
                 <a class="nav-link" data-bs-toggle="tab" href="#dashboardPendapatanPembiayaanBelanjaTab" role="tab" aria-selected="false">Dashboard Pendapatan, Pembiayaan, dan Belanja</a>
             </li>
-        </ul>
+        </ul> --}}
 
         <div class="tab-content">
             {{-- Visi Misi Start --}}
-            <div class="tab-pane fade active show" id="dashboardVisiMisiTab" role="tabpanel">
+            {{-- <div class="tab-pane fade active show" id="dashboardVisiMisiTab" role="tabpanel">
                 <div class="row">
                     <div class="col-12">
                         <div class="card mb-2">
@@ -400,11 +400,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             {{-- Visi Misi End --}}
 
             {{-- Pendapatan, Pembiayaan, dan Belanja Start --}}
-            <div class="tab-pane fade" id="dashboardPendapatanPembiayaanBelanjaTab" role="tabpanel">
+            {{-- <div class="tab-pane fade" id="dashboardPendapatanPembiayaanBelanjaTab" role="tabpanel">
                 <div class="row mb-3">
                     <div class="col-12 col-md-4">
                         <div class="card">
@@ -578,7 +578,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             {{-- Pendapatan, Pembiayaan, dan Belanja End --}}
         </div>
         <!-- Content End -->

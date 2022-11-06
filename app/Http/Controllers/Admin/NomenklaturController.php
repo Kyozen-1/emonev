@@ -77,15 +77,7 @@ class NomenklaturController extends Controller
             }
         }
 
-        $html = '<div class="row mb-3">
-                    <div class="col-12">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
-                            <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-table-rows slim">
+        $html = '<div class="data-table-rows slim">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
@@ -198,15 +190,7 @@ class NomenklaturController extends Controller
             }
         }
 
-        $html = '<div class="row mb-3">
-                    <div class="col-12">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="onOffTaggingKegiatan" checked>
-                            <label class="form-check-label" for="onOffTaggingKegiatan">On / Off Tagging</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-table-rows slim">
+        $html = '<div class="data-table-rows slim">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-striped table-condesed">
                             <thead>
@@ -369,15 +353,7 @@ class NomenklaturController extends Controller
             }
         }
 
-        $html = '<div class="row mb-3">
-                    <div class="col-12">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="onOffTaggingSubKegiatan" checked>
-                            <label class="form-check-label" for="onOffTaggingSubKegiatan">On / Off Tagging</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-table-rows slim">
+        $html = '<div class="data-table-rows slim">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-striped table-condesed">
                             <thead>
