@@ -95,6 +95,22 @@
                 <div class="tab-content">
                     {{-- TC 14 Start --}}
                     <div class="tab-pane fade active show" id="tc_14" role="tabpanel">
+                        <div class="d-flex justify-content-between">
+                            <div></div>
+                            <button
+                                class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                            >
+                                <i data-acorn-icon="download" data-acorn-size="15"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                <a class="dropdown-item" href="#">PDF</a>
+                                <a class="dropdown-item" href="#">Excel</a>
+                            </div>
+                        </div>
                         <div class="text-center mb-3">
                             <h1>Tabel T-C.14</h1>
                             <h1>Program Pembangunan Daerah yang disertai Pagu Indikatif</h1>
@@ -180,6 +196,22 @@
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
+                                <div class="d-flex justify-content-between">
+                                    <div></div>
+                                    <button
+                                        class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        aria-haspopup="true"
+                                    >
+                                        <i data-acorn-icon="download" data-acorn-size="15"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                        <a class="dropdown-item" href="#">PDF</a>
+                                        <a class="dropdown-item" href="#">Excel</a>
+                                    </div>
+                                </div>
                                 @foreach ($tahuns as $tahun)
                                     <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="tc_19_{{$tahun}}" role="tabpanel">
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
@@ -265,6 +297,22 @@
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
+                                <div class="d-flex justify-content-between">
+                                    <div></div>
+                                    <button
+                                        class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        aria-haspopup="true"
+                                    >
+                                        <i data-acorn-icon="download" data-acorn-size="15"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                        <a class="dropdown-item" href="#">PDF</a>
+                                        <a class="dropdown-item" href="#">Excel</a>
+                                    </div>
+                                </div>
                                 @foreach ($tahuns as $tahun)
                                     <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_79_{{$tahun}}" role="tabpanel">
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
@@ -359,6 +407,22 @@
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
+                                <div class="d-flex justify-content-between">
+                                    <div></div>
+                                    <button
+                                        class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        aria-haspopup="true"
+                                    >
+                                        <i data-acorn-icon="download" data-acorn-size="15"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                        <a class="dropdown-item" href="#">PDF</a>
+                                        <a class="dropdown-item" href="#">Excel</a>
+                                    </div>
+                                </div>
                                 @foreach ($tahuns as $tahun)
                                     <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_78_{{$tahun}}" role="tabpanel">
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
@@ -484,6 +548,22 @@
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
+                                <div class="d-flex justify-content-between">
+                                    <div></div>
+                                    <button
+                                        class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        aria-haspopup="true"
+                                    >
+                                        <i data-acorn-icon="download" data-acorn-size="15"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                        <a class="dropdown-item" href="#">PDF</a>
+                                        <a class="dropdown-item" href="#">Excel</a>
+                                    </div>
+                                </div>
                                 @foreach ($tahuns as $tahun)
                                     <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_80_{{$tahun}}" role="tabpanel">
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
@@ -611,6 +691,22 @@
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
+                                <div class="d-flex justify-content-between">
+                                    <div></div>
+                                    <button
+                                        class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        aria-haspopup="true"
+                                    >
+                                        <i data-acorn-icon="download" data-acorn-size="15"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                        <a class="dropdown-item" href="#">PDF</a>
+                                        <a class="dropdown-item" href="#">Excel</a>
+                                    </div>
+                                </div>
                                 @foreach ($tahuns as $tahun)
                                     <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_81_{{$tahun}}" role="tabpanel">
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
