@@ -270,7 +270,7 @@ class NomenklaturController extends Controller
                                                                                                 $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
                                                                                                 $kegiatans = [];
                                                                                                 foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                                                                                                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)->latest()->first();
                                                                                                     if($cek_perubahan_kegiatan)
                                                                                                     {
                                                                                                         $kegiatans[] = [
@@ -657,15 +657,7 @@ class NomenklaturController extends Controller
             }
         }
 
-        $html = '<div class="row mb-3">
-                    <div class="col-12">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="onOffTaggingSubKegiatan" checked>
-                            <label class="form-check-label" for="onOffTaggingSubKegiatan">On / Off Tagging</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-table-rows slim">
+        $html = '<div class="data-table-rows slim">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-striped table-condesed">
                             <thead>
@@ -721,7 +713,7 @@ class NomenklaturController extends Controller
                                             </tr>
                                             <tr>
                                                 <td colspan="3" class="hiddenRow">
-                                                    <div class="accordion-body collapse" id="sub_kegiatan_urusan'.$urusan['id'].'">
+                                                    <div class=" collapse" id="sub_kegiatan_urusan'.$urusan['id'].'">
                                                         <table class="table table-striped table-condesed">
                                                             <tbody>';
                                                                 foreach ($programs as $program) {
@@ -739,7 +731,7 @@ class NomenklaturController extends Controller
                                                                             </tr>
                                                                             <tr>
                                                                                 <td colspan="12" class="hiddenRow">
-                                                                                    <div class="accordion-body collapse" id="sub_kegiatan_program'.$program['id'].'">
+                                                                                    <div class=" collapse" id="sub_kegiatan_program'.$program['id'].'">
                                                                                         <table class="table table-striped">
                                                                                             <tbody>';
                                                                                                 $get_kegiatans = Kegiatan::where('program_id', $program['id']);
@@ -794,7 +786,7 @@ class NomenklaturController extends Controller
                                                                                                             </tr>
                                                                                                             <tr>
                                                                                                                 <td colspan="12" class="hiddenRow">
-                                                                                                                    <div class="accordion-body collapse" id="sub_kegiatan_kegiatan'.$kegiatan['id'].'">
+                                                                                                                    <div class=" collapse" id="sub_kegiatan_kegiatan'.$kegiatan['id'].'">
                                                                                                                         <table class="table table-striped table-condesed">
                                                                                                                             <tbody>';
                                                                                                                                 $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id']);
@@ -902,15 +894,7 @@ class NomenklaturController extends Controller
             }
         }
 
-        $html = '<div class="row mb-3">
-                    <div class="col-12">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="onOffTaggingKegiatan" checked>
-                            <label class="form-check-label" for="onOffTaggingKegiatan">On / Off Tagging</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-table-rows slim">
+        $html = '<div class="data-table-rows slim">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-striped table-condesed">
                             <thead>
@@ -966,7 +950,7 @@ class NomenklaturController extends Controller
                                             </tr>
                                             <tr>
                                                 <td colspan="3" class="hiddenRow">
-                                                    <div class="accordion-body collapse" id="kegiatan_urusan'.$urusan['id'].'">
+                                                    <div class=" collapse" id="kegiatan_urusan'.$urusan['id'].'">
                                                         <table class="table table-striped table-condesed">
                                                             <tbody>';
                                                                 foreach ($programs as $program) {
@@ -987,7 +971,7 @@ class NomenklaturController extends Controller
                                                                             </tr>
                                                                             <tr>
                                                                                 <td colspan="12" class="hiddenRow">
-                                                                                    <div class="accordion-body collapse" id="kegiatan_program'.$program['id'].'">
+                                                                                    <div class=" collapse" id="kegiatan_program'.$program['id'].'">
                                                                                         <table class="table table-striped table-condesed">
                                                                                             <tbody>';
                                                                                                 $get_kegiatans = Kegiatan::where('program_id', $program['id']);
@@ -1086,15 +1070,7 @@ class NomenklaturController extends Controller
             }
         }
 
-        $html = '<div class="row mb-3">
-                    <div class="col-12">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
-                            <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-table-rows slim">
+        $html = '<div class="data-table-rows slim">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
@@ -1155,7 +1131,7 @@ class NomenklaturController extends Controller
                                         </tr>
                                         <tr>
                                             <td colspan="4" class="hiddenRow">
-                                                <div class="accordion-body collapse" id="program_urusan'.$urusan['id'].'">
+                                                <div class=" collapse" id="program_urusan'.$urusan['id'].'">
                                                     <table class="table table-striped table-condesed">
                                                         <tbody>';
                                                             foreach ($programs as $program) {

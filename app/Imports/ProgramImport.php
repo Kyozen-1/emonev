@@ -68,6 +68,46 @@ class ProgramImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
+                    // Semua
+                    // $cek_program = Program::where('kode', $row[2])->whereHas('urusan', function($q) use ($row){
+                    //     $q->where('kode', $row[1]);
+                    // })->where('tahun_perubahan', $row[4])->first();
+                    // if($cek_program)
+                    // {
+                    //     $pivot = new PivotPerubahanProgram;
+                    //     $pivot->program_id = $cek_program->id;
+                    //     $pivot->urusan_id = $cek_program->urusan_id;
+                    //     $pivot->kode = $row[2];
+                    //     $pivot->deskripsi = $row[3];
+                    //     $pivot->tahun_perubahan = $row[4];
+                    //     $pivot->kabupaten_id = 62;
+                    //     if($row[4] > 2020)
+                    //     {
+                    //         $pivot->status_aturan = 'Sesudah Perubahan';
+                    //     } else {
+                    //         $pivot->status_aturan = 'Sebelum Perubahan';
+                    //     }
+                    //     $pivot->save();
+                    // } else {
+                    //     $get_urusan = Urusan::where('kode', $row[1])->first();
+                    //     if($get_urusan)
+                    //     {
+                    //         $program = new Program;
+                    //         $program->urusan_id = $get_urusan->id;
+                    //         $program->kode = $row[2];
+                    //         $program->deskripsi = $row[3];
+                    //         $program->tahun_perubahan = $row[4];
+                    //         $program->kabupaten_id = 62;
+                    //         if($row[4] > 2020)
+                    //         {
+                    //             $program->status_aturan = 'Sesudah Perubahan';
+                    //         } else {
+                    //             $program->status_aturan = 'Sebelum Perubahan';
+                    //         }
+                    //         $program->save();
+                    //     }
+                    // }
+                    // Satu Persatu
                     $cek_program = Program::where('kode', $row[1])->where('urusan_id', $this->urusan_id)->first();
                     if($cek_program)
                     {

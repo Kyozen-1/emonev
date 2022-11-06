@@ -1023,6 +1023,9 @@
                                             <th>OPD</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        {!! $rkpd !!}
+                                    </tbody>
                                 </table>
                             </div>
                             <!-- Table End -->
