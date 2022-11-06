@@ -38,6 +38,8 @@ use App\Models\PivotPerubahanKegiatan;
 use App\Models\Kegiatan;
 use App\Models\PivotOpdRentraKegiatan;
 use App\Models\TargetRpPertahunRenstraKegiatan;
+use App\Models\SubKegiatan;
+use App\Models\PivotPerubahanSubKegiatan;
 
 class PerencanaanController extends Controller
 {
@@ -94,6 +96,7 @@ class PerencanaanController extends Controller
             }
         }
         $opds = MasterOpd::pluck('nama', 'id');
+
         return view('admin.perencanaan.index', [
             'tahuns' => $tahuns,
             'tahun_awal' => $tahun_awal,
@@ -7306,6 +7309,144 @@ class PerencanaanController extends Controller
                         </table>
                     </div>
                 </div>';
+        return response()->json(['html' => $html]);
+    }
+
+    public function get_rkpd()
+    {
+        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $urusans = [];
+        foreach($get_urusans as $get_urusan)
+        {
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)
+                                        ->orderBy('tahun_perubahan', 'desc')
+                                        ->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $urusans[] = [
+                    'id' => $cek_perubahan_urusan->urusan_id,
+                    'kode' => $cek_perubahan_urusan->kode,
+                    'deskripsi' => $cek_perubahan_urusan->deskripsi
+                ];
+            } else {
+                $urusans[] = [
+                    'id' => $get_urusan->id,
+                    'kode' => $get_urusan->kode,
+                    'deskripsi' => $get_urusan->deskripsi
+                ];
+            }
+        }
+
+        $html = '';
+        foreach ($urusans as $urusan) {
+            $html .= '<tr>';
+                $html .= '<td colspan="6"><strong>Urusan</strong></td>';
+            $html .= '</tr>';
+            $html .= '<tr>';
+                $html .= '<td>'.$urusan['kode'].'</td>';
+                $html .= '<td>'.$urusan['deskripsi'].'</td>';
+            $html .= '</tr>';
+
+            $get_programs = Program::where('urusan_id', $urusan['id'])->orderBy('kode', 'asc')->get();
+            $programs = [];
+            foreach ($get_programs as $get_program) {
+                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)
+                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                if($cek_perubahan_program)
+                {
+                    $programs[] = [
+                        'id' => $cek_perubahan_program->program_id,
+                        'kode' => $cek_perubahan_program->kode,
+                        'deskripsi' => $cek_perubahan_program->deskripsi
+                    ];
+                } else {
+                    $programs[] = [
+                        'id' => $get_program->id,
+                        'kode' => $get_program->kode,
+                        'deskripsi' => $get_program->deskripsi
+                    ];
+                }
+            }
+            $html .= '<tr>';
+                $html .= '<td colspan="6"><strong>Program</strong></td>';
+            $html .= '</tr>';
+            foreach($programs as $program)
+            {
+                $html .= '<tr>';
+                    $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'</td>';
+                    $html .= '<td>'.$program['deskripsi'].'</td>';
+                $html .= '</tr>';
+
+                $get_kegiatans = Kegiatan::where('program_id', $program['id'])->orderBy('kode', 'asc')->get();
+                $kegiatans = [];
+                foreach($get_kegiatans as $get_kegiatan)
+                {
+                    $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
+                                                ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                    if($cek_perubahan_kegiatan)
+                    {
+                        $kegiatans[] = [
+                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                            'kode' => $cek_perubahan_kegiatan->kode,
+                            'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                        ];
+                    } else {
+                        $kegiatans[] = [
+                            'id' => $get_kegiatan->id,
+                            'kode' => $get_kegiatan->kode,
+                            'deskripsi' => $get_kegiatan->deskripsi
+                        ];
+                    }
+                }
+
+                $html .= '<tr>';
+                    $html .= '<td colspan="6"><strong>Kegiatan</strong></td>';
+                $html .= '</tr>';
+
+                foreach($kegiatans as $kegiatan)
+                {
+                    $html .= '<tr>';
+                        $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>';
+                        $html .= '<td>'.$kegiatan['deskripsi'].'</td>';
+                    $html .='</tr>';
+
+                    $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->orderBy('kode', 'asc')
+                                            ->latest()->get();
+                    $sub_kegiatans = [];
+                    foreach($get_sub_kegiatans as $get_sub_kegiatan)
+                    {
+                        $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)
+                                                        ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+                        if($cek_perubahan_sub_kegiatan)
+                        {
+                            $sub_kegiatans[] = [
+                                'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
+                                'kode' => $cek_perubahan_sub_kegiatan->kode,
+                                'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi
+                            ];
+                        } else {
+                            $sub_kegiatans[] = [
+                                'id' => $get_sub_kegiatan->id,
+                                'kode' => $get_sub_kegiatan->kode,
+                                'deskripsi' => $get_sub_kegiatan->deskripsi
+                            ];
+                        }
+                    }
+
+                    $html .= '<tr>';
+                        $html .= '<td colspan="6"><strong>Sub Kegiatan</strong></td>';
+                    $html .= '</tr>';
+                    foreach($sub_kegiatans as $sub_kegiatan)
+                    {
+                        $html .= '<tr>';
+                            $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</td>';
+                            $html .= '<td>'.$sub_kegiatan['deskripsi'].'</td>';
+                        $html .='</tr>';
+                    }
+                }
+            }
+        }
+
         return response()->json(['html' => $html]);
     }
 }

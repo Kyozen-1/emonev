@@ -103,7 +103,7 @@
                 <a class="nav-link" data-bs-toggle="tab" href="#renstraTab" role="tab" aria-selected="false"><i data-acorn-icon="file-text" class="icon" data-acorn-size="18"></i> RENSTRA</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#rkpdTab" role="tab" aria-selected="false"><i data-acorn-icon="file-text" class="icon" data-acorn-size="18"></i> RKPD</a>
+                <a class="nav-link" data-bs-toggle="tab" href="#rkpdTab" role="tab" aria-selected="false" id="buttonRkpdTab"><i data-acorn-icon="file-text" class="icon" data-acorn-size="18"></i> RKPD</a>
             </li>
             <li class="nav-item" role="presentation">
                 <a class="nav-link" data-bs-toggle="tab" href="#renjaTab" role="tab" aria-selected="false"><i data-acorn-icon="file-text" class="icon" data-acorn-size="18"></i> RENJA</a>
@@ -1012,19 +1012,18 @@
                         <div class="data-table-rows slim">
                             <!-- Table Start -->
                             <div class="data-table-responsive-wrapper">
-                                <table id="renja_table" class="data-table w-100">
+                                <table class="table table-condensed table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Kode</th>
-                                            <th>Urusan/Program/Kegiatan/Sub Kegiatan</th>
-                                            <th>Pagu RPJMD</th>
-                                            <th>Pagu Renstra</th>
-                                            <th>Pagu Renja</th>
-                                            <th>OPD</th>
+                                            <th width="5%">Kode</th>
+                                            <th width="45%">Urusan/Program/Kegiatan/Sub Kegiatan</th>
+                                            <th width="10%">Pagu RPJMD</th>
+                                            <th width="10%">Pagu Renstra</th>
+                                            <th width="10%">Pagu Renja</th>
+                                            <th width="20%">OPD</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {!! $rkpd !!}
+                                    <tbody id="rkpd_table" style="text-align: left;">
                                     </tbody>
                                 </table>
                             </div>
@@ -4709,6 +4708,18 @@
                 success: function(data)
                 {
                     $('#renstraKegiatanNavDiv'+tahun).html(data.html);
+                }
+            });
+        });
+
+        // RKPD
+        $('#buttonRkpdTab').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.get-rkpd') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#rkpd_table').html(data.html);
                 }
             });
         });

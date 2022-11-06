@@ -97,6 +97,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/perencanaan/renstra/get-kegiatan/{tahun}', 'Admin\PerencanaanController@renstra_get_kegiatan_tahun');
     Route::post('/admin/perencanaan/renstra/filter/kegiatan', 'Admin\PerencanaanController@renstra_filter_kegiatan')->name('admin.perencanaan.renstra.filter.kegiatan');
     Route::post('/admin/perencanaan/renstra/reset/kegiatan', 'Admin\PerencanaanController@renstra_get_kegiatan')->name('admin.perencanaan.renstra.reset.kegiatan');
+    Route::get('/admin/perencanaan/get-rkpd', 'Admin\PerencanaanController@get_rkpd')->name('admin.perencanaan.get-rkpd');
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');
