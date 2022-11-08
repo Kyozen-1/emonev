@@ -477,12 +477,26 @@
                                                         </div>
                                                     </div>
                                                     <div class="row mb-3">
-                                                        <div class="col-12">
+                                                        <div class="col-2 justify-content-center align-self-center">
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
                                                                 <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
                                                             </div>
                                                         </div>
+                                                        <div class="col-2">
+                                                            <form>
+                                                                Program:
+                                                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option1_{{$tahun}}" value="semua" checked="checked"/>
+                                                                    <label class="btn btn-outline-primary" for="status_program_option1_{{$tahun}}">Semua</label>
+                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option2_{{$tahun}}" value="prioritas"/>
+                                                                    <label class="btn btn-outline-primary" for="status_program_option2_{{$tahun}}">Prioritas</label>
+                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option3_{{$tahun}}" value="pendukung"/>
+                                                                    <label class="btn btn-outline-primary" for="status_program_option3_{{$tahun}}">Pendukung</label>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <div class="col"></div>
                                                     </div>
                                                     <hr>
                                                     <div class="row">
@@ -4720,6 +4734,23 @@
                 success: function(data)
                 {
                     $('#rkpd_table').html(data.html);
+                }
+            });
+        });
+
+        // Filter Program
+        $('input[type=radio].status_program_option').change(function() {
+            var tahun = $('.navRpjmdProgram.active').attr('data-tahun');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.rpjmd.filter.program.status') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    value:$(this).val()
+                },
+                success: function(data)
+                {
+                    $('#programNavDiv'+tahun).html(data.html);
                 }
             });
         });

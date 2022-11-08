@@ -98,6 +98,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/perencanaan/renstra/filter/kegiatan', 'Admin\PerencanaanController@renstra_filter_kegiatan')->name('admin.perencanaan.renstra.filter.kegiatan');
     Route::post('/admin/perencanaan/renstra/reset/kegiatan', 'Admin\PerencanaanController@renstra_get_kegiatan')->name('admin.perencanaan.renstra.reset.kegiatan');
     Route::get('/admin/perencanaan/get-rkpd', 'Admin\PerencanaanController@get_rkpd')->name('admin.perencanaan.get-rkpd');
+    Route::post('/admin/perencanaan/rpjmd/filter/program/status', 'Admin\PerencanaanController@rpjmd_filter_program_status')->name('admin.perencanaan.rpjmd.filter.program.status');
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');
