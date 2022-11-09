@@ -7339,12 +7339,14 @@ class PerencanaanController extends Controller
 
         $html = '';
         foreach ($urusans as $urusan) {
-            $html .= '<tr>';
-                $html .= '<td colspan="6"><strong>Urusan</strong></td>';
-            $html .= '</tr>';
-            $html .= '<tr>';
+            $html .= '<tr style="background: #B2BEB5;">';
                 $html .= '<td>'.$urusan['kode'].'</td>';
                 $html .= '<td>'.$urusan['deskripsi'].'</td>';
+                $html .= '<td>Rp. 0</td>';
+                $html .= '<td>Rp. 0</td>';
+                $html .= '<td>Rp. 0</td>';
+                $html .= '<td>Dinas Pendidikan dan Kebudayaan</td>';
+                $html .= '<td>Agus</td>';
             $html .= '</tr>';
 
             $get_programs = Program::where('urusan_id', $urusan['id'])->orderBy('kode', 'asc')->get();
@@ -7367,14 +7369,16 @@ class PerencanaanController extends Controller
                     ];
                 }
             }
-            $html .= '<tr>';
-                $html .= '<td colspan="6"><strong>Program</strong></td>';
-            $html .= '</tr>';
             foreach($programs as $program)
             {
-                $html .= '<tr>';
+                $html .= '<tr style="background: #D3D3D3;">';
                     $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'</td>';
                     $html .= '<td>'.$program['deskripsi'].'</td>';
+                    $html .= '<td>Rp. 0</td>';
+                    $html .= '<td>Rp. 0</td>';
+                    $html .= '<td>Rp. 0</td>';
+                    $html .= '<td>Dinas Pendidikan dan Kebudayaan</td>';
+                    $html .= '<td>Agus</td>';
                 $html .= '</tr>';
 
                 $get_kegiatans = Kegiatan::where('program_id', $program['id'])->orderBy('kode', 'asc')->get();
@@ -7399,15 +7403,16 @@ class PerencanaanController extends Controller
                     }
                 }
 
-                $html .= '<tr>';
-                    $html .= '<td colspan="6"><strong>Kegiatan</strong></td>';
-                $html .= '</tr>';
-
                 foreach($kegiatans as $kegiatan)
                 {
-                    $html .= '<tr>';
+                    $html .= '<tr style="background: #E5E4E2;">';
                         $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>';
                         $html .= '<td>'.$kegiatan['deskripsi'].'</td>';
+                        $html .= '<td>Rp. 0</td>';
+                        $html .= '<td>Rp. 0</td>';
+                        $html .= '<td>Rp. 0</td>';
+                        $html .= '<td>Dinas Pendidikan dan Kebudayaan</td>';
+                        $html .= '<td>Agus</td>';
                     $html .='</tr>';
 
                     $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->orderBy('kode', 'asc')
@@ -7432,15 +7437,16 @@ class PerencanaanController extends Controller
                             ];
                         }
                     }
-
-                    $html .= '<tr>';
-                        $html .= '<td colspan="6"><strong>Sub Kegiatan</strong></td>';
-                    $html .= '</tr>';
                     foreach($sub_kegiatans as $sub_kegiatan)
                     {
-                        $html .= '<tr>';
+                        $html .= '<tr style="background: #C0C0C0;">';
                             $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</td>';
                             $html .= '<td>'.$sub_kegiatan['deskripsi'].'</td>';
+                            $html .= '<td>Rp. 0</td>';
+                            $html .= '<td>Rp. 0</td>';
+                            $html .= '<td>Rp. 0</td>';
+                            $html .= '<td>Dinas Pendidikan dan Kebudayaan</td>';
+                            $html .= '<td>Agus</td>';
                         $html .='</tr>';
                     }
                 }

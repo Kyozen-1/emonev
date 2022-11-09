@@ -1034,7 +1034,8 @@
                                             <th width="10%">Pagu RPJMD</th>
                                             <th width="10%">Pagu Renstra</th>
                                             <th width="10%">Pagu Renja</th>
-                                            <th width="20%">OPD</th>
+                                            <th width="15%">OPD</th>
+                                            <th width="5%">PIC</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rkpd_table" style="text-align: left;">
