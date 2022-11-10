@@ -46,6 +46,14 @@
                 overflow-y: scroll;
             }
         }
+        .box {
+            float: left;
+            height: 20px;
+            width: 20px;
+            margin-bottom: 15px;
+            border: 1px solid black;
+            clear: both;
+        }
     </style>
 @endsection
 
@@ -170,13 +178,13 @@
                                                     </div>
                                                     <div class="data-table-rows slim">
                                                         <!-- Table Start -->
-                                                        <div class="data-table-responsive-wrapper">
-                                                            <table id="visi_table_{{$tahun}}" class="data-table w-100">
+                                                        <div class="table-responsive-sm">
+                                                            <table id="visi_table_{{$tahun}}" class="table">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th class="text-muted text-small text-uppercase">No</th>
-                                                                        <th class="text-muted text-small text-uppercase">Deskripsi</th>
-                                                                        <th class="text-muted text-small text-uppercase">Aksi</th>
+                                                                        <th style="width: 0px;">No</th>
+                                                                        <th style="width: 0px;">Deskripsi</th>
+                                                                        <th style="width: 0px;">Aksi</th>
                                                                     </tr>
                                                                 </thead>
                                                             </table>
@@ -1022,6 +1030,17 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="row">
+                                    <div class="col"><div class="box" style="background: #ffffff;"></div> <span>: Urusan</span></div>
+                                    <div class="col"><div class="box" style="background: #e2e2e2;"></div> <span>: Program</span></div>
+                                    <div class="col"><div class="box" style="background: #cfcfcf;"></div> <span>: Kegiatan</span></div>
+                                    <div class="col"><div class="box" style="background: #bbbbbb;"></div> <span>: Sub Kegiatan</span></div>
+                                </div>
+                            </div>
+                            <div class="col"></div>
                         </div>
                         <div class="data-table-rows slim">
                             <!-- Table Start -->
@@ -2135,44 +2154,44 @@
             @foreach ($tahuns as $tahun)
                 var tahun = "{{$tahun}}";
 
-                $('#misi_filter_visi_'+tahun).select2();
-                $('#misi_filter_misi_'+tahun).select2();
+                // $('#misi_filter_visi_'+tahun).select2();
+                // $('#misi_filter_misi_'+tahun).select2();
 
-                $('#tujuan_filter_visi_'+tahun).select2();
-                $('#tujuan_filter_misi_'+tahun).select2();
-                $('#tujuan_filter_tujuan_'+tahun).select2();
+                // $('#tujuan_filter_visi_'+tahun).select2();
+                // $('#tujuan_filter_misi_'+tahun).select2();
+                // $('#tujuan_filter_tujuan_'+tahun).select2();
 
-                $('#sasaran_filter_visi_'+tahun).select2();
-                $('#sasaran_filter_misi_'+tahun).select2();
-                $('#sasaran_filter_tujuan_'+tahun).select2();
-                $('#sasaran_filter_sasaran_'+tahun).select2();
+                // $('#sasaran_filter_visi_'+tahun).select2();
+                // $('#sasaran_filter_misi_'+tahun).select2();
+                // $('#sasaran_filter_tujuan_'+tahun).select2();
+                // $('#sasaran_filter_sasaran_'+tahun).select2();
 
-                $('#program_filter_visi_'+tahun).select2();
-                $('#program_filter_misi_'+tahun).select2();
-                $('#program_filter_tujuan_'+tahun).select2();
-                $('#program_filter_sasaran_'+tahun).select2();
+                // $('#program_filter_visi_'+tahun).select2();
+                // $('#program_filter_misi_'+tahun).select2();
+                // $('#program_filter_tujuan_'+tahun).select2();
+                // $('#program_filter_sasaran_'+tahun).select2();
 
-                $('#renstra_tujuan_filter_visi_'+tahun).select2();
-                $('#renstra_tujuan_filter_misi_'+tahun).select2();
-                $('#renstra_tujuan_filter_tujuan_'+tahun).select2();
+                // $('#renstra_tujuan_filter_visi_'+tahun).select2();
+                // $('#renstra_tujuan_filter_misi_'+tahun).select2();
+                // $('#renstra_tujuan_filter_tujuan_'+tahun).select2();
 
-                $('#renstra_sasaran_filter_visi_'+tahun).select2();
-                $('#renstra_sasaran_filter_misi_'+tahun).select2();
-                $('#renstra_sasaran_filter_tujuan_'+tahun).select2();
-                $('#renstra_sasaran_filter_sasaran_'+tahun).select2();
+                // $('#renstra_sasaran_filter_visi_'+tahun).select2();
+                // $('#renstra_sasaran_filter_misi_'+tahun).select2();
+                // $('#renstra_sasaran_filter_tujuan_'+tahun).select2();
+                // $('#renstra_sasaran_filter_sasaran_'+tahun).select2();
 
-                $('#renstra_program_filter_visi_'+tahun).select2();
-                $('#renstra_program_filter_misi_'+tahun).select2();
-                $('#renstra_program_filter_tujuan_'+tahun).select2();
-                $('#renstra_program_filter_sasaran_'+tahun).select2();
-                $('#renstra_program_filter_program_'+tahun).select2();
+                // $('#renstra_program_filter_visi_'+tahun).select2();
+                // $('#renstra_program_filter_misi_'+tahun).select2();
+                // $('#renstra_program_filter_tujuan_'+tahun).select2();
+                // $('#renstra_program_filter_sasaran_'+tahun).select2();
+                // $('#renstra_program_filter_program_'+tahun).select2();
 
-                $('#renstra_kegiatan_filter_visi_'+tahun).select2();
-                $('#renstra_kegiatan_filter_misi_'+tahun).select2();
-                $('#renstra_kegiatan_filter_tujuan_'+tahun).select2();
-                $('#renstra_kegiatan_filter_sasaran_'+tahun).select2();
-                $('#renstra_kegiatan_filter_program_'+tahun).select2();
-                $('#renstra_kegiatan_filter_kegiatan_'+tahun).select2();
+                // $('#renstra_kegiatan_filter_visi_'+tahun).select2();
+                // $('#renstra_kegiatan_filter_misi_'+tahun).select2();
+                // $('#renstra_kegiatan_filter_tujuan_'+tahun).select2();
+                // $('#renstra_kegiatan_filter_sasaran_'+tahun).select2();
+                // $('#renstra_kegiatan_filter_program_'+tahun).select2();
+                // $('#renstra_kegiatan_filter_kegiatan_'+tahun).select2();
 
                 var dataTables = $('#visi_table_'+tahun).DataTable({
                     processing: true,

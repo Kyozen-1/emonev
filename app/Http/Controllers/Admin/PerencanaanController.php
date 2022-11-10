@@ -133,7 +133,7 @@ class PerencanaanController extends Controller
             }
         }
         $html = '<div class="data-table-rows slim" id="misi_div_table">
-                    <div class="data-table-responsive-wrapper">
+                    <div class="table-responsive-sm">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
@@ -7339,7 +7339,7 @@ class PerencanaanController extends Controller
 
         $html = '';
         foreach ($urusans as $urusan) {
-            $html .= '<tr style="background: #B2BEB5;">';
+            $html .= '<tr style="background: #ffffff;">';
                 $html .= '<td>'.$urusan['kode'].'</td>';
                 $html .= '<td>'.$urusan['deskripsi'].'</td>';
                 $html .= '<td>Rp. 0</td>';
@@ -7371,7 +7371,7 @@ class PerencanaanController extends Controller
             }
             foreach($programs as $program)
             {
-                $html .= '<tr style="background: #D3D3D3;">';
+                $html .= '<tr style="background: #e2e2e2;">';
                     $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'</td>';
                     $html .= '<td>'.$program['deskripsi'].'</td>';
                     $html .= '<td>Rp. 0</td>';
@@ -7405,7 +7405,7 @@ class PerencanaanController extends Controller
 
                 foreach($kegiatans as $kegiatan)
                 {
-                    $html .= '<tr style="background: #E5E4E2;">';
+                    $html .= '<tr style="background: #cfcfcf;">';
                         $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>';
                         $html .= '<td>'.$kegiatan['deskripsi'].'</td>';
                         $html .= '<td>Rp. 0</td>';
@@ -7439,7 +7439,7 @@ class PerencanaanController extends Controller
                     }
                     foreach($sub_kegiatans as $sub_kegiatan)
                     {
-                        $html .= '<tr style="background: #C0C0C0;">';
+                        $html .= '<tr style="background: #bbbbbb;">';
                             $html .= '<td>'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</td>';
                             $html .= '<td>'.$sub_kegiatan['deskripsi'].'</td>';
                             $html .= '<td>Rp. 0</td>';

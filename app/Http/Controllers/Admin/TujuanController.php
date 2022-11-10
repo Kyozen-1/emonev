@@ -178,7 +178,7 @@ class TujuanController extends Controller
         $deskripsi_misi = '';
         $deskripsi_visi = '';
 
-        $cek_perubahan = PivotPerubahanTujuan::where('tujuan_id', $id)->latest()->first();
+        $cek_perubahan = PivotPerubahanTujuan::where('tujuan_id', $id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
         $html = '<div>';
 
         if($cek_perubahan)
@@ -263,7 +263,6 @@ class TujuanController extends Controller
                 $visi = Visi::find($visi_id);
                 $deskripsi_visi = $visi->deskripsi;
             }
-
             $kode_tujuan = $cek_perubahan->kode;
             $deskripsi_tujuan = $cek_perubahan->deskripsi;
             $tahun_perubahan_tujuan = $cek_perubahan->tahun_perubahan;
@@ -295,22 +294,6 @@ class TujuanController extends Controller
 
         $html .='</div>';
 
-        // $cek_indikator = PivotTujuanIndikator::where('tujuan_id', $id)->first();
-        // $indikator = '<div>';
-
-        // if($cek_indikator){
-        //     $get_indikators = PivotTujuanIndikator::where('tujuan_id', $id)->get();
-        //     $indikator .= '<ul>';
-        //     foreach ($get_indikators as $get_indikator) {
-        //         $indikator .= '<li>'.$get_indikator->indikator.'</li>';
-        //     }
-        //     $indikator .= '</ul>';
-        // } else {
-        //     $indikator .= '<p>Tidak ada</p>';
-        // }
-
-        // $indikator .='</div>';
-
         $array = [
             'visi' => $deskripsi_visi,
             'misi' => $deskripsi_misi,
@@ -327,7 +310,7 @@ class TujuanController extends Controller
     {
         $data = Tujuan::find($id);
 
-        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $id)->latest()->first();
+        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
         if($cek_perubahan_tujuan)
         {
             $array = [

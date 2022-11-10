@@ -43,6 +43,8 @@ use App\Exports\Tc14Ekspor;
 use App\Exports\Tc19Ekspor;
 use App\Exports\E79Ekspor;
 use App\Exports\E78Ekspor;
+use App\Exports\E80Ekspor;
+use App\Exports\E81Ekspor;
 
 class LaporanController extends Controller
 {
@@ -1275,7 +1277,6 @@ class LaporanController extends Controller
     public function laporan_e_78(Request $request)
     {
         // E 78 Start
-
         $get_sasarans = Sasaran::all();
         $sasarans = [];
         foreach ($get_sasarans as $get_sasaran) {
@@ -1315,7 +1316,7 @@ class LaporanController extends Controller
             $urutan_a = 1;
             foreach ($get_program_rpjmds as $get_program_rpjmd) {
                 $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
-                                            ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+                                            ->where('tahun_perubahan', $request->tahun)->latest()->first();
                 if($cek_perubahan_program)
                 {
                     $program = [
@@ -2153,8 +2154,259 @@ class LaporanController extends Controller
         return Excel::download(new E79Ekspor($tahun), 'Laporan E - 79.xlsx');
     }
 
+    public function e_78_ekspor_pdf($tahun)
+    {
+        // E 78 Start
+        $get_sasarans = Sasaran::all();
+        $sasarans = [];
+        foreach ($get_sasarans as $get_sasaran) {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+                                        // ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi
+                ];
+            }
+        }
+        $e_78 = '';
+        $a = 1;
+        foreach ($sasarans as $sasaran) {
+            $e_78 .= '<tr>';
+                $e_78 .= '<td colspan="41" style="text-align: left"><strong>Sasaran</strong></td>';
+            $e_78 .= '</tr>';
+            $e_78 .= '<tr>';
+                $e_78 .= '<td>'.$a++.'</td>';
+                $e_78 .= '<td>'.$sasaran['deskripsi'].'</td>';
+
+            $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran){
+                $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran) {
+                    $q->where('sasaran_id', $sasaran['id']);
+                });
+            })->where('status_program', 'Program Prioritas')->get();
+            $program = [];
+            $urutan_a = 1;
+            foreach ($get_program_rpjmds as $get_program_rpjmd) {
+                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                            ->where('tahun_perubahan', $tahun)->latest()->first();
+                if($cek_perubahan_program)
+                {
+                    $program = [
+                        'id' => $cek_perubahan_program->program_id,
+                        'kode' => $cek_perubahan_program->kode,
+                        'deskripsi' => $cek_perubahan_program->deskripsi
+                    ];
+                } else {
+                    $program = [
+                        'id' => $get_program_rpjmd->program_id,
+                        'kode' => $get_program_rpjmd->program->kode,
+                        'deskripsi' => $get_program_rpjmd->program->deskripsi
+                    ];
+                }
+                if($urutan_a == 1)
+                {
+                        $e_78 .= '<td>'.$program['deskripsi'].'</td>';
+                    $e_78 .= '</tr>';
+                } else {
+                    $e_78 .= '<tr>';
+                        $e_78 .= '<td>'.$a++.'</td>';
+                        $e_78 .= '<td>'.$sasaran['deskripsi'].'</td>';
+                        $e_78 .= '<td>'.$program['deskripsi'].'</td>';
+                    $e_78 .= '</tr>';
+                }
+                $urutan_a++;
+            }
+        }
+
+        $pdf = PDF::loadView('admin.laporan.e-78', [
+            'e_78' => $e_78,
+            'tahun' => $tahun
+        ]);
+
+        return $pdf->setPaper('b2', 'landscape')->stream('Laporan E-78.pdf');
+    }
+
     public function e_78_ekspor_excel($tahun)
     {
         return Excel::download(new E78Ekspor($tahun), 'Laporan E - 78.xlsx');
+    }
+
+    public function e_80_ekspor_pdf($tahun)
+    {
+        $get_sasarans = Sasaran::all();
+        $sasarans = [];
+        foreach ($get_sasarans as $get_sasaran) {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+                                        // ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi
+                ];
+            }
+        }
+        $e_80 = '';
+        $a = 1;
+        foreach ($sasarans as $sasaran) {
+            $e_80 .= '<tr>';
+                $e_80 .= '<td colspan="41" style="text-align: left"><strong>Sasaran</strong></td>';
+            $e_80 .= '</tr>';
+            $e_80 .= '<tr>';
+                $e_80 .= '<td>'.$a++.'</td>';
+                $e_80 .= '<td>'.$sasaran['deskripsi'].'</td>';
+
+            $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran){
+                $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran) {
+                    $q->where('sasaran_id', $sasaran['id']);
+                });
+            })->get();
+            $program = [];
+            $urutan_a = 1;
+            foreach ($get_program_rpjmds as $get_program_rpjmd) {
+                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                            ->where('tahun_perubahan', $tahun)->latest()->first();
+                if($cek_perubahan_program)
+                {
+                    $program = [
+                        'id' => $cek_perubahan_program->program_id,
+                        'kode' => $cek_perubahan_program->kode,
+                        'deskripsi' => $cek_perubahan_program->deskripsi
+                    ];
+                } else {
+                    $program = [
+                        'id' => $get_program_rpjmd->program_id,
+                        'kode' => $get_program_rpjmd->program->kode,
+                        'deskripsi' => $get_program_rpjmd->program->deskripsi
+                    ];
+                }
+                if($urutan_a == 1)
+                {
+                        $e_80 .= '<td>'.$program['deskripsi'].'</td>';
+                    $e_80 .= '</tr>';
+                } else {
+                    $e_80 .= '<tr>';
+                        $e_80 .= '<td>'.$a++.'</td>';
+                        $e_80 .= '<td>'.$sasaran['deskripsi'].'</td>';
+                        $e_80 .= '<td>'.$program['deskripsi'].'</td>';
+                    $e_80 .= '</tr>';
+                }
+                $urutan_a++;
+            }
+        }
+        // E 80 End
+
+        $pdf = PDF::loadView('admin.laporan.e-80', [
+            'e_80' => $e_80,
+            'tahun' => $tahun
+        ]);
+
+        return $pdf->setPaper('b2', 'landscape')->stream('Laporan E-80.pdf');
+    }
+
+    public function e_80_ekspor_excel($tahun)
+    {
+        return Excel::download(new E80Ekspor($tahun), 'Laporan E - 80.xlsx');
+    }
+
+    public function e_81_ekspor_pdf($tahun)
+    {
+        // E 81 Start
+        $get_sasarans = Sasaran::all();
+        $sasarans = [];
+        foreach ($get_sasarans as $get_sasaran) {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+                                        // ->where('tahun_perubahan', $tahun_awal)->latest()->first();
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi
+                ];
+            }
+        }
+        $e_81 = '';
+        $a = 1;
+        foreach ($sasarans as $sasaran) {
+            $e_81 .= '<tr>';
+                $e_81 .= '<td colspan="41" style="text-align: left"><strong>Sasaran</strong></td>';
+            $e_81 .= '</tr>';
+            $e_81 .= '<tr>';
+                $e_81 .= '<td>'.$a++.'</td>';
+                $e_81 .= '<td>'.$sasaran['deskripsi'].'</td>';
+
+            $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran){
+                $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran) {
+                    $q->where('sasaran_id', $sasaran['id']);
+                });
+            })->get();
+            $program = [];
+            $urutan_a = 1;
+            foreach ($get_program_rpjmds as $get_program_rpjmd) {
+                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
+                                            ->where('tahun_perubahan', $tahun)->latest()->first();
+                if($cek_perubahan_program)
+                {
+                    $program = [
+                        'id' => $cek_perubahan_program->program_id,
+                        'kode' => $cek_perubahan_program->kode,
+                        'deskripsi' => $cek_perubahan_program->deskripsi
+                    ];
+                } else {
+                    $program = [
+                        'id' => $get_program_rpjmd->program_id,
+                        'kode' => $get_program_rpjmd->program->kode,
+                        'deskripsi' => $get_program_rpjmd->program->deskripsi
+                    ];
+                }
+                if($urutan_a == 1)
+                {
+                        $e_81 .= '<td>'.$program['deskripsi'].'</td>';
+                    $e_81 .= '</tr>';
+                } else {
+                    $e_81 .= '<tr>';
+                        $e_81 .= '<td>'.$a++.'</td>';
+                        $e_81 .= '<td>'.$sasaran['deskripsi'].'</td>';
+                        $e_81 .= '<td>'.$program['deskripsi'].'</td>';
+                    $e_81 .= '</tr>';
+                }
+                $urutan_a++;
+            }
+        }
+        // E 81 End
+
+        $pdf = PDF::loadView('admin.laporan.e-81', [
+            'e_81' => $e_81,
+            'tahun' => $tahun
+        ]);
+
+        return $pdf->setPaper('b2', 'landscape')->stream('Laporan E-81.pdf');
+    }
+
+    public function e_81_ekspor_excel($tahun)
+    {
+        return Excel::download(new E81Ekspor($tahun), 'Laporan E - 81.xlsx');
     }
 }

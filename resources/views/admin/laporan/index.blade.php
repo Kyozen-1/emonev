@@ -328,7 +328,7 @@
                                             </div>
                                         </div>
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
-                                        <div class="data-table-responsive-wrapper">
+                                        <div class="table-responsive">
                                             <div class="text-center">
                                                 <h1>Tabel E.79</h1>
                                                 <h3>Evaluasi terhadap Hasil RKPD</h3>
@@ -446,7 +446,7 @@
                                             </div>
                                         </div>
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
-                                        <div class="data-table-responsive-wrapper">
+                                        <div class="table-responsive">
                                             <div class="text-center">
                                                 <h1>Tabel E.78</h1>
                                                 <h3>Evaluasi Terhadap Hasil RPJMD</h3>
@@ -590,12 +590,12 @@
                                                 <i data-acorn-icon="download" data-acorn-size="15"></i>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
-                                                <a class="dropdown-item" href="#">PDF</a>
-                                                <a class="dropdown-item" href="#">Excel</a>
+                                                <a class="dropdown-item" href="{{ route('admin.laporan.e-80.ekspor.pdf', ['tahun' => $tahun]) }}">PDF</a>
+                                                <a class="dropdown-item" href="{{ route('admin.laporan.e-80.ekspor.excel', ['tahun' => $tahun]) }}">Excel</a>
                                             </div>
                                         </div>
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
-                                        <div class="data-table-responsive-wrapper">
+                                        <div class="table-responsive">
                                             <div class="text-center">
                                                 <h1>Tabel E.80</h1>
                                                 <h3>Evaluasi Terhadap Hasil Renstra Perangkat Daerah Lingkup </h3>
@@ -733,12 +733,12 @@
                                                 <i data-acorn-icon="download" data-acorn-size="15"></i>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
-                                                <a class="dropdown-item" href="#">PDF</a>
-                                                <a class="dropdown-item" href="#">Excel</a>
+                                                <a class="dropdown-item" href="{{ route('admin.laporan.e-81.ekspor.pdf', ['tahun'=>$tahun]) }}">PDF</a>
+                                                <a class="dropdown-item" href="{{ route('admin.laporan.e-81.ekspor.excel', ['tahun'=>$tahun]) }}">Excel</a>
                                             </div>
                                         </div>
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
-                                        <div class="data-table-responsive-wrapper">
+                                        <div class="table-responsive">
                                             <div class="text-center">
                                                 <h1>Tabel E.81</h1>
                                                 <h3>Evaluasi Terhadap Hasil Renja Perangkat Daerah Lingkup </h3>
