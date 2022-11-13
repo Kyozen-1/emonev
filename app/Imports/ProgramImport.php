@@ -14,6 +14,7 @@ use App\Models\PivotPerubahanUrusan;
 use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
 use Carbon\Carbon;
+use App\Models\ProgramIndikatorKinerja;
 
 class ProgramImport implements ToCollection,WithStartRow
 {
@@ -132,6 +133,43 @@ class ProgramImport implements ToCollection,WithStartRow
                             $program->save();
                         }
                     }
+
+                    // Program Indikator
+                    // $cek_program_indikator_kinerja = ProgramIndikatorKinerja::where('deskripsi', 'like', '%'.$row[3].'%')
+                    //                                     ->whereHas('program', function($q) use ($row){
+                    //                                         $q->where('kode', $row[2]);
+                    //                                         $q->whereHas('urusan', function($q) use ($row){
+                    //                                             $q->where('kode', $row[1]);
+                    //                                         });
+                    //                                     })->first();
+
+                    // if($cek_program_indikator_kinerja)
+                    // {
+                    //     ProgramIndikatorKinerja::find($cek_program_indikator_kinerja->id)->delete();
+
+                    //     $get_program = Program::where('kode', $row[2])->whereHas('urusan', function($q) use ($row){
+                    //         $q->where('kode', $row[1]);
+                    //     })->first();
+                    //     if($get_program)
+                    //     {
+                    //         $program_indikator_kinerja = new ProgramIndikatorKinerja;
+                    //         $program_indikator_kinerja->program_id = $get_program->id;
+                    //         $program_indikator_kinerja->deskripsi = $row[3];
+                    //         $program_indikator_kinerja->save();
+                    //     }
+                    // } else {
+                    //     $get_program = Program::where('kode', $row[2])->whereHas('urusan', function($q) use ($row){
+                    //         $q->where('kode', $row[1]);
+                    //     })->first();
+                    //     if($get_program)
+                    //     {
+                    //         $program_indikator_kinerja = new ProgramIndikatorKinerja;
+                    //         $program_indikator_kinerja->program_id = $get_program->id;
+                    //         $program_indikator_kinerja->deskripsi = $row[3];
+                    //         $program_indikator_kinerja->save();
+                    //     }
+                    // }
+
                     // Satu Persatu
                     // $cek_program = Program::where('kode', $row[1])->where('urusan_id', $this->urusan_id)->first();
                     // if($cek_program)
