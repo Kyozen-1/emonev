@@ -46,8 +46,11 @@ Route::group(['middleware' => 'auth:admin'], function(){
     //Nomenklatur
     Route::get('/admin/nomenklatur', 'Admin\NomenklaturController@index')->name('admin.nomenklatur.index');
     Route::get('/admin/nomenklatur/get-program', 'Admin\NomenklaturController@get_program')->name('admin.nomenklatur.get-program');
+    Route::get('/admin/nomenklatur/get-program/{tahun}', 'Admin\NomenklaturController@get_program_tahun');
     Route::get('/admin/nomenklatur/get-kegiatan', 'Admin\NomenklaturController@get_kegiatan')->name('admin.nomenklatur.get-kegiatan');
+    Route::get('/admin/nomenklatur/get-kegiatan/{tahun}', 'Admin\NomenklaturController@get_kegiatan_tahun');
     Route::get('/admin/nomenklatur/get-sub-kegiatan', 'Admin\NomenklaturController@get_sub_kegiatan')->name('admin.nomenklatur.get-sub-kegiatan');
+    Route::get('/admin/nomenklatur/get-sub-kegiatan/{tahun}', 'Admin\NomenklaturController@get_sub_kegiatan_tahun');
     Route::post('/admin/nomenklatur/filter/get-program', 'Admin\NomenklaturController@filter_get_program')->name('admin.nomenklatur.filter.get-program');
     Route::post('/admin/nomenklatur/filter/get-kegiatan', 'Admin\NomenklaturController@filter_get_kegiatan')->name('admin.nomenklatur.filter.get-kegiatan');
     Route::post('/admin/nomenklatur/filter/get-sub-kegiatan', 'Admin\NomenklaturController@filter_get_sub_kegiatan')->name('admin.nomenklatur.filter.get-sub-kegiatan');
@@ -124,21 +127,23 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');
-    Route::get('/admin/urusan/detail/{id}', 'Admin\UrusanController@show');
+    Route::get('/admin/urusan/get-urusan/{tahun}', 'Admin\UrusanController@get_urusan');
+    Route::get('/admin/urusan/detail/{id}/{tahun}', 'Admin\UrusanController@show');
     Route::post('/admin/urusan','Admin\UrusanController@store')->name('admin.urusan.store');
-    Route::get('/admin/urusan/edit/{id}','Admin\UrusanController@edit');
+    Route::get('/admin/urusan/edit/{id}/{tahun}','Admin\UrusanController@edit');
     Route::post('/admin/urusan/update','Admin\UrusanController@update')->name('admin.urusan.update');
     Route::get('/admin/urusan/destroy/{id}','Admin\UrusanController@destroy');
     Route::post('/admin/urusan/destroy/impor', 'Admin\UrusanController@impor')->name('admin.urusan.impor');
 
     //Program
     Route::get('/admin/program', 'Admin\ProgramController@index')->name('admin.program.index');
-    Route::get('/admin/program/detail/{id}', 'Admin\ProgramController@show');
+    Route::get('/admin/program/detail/{id}/{tahun}', 'Admin\ProgramController@show');
     Route::post('/admin/program','Admin\ProgramController@store')->name('admin.program.store');
-    Route::get('/admin/program/edit/{id}','Admin\ProgramController@edit');
+    Route::get('/admin/program/edit/{id}/{tahun}','Admin\ProgramController@edit');
     Route::post('/admin/program/update','Admin\ProgramController@update')->name('admin.program.update');
     Route::get('/admin/program/destroy/{id}','Admin\ProgramController@destroy');
     Route::post('/admin/program/destroy/impor', 'Admin\ProgramController@impor')->name('admin.program.impor');
+    Route::post('/admin/program/indikator-kinerja/tambah', 'Admin\ProgramController@indikator_kinerja_tambah')->name('admin.program.indikator-kinerja.tambah');
 
     //Program - Indikator
     Route::get('/admin/program/{program_id}/indikator', 'Admin\ProgramIndikatorController@index');
@@ -151,10 +156,10 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     //Kegiatan
     Route::get('/admin/kegiatan', 'Admin\KegiatanController@index')->name('admin.kegiatan.index');
-    Route::get('/admin/kegiatan/detail/{id}', 'Admin\KegiatanController@show');
+    Route::get('/admin/kegiatan/detail/{id}/{tahun}', 'Admin\KegiatanController@show');
     Route::post('/admin/kegiatan/get-program', 'Admin\KegiatanController@get_program')->name('admin.kegiatan.get-program');
     Route::post('/admin/kegiatan','Admin\KegiatanController@store')->name('admin.kegiatan.store');
-    Route::get('/admin/kegiatan/edit/{id}','Admin\KegiatanController@edit');
+    Route::get('/admin/kegiatan/edit/{id}/{tahun}','Admin\KegiatanController@edit');
     Route::post('/admin/kegiatan/update','Admin\KegiatanController@update')->name('admin.kegiatan.update');
     Route::get('/admin/kegiatan/destroy/{id}','Admin\KegiatanController@destroy');
     Route::post('/admin/kegiatan/destroy/impor', 'Admin\KegiatanController@impor')->name('admin.kegiatan.impor');

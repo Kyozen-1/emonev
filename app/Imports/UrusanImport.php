@@ -65,19 +65,42 @@ class UrusanImport implements ToCollection,WithStartRow
                     $cek_urusan =  Urusan::where('kode', $row[1])->first();
                     if($cek_urusan)
                     {
-                        $pivot = new PivotPerubahanUrusan;
-                        $pivot->urusan_id = $cek_urusan->id;
-                        $pivot->kode = $row[1];
-                        $pivot->deskripsi = $row[2];
-                        $pivot->tahun_perubahan = $row[3];
-                        if($row[3] > 2020)
+                        $cek_pivot_perubahan_urusan = PivotPerubahanUrusan::where('kode', $row[1])
+                                                        ->where('tahun_perubahan', $row[3])
+                                                        ->where('urusan_id', $cek_urusan->id)
+                                                        ->first();
+                        if($cek_pivot_perubahan_urusan)
                         {
-                            $pivot->status_aturan = 'Sesudah Perubahan';
+                            PivotPerubahanUrusan::find($cek_pivot_perubahan_urusan->id)->delete();
+
+                            $pivot = new PivotPerubahanUrusan;
+                            $pivot->urusan_id = $cek_urusan->id;
+                            $pivot->kode = $row[1];
+                            $pivot->deskripsi = $row[2];
+                            $pivot->tahun_perubahan = $row[3];
+                            if($row[3] > 2020)
+                            {
+                                $pivot->status_aturan = 'Sesudah Perubahan';
+                            } else {
+                                $pivot->status_aturan = 'Sebelum Perubahan';
+                            }
+                            $pivot->kabupaten_id = 62;
+                            $pivot->save();
                         } else {
-                            $pivot->status_aturan = 'Sebelum Perubahan';
+                            $pivot = new PivotPerubahanUrusan;
+                            $pivot->urusan_id = $cek_urusan->id;
+                            $pivot->kode = $row[1];
+                            $pivot->deskripsi = $row[2];
+                            $pivot->tahun_perubahan = $row[3];
+                            if($row[3] > 2020)
+                            {
+                                $pivot->status_aturan = 'Sesudah Perubahan';
+                            } else {
+                                $pivot->status_aturan = 'Sebelum Perubahan';
+                            }
+                            $pivot->kabupaten_id = 62;
+                            $pivot->save();
                         }
-                        $pivot->kabupaten_id = 62;
-                        $pivot->save();
                     } else {
                         $urusan = new Urusan;
                         $urusan->kode = $row[1];

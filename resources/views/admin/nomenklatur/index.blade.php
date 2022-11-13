@@ -137,193 +137,496 @@
                     <div class="tab-content">
                         {{-- Urusan Start --}}
                             <div class="tab-pane fade active show" id="urusan" role="tabpanel">
-                                <div class="row mb-3">
-                                    <div class="col-12" style="text-align: right">
-                                        <button class="btn btn-outline-primary waves-effect waves-light mr-2" id="urusan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditUrusanModal" title="Tambah Data"><i class="fas fa-plus"></i></button>
-                                        <a class="btn btn-outline-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_urusan.xlsx') }}" title="Download Template Import Data"><i class="fas fa-file-excel"></i></a>
-                                        <button class="btn btn-outline-info waves-effect waves-light" title="Import Data" id="urusan_btn_impor_template" type="button"><i class="fas fa-file-import"></i></button>
-                                    </div>
+                                <div class="border-0 pb-0">
+                                    <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active navNomenklaturUrusan" data-bs-toggle="tab" data-bs-target="#nomenklatur_urusan_semua" role="tab" aria-selected="true" type="button" data-tahun="semua">
+                                                Semua
+                                            </button>
+                                        </li>
+                                        @foreach ($tahuns as $tahun)
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link navNomenklaturUrusan" data-bs-toggle="tab" data-bs-target="#nomenklatur_urusan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                    {{$tahun}}
+                                                </button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
+                                <div class="card-body">
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade active show" id="nomenklatur_urusan_semua" role="tabpanel">
+                                            <div class="row mb-3">
+                                                <div class="col-12" style="text-align: right">
+                                                    <button class="btn btn-outline-primary waves-effect waves-light mr-2 urusan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditUrusanModal" title="Tambah Data"><i class="fas fa-plus"></i></button>
+                                                    <a class="btn btn-outline-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_urusan.xlsx') }}" title="Download Template Import Data"><i class="fas fa-file-excel"></i></a>
+                                                    <button class="btn btn-outline-info waves-effect waves-light urusan_btn_impor_template" title="Import Data" type="button"><i class="fas fa-file-import"></i></button>
+                                                </div>
+                                            </div>
 
-                                <div class="data-table-rows slim">
-                                    <!-- Table Start -->
-                                    <div class="data-table-responsive-wrapper">
-                                        <table id="urusan_table" class="data-table w-100">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-muted text-small text-uppercase" width="15%">No</th>
-                                                    <th class="text-muted text-small text-uppercase" width="15%">Kode</th>
-                                                    <th class="text-muted text-small text-uppercase" width="40%">Deskripsi</th>
-                                                    <th class="text-muted text-small text-uppercase" widht="15%">Tahun Perubahan</th>
-                                                    <th class="text-muted text-small text-uppercase" width="15%">Aksi</th>
-                                                </tr>
-                                            </thead>
-                                        </table>
+                                            <div class="data-table-rows slim">
+                                                <!-- Table Start -->
+                                                <div class="data-table-responsive-wrapper">
+                                                    <table id="urusan_table_semua" class="data-table w-100">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 0px;">No</th>
+                                                                <th style="width: 0px;">Kode</th>
+                                                                <th style="width: 0px;">Deskripsi</th>
+                                                                <th style="width: 0px;">Aksi</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                                <!-- Table End -->
+                                            </div>
+                                        </div>
+                                        @foreach ($tahuns as $tahun)
+                                            <div class="tab-pane fade" id="nomenklatur_urusan_{{$tahun}}" role="tabpanel">
+                                                <div class="row mb-3">
+                                                    <div class="col-12" style="text-align: right">
+                                                        <button class="btn btn-outline-primary waves-effect waves-light mr-2 urusan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditUrusanModal" title="Tambah Data"><i class="fas fa-plus"></i></button>
+                                                        <a class="btn btn-outline-success waves-effect waves-light mr-2" href="{{ asset('template/template_impor_urusan.xlsx') }}" title="Download Template Import Data"><i class="fas fa-file-excel"></i></a>
+                                                        <button class="btn btn-outline-info waves-effect waves-light urusan_btn_impor_template" title="Import Data" type="button"><i class="fas fa-file-import"></i></button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="data-table-rows slim">
+                                                    <!-- Table Start -->
+                                                    <div class="data-table-responsive-wrapper">
+                                                        <table id="urusan_table_{{$tahun}}" class="data-table w-100">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 0px;">No</th>
+                                                                    <th style="width: 0px;">Kode</th>
+                                                                    <th style="width: 0px;">Deskripsi</th>
+                                                                    <th style="width: 0px;">Aksi</th>
+                                                                </tr>
+                                                            </thead>
+                                                        </table>
+                                                    </div>
+                                                    <!-- Table End -->
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <!-- Table End -->
                                 </div>
                             </div>
                         {{-- Urusan End --}}
 
                         {{-- Program Start --}}
                         <div class="tab-pane fade" id="program" role="tabpanel">
-                            <div class="row mb-2">
-                                <div class="col-12">
-                                    <h2 class="small-title">Filter Data</h2>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Urusan</label>
-                                        <select name="program_filter_urusan" id="program_filter_urusan" class="form-control">
-                                            <option value="">--- Pilih Urusan ---</option>
-                                            @foreach ($urusans as $urusan)
-                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
-                                            @endforeach
-                                        </select>
+                            <div class="border-0 pb-0">
+                                <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active navNomenklaturProgram" data-bs-toggle="tab" data-bs-target="#nomenklatur_program_semua" role="tab" aria-selected="true" type="button" data-tahun="semua">
+                                            Semua
+                                        </button>
+                                    </li>
+                                    @foreach ($tahuns as $tahun)
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link navNomenklaturProgram" data-bs-toggle="tab" data-bs-target="#nomenklatur_program_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                {{$tahun}}
+                                            </button>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade active show" id="nomenklatur_program_semua" role="tabpanel">
+                                        <div class="row mb-2">
+                                            <div class="col-12">
+                                                <h2 class="small-title">Filter Data</h2>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Urusan</label>
+                                                    <select id="program_filter_urusan_semua" class="form-control program_filter_urusan" data-tahun="semua">
+                                                        <option value="">--- Pilih Urusan ---</option>
+                                                        @foreach ($urusans as $urusan)
+                                                            <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Program</label>
+                                                    <select id="program_filter_program_semua" class="form-control program_filter_program" data-tahun="semua" disabled>
+                                                        <option value="">--- Pilih Program ---</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <label for="" class="form-label">Aksi Filter</label>
+                                                <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                    <button class="btn btn-primary waves-effect waves-light mr-1 program_btn_filter" type="button" data-tahun="semua">Filter Data</button>
+                                                    <button class="btn btn-secondary waves-effect waves-light program_btn_reset" type="button" data-tahun="semua">Reset</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
+                                                    <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6" style="text-align: right">
+                                                <label for="" class="control-label mr-3">Impor Program: </label>
+                                                <a class="btn btn-success waves-effect waves-light mr-1" href="{{asset('template/template_impor_program.xlsx')}}" title="Download Template Import Data Program"><i class="fas fa-file-excel"></i></a>
+                                                <button class="btn btn-info waves-effect waves-light program_btn_impor_template" title="Import Data Program" type="button"><i class="fas fa-file-import"></i></button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div id="programDivsemua"></div>
                                     </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Program</label>
-                                        <select name="program_filter_program" id="program_filter_program" class="form-control" disabled>
-                                            <option value="">--- Pilih Program ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <label for="" class="form-label">Aksi Filter</label>
-                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
-                                        <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="program_btn_filter">Filter Data</button>
-                                        <button class="btn btn-secondary waves-effect waves-light" type="button" id="program_btn_reset">Reset</button>
-                                    </div>
+                                    @foreach ($tahuns as $tahun)
+                                        <div class="tab-pane fade" id="nomenklatur_program_{{$tahun}}" role="tabpanel">
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <h2 class="small-title">Filter Data</h2>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Urusan</label>
+                                                        <select id="program_filter_urusan_{{$tahun}}" class="form-control program_filter_urusan" data-tahun="{{$tahun}}">
+                                                            <option value="">--- Pilih Urusan ---</option>
+                                                            @foreach ($urusans as $urusan)
+                                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Program</label>
+                                                        <select id="program_filter_program_{{$tahun}}" class="form-control program_filter_program" data-tahun="{{$tahun}}" disabled>
+                                                            <option value="">--- Pilih Program ---</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <label for="" class="form-label">Aksi Filter</label>
+                                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                        <button class="btn btn-primary waves-effect waves-light mr-1 program_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                        <button class="btn btn-secondary waves-effect waves-light program_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-6">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
+                                                        <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6" style="text-align: right">
+                                                    <label for="" class="control-label mr-3">Impor Program: </label>
+                                                    <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_program.xlsx')}}" title="Download Template Import Data Program"><i class="fas fa-file-excel"></i></a>
+                                                    <button class="btn btn-info waves-effect waves-light program_btn_impor_template" title="Import Data Program" type="button"><i class="fas fa-file-import"></i></button>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div id="programDiv{{$tahun}}"></div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
-                                        <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div id="programDiv"></div>
                         </div>
                         {{-- Program End --}}
 
                         {{-- Kegiatan Start --}}
                         <div class="tab-pane fade" id="kegiatan" role="tabpanel">
-                            <div class="row mb-2">
-                                <div class="col-12">
-                                    <h2 class="small-title">Filter Data</h2>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Urusan</label>
-                                        <select name="kegiatan_filter_urusan" id="kegiatan_filter_urusan" class="form-control">
-                                            <option value="">--- Pilih Urusan ---</option>
-                                            @foreach ($urusans as $urusan)
-                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
-                                            @endforeach
-                                        </select>
+                            <div class="border-0 pb-0">
+                                <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active navNomenklaturKegiatan" data-bs-toggle="tab" data-bs-target="#nomenklatur_kegiatan_semua" role="tab" aria-selected="true" type="button" data-tahun="semua">
+                                            Semua
+                                        </button>
+                                    </li>
+                                    @foreach ($tahuns as $tahun)
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link navNomenklaturKegiatan" data-bs-toggle="tab" data-bs-target="#nomenklatur_kegiatan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                {{$tahun}}
+                                            </button>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade active show" id="nomenklatur_kegiatan_semua" role="tabpanel">
+                                        <div class="row mb-2">
+                                            <div class="col-12">
+                                                <h2 class="small-title">Filter Data</h2>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Urusan</label>
+                                                    <select id="kegiatan_filter_urusan_semua" class="form-control kegiatan_filter_urusan" data-tahun="semua">
+                                                        <option value="">--- Pilih Urusan ---</option>
+                                                        @foreach ($urusans as $urusan)
+                                                            <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Program</label>
+                                                    <select id="kegiatan_filter_program_semua" class="form-control kegiatan_filter_program" data-tahun="semua" disabled>
+                                                        <option value="">--- Pilih Program ---</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Kegiatan</label>
+                                                    <select id="kegiatan_filter_kegiatan_semua" class="form-control kegiatan_filter_kegiatan" data-tahun="semua" disabled>
+                                                        <option value="">--- Pilih Kegiatan ---</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <label for="" class="form-label">Aksi Filter</label>
+                                                <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                    <button class="btn btn-primary waves-effect waves-light mr-1 kegiatan_btn_filter" type="button" data-tahun="semua">Filter Data</button>
+                                                    <button class="btn btn-secondary waves-effect waves-light kegiatan_btn_reset" type="button" data-tahun="semua">Reset</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="onOffTaggingKegiatan" checked>
+                                                    <label class="form-check-label" for="onOffTaggingKegiatan">On / Off Tagging</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6" style="text-align: right;">
+                                                <label for="" class="form-label">Impor Data:</label>
+                                                <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_kegiatan.xlsx')}}" title="Download Template Import Data Kegiatan"><i class="fas fa-file-excel"></i></a>
+                                                <button class="btn btn-info waves-effect waves-light kegiatan_btn_impor_template" title="Import Data Kegiatan" type="button"><i class="fas fa-file-import"></i></button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div id="kegiatanDivsemua"></div>
                                     </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Program</label>
-                                        <select name="kegiatan_filter_program" id="kegiatan_filter_program" class="form-control" disabled>
-                                            <option value="">--- Pilih Program ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Kegiatan</label>
-                                        <select name="kegiatan_filter_kegiatan" id="kegiatan_filter_kegiatan" class="form-control" disabled>
-                                            <option value="">--- Pilih Kegiatan ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <label for="" class="form-label">Aksi Filter</label>
-                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
-                                        <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="kegiatan_btn_filter">Filter Data</button>
-                                        <button class="btn btn-secondary waves-effect waves-light" type="button" id="kegiatan_btn_reset">Reset</button>
-                                    </div>
+                                    @foreach ($tahuns as $tahun)
+                                        <div class="tab-pane fade" id="nomenklatur_kegiatan_{{$tahun}}" role="tabpanel">
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <h2 class="small-title">Filter Data</h2>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Urusan</label>
+                                                        <select id="kegiatan_filter_urusan_{{$tahun}}" class="form-control kegiatan_filter_urusan" data-tahun="{{$tahun}}">
+                                                            <option value="">--- Pilih Urusan ---</option>
+                                                            @foreach ($urusans as $urusan)
+                                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Program</label>
+                                                        <select id="kegiatan_filter_program_{{$tahun}}" class="form-control kegiatan_filter_program" data-tahun="{{$tahun}}" disabled>
+                                                            <option value="">--- Pilih Program ---</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Kegiatan</label>
+                                                        <select id="kegiatan_filter_kegiatan_{{$tahun}}" class="form-control kegiatan_filter_kegiatan" data-tahun="{{$tahun}}" disabled>
+                                                            <option value="">--- Pilih Kegiatan ---</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <label for="" class="form-label">Aksi Filter</label>
+                                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                        <button class="btn btn-primary waves-effect waves-light mr-1 kegiatan_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                        <button class="btn btn-secondary waves-effect waves-light kegiatan_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-6">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" id="onOffTaggingKegiatan" checked>
+                                                        <label class="form-check-label" for="onOffTaggingKegiatan">On / Off Tagging</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6" style="text-align: right;">
+                                                    <label for="" class="form-label">Impor Data:</label>
+                                                    <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_kegiatan.xlsx')}}" title="Download Template Import Data Kegiatan"><i class="fas fa-file-excel"></i></a>
+                                                    <button class="btn btn-info waves-effect waves-light kegiatan_btn_impor_template" title="Import Data Kegiatan" type="button"><i class="fas fa-file-import"></i></button>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div id="kegiatanDiv{{$tahun}}"></div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="onOffTaggingKegiatan" checked>
-                                        <label class="form-check-label" for="onOffTaggingKegiatan">On / Off Tagging</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div id="kegiatanDiv"></div>
                         </div>
                         {{-- Kegiatan End --}}
 
                         {{-- Sub Kegiatan Start --}}
                         <div class="tab-pane fade" id="sub_kegiatan" role="tabpanel">
-                            <div class="row mb-2">
-                                <div class="col-12">
-                                    <h2 class="small-title">Filter Data</h2>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Urusan</label>
-                                        <select name="sub_kegiatan_filter_urusan" id="sub_kegiatan_filter_urusan" class="form-control">
-                                            <option value="">--- Pilih Urusan ---</option>
-                                            @foreach ($urusans as $urusan)
-                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
-                                            @endforeach
-                                        </select>
+                            <div class="border-0 pb-0">
+                                <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active navNomenklaturSubKegiatan" data-bs-toggle="tab" data-bs-target="#nomenklatur_sub_kegiatan_semua" role="tab" aria-selected="true" type="button" data-tahun="semua">
+                                            Semua
+                                        </button>
+                                    </li>
+                                    @foreach ($tahuns as $tahun)
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link navNomenklaturSubKegiatan" data-bs-toggle="tab" data-bs-target="#nomenklatur_sub_kegiatan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                {{$tahun}}
+                                            </button>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade active show" id="nomenklatur_sub_kegiatan_semua" role="tabpanel">
+                                        <div class="row mb-2">
+                                            <div class="col-12">
+                                                <h2 class="small-title">Filter Data</h2>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Urusan</label>
+                                                    <select id="sub_kegiatan_filter_urusan_semua" class="form-control sub_kegiatan_filter_urusan" data-tahun="semua">
+                                                        <option value="">--- Pilih Urusan ---</option>
+                                                        @foreach ($urusans as $urusan)
+                                                            <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Program</label>
+                                                    <select id="sub_kegiatan_filter_program_semua" class="form-control sub_kegiatan_filter_program" data-tahun="semua" disabled>
+                                                        <option value="">--- Pilih Program ---</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Kegiatan</label>
+                                                    <select id="sub_kegiatan_filter_kegiatan_semua" class="form-control sub_kegiatan_filter_kegiatan" data-tahun="semua" disabled>
+                                                        <option value="">--- Pilih Kegiatan ---</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group position-relative mb-3">
+                                                    <label for="" class="form-label">Sub Kegiatan</label>
+                                                    <select id="sub_kegiatan_filter_sub_kegiatan_semua" class="form-control sub_kegiatan_filter_sub_kegiatan" data-tahun="semua" disabled>
+                                                        <option value="">--- Pilih Sub Kegiatan ---</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <label for="" class="form-label">Aksi Filter</label>
+                                                <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                    <button class="btn btn-primary waves-effect waves-light mr-1 sub_kegiatan_btn_filter" type="button" data-tahun="semua">Filter Data</button>
+                                                    <button class="btn btn-secondary waves-effect waves-light sub_kegiatan_btn_reset" type="button" data-tahun="semua">Reset</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="onOffTaggingSubKegiatan" checked>
+                                                    <label class="form-check-label" for="onOffTaggingSubKegiatan">On / Off Tagging</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6" style="text-align: right">
+                                                <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_sub_kegiatan.xlsx')}}" title="Download Template Import Data Sub Kegiatan"><i class="fas fa-file-excel"></i></a>
+                                                <button class="btn btn-info waves-effect waves-light sub_kegiatan_btn_impor_template" title="Import Data Sub Kegiatan" type="button"><i class="fas fa-file-import"></i></button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div id="subKegiatanDivsemua"></div>
                                     </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Program</label>
-                                        <select name="sub_kegiatan_filter_program" id="sub_kegiatan_filter_program" class="form-control" disabled>
-                                            <option value="">--- Pilih Program ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Kegiatan</label>
-                                        <select name="sub_kegiatan_filter_kegiatan" id="sub_kegiatan_filter_kegiatan" class="form-control" disabled>
-                                            <option value="">--- Pilih Kegiatan ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group position-relative mb-3">
-                                        <label for="" class="form-label">Sub Kegiatan</label>
-                                        <select name="sub_kegiatan_filter_sub_kegiatan" id="sub_kegiatan_filter_sub_kegiatan" class="form-control" disabled>
-                                            <option value="">--- Pilih Sub Kegiatan ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <label for="" class="form-label">Aksi Filter</label>
-                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
-                                        <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="sub_kegiatan_btn_filter">Filter Data</button>
-                                        <button class="btn btn-secondary waves-effect waves-light" type="button" id="sub_kegiatan_btn_reset">Reset</button>
-                                    </div>
+                                    @foreach ($tahuns as $tahun)
+                                        <div class="tab-pane fade" id="nomenklatur_sub_kegiatan_{{$tahun}}" role="tabpanel">
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <h2 class="small-title">Filter Data</h2>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Urusan</label>
+                                                        <select id="sub_kegiatan_filter_urusan_{{$tahun}}" class="form-control sub_kegiatan_filter_urusan" data-tahun="{{$tahun}}">
+                                                            <option value="">--- Pilih Urusan ---</option>
+                                                            @foreach ($urusans as $urusan)
+                                                                <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Program</label>
+                                                        <select id="sub_kegiatan_filter_program_{{$tahun}}" class="form-control sub_kegiatan_filter_program" data-tahun="{{$tahun}}" disabled>
+                                                            <option value="">--- Pilih Program ---</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Kegiatan</label>
+                                                        <select id="sub_kegiatan_filter_kegiatan_{{$tahun}}" class="form-control sub_kegiatan_filter_kegiatan" data-tahun="{{$tahun}}" disabled>
+                                                            <option value="">--- Pilih Kegiatan ---</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group position-relative mb-3">
+                                                        <label for="" class="form-label">Sub Kegiatan</label>
+                                                        <select id="sub_kegiatan_filter_sub_kegiatan_{{$tahun}}" class="form-control sub_kegiatan_filter_sub_kegiatan" data-tahun="{{$tahun}}" disabled>
+                                                            <option value="">--- Pilih Sub Kegiatan ---</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <label for="" class="form-label">Aksi Filter</label>
+                                                    <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                        <button class="btn btn-primary waves-effect waves-light mr-1 sub_kegiatan_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                        <button class="btn btn-secondary waves-effect waves-light sub_kegiatan_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-6">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" id="onOffTaggingSubKegiatan" checked>
+                                                        <label class="form-check-label" for="onOffTaggingSubKegiatan">On / Off Tagging</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6" style="text-align: right">
+                                                    <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_sub_kegiatan.xlsx')}}" title="Download Template Import Data Sub Kegiatan"><i class="fas fa-file-excel"></i></a>
+                                                    <button class="btn btn-info waves-effect waves-light sub_kegiatan_btn_impor_template" title="Import Data Sub Kegiatan" type="button"><i class="fas fa-file-import"></i></button>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div id="subKegiatanDiv{{$tahun}}"></div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="onOffTaggingSubKegiatan" checked>
-                                        <label class="form-check-label" for="onOffTaggingSubKegiatan">On / Off Tagging</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div id="subKegiatanDiv"></div>
                         </div>
                         {{-- Sub Kegiatan End --}}
                     </div>
@@ -354,9 +657,9 @@
                                 <textarea name="urusan_deskripsi" id="urusan_deskripsi" rows="5" class="form-control"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="urusan_tahun_perubahan" class="form-label">Tahun Perubahan</label>
+                                <label for="urusan_tahun_perubahan" class="form-label">Tahun</label>
                                 <select name="urusan_tahun_perubahan" id="urusan_tahun_perubahan" class="form-control" required>
-                                    <option value="">--- Pilih Tahun Perubahan ---</option>
+                                    <option value="">--- Pilih Tahun ---</option>
                                     @foreach ($tahuns as $tahun)
                                         <option value="{{$tahun}}">{{$tahun}}</option>
                                     @endforeach
@@ -488,7 +791,6 @@
                 <div class="modal-body">
                     <form action="{{ route('admin.program.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="program_impor_urusan_id" id="program_impor_urusan_id">
                         <div class="mb-3 position-relative form-group">
                             <input type="file" class="dropify" id="impor_program" name="impor_program" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
                         </div>
@@ -538,6 +840,30 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Oke</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="indikatorKinerjaProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaProgramModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Indikator Kinerja Program</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.program.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_program_program_id" id="indikator_kinerja_program_program_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Tambah Indikator Kinerja</label>
+                            <input id="indikator_kinerja_program_deskripsi" name="indikator_kinerja_program_deskripsi"/>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -598,7 +924,6 @@
                 <div class="modal-body">
                     <form action="{{ route('admin.kegiatan.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="kegiatan_impor_program_id" id="kegiatan_impor_program_id">
                         <div class="mb-3 position-relative form-group">
                             <input type="file" class="dropify" id="impor_kegiatan" name="impor_kegiatan" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
                         </div>
@@ -762,7 +1087,6 @@
                 <div class="modal-body">
                     <form action="{{ route('admin.sub-kegiatan.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="sub_kegiatan_impor_kegiatan_id" id="sub_kegiatan_impor_kegiatan_id">
                         <div class="mb-3 position-relative form-group">
                             <input type="file" class="dropify" id="impor_sub_kegiatan" name="impor_sub_kegiatan" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
                         </div>
@@ -801,19 +1125,7 @@
         $('.dropify').dropify();
         $('.dropify-wrapper').css('line-height', '3rem');
 
-        $('#program_filter_urusan').select2();
-        $('#program_filter_program').select2();
-
-        $('#kegiatan_filter_urusan').select2();
-        $('#kegiatan_filter_program').select2();
-        $('#kegiatan_filter_kegiatan').select2();
-
-        $('#sub_kegiatan_filter_urusan').select2();
-        $('#sub_kegiatan_filter_program').select2();
-        $('#sub_kegiatan_filter_kegiatan').select2();
-        $('#sub_kegiatan_filter_sub_kegiatan').select2();
-
-        var dataTables = $('#urusan_table').DataTable({
+        var dataTables = $('#urusan_table_semua').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
@@ -832,21 +1144,74 @@
                     name: 'deskripsi'
                 },
                 {
-                    data: 'tahun_perubahan',
-                    name: 'tahun_perubahan'
-                },
-                {
                     data: 'aksi',
                     name: 'aksi',
                     orderable: false
                 },
             ]
         });
+
+        $('#program_filter_urusan_semua').select2();
+        $('#program_filter_program_semua').select2();
+
+        $('#kegiatan_filter_urusan_semua').select2();
+        $('#kegiatan_filter_program_semua').select2();
+        $('#kegiatan_filter_kegiatan_semua').select2();
+
+        $('#sub_kegiatan_filter_urusan_semua').select2();
+        $('#sub_kegiatan_filter_program_semua').select2();
+        $('#sub_kegiatan_filter_kegiatan_semua').select2();
+        $('#sub_kegiatan_filter_sub_kegiatan_semua').select2();
+
+        @foreach ($tahuns as $tahun)
+            var tahun = "{{$tahun}}";
+
+            $('#program_filter_urusan_'+tahun).select2();
+            $('#program_filter_program_'+tahun).select2();
+
+            $('#kegiatan_filter_urusan_'+tahun).select2();
+            $('#kegiatan_filter_program_'+tahun).select2();
+            $('#kegiatan_filter_kegiatan_'+tahun).select2();
+
+            $('#sub_kegiatan_filter_urusan_'+tahun).select2();
+            $('#sub_kegiatan_filter_program_'+tahun).select2();
+            $('#sub_kegiatan_filter_kegiatan_'+tahun).select2();
+            $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).select2();
+
+            var dataTables = $('#urusan_table_'+tahun).DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ url('/admin/urusan/get-urusan') }}" + '/' + tahun,
+                },
+                columns:[
+                    {
+                        data: 'DT_RowIndex'
+                    },
+                    {
+                        data: 'kode',
+                        name: 'kode'
+                    },
+                    {
+                        data: 'deskripsi',
+                        name: 'deskripsi'
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        orderable: false
+                    },
+                ]
+            });
+        @endforeach
+
+        new Tagify(document.querySelector('#indikator_kinerja_program_deskripsi'));
     });
     $(document).on('click', '.urusan_detail', function(){
         var id = $(this).attr('id');
+        var tahun = $(this).attr('data-tahun');
         $.ajax({
-            url: "{{ url('/admin/urusan/detail') }}"+'/'+id,
+            url: "{{ url('/admin/urusan/detail') }}"+'/'+id + '/' + tahun,
             dataType: "json",
             success: function(data)
             {
@@ -861,7 +1226,7 @@
             }
         });
     });
-    $('#urusan_create').click(function(){
+    $('.urusan_create').click(function(){
         $('#urusan_form')[0].reset();
         $('#urusan_aksi_button').text('Save');
         $('#urusan_aksi_button').prop('disabled', false);
@@ -949,9 +1314,10 @@
     });
     $(document).on('click', '.urusan_edit', function(){
         var id = $(this).attr('id');
+        var tahun = $(this).attr('data-tahun');
         $('#urusan_form_result').html('');
         $.ajax({
-            url: "{{ url('/admin/urusan/edit') }}"+'/'+id,
+            url: "{{ url('/admin/urusan/edit') }}"+'/'+id+'/'+tahun,
             dataType: "json",
             success: function(data)
             {
@@ -1018,7 +1384,7 @@
         });
     });
 
-    $('#urusan_btn_impor_template').click(function(){
+    $('.urusan_btn_impor_template').click(function(){
         $('#importUrusanModal').modal('show');
     });
 
@@ -1031,7 +1397,19 @@
             dataType: "json",
             success: function(data)
             {
-                $('#programDiv').html(data.html);
+                $('#programDivsemua').html(data.html);
+            }
+        });
+    });
+
+    $('.navNomenklaturProgram').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $.ajax({
+            url: "{{ url('/admin/nomenklatur/get-program') }}" + '/' + tahun,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#programDiv'+tahun).html(data.html);
             }
         });
     });
@@ -1115,14 +1493,14 @@
     });
 
     $(document).on('click','.program_btn_impor_template',function(){
-        $('#program_impor_urusan_id').val($(this).attr('data-urusan-id'));
         $('#importProgramModal').modal('show');
     });
 
     $(document).on('click', '.detail-program', function(){
         var id = $(this).attr('data-program-id');
+        var tahun = $(this).attr('data-tahun');
         $.ajax({
-            url: "{{ url('/admin/program/detail') }}"+'/'+id,
+            url: "{{ url('/admin/program/detail') }}"+'/'+id + '/' + tahun,
             dataType: "json",
             success: function(data)
             {
@@ -1141,10 +1519,11 @@
 
     $(document).on('click', '.edit-program', function(){
         var id = $(this).attr('data-program-id');
+        var tahun = $(this).attr('data-tahun');
         $('#program_urusan_id').val($(this).attr('data-urusan-id'));
         $('#form_result').html('');
         $.ajax({
-            url: "{{ url('/admin/program/edit') }}"+'/'+id,
+            url: "{{ url('/admin/program/edit') }}"+'/'+id + '/' + tahun,
             dataType: "json",
             success: function(data)
             {
@@ -1161,6 +1540,11 @@
             }
         });
     });
+
+    $(document).on('click', '.tambah-program-indikator-kinerja', function(){
+        $('#indikator_kinerja_program_program_id').val($(this).attr('data-program-id'));
+        $('#indikatorKinerjaProgramModal').modal('show');
+    });
     // Program End
 
     // Kegiatan Start
@@ -1170,7 +1554,19 @@
             dataType: "json",
             success: function(data)
             {
-                $('#kegiatanDiv').html(data.html);
+                $('#kegiatanDivsemua').html(data.html);
+            }
+        });
+    });
+
+    $('.navNomenklaturKegiatan').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $.ajax({
+            url: "{{ url('/admin/nomenklatur/get-kegiatan') }}" + '/' + tahun,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#kegiatanDiv'+tahun).html(data.html);
             }
         });
     });
@@ -1254,8 +1650,9 @@
 
     $(document).on('click', '.detail-kegiatan', function(){
         var id = $(this).attr('data-kegiatan-id');
+        var tahun = $(this).attr('data-tahun');
         $.ajax({
-            url: "{{ url('/admin/kegiatan/detail') }}"+'/'+id,
+            url: "{{ url('/admin/kegiatan/detail') }}"+'/'+id+'/'+tahun,
             dataType: "json",
             success: function(data)
             {
@@ -1275,10 +1672,11 @@
 
     $(document).on('click', '.edit-kegiatan', function(){
         var id = $(this).attr('data-kegiatan-id');
+        var tahun = $(this).attr('data-tahun');
         $('#kegiatan_program_id').val($(this).attr('data-program-id'));
         $('#form_result').html('');
         $.ajax({
-            url: "{{ url('/admin/kegiatan/edit') }}"+'/'+id,
+            url: "{{ url('/admin/kegiatan/edit') }}"+'/'+id + '/' + tahun,
             dataType: "json",
             success: function(data)
             {
@@ -1297,7 +1695,6 @@
     });
 
     $(document).on('click', '.kegiatan_btn_impor_template',function(){
-        $('#kegiatan_impor_program_id').val($(this).attr('data-program-id'));
         $('#importKegiatanModal').modal('show');
     });
     // Kegiatan End
@@ -1309,7 +1706,19 @@
             dataType: "json",
             success: function(data)
             {
-                $('#subKegiatanDiv').html(data.html);
+                $('#subKegiatanDivsemua').html(data.html);
+            }
+        });
+    });
+
+    $('.navNomenklaturSubKegiatan').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $.ajax({
+            url: "{{ url('/admin/nomenklatur/get-sub-kegiatan') }}" + '/' + tahun,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#subKegiatanDiv'+tahun).html(data.html);
             }
         });
     });
@@ -1437,7 +1846,6 @@
     });
 
     $(document).on('click','.sub_kegiatan_btn_impor_template',function(){
-        $('#sub_kegiatan_impor_kegiatan_id').val($(this).attr('data-kegiatan-id'));
         $('#importSubKegiatanModal').modal('show');
     });
     // Sub Kegiatan End
@@ -1471,7 +1879,8 @@
     });
 
     // Filter Data Program
-    $('#program_filter_urusan').on('change', function(){
+    $('.program_filter_urusan').on('change', function(){
+        var tahun = $(this).attr('data-tahun');
         if($(this).val() != '')
         {
             $.ajax({
@@ -1479,25 +1888,27 @@
                 method: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    id:$(this).val()
+                    id:$(this).val(),
+                    tahun: tahun
                 },
                 success: function(response){
-                    $('#program_filter_program').empty();
-                    $('#program_filter_program').prop('disabled', false);
-                    $('#program_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                    $('#program_filter_program_'+tahun).empty();
+                    $('#program_filter_program_'+tahun).prop('disabled', false);
+                    $('#program_filter_program_'+tahun).append('<option value="">--- Pilih Program ---</option>');
                     $.each(response, function(key, value){
-                        $('#program_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        $('#program_filter_program_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                     });
                 }
             });
         } else {
-            $('#program_filter_program').prop('disabled', true);
+            $('#program_filter_program_'+tahun).prop('disabled', true);
         }
     });
 
-    $('#program_btn_filter').click(function(){
-        var urusan = $('#program_filter_urusan').val();
-        var program = $('#program_filter_program').val();
+    $('.program_btn_filter').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        var urusan = $('#program_filter_urusan_'+tahun).val();
+        var program = $('#program_filter_program_'+tahun).val();
 
         $.ajax({
             url: "{{ route('admin.nomenklatur.filter.program') }}",
@@ -1505,34 +1916,38 @@
             data: {
                 "_token": "{{ csrf_token() }}",
                 urusan: urusan,
-                program: program
+                program: program,
+                tahun: tahun
             },
             success: function(data)
             {
-                $('#programDiv').html(data.html);
+                $('#programDiv'+tahun).html(data.html);
             }
         });
     });
 
-    $('#program_btn_reset').click(function(){
-        $('#program_filter_program').prop('disabled', true);
-        $("[name='program_filter_urusan']").val('').trigger('change');
-        $("[name='program_filter_program']").val('').trigger('change');
+    $('.program_btn_reset').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $('#program_filter_program_'+tahun).prop('disabled', true);
+        $('#program_filter_urusan_'+tahun).val('').trigger('change');
+        $('#program_filter_program_'+tahun).val('').trigger('change');
         $.ajax({
             url: "{{ route('admin.nomenklatur.reset.program') }}",
             method: 'POST',
             data: {
-                "_token": "{{ csrf_token() }}"
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun
             },
             success: function(data)
             {
-                $('#programDiv').html(data.html);
+                $('#programDiv'+tahun).html(data.html);
             }
         });
     });
 
     // Filter Data Kegiatan
-    $('#kegiatan_filter_urusan').on('change', function(){
+    $('.kegiatan_filter_urusan').on('change', function(){
+        var tahun = $(this).attr('data-tahun');
         if($(this).val() != '')
         {
             $.ajax({
@@ -1540,25 +1955,27 @@
                 method: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    id:$(this).val()
+                    id:$(this).val(),
+                    tahun : tahun
                 },
                 success: function(response){
-                    $('#kegiatan_filter_program').empty();
-                    $('#kegiatan_filter_program').prop('disabled', false);
-                    $('#kegiatan_filter_kegiatan').prop('disabled', true);
-                    $('#kegiatan_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                    $('#kegiatan_filter_program_'+tahun).empty();
+                    $('#kegiatan_filter_program_'+tahun).prop('disabled', false);
+                    $('#kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                    $('#kegiatan_filter_program_'+tahun).append('<option value="">--- Pilih Program ---</option>');
                     $.each(response, function(key, value){
-                        $('#kegiatan_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        $('#kegiatan_filter_program_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                     });
                 }
             });
         } else {
-            $('#kegiatan_filter_program').prop('disabled', true);
-            $('#kegiatan_filter_kegiatan').prop('disabled', true);
+            $('#kegiatan_filter_program_'+tahun).prop('disabled', true);
+            $('#kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
         }
     });
 
-    $('#kegiatan_filter_program').on('change', function(){
+    $('.kegiatan_filter_program').on('change', function(){
+        var tahun = $(this).attr('data-tahun');
         if($(this).val() != '')
         {
             $.ajax({
@@ -1566,26 +1983,28 @@
                 method: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    id:$(this).val()
+                    id:$(this).val(),
+                    tahun:tahun
                 },
                 success: function(response){
-                    $('#kegiatan_filter_kegiatan').empty();
-                    $('#kegiatan_filter_kegiatan').prop('disabled', false);
-                    $('#kegiatan_filter_kegiatan').append('<option value="">--- Pilih Kegiatan ---</option>');
+                    $('#kegiatan_filter_kegiatan_'+tahun).empty();
+                    $('#kegiatan_filter_kegiatan_'+tahun).prop('disabled', false);
+                    $('#kegiatan_filter_kegiatan_'+tahun).append('<option value="">--- Pilih Kegiatan ---</option>');
                     $.each(response, function(key, value){
-                        $('#kegiatan_filter_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        $('#kegiatan_filter_kegiatan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                     });
                 }
             });
         } else {
-            $('#kegiatan_filter_kegiatan').prop('disabled', true);
+            $('#kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
         }
     });
 
-    $('#kegiatan_btn_filter').click(function(){
-        var urusan = $('#kegiatan_filter_urusan').val();
-        var program = $('#kegiatan_filter_program').val();
-        var kegiatan = $('#kegiatan_filter_kegiatan').val();
+    $('.kegiatan_btn_filter').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        var urusan = $('#kegiatan_filter_urusan_'+tahun).val();
+        var program = $('#kegiatan_filter_program_'+tahun).val();
+        var kegiatan = $('#kegiatan_filter_kegiatan_'+tahun).val();
 
         $.ajax({
             url: "{{ route('admin.nomenklatur.filter.kegiatan') }}",
@@ -1594,36 +2013,40 @@
                 "_token": "{{ csrf_token() }}",
                 urusan: urusan,
                 program: program,
-                kegiatan: kegiatan
+                kegiatan: kegiatan,
+                tahun: tahun
             },
             success: function(data)
             {
-                $('#kegiatanDiv').html(data.html);
+                $('#kegiatanDiv'+tahun).html(data.html);
             }
         });
     });
 
-    $('#kegiatan_btn_reset').click(function(){
-        $('#kegiatan_filter_program').prop('disabled', true);
-        $('#kegiatan_filter_kegiatan').prop('disabled', true);
-        $("[name='kegiatan_filter_urusan']").val('').trigger('change');
-        $("[name='kegiatan_filter_program']").val('').trigger('change');
-        $("[name='kegiatan_filter_kegiatan']").val('').trigger('change');
+    $('.kegiatan_btn_reset').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $('#kegiatan_filter_program_'+tahun).prop('disabled', true);
+        $('#kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+        $('#kegiatan_filter_urusan_'+tahun).val('').trigger('change');
+        $('#kegiatan_filter_program_'+tahun).val('').trigger('change');
+        $('#kegiatan_filter_kegiatan_'+tahun).val('').trigger('change');
         $.ajax({
             url: "{{ route('admin.nomenklatur.reset.kegiatan') }}",
             method: 'POST',
             data: {
-                "_token": "{{ csrf_token() }}"
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun
             },
             success: function(data)
             {
-                $('#kegiatanDiv').html(data.html);
+                $('#kegiatanDiv'+tahun).html(data.html);
             }
         });
     });
 
     // Filter Data Sub Kegiatan
-    $('#sub_kegiatan_filter_urusan').on('change', function(){
+    $('.sub_kegiatan_filter_urusan').on('change', function(){
+        var tahun = $(this).attr('data-tahun');
         if($(this).val() != '')
         {
             $.ajax({
@@ -1631,27 +2054,29 @@
                 method: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    id:$(this).val()
+                    id:$(this).val(),
+                    tahun: tahun
                 },
                 success: function(response){
-                    $('#sub_kegiatan_filter_program').empty();
-                    $('#sub_kegiatan_filter_program').prop('disabled', false);
-                    $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
-                    $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
-                    $('#sub_kegiatan_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                    $('#sub_kegiatan_filter_program_'+tahun).empty();
+                    $('#sub_kegiatan_filter_program_'+tahun).prop('disabled', false);
+                    $('#sub_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+                    $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).prop('disabled', true);
+                    $('#sub_kegiatan_filter_program_'+tahun).append('<option value="">--- Pilih Program ---</option>');
                     $.each(response, function(key, value){
-                        $('#sub_kegiatan_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        $('#sub_kegiatan_filter_program_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                     });
                 }
             });
         } else {
-            $('#sub_kegiatan_filter_program').prop('disabled', true);
-            $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
-            $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
+            $('#sub_kegiatan_filter_program_'+tahun).prop('disabled', true);
+            $('#sub_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+            $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).prop('disabled', true);
         }
     });
 
-    $('#sub_kegiatan_filter_program').on('change', function(){
+    $('.sub_kegiatan_filter_program').on('change', function(){
+        var tahun = $(this).attr('data-tahun');
         if($(this).val() != '')
         {
             $.ajax({
@@ -1659,25 +2084,27 @@
                 method: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    id:$(this).val()
+                    id:$(this).val(),
+                    tahun: tahun
                 },
                 success: function(response){
-                    $('#sub_kegiatan_filter_kegiatan').empty();
-                    $('#sub_kegiatan_filter_kegiatan').prop('disabled', false);
-                    $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
-                    $('#sub_kegiatan_filter_kegiatan').append('<option value="">--- Pilih Kegiatan ---</option>');
+                    $('#sub_kegiatan_filter_kegiatan_'+tahun).empty();
+                    $('#sub_kegiatan_filter_kegiatan_'+tahun).prop('disabled', false);
+                    $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).prop('disabled', true);
+                    $('#sub_kegiatan_filter_kegiatan_'+tahun).append('<option value="">--- Pilih Kegiatan ---</option>');
                     $.each(response, function(key, value){
-                        $('#sub_kegiatan_filter_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        $('#sub_kegiatan_filter_kegiatan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                     });
                 }
             });
         } else {
-            $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
-            $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
+            $('#sub_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+            $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).prop('disabled', true);
         }
     });
 
-    $('#sub_kegiatan_filter_kegiatan').on('change', function(){
+    $('.sub_kegiatan_filter_kegiatan').on('change', function(){
+        var tahun = $(this).attr('data-tahun');
         if($(this).val() != '')
         {
             $.ajax({
@@ -1685,27 +2112,29 @@
                 method: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    id:$(this).val()
+                    id:$(this).val(),
+                    tahun:tahun
                 },
                 success: function(response){
-                    $('#sub_kegiatan_filter_sub_kegiatan').empty();
-                    $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', false);
-                    $('#sub_kegiatan_filter_sub_kegiatan').append('<option value="">--- Pilih Sub Kegiatan ---</option>');
+                    $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).empty();
+                    $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).prop('disabled', false);
+                    $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).append('<option value="">--- Pilih Sub Kegiatan ---</option>');
                     $.each(response, function(key, value){
-                        $('#sub_kegiatan_filter_sub_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).append(new Option(value.kode +'. '+value.deskripsi, value.id));
                     });
                 }
             });
         } else {
-            $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
+            $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).prop('disabled', true);
         }
     });
 
-    $('#sub_kegiatan_btn_filter').click(function(){
-        var urusan = $('#sub_kegiatan_filter_urusan').val();
-        var program = $('#sub_kegiatan_filter_program').val();
-        var kegiatan = $('#sub_kegiatan_filter_kegiatan').val();
-        var sub_kegiatan = $('#sub_kegiatan_filter_sub_kegiatan').val();
+    $('.sub_kegiatan_btn_filter').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        var urusan = $('#sub_kegiatan_filter_urusan_'+tahun).val();
+        var program = $('#sub_kegiatan_filter_program_'+tahun).val();
+        var kegiatan = $('#sub_kegiatan_filter_kegiatan_'+tahun).val();
+        var sub_kegiatan = $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).val();
 
         $.ajax({
             url: "{{ route('admin.nomenklatur.filter.sub-kegiatan') }}",
@@ -1716,31 +2145,34 @@
                 program: program,
                 kegiatan: kegiatan,
                 sub_kegiatan: sub_kegiatan,
+                tahun: tahun
             },
             success: function(data)
             {
-                $('#subKegiatanDiv').html(data.html);
+                $('#subKegiatanDiv'+tahun).html(data.html);
             }
         });
     });
 
-    $('#sub_kegiatan_btn_reset').click(function(){
-        $('#sub_kegiatan_filter_program').prop('disabled', true);
-        $('#sub_kegiatan_filter_kegiatan').prop('disabled', true);
-        $('#sub_kegiatan_filter_sub_kegiatan').prop('disabled', true);
-        $("[name='sub_kegiatan_filter_urusan']").val('').trigger('change');
-        $("[name='sub_kegiatan_filter_program']").val('').trigger('change');
-        $("[name='sub_kegiatan_filter_kegiatan']").val('').trigger('change');
-        $("[name='sub_kegiatan_filter_sub_kegiatan']").val('').trigger('change');
+    $('.sub_kegiatan_btn_reset').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        $('#sub_kegiatan_filter_program_'+tahun).prop('disabled', true);
+        $('#sub_kegiatan_filter_kegiatan_'+tahun).prop('disabled', true);
+        $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).prop('disabled', true);
+        $('#sub_kegiatan_filter_urusan_'+tahun).val('').trigger('change');
+        $('#sub_kegiatan_filter_program_'+tahun).val('').trigger('change');
+        $('#sub_kegiatan_filter_kegiatan_'+tahun).val('').trigger('change');
+        $('#sub_kegiatan_filter_sub_kegiatan_'+tahun).val('').trigger('change');
         $.ajax({
             url: "{{ route('admin.nomenklatur.reset.sub-kegiatan') }}",
             method: 'POST',
             data: {
-                "_token": "{{ csrf_token() }}"
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun
             },
             success: function(data)
             {
-                $('#subKegiatanDiv').html(data.html);
+                $('#subKegiatanDiv'+tahun).html(data.html);
             }
         });
     });

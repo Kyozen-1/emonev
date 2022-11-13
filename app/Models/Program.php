@@ -24,13 +24,13 @@ class Program extends Model
         return $this->hasMany('App\Models\Kegiatan', 'program_id');
     }
 
-    public function pivot_program_kegiatan_renstra()
-    {
-        return $this->hasMany('App\Models\PivotProgramKegiatanRenstra', 'program_id');
-    }
-
     public function program_rpjmd()
     {
         return $this->hasMany('App\Models\ProgramRpjmd', 'program_id');
+    }
+
+    public function program_indikator_kinerja()
+    {
+        return $this->hasMany('App\Models\ProgramIndikatorKinerja', 'program_id');
     }
 }
