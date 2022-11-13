@@ -14,6 +14,8 @@ use App\Models\PivotPerubahanKegiatan;
 use App\Models\SubKegiatan;
 use App\Models\PivotPerubahanSubKegiatan;
 use App\Models\ProgramIndikatorKinerja;
+use App\Models\KegiatanIndikatorKinerja;
+use App\Models\SubKegiatanIndikatorKinerja;
 
 class NomenklaturController extends Controller
 {
@@ -136,7 +138,7 @@ class NomenklaturController extends Controller
                                                                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
                                                                             $html .= '<td width="25%"><ul>';
                                                                             foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
-                                                                                $html .= '<li>'.$program_indikator_kinerja->deskripsi.'</li>';
+                                                                                $html .= '<li class="mb-2">'.$program_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja->id.'"></button></li>';
                                                                             }
                                                                             $html .='</ul></td>
                                                                             <td width="20%">
@@ -192,8 +194,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -245,16 +247,22 @@ class NomenklaturController extends Controller
                                                                 foreach ($programs as $program) {
                                                                     $html .= '<tr>
                                                                                 <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'</td>
-                                                                                <td width="50%">
+                                                                                <td width="40%">
                                                                                     '.$program['deskripsi'].'
                                                                                     <br>
                                                                                     <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                     <span class="badge bg-warning text-uppercase program-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                </td>
-                                                                                <td width="15%"> '.$program['tahun_perubahan'].'</td>
+                                                                                </td>';
+                                                                                $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
+                                                                                $html .= '<td width="25%"><ul>';
+                                                                                foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                                                                                    $html .= '<li class="mb-2">'.$program_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja->id.'"></button></li>';
+                                                                                }
+                                                                                $html .='</ul></td>
                                                                                 <td width="20%">
                                                                                     <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" type="button" data-tahun="'.$tahun.'" title="Detail Program"><i class="fas fa-eye"></i></button>
-                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
                                                                                 </td>
                                                                             </tr>';
                                                                 }
@@ -299,8 +307,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -340,16 +348,22 @@ class NomenklaturController extends Controller
                                                                 foreach ($programs as $program) {
                                                                     $html .= '<tr>
                                                                                 <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'</td>
-                                                                                <td width="50%">
+                                                                                <td width="40%">
                                                                                     '.$program['deskripsi'].'
                                                                                     <br>
                                                                                     <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                     <span class="badge bg-warning text-uppercase program-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                </td>
-                                                                                <td width="15%"> '.$program['tahun_perubahan'].'</td>
+                                                                                </td>';
+                                                                                $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
+                                                                                $html .= '<td width="25%"><ul>';
+                                                                                foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                                                                                    $html .= '<li class="mb-2">'.$program_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja->id.'"></button></li>';
+                                                                                }
+                                                                                $html .='</ul></td>
                                                                                 <td width="20%">
                                                                                     <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="'.$tahun.'" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
-                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
                                                                                 </td>
                                                                             </tr>';
                                                                 }
@@ -398,8 +412,8 @@ class NomenklaturController extends Controller
                             <thead>
                                 <tr>
                                     <th width="15%">Kode</th>
-                                    <th width="50%">Deskripsi</th>
-                                    <th width="15%">Tahun Perubahan</th>
+                                    <th width="40%">Deskripsi</th>
+                                    <th width="25%">Indikator Kinerja</th>
                                     <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
@@ -449,13 +463,13 @@ class NomenklaturController extends Controller
                                                                 foreach ($programs as $program) {
                                                                     $html .= '<tr style="background: #c04141;">
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                     '.strtoupper($program['deskripsi']).'
                                                                                     <br>
                                                                                     <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                     <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                 </td>
-                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                 <td width="20%">
                                                                                     <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
                                                                                 </td>
@@ -494,17 +508,23 @@ class NomenklaturController extends Controller
                                                                                                 foreach ($kegiatans as $kegiatan) {
                                                                                                     $html .= '<tr>
                                                                                                                 <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                <td width="50%">
+                                                                                                                <td width="40%">
                                                                                                                     '.$kegiatan['deskripsi'].'
                                                                                                                     <br>
                                                                                                                     <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
                                                                                                                     <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
                                                                                                                     <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                </td>
-                                                                                                                <td width="15%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                </td>';
+                                                                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                                                                $html .= '<td width="25%"><ul>';
+                                                                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                                                                    $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-kegiatan-indikator-kinerja-id="'.$kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                }
+                                                                                                                $html .='</ul></td>
                                                                                                                 <td width="20%">
                                                                                                                     <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                 </td>
                                                                                                             </tr>';
                                                                                                 }
@@ -560,8 +580,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -611,13 +631,13 @@ class NomenklaturController extends Controller
                                                                     foreach ($programs as $program) {
                                                                         $html .= '<tr style="background: #c04141;">
                                                                                     <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                         '.strtoupper($program['deskripsi']).'
                                                                                         <br>
                                                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                         <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                     <td width="20%">
                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
                                                                                     </td>
@@ -656,17 +676,23 @@ class NomenklaturController extends Controller
                                                                                                     foreach ($kegiatans as $kegiatan) {
                                                                                                         $html .= '<tr>
                                                                                                                     <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="50%">
+                                                                                                                    <td width="40%">
                                                                                                                         '.$kegiatan['deskripsi'].'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
                                                                                                                         <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
                                                                                                                         <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>
-                                                                                                                    <td width="15%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                    </td>';
+                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                                                                    $html .= '<td width="25%"><ul>';
+                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-kegiatan-indikator-kinerja-id="'.$kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                    }
+                                                                                                                    $html .='</ul></td>
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="'.$tahun.'" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>';
                                                                                                     }
@@ -717,8 +743,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -768,13 +794,13 @@ class NomenklaturController extends Controller
                                                                     foreach ($programs as $program) {
                                                                         $html .= '<tr style="background: #c04141;">
                                                                                     <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                         '.strtoupper($program['deskripsi']).'
                                                                                         <br>
                                                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                         <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                     <td width="20%">
                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
                                                                                     </td>
@@ -799,17 +825,23 @@ class NomenklaturController extends Controller
                                                                                                     foreach ($kegiatans as $kegiatan) {
                                                                                                         $html .= '<tr>
                                                                                                                     <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="50%">
+                                                                                                                    <td width="40%">
                                                                                                                         '.$kegiatan['deskripsi'].'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
                                                                                                                         <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
                                                                                                                         <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>
-                                                                                                                    <td width="15%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                    </td>';
+                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                                                                    $html .= '<td width="25%"><ul>';
+                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-kegiatan-indikator-kinerja-id="'.$kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                    }
+                                                                                                                    $html .='</ul></td>
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="'.$tahun.'" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>';
                                                                                                     }
@@ -864,8 +896,8 @@ class NomenklaturController extends Controller
                             <thead>
                                 <tr>
                                     <th width="15%">Kode</th>
-                                    <th width="50%">Deskripsi</th>
-                                    <th width="15%">Tahun Perubahan</th>
+                                    <th width="40%">Deskripsi</th>
+                                    <th width="25%">Indikator Kinerja</th>
                                     <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
@@ -918,13 +950,13 @@ class NomenklaturController extends Controller
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                     '.$urusan['kode'].'.'.$program['kode'].'
                                                                                 </td>
-                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                     '.strtoupper($program['deskripsi']).'
                                                                                     <br>
                                                                                     <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                     <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                 </td>
-                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                 <td width="20%"></td>
                                                                             </tr>
                                                                             <tr>
@@ -963,14 +995,14 @@ class NomenklaturController extends Controller
                                                                                                                 <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                                                     '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'
                                                                                                                 </td>
-                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                                                     '.strtoupper($kegiatan['deskripsi']).'
                                                                                                                     <br>
                                                                                                                     <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                                                     <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                                                     <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
                                                                                                                 </td>
-                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                                                 <td width="20%">
                                                                                                                     <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                 </td>
@@ -1010,7 +1042,7 @@ class NomenklaturController extends Controller
                                                                                                                                                 <td width="15%">
                                                                                                                                                     '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'
                                                                                                                                                 </td>
-                                                                                                                                                <td width="50%">
+                                                                                                                                                <td width="40%">
                                                                                                                                                     '.$sub_kegiatan['deskripsi'].'
                                                                                                                                                     <br>
                                                                                                                                                     <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
@@ -1018,10 +1050,16 @@ class NomenklaturController extends Controller
                                                                                                                                                     <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</span>
                                                                                                                                                     <span class="badge bg-info text-uppercase sub-kegiatan-tagging">Sub Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</span>
                                                                                                                                                 </td>
-                                                                                                                                                <td width="15%">'.$sub_kegiatan['tahun_perubahan'].'</td>
+                                                                                                                                                <td width="25%"><ul>';
+                                                                                                                                                $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
+                                                                                                                                                foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                                                                                                                                                    $html .= '<li class="mb-2">'.$sub_kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                                                }
+                                                                                                                                                $html .= '</ul></td>
                                                                                                                                                 <td width="20%">
                                                                                                                                                     <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Sub Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                                                 </td>
                                                                                                                                             </tr>';
                                                                                                                                 }
@@ -1083,8 +1121,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -1137,13 +1175,13 @@ class NomenklaturController extends Controller
                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                         '.$urusan['kode'].'.'.$program['kode'].'
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                         '.strtoupper($program['deskripsi']).'
                                                                                         <br>
                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                     <td width="20%"></td>
                                                                                 </tr>
                                                                                 <tr>
@@ -1182,14 +1220,14 @@ class NomenklaturController extends Controller
                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                                                         '.strtoupper($kegiatan['deskripsi']).'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                     </td>
@@ -1229,7 +1267,7 @@ class NomenklaturController extends Controller
                                                                                                                                                     <td width="15%">
                                                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'
                                                                                                                                                     </td>
-                                                                                                                                                    <td width="50%">
+                                                                                                                                                    <td width="40%">
                                                                                                                                                         '.$sub_kegiatan['deskripsi'].'
                                                                                                                                                         <br>
                                                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
@@ -1237,10 +1275,16 @@ class NomenklaturController extends Controller
                                                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</span>
                                                                                                                                                         <span class="badge bg-info text-uppercase sub-kegiatan-tagging">Sub Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</span>
                                                                                                                                                     </td>
-                                                                                                                                                    <td width="15%">'.$sub_kegiatan['tahun_perubahan'].'</td>
+                                                                                                                                                    <td width="25%"><ul>';
+                                                                                                                                                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
+                                                                                                                                                    foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                                                                                                                                                        $html .= '<li class="mb-2">'.$sub_kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                                                    }
+                                                                                                                                                    $html .= '</ul></td>
                                                                                                                                                     <td width="20%">
                                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Sub Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                                                     </td>
                                                                                                                                                 </tr>';
                                                                                                                                     }
@@ -1297,8 +1341,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -1351,13 +1395,13 @@ class NomenklaturController extends Controller
                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                         '.$urusan['kode'].'.'.$program['kode'].'
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                         '.strtoupper($program['deskripsi']).'
                                                                                         <br>
                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                     <td width="20%"></td>
                                                                                 </tr>
                                                                                 <tr>
@@ -1396,14 +1440,14 @@ class NomenklaturController extends Controller
                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                                                         '.strtoupper($kegiatan['deskripsi']).'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                     </td>
@@ -1443,7 +1487,7 @@ class NomenklaturController extends Controller
                                                                                                                                                     <td width="15%">
                                                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'
                                                                                                                                                     </td>
-                                                                                                                                                    <td width="50%">
+                                                                                                                                                    <td width="40%">
                                                                                                                                                         '.$sub_kegiatan['deskripsi'].'
                                                                                                                                                         <br>
                                                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
@@ -1451,10 +1495,16 @@ class NomenklaturController extends Controller
                                                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</span>
                                                                                                                                                         <span class="badge bg-info text-uppercase sub-kegiatan-tagging">Sub Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</span>
                                                                                                                                                     </td>
-                                                                                                                                                    <td width="15%">'.$sub_kegiatan['tahun_perubahan'].'</td>
+                                                                                                                                                    <td width="25%"><ul>';
+                                                                                                                                                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
+                                                                                                                                                    foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                                                                                                                                                        $html .= '<li class="mb-2">'.$sub_kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                                                    }
+                                                                                                                                                    $html .= '</ul></td>
                                                                                                                                                     <td width="20%">
                                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="'.$tahun.'" type="button" title="Detail Sub Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="'.$tahun.'" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                                                     </td>
                                                                                                                                                 </tr>';
                                                                                                                                     }
@@ -1643,8 +1693,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -1702,13 +1752,14 @@ class NomenklaturController extends Controller
                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                         '.$urusan['kode'].'.'.$program['kode'].'
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="70%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                         '.strtoupper($program['deskripsi']).'
                                                                                         <br>
                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="20%"></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td colspan="12" class="hiddenRow">
@@ -1751,14 +1802,14 @@ class NomenklaturController extends Controller
                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%">
                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="50%">
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="40%">
                                                                                                                         '.$kegiatan['deskripsi'].'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%">'.$kegiatan['tahun_perubahan'].'</td>
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                     </td>
@@ -1803,7 +1854,7 @@ class NomenklaturController extends Controller
                                                                                                                                                     <td width="15%">
                                                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'
                                                                                                                                                     </td>
-                                                                                                                                                    <td width="50%">
+                                                                                                                                                    <td width="40%">
                                                                                                                                                         '.$sub_kegiatan['deskripsi'].'
                                                                                                                                                         <br>
                                                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
@@ -1811,10 +1862,16 @@ class NomenklaturController extends Controller
                                                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</span>
                                                                                                                                                         <span class="badge bg-info text-uppercase sub-kegiatan-tagging">Sub Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</span>
                                                                                                                                                     </td>
-                                                                                                                                                    <td width="15%">'.$sub_kegiatan['tahun_perubahan'].'</td>
+                                                                                                                                                    <td width="25%"><ul>';
+                                                                                                                                                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
+                                                                                                                                                    foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                                                                                                                                                        $html .= '<li class="mb-2">'.$sub_kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                                                    }
+                                                                                                                                                    $html .= '</ul></td>
                                                                                                                                                     <td width="20%">
                                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Sub Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                                                     </td>
                                                                                                                                                 </tr>';
                                                                                                                                     }
@@ -1876,7 +1933,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="70%">Deskripsi</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="15%">Tahun Perubahan</th>
                                     </tr>
                                 </thead>
@@ -1934,13 +1992,14 @@ class NomenklaturController extends Controller
                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                         '.$urusan['kode'].'.'.$program['kode'].'
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="70%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                         '.strtoupper($program['deskripsi']).'
                                                                                         <br>
                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="20%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td colspan="12" class="hiddenRow">
@@ -1983,14 +2042,14 @@ class NomenklaturController extends Controller
                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%">
                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="50%">
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="40%">
                                                                                                                         '.$kegiatan['deskripsi'].'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%">'.$kegiatan['tahun_perubahan'].'</td>
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                     </td>
@@ -2022,7 +2081,7 @@ class NomenklaturController extends Controller
                                                                                                                                                     <td width="15%">
                                                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'
                                                                                                                                                     </td>
-                                                                                                                                                    <td width="50%">
+                                                                                                                                                    <td width="40%">
                                                                                                                                                         '.$sub_kegiatan['deskripsi'].'
                                                                                                                                                         <br>
                                                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
@@ -2030,10 +2089,16 @@ class NomenklaturController extends Controller
                                                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</span>
                                                                                                                                                         <span class="badge bg-info text-uppercase sub-kegiatan-tagging">Sub Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</span>
                                                                                                                                                     </td>
-                                                                                                                                                    <td width="15%">'.$sub_kegiatan['tahun_perubahan'].'</td>
+                                                                                                                                                    <td width="25%"><ul>';
+                                                                                                                                                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
+                                                                                                                                                    foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                                                                                                                                                        $html .= '<li class="mb-2">'.$sub_kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                                                    }
+                                                                                                                                                    $html .= '</ul></td>
                                                                                                                                                     <td width="20%">
                                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Detail Sub Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                                                     </td>
                                                                                                                                                 </tr>';
                                                                                                                                     }
@@ -2101,8 +2166,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -2157,13 +2222,13 @@ class NomenklaturController extends Controller
                                                                     foreach ($programs as $program) {
                                                                         $html .= '<tr style="background: #c04141;">
                                                                                     <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                         '.strtoupper($program['deskripsi']).'
                                                                                         <br>
                                                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                         <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                     <td width="20%">
                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
                                                                                     </td>
@@ -2208,17 +2273,23 @@ class NomenklaturController extends Controller
                                                                                                     foreach ($kegiatans as $kegiatan) {
                                                                                                         $html .= '<tr>
                                                                                                                     <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="50%">
+                                                                                                                    <td width="40%">
                                                                                                                         '.$kegiatan['deskripsi'].'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
                                                                                                                         <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
                                                                                                                         <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>
-                                                                                                                    <td width="15%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                    </td>';
+                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                                                                    $html .= '<td width="25%"><ul>';
+                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-kegiatan-indikator-kinerja-id="'.$kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                    }
+                                                                                                                    $html .='</ul></td>
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>';
                                                                                                     }
@@ -2274,8 +2345,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Tahun Perubahan</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -2330,13 +2401,13 @@ class NomenklaturController extends Controller
                                                                     foreach ($programs as $program) {
                                                                         $html .= '<tr style="background: #c04141;">
                                                                                     <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="50%">
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                         '.strtoupper($program['deskripsi']).'
                                                                                         <br>
                                                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                         <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                     </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="15%"></td>
+                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                     <td width="20%">
                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
                                                                                     </td>
@@ -2366,17 +2437,23 @@ class NomenklaturController extends Controller
                                                                                                     foreach ($kegiatans as $kegiatan) {
                                                                                                         $html .= '<tr>
                                                                                                                     <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="50%">
+                                                                                                                    <td width="40%">
                                                                                                                         '.$kegiatan['deskripsi'].'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
                                                                                                                         <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
                                                                                                                         <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>
-                                                                                                                    <td width="15%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                    </td>';
+                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                                                                    $html .= '<td width="25%"><ul>';
+                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-kegiatan-indikator-kinerja-id="'.$kegiatan_indikator_kinerja->id.'"></button></li>';
+                                                                                                                    }
+                                                                                                                    $html .='</ul></td>
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-kegiatan-indikator-kinerja" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Kegiatan"><i class="fas fa-lock"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>';
                                                                                                     }
@@ -2438,8 +2515,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -2496,16 +2573,22 @@ class NomenklaturController extends Controller
                                                                 foreach ($programs as $program) {
                                                                     $html .= '<tr>
                                                                                 <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'</td>
-                                                                                <td width="50%">
+                                                                                <td width="40%">
                                                                                     '.$program['deskripsi'].'
                                                                                     <br>
                                                                                     <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                     <span class="badge bg-warning text-uppercase program-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                </td>
-                                                                                <td width="15%"> '.$program['tahun_perubahan'].'</td>
+                                                                                </td>';
+                                                                                $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
+                                                                                $html .= '<td width="25%"><ul>';
+                                                                                foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                                                                                    $html .= '<li class="mb-2">'.$program_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja->id.'"></button></li>';
+                                                                                }
+                                                                                $html .='</ul></td>
                                                                                 <td width="20%">
                                                                                     <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
-                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
                                                                                 </td>
                                                                             </tr>';
                                                                 }
@@ -2555,8 +2638,8 @@ class NomenklaturController extends Controller
                                 <thead>
                                     <tr>
                                         <th width="15%">Kode</th>
-                                        <th width="50%">Deskripsi</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="40%">Deskripsi</th>
+                                        <th width="25%">Tahun Perubahan</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -2602,16 +2685,22 @@ class NomenklaturController extends Controller
                                                                 foreach ($programs as $program) {
                                                                     $html .= '<tr>
                                                                                 <td width="15%">'.$urusan['kode'].'.'.$program['kode'].'</td>
-                                                                                <td width="50%">
+                                                                                <td width="40%">
                                                                                     '.$program['deskripsi'].'
                                                                                     <br>
                                                                                     <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                     <span class="badge bg-warning text-uppercase program-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                </td>
-                                                                                <td width="15%"> '.$program['tahun_perubahan'].'</td>
+                                                                                </td>';
+                                                                                $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
+                                                                                $html .= '<td width="25%"><ul>';
+                                                                                foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                                                                                    $html .= '<li class="mb-2">'.$program_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja->id.'"></button></li>';
+                                                                                }
+                                                                                $html .='</ul></td>
                                                                                 <td width="20%">
                                                                                     <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
-                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
+                                                                                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
                                                                                 </td>
                                                                             </tr>';
                                                                 }

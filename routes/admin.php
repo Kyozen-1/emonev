@@ -144,6 +144,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/program/destroy/{id}','Admin\ProgramController@destroy');
     Route::post('/admin/program/destroy/impor', 'Admin\ProgramController@impor')->name('admin.program.impor');
     Route::post('/admin/program/indikator-kinerja/tambah', 'Admin\ProgramController@indikator_kinerja_tambah')->name('admin.program.indikator-kinerja.tambah');
+    Route::post('/admin/program/indikator-kinerja/hapus', 'Admin\ProgramController@indikator_kinerja_hapus')->name('admin.program.indikator-kinerja.hapus');
 
     //Program - Indikator
     Route::get('/admin/program/{program_id}/indikator', 'Admin\ProgramIndikatorController@index');
@@ -163,6 +164,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/kegiatan/update','Admin\KegiatanController@update')->name('admin.kegiatan.update');
     Route::get('/admin/kegiatan/destroy/{id}','Admin\KegiatanController@destroy');
     Route::post('/admin/kegiatan/destroy/impor', 'Admin\KegiatanController@impor')->name('admin.kegiatan.impor');
+    Route::post('/admin/kegiatan/indikator-kinerja/tambah', 'Admin\KegiatanController@indikator_kinerja_tambah')->name('admin.kegiatan.indikator-kinerja.tambah');
+    Route::post('/admin/kegiatan/indikator-kinerja/hapus', 'Admin\KegiatanController@indikator_kinerja_hapus')->name('admin.kegiatan.indikator-kinerja.hapus');
 
     //Kegiatan - Indikator
     Route::get('/admin/kegiatan/{kegiatan_id}/indikator', 'Admin\KegiatanIndikatorController@index');
@@ -183,6 +186,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/sub-kegiatan/update','Admin\SubKegiatanController@update')->name('admin.sub-kegiatan.update');
     Route::get('/admin/sub-kegiatan/destroy/{id}','Admin\SubKegiatanController@destroy');
     Route::post('/admin/sub-kegiatan/destroy/impor', 'Admin\SubKegiatanController@impor')->name('admin.sub-kegiatan.impor');
+    Route::post('/admin/sub-kegiatan/indikator-kinerja/tambah', 'Admin\SubKegiatanController@indikator_kinerja_tambah')->name('admin.sub-kegiatan.indikator-kinerja.tambah');
+    Route::post('/admin/sub-kegiatan/indikator-kinerja/hapus', 'Admin\SubKegiatanController@indikator_kinerja_hapus')->name('admin.sub-kegiatan.indikator-kinerja.hapus');
 
     //Sub Kegiatan - Indikator
     Route::get('/admin/sub-kegiatan/{sub_kegiatan_id}/indikator', 'Admin\SubKegiatanIndikatorController@index');

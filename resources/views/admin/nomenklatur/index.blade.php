@@ -981,6 +981,30 @@
             </div>
         </div>
     </div>
+
+    <div id="indikatorKinerjaKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaKegiatanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Indikator Kinerja Kegiatan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.kegiatan.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_kegiatan_kegiatan_id" id="indikator_kinerja_kegiatan_kegiatan_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Tambah Indikator Kinerja</label>
+                            <input id="indikator_kinerja_kegiatan_deskripsi" name="indikator_kinerja_kegiatan_deskripsi"/>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     {{-- Modal Kegiatan End --}}
 
     {{-- Modal Sub Kegiatan Start --}}
@@ -1098,6 +1122,30 @@
             </div>
         </div>
     </div>
+
+    <div id="indikatorKinerjaSubKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaSubKegiatanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Indikator Kinerja Sub Kegiatan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.sub-kegiatan.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_sub_kegiatan_sub_kegiatan_id" id="indikator_kinerja_sub_kegiatan_sub_kegiatan_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Tambah Indikator Kinerja</label>
+                            <input id="indikator_kinerja_sub_kegiatan_deskripsi" name="indikator_kinerja_sub_kegiatan_deskripsi"/>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     {{-- Modal Sub Kegiatan End --}}
 @endsection
 
@@ -1206,6 +1254,8 @@
         @endforeach
 
         new Tagify(document.querySelector('#indikator_kinerja_program_deskripsi'));
+        new Tagify(document.querySelector('#indikator_kinerja_kegiatan_deskripsi'));
+        new Tagify(document.querySelector('#indikator_kinerja_sub_kegiatan_deskripsi'));
     });
     $(document).on('click', '.urusan_detail', function(){
         var id = $(this).attr('id');
@@ -1545,6 +1595,53 @@
         $('#indikator_kinerja_program_program_id').val($(this).attr('data-program-id'));
         $('#indikatorKinerjaProgramModal').modal('show');
     });
+
+    $(document).on('click','.btn-hapus-program-indikator-kinerja',function(){
+        var program_id = $(this).attr('data-program-id');
+        var program_indikator_kinerja_id = $(this).attr('data-program-indikator-kinerja-id');
+
+        return new swal({
+            title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#1976D2",
+            confirmButtonText: "Ya"
+        }).then((result)=>{
+            if(result.value)
+            {
+                $.ajax({
+                    url: "{{ route('admin.program.indikator-kinerja.hapus') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        program_id:program_id,
+                        program_indikator_kinerja_id: program_indikator_kinerja_id
+                    },
+                    success: function(data)
+                    {
+                        if(data.errors)
+                        {
+                            Swal.fire({
+                                icon: 'errors',
+                                title: data.errors,
+                                showConfirmButton: true
+                            });
+                        }
+                        if(data.success)
+                        {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
     // Program End
 
     // Kegiatan Start
@@ -1697,6 +1794,58 @@
     $(document).on('click', '.kegiatan_btn_impor_template',function(){
         $('#importKegiatanModal').modal('show');
     });
+
+    $(document).on('click', '.tambah-kegiatan-indikator-kinerja', function(){
+        $('#indikator_kinerja_kegiatan_kegiatan_id').val($(this).attr('data-kegiatan-id'));
+        $('#indikatorKinerjaKegiatanModal').modal('show');
+    });
+
+    $(document).on('click','.btn-hapus-kegiatan-indikator-kinerja',function(){
+        var kegiatan_id = $(this).attr('data-kegiatan-id');
+        var kegiatan_indikator_kinerja_id = $(this).attr('data-kegiatan-indikator-kinerja-id');
+
+        return new swal({
+            title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#1976D2",
+            confirmButtonText: "Ya"
+        }).then((result)=>{
+            if(result.value)
+            {
+                $.ajax({
+                    url: "{{ route('admin.kegiatan.indikator-kinerja.hapus') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        kegiatan_id:kegiatan_id,
+                        kegiatan_indikator_kinerja_id: kegiatan_indikator_kinerja_id
+                    },
+                    success: function(data)
+                    {
+                        if(data.errors)
+                        {
+                            Swal.fire({
+                                icon: 'errors',
+                                title: data.errors,
+                                showConfirmButton: true
+                            });
+                        }
+                        if(data.success)
+                        {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
     // Kegiatan End
 
     // Sub Kegiatan Start
@@ -1847,6 +1996,58 @@
 
     $(document).on('click','.sub_kegiatan_btn_impor_template',function(){
         $('#importSubKegiatanModal').modal('show');
+    });
+
+    $(document).on('click', '.tambah-sub-kegiatan-indikator-kinerja', function(){
+        $('#indikator_kinerja_sub_kegiatan_sub_kegiatan_id').val($(this).attr('data-sub-kegiatan-id'));
+        $('#indikatorKinerjaSubKegiatanModal').modal('show');
+    });
+
+    $(document).on('click','.btn-hapus-sub-kegiatan-indikator-kinerja',function(){
+        var sub_kegiatan_id = $(this).attr('data-sub-kegiatan-id');
+        var sub_kegiatan_indikator_kinerja_id = $(this).attr('data-sub-kegiatan-indikator-kinerja-id');
+
+        return new swal({
+            title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#1976D2",
+            confirmButtonText: "Ya"
+        }).then((result)=>{
+            if(result.value)
+            {
+                $.ajax({
+                    url: "{{ route('admin.sub-kegiatan.indikator-kinerja.hapus') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        sub_kegiatan_id:sub_kegiatan_id,
+                        sub_kegiatan_indikator_kinerja_id: sub_kegiatan_indikator_kinerja_id
+                    },
+                    success: function(data)
+                    {
+                        if(data.errors)
+                        {
+                            Swal.fire({
+                                icon: 'errors',
+                                title: data.errors,
+                                showConfirmButton: true
+                            });
+                        }
+                        if(data.success)
+                        {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                            });
+                        }
+                    }
+                });
+            }
+        });
     });
     // Sub Kegiatan End
 

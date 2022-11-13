@@ -450,4 +450,11 @@ class ProgramController extends Controller
         Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk Program');
         return redirect()->route('admin.nomenklatur.index');
     }
+
+    public function indikator_kinerja_hapus(Request $request)
+    {
+        ProgramIndikatorKinerja::find($request->program_indikator_kinerja_id)->delete();
+
+        return response()->json(['success' => 'Berhasil Menghapus Indikator Kinerja untuk Program']);
+    }
 }

@@ -24,13 +24,8 @@ class Kegiatan extends Model
         return $this->hasMany('App\Models\SubKegiatan', 'sub_kegiatan_id');
     }
 
-    public function pivot_program_kegiatan_renstra()
+    public function kegiatan_indikator_kinerja()
     {
-        return $this->hasMany('App\Models\PivotProgramKegiatanRenstra', 'kegiatan_id');
-    }
-
-    public function renstra_kegiatan()
-    {
-        return $this->hasMany('App\Models\RenstraKegiatan', 'kegiatan_id');
+        return $this->hasMany('App\Models\KegiatanIndikatorKinerja', 'kegiatan_id');
     }
 }

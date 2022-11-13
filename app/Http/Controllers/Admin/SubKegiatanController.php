@@ -24,6 +24,7 @@ use App\Models\PivotPerubahanUrusan;
 use App\Models\SubKegiatan;
 use App\Models\PivotPerubahanSubKegiatan;
 use App\Models\PivotSubKegiatanIndikator;
+use App\Models\SubKegiatanIndikatorKinerja;
 
 class SubKegiatanController extends Controller
 {
@@ -520,5 +521,26 @@ class SubKegiatanController extends Controller
             Alert::error('Gagal', $msg[1]);
             return back();
         }
+    }
+
+    public function indikator_kinerja_tambah(Request $request)
+    {
+        $deskripsis = json_decode($request->indikator_kinerja_sub_kegiatan_deskripsi, true);
+        foreach ($deskripsis as $deskripsi) {
+            $indikator_kinerja = new SubKegiatanIndikatorKinerja;
+            $indikator_kinerja->sub_kegiatan_id = $request->indikator_kinerja_sub_kegiatan_sub_kegiatan_id;
+            $indikator_kinerja->deskripsi = $deskripsi['value'];
+            $indikator_kinerja->save();
+        }
+
+        Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk SubKegiatan');
+        return redirect()->route('admin.nomenklatur.index');
+    }
+
+    public function indikator_kinerja_hapus(Request $request)
+    {
+        SubKegiatanIndikatorKinerja::find($request->sub_kegiatan_indikator_kinerja_id)->delete();
+
+        return response()->json(['success' => 'Berhasil Menghapus Indikator Kinerja untuk SuKegiatan']);
     }
 }

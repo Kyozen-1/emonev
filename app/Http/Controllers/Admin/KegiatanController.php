@@ -21,6 +21,7 @@ use App\Models\PivotKegiatanIndikator;
 use App\Imports\KegiatanImport;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotPerubahanUrusan;
+use App\Models\KegiatanIndikatorKinerja;
 
 class KegiatanController extends Controller
 {
@@ -566,5 +567,26 @@ class KegiatanController extends Controller
             Alert::error('Gagal', $msg[1]);
             return back();
         }
+    }
+
+    public function indikator_kinerja_tambah(Request $request)
+    {
+        $deskripsis = json_decode($request->indikator_kinerja_kegiatan_deskripsi, true);
+        foreach ($deskripsis as $deskripsi) {
+            $indikator_kinerja = new KegiatanIndikatorKinerja;
+            $indikator_kinerja->kegiatan_id = $request->indikator_kinerja_kegiatan_kegiatan_id;
+            $indikator_kinerja->deskripsi = $deskripsi['value'];
+            $indikator_kinerja->save();
+        }
+
+        Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk Kegiatan');
+        return redirect()->route('admin.nomenklatur.index');
+    }
+
+    public function indikator_kinerja_hapus(Request $request)
+    {
+        KegiatanIndikatorKinerja::find($request->kegiatan_indikator_kinerja_id)->delete();
+
+        return response()->json(['success' => 'Berhasil Menghapus Indikator Kinerja untuk Kegiatan']);
     }
 }
