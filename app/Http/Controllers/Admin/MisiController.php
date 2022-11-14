@@ -148,7 +148,7 @@ class MisiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, $tahun)
     {
         $data = Misi::find($id);
 
@@ -229,7 +229,7 @@ class MisiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, $tahun)
     {
         $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $id)->latest()->first();
         if($cek_perubahan_misi)

@@ -216,9 +216,9 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     //Misi
     Route::get('/admin/misi', 'Admin\MisiController@index')->name('admin.misi.index');
-    Route::get('/admin/misi/detail/{id}', 'Admin\MisiController@show');
+    Route::get('/admin/misi/detail/{id}/{tahun}', 'Admin\MisiController@show');
     Route::post('/admin/misi','Admin\MisiController@store')->name('admin.misi.store');
-    Route::get('/admin/misi/edit/{id}','Admin\MisiController@edit');
+    Route::get('/admin/misi/edit/{id}/{tahun}','Admin\MisiController@edit');
     Route::post('/admin/misi/update','Admin\MisiController@update')->name('admin.misi.update');
     Route::get('/admin/misi/destroy/{id}','Admin\MisiController@destroy');
 
@@ -231,6 +231,10 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/tujuan/update','Admin\TujuanController@update')->name('admin.tujuan.update');
     Route::get('/admin/tujuan/destroy/{id}','Admin\TujuanController@destroy');
     Route::post('/admin/tujuan/destroy/impor', 'Admin\TujuanController@impor')->name('admin.tujuan.impor');
+    Route::post('/admin/tujuan/indikator-kinerja/tambah', 'Admin\TujuanController@indikator_kinerja_tambah')->name('admin.tujuan.indikator-kinerja.tambah');
+    Route::post('/admin/tujuan/indikator-kinerja/hapus', 'Admin\TujuanController@indikator_kinerja_hapus')->name('admin.tujuan.indikator-kinerja.hapus');
+    Route::post('/admin/tujuan/indikator-kinerja/target-satuan-rp-realisasi', 'Admin\TujuanController@store_tujuan_target_satuan_rp_realisasi')->name('admin.tujuan.indikator.target-satuan-rp-realisasi');
+    Route::post('/admin/tujuan/indikator-kinerja/target-satuan-rp-realisasi/update', 'Admin\TujuanController@update_tujuan_target_satuan_rp_realisasi')->name('admin.tujuan.indikator.target-satuan-rp-realisasi_update');
 
     //Tujuan - Indikator
     Route::get('/admin/tujuan/{tujuan_id}/indikator', 'Admin\TujuanIndikatorController@index');

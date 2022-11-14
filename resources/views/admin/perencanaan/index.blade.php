@@ -202,9 +202,14 @@
                                 <div class="tab-pane fade" id="misiNav" role="tabpanel">
                                     <div class="border-0 pb-0">
                                         <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active navRpjmdMisi" data-bs-toggle="tab" data-bs-target="#rpjmd_misi_semua" role="tab" aria-selected="true" type="button" data-tahun="semua">
+                                                    Semua
+                                                </button>
+                                            </li>
                                             @foreach ($tahuns as $tahun)
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRpjmdMisi" data-bs-toggle="tab" data-bs-target="#rpjmd_misi_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                    <button class="nav-link navRpjmdMisi" data-bs-toggle="tab" data-bs-target="#rpjmd_misi_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
                                                         {{$tahun}}
                                                     </button>
                                                 </li>
@@ -213,8 +218,52 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="tab-content">
+                                            <div class="tab-pane fade active show" id="rpjmd_misi_semua" role="tabpanel">
+                                                <div class="row mb-2">
+                                                    <div class="col-12">
+                                                        <h2 class="small-title">Filter Data</h2>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Visi</label>
+                                                            <select id="misi_filter_visi_semua" class="form-control misi_filter_visi" data-tahun="semua">
+                                                                <option value="">--- Pilih Visi ---</option>
+                                                                <option value="aman">Aman</option>
+                                                                <option value="mandiri">Mandiri</option>
+                                                                <option value="sejahtera">Sejahtera</option>
+                                                                <option value="berahlak">Berahlak</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Misi</label>
+                                                            <select id="misi_filter_misi_semua" class="form-control" disabled>
+                                                                <option value="">--- Pilih Misi ---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label for="" class="form-label">Filter Aksi</label>
+                                                        <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                            <button class="btn btn-primary waves-effect waves-light mr-1 misi_btn_filter" type="button" data-tahun="semua">Filter Data</button>
+                                                            <button class="btn btn-secondary waves-effect waves-light misi_btn_reset" type="button" data-tahun="semua">Reset</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="onOffTaggingMisi" checked>
+                                                            <label class="form-check-label" for="onOffTaggingMisi">On / Off Tagging</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div id="misiNavDivsemua"></div>
+                                            </div>
                                             @foreach ($tahuns as $tahun)
-                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="rpjmd_misi_{{$tahun}}" role="tabpanel">
+                                                <div class="tab-pane fade" id="rpjmd_misi_{{$tahun}}" role="tabpanel">
                                                     <div class="row mb-2">
                                                         <div class="col-12">
                                                             <h2 class="small-title">Filter Data</h2>
@@ -268,9 +317,14 @@
                                 <div class="tab-pane fade" id="tujuanNav" role="tabpanel">
                                     <div class="border-0 pb-0">
                                         <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active navRpjmdTujuan" data-bs-toggle="tab" data-bs-target="#rpjmd_tujuan_semua" role="tab" aria-selected="true" type="button" data-tahun="semua">
+                                                    Semua
+                                                </button>
+                                            </li>
                                             @foreach ($tahuns as $tahun)
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRpjmdTujuan" data-bs-toggle="tab" data-bs-target="#rpjmd_tujuan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                    <button class="nav-link navRpjmdTujuan" data-bs-toggle="tab" data-bs-target="#rpjmd_tujuan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
                                                         {{$tahun}}
                                                     </button>
                                                 </li>
@@ -279,8 +333,64 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="tab-content">
+                                            <div class="tab-pane fade active show" id="rpjmd_tujuan_semua" role="tabpanel">
+                                                <div class="row mb-2">
+                                                    <div class="col-12">
+                                                        <h2 class="small-title">Filter Data</h2>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Visi</label>
+                                                            <select id="tujuan_filter_visi_semua" class="form-control tujuan_filter_visi" data-tahun="semua">
+                                                                <option value="">--- Pilih Visi ---</option>
+                                                                <option value="aman">Aman</option>
+                                                                <option value="mandiri">Mandiri</option>
+                                                                <option value="sejahtera">Sejahtera</option>
+                                                                <option value="berahlak">Berahlak</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Misi</label>
+                                                            <select id="tujuan_filter_misi_semua" class="form-control tujuan_filter_misi" data-tahun="semua" disabled>
+                                                                <option value="">--- Pilih Misi ---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Tujuan</label>
+                                                            <select id="tujuan_filter_tujuan_semua" class="form-control tujuan_filter_tujuan" data-tahun="semua" disabled>
+                                                                <option value="">--- Pilih Tujuan ---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label for="" class="form-label">Aksi Filter</label>
+                                                        <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                            <button class="btn btn-primary waves-effect waves-light mr-1 tujuan_btn_filter" type="button" data-tahun="semua">Filter Data</button>
+                                                            <button class="btn btn-secondary waves-effect waves-light tujuan_btn_reset" type="button" data-tahun="semua">Reset</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-6">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="onOffTaggingTujuan" checked>
+                                                            <label class="form-check-label" for="onOffTaggingTujuan">On / Off Tagging</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6" style="text-align: right">
+                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_tujuan.xlsx')}}" title="Download Template Import Data Tujuan"><i class="fas fa-file-excel"></i></a>
+                                                        <button class="btn btn-info waves-effect waves-light tujuan_btn_impor_template" title="Import Data Tujuan" type="button" ><i class="fas fa-file-import"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div id="tujuanNavDivsemua"></div>
+                                            </div>
                                             @foreach ($tahuns as $tahun)
-                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="rpjmd_tujuan_{{$tahun}}" role="tabpanel">
+                                                <div class="tab-pane fade" id="rpjmd_tujuan_{{$tahun}}" role="tabpanel">
                                                     <div class="row mb-2">
                                                         <div class="col-12">
                                                             <h2 class="small-title">Filter Data</h2>
@@ -322,11 +432,15 @@
                                                         </div>
                                                     </div>
                                                     <div class="row mb-3">
-                                                        <div class="col-12">
+                                                        <div class="col-6">
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input" type="checkbox" id="onOffTaggingTujuan" checked>
                                                                 <label class="form-check-label" for="onOffTaggingTujuan">On / Off Tagging</label>
                                                             </div>
+                                                        </div>
+                                                        <div class="col-6" style="text-align: right">
+                                                            <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_tujuan.xlsx')}}" title="Download Template Import Data Tujuan"><i class="fas fa-file-excel"></i></a>
+                                                            <button class="btn btn-info waves-effect waves-light tujuan_btn_impor_template" title="Import Data Tujuan" type="button" ><i class="fas fa-file-import"></i></button>
                                                         </div>
                                                     </div>
                                                     <hr>
@@ -1408,7 +1522,6 @@
                 <div class="modal-body">
                     <form action="{{ route('admin.tujuan.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="tujuan_impor_misi_id" id="tujuan_impor_misi_id">
                         <div class="mb-3 position-relative form-group">
                             <input type="file" class="dropify" id="impor_tujuan" name="impor_tujuan" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
                         </div>
@@ -1462,6 +1575,62 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Oke</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="indikatorKinerjaTujuanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaTujuanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Indikator Kinerja Tujuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.tujuan.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_tujuan_tujuan_id" id="indikator_kinerja_tujuan_tujuan_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Tambah Indikator Kinerja</label>
+                            <input id="indikator_kinerja_tujuan_deskripsi" name="indikator_kinerja_tujuan_deskripsi"/>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTargetTujuanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetTujuanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.tujuan.indikator.target-satuan-rp-realisasi_update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="tujuan_target_satuan_rp_realisasi" id="tujuan_target_satuan_rp_realisasi">
+                        <div class="form-group position-relative">
+                            <label for="tujuan_edit_target" class="form-label">Target</label>
+                            <input type="text" class="form-control" id="tujuan_edit_target" name="tujuan_edit_target" required>
+                        </div>
+                        <div class="form-group position-relative">
+                            <label for="tujuan_edit_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="tujuan_edit_satuan" name="tujuan_edit_satuan" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="tujuan_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="tujuan_edit_realisasi" name="tujuan_edit_realisasi" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -2219,6 +2388,8 @@
                     ]
                 });
             @endforeach
+
+            new Tagify(document.querySelector('#indikator_kinerja_tujuan_deskripsi'));
         });
         $(document).on('click', '.visi_detail', function(){
             var id = $(this).attr('id');
@@ -2352,7 +2523,7 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#misiNavDiv'+tahun_awal).html(data.html);
+                    $('#misiNavDivsemua').html(data.html);
                 }
             });
         });
@@ -2461,8 +2632,9 @@
 
         $(document).on('click', '.detail-misi', function(){
             var id = $(this).attr('data-misi-id');
+            var tahun = $(this).attr('data-tahun');
             $.ajax({
-                url: "{{ url('/admin/misi/detail') }}"+'/'+id,
+                url: "{{ url('/admin/misi/detail') }}"+'/'+id+'/'+tahun,
                 dataType: "json",
                 success: function(data)
                 {
@@ -2481,10 +2653,11 @@
 
         $(document).on('click', '.edit-misi', function(){
             var id = $(this).attr('data-misi-id');
+            var tahun = $(this).attr('data-tahun');
             $('#misi_visi_id').val($(this).attr('data-visi-id'));
             $('#misi_form_result').html('');
             $.ajax({
-                url: "{{ url('/admin/misi/edit') }}"+'/'+id,
+                url: "{{ url('/admin/misi/edit') }}"+'/'+id+'/'+tahun,
                 dataType: "json",
                 success: function(data)
                 {
@@ -2510,7 +2683,7 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#tujuanNavDiv'+tahun_awal).html(data.html);
+                    $('#tujuanNavDivsemua').html(data.html);
                 }
             });
         });
@@ -2618,7 +2791,6 @@
         });
 
         $(document).on('click','.tujuan_btn_impor_template',function(){
-            $('#tujuan_impor_misi_id').val($(this).attr('data-misi-id'));
             $('.modal-title').text('Import Data Tujuan');
             $('#importTujuanModal').modal('show');
         });
@@ -2665,6 +2837,130 @@
                     $('#addEditTujuanModal').modal('show');
                 }
             });
+        });
+
+        $(document).on('click', '.tambah-tujuan-indikator-kinerja', function(){
+            $('#indikator_kinerja_tujuan_tujuan_id').val($(this).attr('data-tujuan-id'));
+            $('#indikatorKinerjaTujuanModal').modal('show');
+        });
+
+        $(document).on('click', '.btn-hapus-tujuan-indikator-kinerja', function(){
+            var tujuan_indikator_kinerja_id = $(this).attr('data-tujuan-indikator-kinerja-id');
+            var tujuan_id = $(this).attr('data-tujuan-id');
+
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.tujuan.indikator-kinerja.hapus') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tujuan_id:tujuan_id,
+                            tujuan_indikator_kinerja_id: tujuan_indikator_kinerja_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-tujuan-target-satuan-rp-realisasi', function(){
+            var tujuan_indikator_kinerja_id = $(this).attr('data-tujuan-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+
+            var target = $('.tujuan-add-target.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).val();
+            var satuan = $('.tujuan-add-satuan.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).val();
+            var realisasi = $('.tujuan-add-realisasi.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).val();
+
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.tujuan.indikator.target-satuan-rp-realisasi') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tahun:tahun,
+                            tujuan_indikator_kinerja_id:tujuan_indikator_kinerja_id,
+                            target:target,
+                            satuan:satuan,
+                            realisasi:realisasi
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-tujuan-edit-target-satuan-rp-realisasi', function(){
+            var tujuan_indikator_kinerja_id = $(this).attr('data-tujuan-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var tujuan_target_satuan_rp_realisasi = $(this).attr('data-tujuan-target-satuan-rp-realisasi');
+            var target = $('.tujuan-span-target.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).text();
+            var satuan = $('.tujuan-span-satuan.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).text();
+            var realisasi = $('.tujuan-span-realisasi.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).text();
+
+            $('#tujuan_target_satuan_rp_realisasi').val(tujuan_target_satuan_rp_realisasi);
+            $('#tujuan_edit_target').val(target);
+            $('#tujuan_edit_satuan').val(satuan);
+            $('#tujuan_edit_realisasi').val(realisasi);
+
+            $('#editTargetTujuanModal').modal('show');
         });
         // Tujuan End
 

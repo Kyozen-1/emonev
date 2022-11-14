@@ -21,6 +21,8 @@ use App\Models\Tujuan;
 use App\Models\PivotPerubahanTujuan;
 use App\Models\PivotTujuanIndikator;
 use App\Imports\TujuanImport;
+use App\Models\TujuanIndikatorKinerja;
+use App\Models\TujuanTargetSatuanRpRealisasi;
 
 class TujuanController extends Controller
 {
@@ -358,9 +360,8 @@ class TujuanController extends Controller
 
     public function impor(Request $request)
     {
-        $misi_id = $request->tujuan_impor_misi_id;
         $file = $request->file('impor_tujuan');
-        Excel::import(new TujuanImport($misi_id), $file->store('temp'));
+        Excel::import(new TujuanImport, $file->store('temp'));
         $msg = [session('import_status'), session('import_message')];
         if ($msg[0]) {
             Alert::success('Berhasil', $msg[1]);
@@ -369,5 +370,80 @@ class TujuanController extends Controller
             Alert::error('Gagal', $msg[1]);
             return back();
         }
+    }
+
+    public function indikator_kinerja_tambah(Request $request)
+    {
+        $deskripsis = json_decode($request->indikator_kinerja_tujuan_deskripsi, true);
+        foreach ($deskripsis as $deskripsi) {
+            $indikator_kinerja = new TujuanIndikatorKinerja;
+            $indikator_kinerja->tujuan_id = $request->indikator_kinerja_tujuan_tujuan_id;
+            $indikator_kinerja->deskripsi = $deskripsi['value'];
+            $indikator_kinerja->save();
+        }
+
+        Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk Tujuan');
+        return redirect()->route('admin.perencanaan.index');
+    }
+
+    public function indikator_kinerja_hapus(Request $request)
+    {
+        $tujuan_target_satuan_rp_realisasies = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $request->tujuan_indikator_kinerja_id)->get();
+        foreach ($tujuan_target_satuan_rp_realisasies as $tujuan_target_satuan_rp_realisasi) {
+            TujuanTargetSatuanRpRealisasi::find($tujuan_target_satuan_rp_realisasi->id)->delete();
+        }
+        TujuanIndikatorKinerja::find($request->tujuan_indikator_kinerja_id)->delete();
+
+        return response()->json(['success' => 'Berhasil Menghapus Indikator Kinerja untuk Tujuan']);
+    }
+
+    public function store_tujuan_target_satuan_rp_realisasi(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'tahun' => 'required',
+            'tujuan_indikator_kinerja_id' => 'required',
+            'target' => 'required',
+            'satuan' => 'required',
+            'realisasi' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $tujuan_target_satuan_rp_realisasi = new TujuanTargetSatuanRpRealisasi;
+        $tujuan_target_satuan_rp_realisasi->tujuan_indikator_kinerja_id = $request->tujuan_indikator_kinerja_id;
+        $tujuan_target_satuan_rp_realisasi->target = $request->target;
+        $tujuan_target_satuan_rp_realisasi->satuan = $request->satuan;
+        $tujuan_target_satuan_rp_realisasi->realisasi = $request->realisasi;
+        $tujuan_target_satuan_rp_realisasi->tahun = $request->tahun;
+        $tujuan_target_satuan_rp_realisasi->save();
+
+        return response()->json(['success' => 'Berhasil menambahkan data']);
+    }
+
+    public function update_tujuan_target_satuan_rp_realisasi(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'tujuan_target_satuan_rp_realisasi' => 'required',
+            'tujuan_edit_target' => 'required',
+            'tujuan_edit_satuan' => 'required',
+            'tujuan_edit_realisasi' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::find($request->tujuan_target_satuan_rp_realisasi);
+        $tujuan_target_satuan_rp_realisasi->target = $request->tujuan_edit_target;
+        $tujuan_target_satuan_rp_realisasi->satuan = $request->tujuan_edit_satuan;
+        $tujuan_target_satuan_rp_realisasi->realisasi = $request->tujuan_edit_realisasi;
+        $tujuan_target_satuan_rp_realisasi->save();
+
+        Alert::success('Berhasil', 'Berhasil Merubahan Target Tujuan');
+        return redirect()->route('admin.perencanaan.index');
     }
 }

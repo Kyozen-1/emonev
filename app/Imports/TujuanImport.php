@@ -24,12 +24,6 @@ class TujuanImport implements ToCollection,WithStartRow
     /**
     * @param Collection $collection
     */
-    protected $misi_id;
-
-    public function __construct($misi_id)
-    {
-        $this->misi_id = $misi_id;
-    }
 
     public function startRow(): int
     {
@@ -75,50 +69,70 @@ class TujuanImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
-                    // $cek_tujuan = Tujuan::where('kode', $row['2'])->whereHas('misi', function($q) use ($row) {
-                    //     $q->where('kode', $row[1]);
-                    // })->first();
+                    //
+                    $cek_tujuan = Tujuan::where('kode', $row['2'])->whereHas('misi', function($q) use ($row) {
+                        $q->where('kode', $row[1]);
+                    })->first();
+                    if($cek_tujuan)
+                    {
+                        $cek_pivot = PivotPerubahanTujuan::where('tujuan_id', $cek_tujuan->id)
+                                        ->where('misi_id', $cek_tujuan->misi_id)
+                                        ->where('kode', $row[2])->where('tahun_perubahan', $row[4])
+                                        ->first();
+                        if($cek_pivot)
+                        {
+                            PivotPerubahanTujuan::find($cek_pivot->id)->delete();
+                            $pivot = new PivotPerubahanTujuan;
+                            $pivot->tujuan_id = $cek_tujuan->id;
+                            $pivot->misi_id = $cek_tujuan->misi_id;
+                            $pivot->kode = $row[2];
+                            $pivot->deskripsi = $row[3];
+                            $pivot->tahun_perubahan = $row[4];
+                            $pivot->kabupaten_id = 62;
+                            $pivot->save();
+                        } else {
+                            $pivot = new PivotPerubahanTujuan;
+                            $pivot->tujuan_id = $cek_tujuan->id;
+                            $pivot->misi_id = $cek_tujuan->misi_id;
+                            $pivot->kode = $row[2];
+                            $pivot->deskripsi = $row[3];
+                            $pivot->tahun_perubahan = $row[4];
+                            $pivot->kabupaten_id = 62;
+                            $pivot->save();
+                        }
+                    } else {
+                        $get_misi = Misi::where('kode', $row[1])->first();
+                        if($get_misi)
+                        {
+                            $tujuan = new Tujuan;
+                            $tujuan->misi_id = $get_misi->id;
+                            $tujuan->kode = $row[2];
+                            $tujuan->deskripsi = $row[3];
+                            $tujuan->tahun_perubahan = $row[4];
+                            $tujuan->kabupaten_id = 62;
+                            $tujuan->save();
+                        }
+                    }
+                    // $cek_tujuan = Tujuan::where('kode', $row[1])->where('misi_id', $this->misi_id)->first();
                     // if($cek_tujuan)
                     // {
                     //     $pivot = new PivotPerubahanTujuan;
                     //     $pivot->tujuan_id = $cek_tujuan->id;
-                    //     $pivot->misi_id = $cek_tujuan->misi_id;
-                    //     $pivot->kode = $row[2];
-                    //     $pivot->deskripsi = $row[3];
-                    //     $pivot->tahun_perubahan = $row[4];
+                    //     $pivot->misi_id = $this->misi_id;
+                    //     $pivot->kode = $row[1];
+                    //     $pivot->deskripsi = $row[2];
+                    //     $pivot->tahun_perubahan = $row[3];
                     //     $pivot->kabupaten_id = 62;
                     //     $pivot->save();
                     // } else {
-                    //     $get_misi = Misi::where('kode', $row[1])->first();
-
                     //     $tujuan = new Tujuan;
-                    //     $tujuan->misi_id = $get_misi->id;
-                    //     $tujuan->kode = $row[2];
-                    //     $tujuan->deskripsi = $row[3];
-                    //     $tujuan->tahun_perubahan = $row[4];
+                    //     $tujuan->misi_id = $this->misi_id;
+                    //     $tujuan->kode = $row[1];
+                    //     $tujuan->deskripsi = $row[2];
+                    //     $tujuan->tahun_perubahan = $row[3];
                     //     $tujuan->kabupaten_id = 62;
                     //     $tujuan->save();
                     // }
-                    $cek_tujuan = Tujuan::where('kode', $row[1])->where('misi_id', $this->misi_id)->first();
-                    if($cek_tujuan)
-                    {
-                        $pivot = new PivotPerubahanTujuan;
-                        $pivot->tujuan_id = $cek_tujuan->id;
-                        $pivot->misi_id = $this->misi_id;
-                        $pivot->kode = $row[1];
-                        $pivot->deskripsi = $row[2];
-                        $pivot->tahun_perubahan = $row[3];
-                        $pivot->kabupaten_id = 62;
-                        $pivot->save();
-                    } else {
-                        $tujuan = new Tujuan;
-                        $tujuan->misi_id = $this->misi_id;
-                        $tujuan->kode = $row[1];
-                        $tujuan->deskripsi = $row[2];
-                        $tujuan->tahun_perubahan = $row[3];
-                        $tujuan->kabupaten_id = 62;
-                        $tujuan->save();
-                    }
                 }
                 $n++;
             }
