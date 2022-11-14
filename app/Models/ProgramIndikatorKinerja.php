@@ -13,4 +13,9 @@ class ProgramIndikatorKinerja extends Model
     {
         return $this->belongsTo('App\Models\Program', 'program_id');
     }
+
+    public function opd_program_indikator_kinerja()
+    {
+        return $this->hasMany('App\Models\OpdProgramIndikatorKinerja', 'program_indikator_kinerja_id');
+    }
 }

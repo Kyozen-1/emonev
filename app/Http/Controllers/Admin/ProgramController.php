@@ -19,6 +19,8 @@ use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
 use App\Imports\ProgramImport;
 use App\Models\ProgramIndikatorKinerja;
+use App\Models\OpdProgramIndikatorKinerja;
+use App\Models\ProgramTargetSatuanRpRealisasi;
 
 class ProgramController extends Controller
 {
@@ -439,12 +441,18 @@ class ProgramController extends Controller
 
     public function indikator_kinerja_tambah(Request $request)
     {
-        $deskripsis = json_decode($request->indikator_kinerja_program_deskripsi, true);
-        foreach ($deskripsis as $deskripsi) {
-            $indikator_kinerja = new ProgramIndikatorKinerja;
-            $indikator_kinerja->program_id = $request->indikator_kinerja_program_program_id;
-            $indikator_kinerja->deskripsi = $deskripsi['value'];
-            $indikator_kinerja->save();
+        $indikator_kinerja = new ProgramIndikatorKinerja;
+        $indikator_kinerja->program_id = $request->indikator_kinerja_program_program_id;
+        $indikator_kinerja->deskripsi = $request->indikator_kinerja_program_deskripsi;
+        $indikator_kinerja->save();
+
+        $opd_id = $request->indikator_kinerja_program_opd_id;
+
+        for ($i=0; $i < count($opd_id); $i++) {
+            $opd_program_indikator_kinerja = new OpdProgramIndikatorKinerja;
+            $opd_program_indikator_kinerja->program_indikator_kinerja_id = $indikator_kinerja->id;
+            $opd_program_indikator_kinerja->opd_id = $opd_id[$i];
+            $opd_program_indikator_kinerja->save();
         }
 
         Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk Program');
@@ -453,8 +461,113 @@ class ProgramController extends Controller
 
     public function indikator_kinerja_hapus(Request $request)
     {
-        ProgramIndikatorKinerja::find($request->program_indikator_kinerja_id)->delete();
+        $program_indikator = ProgramIndikatorKinerja::find($request->program_indikator_kinerja_id);
+
+        $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator->id)->get();
+
+        foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
+            $program_target_satuan_rp_realisasis = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)->get();
+            foreach ($program_target_satuan_rp_realisasis as $program_target_satuan_rp_realisasi) {
+                ProgramTargetSatuanRpRealisasi::find($program_target_satuan_rp_realisasi->id)->delete();
+            }
+            OpdProgramIndikatorKinerja::find($get_opd_program_indikator_kinerja->id)->delete();
+        }
+
+        $program_indikator = $program_indikator->delete();
 
         return response()->json(['success' => 'Berhasil Menghapus Indikator Kinerja untuk Program']);
+    }
+
+    public function indikator_kinerja_edit($id)
+    {
+        $data = ProgramIndikatorKinerja::find($id);
+
+        return response()->json(['result' => $data]);
+    }
+
+    public function indikator_kinerja_update(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'edit_program_indikator_kinerja_id' => 'required',
+            'edit_program_indikator_kinerja_deskripsi' => 'required',
+        ]);
+
+        if($errors -> fails())
+        {
+            Alert::error('Gagal!', $errors->errors()->all());
+            return back();
+        }
+
+        $program_indikator_kinerja = ProgramIndikatorKinerja::find($request->edit_program_indikator_kinerja_id);
+        $program_indikator_kinerja->deskripsi = $request->edit_program_indikator_kinerja_deskripsi;
+        $program_indikator_kinerja->save();
+
+        Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk Program');
+        return redirect()->route('admin.nomenklatur.index');
+    }
+
+    public function opd_indikator_kinerja_edit($id)
+    {
+        $datas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $id)->get();
+        $html = '';
+        foreach ($datas as $data) {
+            $html .= '<div class="alert alert-secondary alert-dismissable fade show" role="alert">
+                '.$data->opd->nama.'
+                <button type="button" class="btn btn-close text-body hapus-opd-program-indikator-kinerja" data-bs-dismiss="alert" data-id="'.$data->id.'" aria-hidden="true"></button>
+            </div>';
+        }
+
+        return response()->json(['html' => $html]);
+    }
+
+    public function opd_indikator_kinerja_hapus(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'id' => 'required|array',
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $id = $request->id;
+        for ($i=0; $i < count($id); $i++) {
+            $get_target_realisasies = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $id[$i])->get();
+            foreach ($get_target_realisasies as $get_target_realisasi) {
+                ProgramTargetSatuanRpRealisasi::find($get_target_realisasi->id)->delete();
+            }
+            OpdProgramIndikatorKinerja::find($id[$i])->delete();
+        }
+
+        return response()->json(['success' => 'Berhasil menghapus opd']);
+    }
+
+    public function opd_indikator_kinerja_update(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'tambah_opd_indikator_program_program_indikator_kinerja_id' => 'required',
+            'tambah_opd_indikator_program_opd_id' => 'required',
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        // Cek Data
+        $cek = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $request->tambah_opd_indikator_program_program_indikator_kinerja_id)
+                ->where('opd_id', $request->tambah_opd_indikator_program_opd_id)->first();
+        if($cek)
+        {
+            return response()->json(['errors' => 'Data sudah ada !, Tidak dapat menyimpan']);
+        }
+
+        $opd = new OpdProgramIndikatorKinerja;
+        $opd->program_indikator_kinerja_id = $request->tambah_opd_indikator_program_program_indikator_kinerja_id;
+        $opd->opd_id = $request->tambah_opd_indikator_program_opd_id;
+        $opd->save();
+
+        return response()->json(['success' => 'Berhasil menyimpan data']);
     }
 }

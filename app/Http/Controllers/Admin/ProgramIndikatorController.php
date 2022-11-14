@@ -18,6 +18,7 @@ use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotProgramIndikator;
 use App\Imports\ProgramIndikatorImport;
+use App\Models\ProgramTargetSatuanRpRealisasi;
 
 class ProgramIndikatorController extends Controller
 {
@@ -169,5 +170,55 @@ class ProgramIndikatorController extends Controller
             Alert::error('Gagal', $msg[1]);
             return back();
         }
+    }
+
+    public function store_program_target_satuan_rp_realisasi(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'tahun' => 'required',
+            'opd_program_indikator_kinerja_id' => 'required',
+            'target' => 'required',
+            'satuan' => 'required',
+            'target_rp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $program_target_satuan_rp_realisasi = new ProgramTargetSatuanRpRealisasi;
+        $program_target_satuan_rp_realisasi->opd_program_indikator_kinerja_id = $request->opd_program_indikator_kinerja_id;
+        $program_target_satuan_rp_realisasi->target = $request->target;
+        $program_target_satuan_rp_realisasi->satuan = $request->satuan;
+        $program_target_satuan_rp_realisasi->target_rp = $request->target_rp;
+        $program_target_satuan_rp_realisasi->tahun = $request->tahun;
+        $program_target_satuan_rp_realisasi->save();
+
+        return response()->json(['success' => 'Berhasil menambahkan target']);
+    }
+
+    public function update_program_target_satuan_rp_realisasi(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'program_target_satuan_rp_realisasi' => 'required',
+            'program_edit_target' => 'required',
+            'program_edit_satuan' => 'required',
+            'program_edit_target_rp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::find($request->program_target_satuan_rp_realisasi);
+        $program_target_satuan_rp_realisasi->target = $request->program_edit_target;
+        $program_target_satuan_rp_realisasi->satuan = $request->program_edit_satuan;
+        $program_target_satuan_rp_realisasi->target_rp = $request->program_edit_target_rp;
+        $program_target_satuan_rp_realisasi->save();
+
+        Alert::success('Berhasil', 'Berhasil Merubahan Target Program');
+        return redirect()->route('admin.nomenklatur.index');
     }
 }

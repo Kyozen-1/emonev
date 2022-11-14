@@ -145,6 +145,11 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/program/destroy/impor', 'Admin\ProgramController@impor')->name('admin.program.impor');
     Route::post('/admin/program/indikator-kinerja/tambah', 'Admin\ProgramController@indikator_kinerja_tambah')->name('admin.program.indikator-kinerja.tambah');
     Route::post('/admin/program/indikator-kinerja/hapus', 'Admin\ProgramController@indikator_kinerja_hapus')->name('admin.program.indikator-kinerja.hapus');
+    Route::get('/admin/program/indikator-kinerja/edit/{id}', 'Admin\ProgramController@indikator_kinerja_edit');
+    Route::post('/admin/program/indikator-kinerja/update', 'Admin\ProgramController@indikator_kinerja_update')->name('admin.program.indikator-kinerja.update');
+    Route::get('/admin/program/indikator-kinerja/edit/opd/{id}', 'Admin\ProgramController@opd_indikator_kinerja_edit');
+    Route::post('/admin/program/indikator-kinerja/edit/opd/hapus', 'Admin\ProgramController@opd_indikator_kinerja_hapus')->name('admin.program.indikator-kinerja.opd-hapus');
+    Route::post('/admin/program/indikator-kinerja/edit/opd/update', 'Admin\ProgramController@opd_indikator_kinerja_update')->name('admin.program.indikator-kinerja.opd-update');
 
     //Program - Indikator
     Route::get('/admin/program/{program_id}/indikator', 'Admin\ProgramIndikatorController@index');
@@ -154,6 +159,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/program/indikator/update','Admin\ProgramIndikatorController@update');
     Route::get('/admin/program/indikator/destroy/{id}','Admin\ProgramIndikatorController@destroy');
     Route::post('/admin/program/indikator/impor', 'Admin\ProgramIndikatorController@impor')->name('admin.program.indikator.impor');
+    Route::post('/admin/program/indikator/target-satuan-rp-realisasi', 'Admin\ProgramIndikatorController@store_program_target_satuan_rp_realisasi')->name('admin.program.indikator.target-satuan-rp-realisasi');
+    Route::post('/admin/program/indikator/target-satuan-rp-realisasi/update', 'Admin\ProgramIndikatorController@update_program_target_satuan_rp_realisasi')->name('admin.program.indikator.target-satuan-rp-realisasi_update');
 
     //Kegiatan
     Route::get('/admin/kegiatan', 'Admin\KegiatanController@index')->name('admin.kegiatan.index');

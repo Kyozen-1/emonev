@@ -14,28 +14,13 @@ class MasterOpd extends Model
         return $this->belongsTo('App\Models\JenisOpd', 'jenis_opd_id');
     }
 
-    public function program_rpjmd()
-    {
-        return $this->hasMany('App\Models\ProgramRpjmd', 'opd_id');
-    }
-
     public function opd()
     {
         return $this->hasMany('App\Models\Opd', 'opd_id');
     }
 
-    public function target_rp_pertahun_program()
+    public function opd_program_indikator_kinerja()
     {
-        return $this->hasMany('App\Models\TargetRpPertahunProgram', 'opd_id');
-    }
-
-    public function pivot_opd_renstra_kegiatan()
-    {
-        return $this->belongsTo('App\Models\PivotOpdRenstraKegiatan', 'opd_id');
-    }
-
-    public function target_rp_pertahun_renstra_kegiatan()
-    {
-        return $this->hasMany('App\Models\TargetRpPertahunRenstraKegiatan', 'opd_id');
+        return $this->hasMany('App\Models\OpdProgramIndikatorKinerja', 'opd_id');
     }
 }

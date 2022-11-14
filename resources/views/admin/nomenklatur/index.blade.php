@@ -856,12 +856,115 @@
                     <form action="{{ route('admin.program.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="indikator_kinerja_program_program_id" id="indikator_kinerja_program_program_id">
-                        <div class="mb-3 position-relative form-group">
+                        {{-- <div class="mb-3 position-relative form-group">
                             <label class="d-block form-label">Tambah Indikator Kinerja</label>
                             <input id="indikator_kinerja_program_deskripsi" name="indikator_kinerja_program_deskripsi"/>
+                        </div> --}}
+                        <div class="form-group mb-3 position-relative">
+                            <label for="indikator_kinerja_program_deskripsi" class="form-label">Indikator Kinerja</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_program_deskripsi" name="indikator_kinerja_program_deskripsi" required>
+                        </div>
+                        <div class="form-group mb-3 position-relative">
+                            <label class="form-label">OPD</label>
+                            <select name="indikator_kinerja_program_opd_id[]" id="indikator_kinerja_program_opd_id" class="form-control" multiple required>
+                                @foreach ($opd as $id => $nama)
+                                    <option value="{{$id}}">{{$nama}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTargetProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetProgramModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.program.indikator.target-satuan-rp-realisasi_update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="program_target_satuan_rp_realisasi" id="program_target_satuan_rp_realisasi">
+                        <div class="form-group position-relative">
+                            <label for="program_edit_target" class="form-label">Target</label>
+                            <input type="text" class="form-control" id="program_edit_target" name="program_edit_target" required>
+                        </div>
+                        <div class="form-group position-relative">
+                            <label for="program_edit_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="program_edit_satuan" name="program_edit_satuan" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="program_edit_target_rp" class="form-label">RP</label>
+                            <input type="text" class="form-control" id="program_edit_target_rp" name="program_edit_target_rp" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editIndikatorProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editIndikatorProgramModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Indikator Kinerja Program</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.program.indikator-kinerja.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_program_indikator_kinerja_id" id="edit_program_indikator_kinerja_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_program_indikator_kinerja_deskripsi" class="form-label">Deskripsi</label>
+                            <input type="text" class="form-control" id="edit_program_indikator_kinerja_deskripsi" name="edit_program_indikator_kinerja_deskripsi" required>
+                        </div>
+                        <div class="form-group position-relative" style="text-align: right">
+                            <button class="btn btn-primary waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="editOpdIndikatorProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editOpdIndikatorProgramModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit OPD Indikator Kinerja Program</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="form_hapus_opd_indikator_program" method="POST">
+                        @csrf
+                        <div id="div_edit_opd_indikator_program" class="mb-3"></div>
+                        <div class="form-group" style="text-align: right">
+                            <button class="btn btn-secondary waves-effect waves-light">Jalankan Proses Hapus</button>
+                        </div>
+                    </form>
+                    <hr>
+                    <form class="form-horizontal" id="form_tambah_opd_indikator_program" method="POST">
+                        @csrf
+                        <input type="hidden" name="tambah_opd_indikator_program_program_indikator_kinerja_id" id="tambah_opd_indikator_program_program_indikator_kinerja_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="" class="form-label">Tambah OPD</label>
+                            <select name="tambah_opd_indikator_program_opd_id" id="tambah_opd_indikator_program_opd_id" class="form-control" required multiple>
+                                @foreach ($opd as $id => $nama)
+                                    <option value="{{$id}}">{{$nama}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group position-relative" style="text-align: right">
+                            <button class="btn btn-primary waves-effect waves-light">Simpan Penambahan Data</button>
                         </div>
                     </form>
                 </div>
@@ -1168,6 +1271,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+    var ID_OPD_PROGRAM_INDIKATOR_KINERJA = [];
     // Urusan Start
     $(document).ready(function(){
         $('.dropify').dropify();
@@ -1197,6 +1301,13 @@
                     orderable: false
                 },
             ]
+        });
+
+        $('#indikator_kinerja_program_opd_id').select2({
+            dropdownParent: $("#indikatorKinerjaProgramModal")
+        });
+        $('#tambah_opd_indikator_program_opd_id').select2({
+            dropdownParent: $("#editOpdIndikatorProgramModal")
         });
 
         $('#program_filter_urusan_semua').select2();
@@ -1253,7 +1364,7 @@
             });
         @endforeach
 
-        new Tagify(document.querySelector('#indikator_kinerja_program_deskripsi'));
+        // new Tagify(document.querySelector('#indikator_kinerja_program_deskripsi'));
         new Tagify(document.querySelector('#indikator_kinerja_kegiatan_deskripsi'));
         new Tagify(document.querySelector('#indikator_kinerja_sub_kegiatan_deskripsi'));
     });
@@ -1635,6 +1746,197 @@
                                 showConfirmButton: true
                             }).then(function() {
                                 window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.button-program-target-satuan-rp-realisasi', function(){
+        var opd_program_indikator_kinerja_id = $(this).attr('data-opd-program-indikator-kinerja-id');
+        var tahun = $(this).attr('data-tahun');
+
+        var target = $('.program-add-target.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).val();
+        var satuan = $('.program-add-satuan.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).val();
+        var target_rp = $('.program-add-target-rp.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).val();
+
+        return new swal({
+            title: "Apakah Anda Yakin?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#1976D2",
+            confirmButtonText: "Ya"
+        }).then((result)=>{
+            if(result.value)
+            {
+                $.ajax({
+                    url: "{{ route('admin.program.indikator.target-satuan-rp-realisasi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        tahun:tahun,
+                        opd_program_indikator_kinerja_id:opd_program_indikator_kinerja_id,
+                        target:target,
+                        satuan:satuan,
+                        target_rp:target_rp
+                    },
+                    dataType: "json",
+                    success: function(data)
+                    {
+                        if(data.errors)
+                        {
+                            Swal.fire({
+                                icon: 'errors',
+                                title: data.errors,
+                                showConfirmButton: true
+                            });
+                        }
+
+                        if(data.success)
+                        {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.button-program-edit-target-satuan-rp-realisasi', function(){
+        var opd_program_indikator_kinerja_id = $(this).attr('data-opd-program-indikator-kinerja-id');
+        var tahun = $(this).attr('data-tahun');
+        var program_target_satuan_rp_realisasi = $(this).attr('data-program-target-satuan-rp-realisasi');
+        var target = $('.program-span-target.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).text();
+        var satuan = $('.program-span-satuan.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).text();
+        var target_rp = $('.program-span-target-rp.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).attr('data-target-rp');
+
+        $('#program_target_satuan_rp_realisasi').val(program_target_satuan_rp_realisasi);
+        $('#program_edit_target').val(target);
+        $('#program_edit_satuan').val(satuan);
+        $('#program_edit_target_rp').val(target_rp);
+
+        $('#editTargetProgramModal').modal('show');
+    });
+
+    $(document).on('click', '.btn-edit-program-indikator-kinerja', function(){
+        var id = $(this).attr('data-id');
+        $.ajax({
+            url: "{{ url('/admin/program/indikator-kinerja/edit') }}" + '/' + id,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#edit_program_indikator_kinerja_id').val(id);
+                $('#edit_program_indikator_kinerja_deskripsi').val(data.result.deskripsi);
+                $('#editIndikatorProgramModal').modal('show');
+            }
+        });
+    });
+
+    $(document).on('click', '.btn-edit-opd-program-indikator-kinerja', function(){
+        var id = $(this).attr('data-id');
+        $.ajax({
+            url : "{{ url('/admin/program/indikator-kinerja/edit/opd') }}" + '/' + id,
+            dataType: "json",
+            success: function(data)
+            {
+                $('#tambah_opd_indikator_program_program_indikator_kinerja_id').val(id);
+                $('#div_edit_opd_indikator_program').html(data.html);
+                $('#editOpdIndikatorProgramModal').modal('show');
+            }
+        });
+    });
+    $(document).on('click', '.hapus-opd-program-indikator-kinerja', function(){
+        var id = $(this).attr('data-id');
+        ID_OPD_PROGRAM_INDIKATOR_KINERJA.push(id);
+    });
+
+    $('#form_hapus_opd_indikator_program').submit(function(e){
+        e.preventDefault();
+        return new swal({
+            title: "Apakah Anda Yakin?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#1976D2",
+            confirmButtonText: "Ya"
+        }).then((result)=>{
+            if(result.value)
+            {
+                $.ajax({
+                    url: "{{ route('admin.program.indikator-kinerja.opd-hapus') }}",
+                    method: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:ID_OPD_PROGRAM_INDIKATOR_KINERJA,
+                    },
+                    success: function(data)
+                    {
+                        if(data.errors)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.errors,
+                                showConfirmButton: true
+                            });
+                        }
+                        if(data.success)
+                        {
+                            new swal({
+                                icon: 'success',
+                                title: data.success
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    $('#form_tambah_opd_indikator_program').submit(function(e){
+        e.preventDefault();
+        return new swal({
+            title: "Apakah Anda Yakin?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#1976D2",
+            confirmButtonText: "Ya"
+        }).then((result)=>{
+            if(result.value)
+            {
+                $.ajax({
+                    url: "{{ route('admin.program.indikator-kinerja.opd-update') }}",
+                    method: "POST",
+                    data: new FormData(this),
+                    dataType: "json",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data)
+                    {
+                        if(data.errors)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.errors,
+                                showConfirmButton: true
+                            });
+                        }
+                        if(data.success)
+                        {
+                            new swal({
+                                icon: 'success',
+                                title: data.success
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.nomenklatur.index') }}";
                             });
                         }
                     }
