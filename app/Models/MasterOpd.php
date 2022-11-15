@@ -23,4 +23,14 @@ class MasterOpd extends Model
     {
         return $this->hasMany('App\Models\OpdProgramIndikatorKinerja', 'opd_id');
     }
+
+    public function tujuan_pd()
+    {
+        return $this->hasMany('App\Models\TujuanPd', 'opd_id');
+    }
+
+    public function sasaran_pd()
+    {
+        return $this->hasMany('App\Models\SasaranPd', 'opd_id');
+    }
 }

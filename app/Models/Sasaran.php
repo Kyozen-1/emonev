@@ -19,8 +19,13 @@ class Sasaran extends Model
         return $this->hasMany('App\Models\PivotPerubahanSasaran', 'sasaran_id');
     }
 
-    public function pivot_sasaran_indikator()
+    public function sasaran_indikator_kinerja()
     {
-        return $this->hasMany('App\Models\PivotSasaranIndikator', 'sasaran_id');
+        return $this->hasMany('App\Models\SasaranIndikatorKinerja', 'sasaran_id');
+    }
+
+    public function sasaran_pd()
+    {
+        return $this->hasMany('App\Models\SasaranPd', 'sasaran_id');
     }
 }

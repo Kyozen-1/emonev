@@ -28,4 +28,9 @@ class Tujuan extends Model
     {
         return $this->hasMany('App\Models\TujuanIndikatorKinerja', 'tujuan_id');
     }
+
+    public function tujuan_pd()
+    {
+        return $this->hasMany('App\Models\TujuanPd', 'tujuan_id');
+    }
 }

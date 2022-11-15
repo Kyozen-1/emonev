@@ -243,6 +243,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraSasaran" checked>
+                                            <label class="form-check-label" for="onOffTaggingRenstraSasaran">On / Off Tagging</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <hr>
                         <div id="renstraSasaranNavDiv"></div>
                     </div>
