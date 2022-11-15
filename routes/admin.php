@@ -288,6 +288,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/program-rpjmd/detail/target-rp-pertahun', 'Admin\ProgramRpjmdController@store_target_rp_pertahun')->name('admin.program-rpjmd.detail.target-rp-pertahun');
     Route::get('/admin/program-rpjmd/edit/{id}','Admin\ProgramRpjmdController@edit');
     Route::post('/admin/program-rpjmd/update','Admin\ProgramRpjmdController@update')->name('admin.program-rpjmd.update');
+    Route::post('/admin/program-rpjmd/pivot-sasaran-indikator-program-rpmjd/delete','Admin\ProgramRpjmdController@pivot_sasaran_indikator_program_rpjmd_delete')->name('admin.program-rpjmd.pivot-sasaran-indikator-program-rpmjd.delete');
 
     //Tahun Periode
     Route::get('/admin/tahun-periode', 'Admin\TahunPeriodeController@index')->name('admin.tahun-periode.index');

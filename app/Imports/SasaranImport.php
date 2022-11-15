@@ -184,73 +184,44 @@ class SasaranImport implements ToCollection,WithStartRow
                     // })->first();
                     // if($get_program)
                     // {
-                    //     $get_sasaran_indikator = PivotSasaranIndikator::where('indikator', 'like', '%'.$row[7].'%')
+                    //     $get_sasaran_indikator = SasaranIndikatorKinerja::where('deskripsi', 'like', '%'.$row[6].'%')
                     //                                 ->whereHas('sasaran', function($q) use ($row){
-                    //                                     $q->where('kode', $row[6]);
+                    //                                     $q->where('kode', $row[5]);
                     //                                     $q->whereHas('tujuan', function($q) use ($row){
-                    //                                         $q->where('kode', $row[5]);
+                    //                                         $q->where('kode', $row[4]);
                     //                                         $q->whereHas('misi', function($q) use ($row){
-                    //                                             $q->where('kode', $row[4]);
+                    //                                             $q->where('kode', $row[3]);
                     //                                         });
                     //                                     });
                     //                                 })->first();
                     //     if($get_sasaran_indikator)
                     //     {
-                    //         $get_opd = MasterOpd::where('nama', 'like', '%'.$row[3].'%')->first();
-                    //         if($get_opd)
+                    //         $cek_program_rpjmd = ProgramRpjmd::where('program_id', $get_program->id)->first();
+                    //         if($cek_program_rpjmd)
                     //         {
-                    //             $cek_program_rpjmd = ProgramRpjmd::where('program_id', $get_program->id)
-                    //                                     ->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($get_sasaran_indikator){
-                    //                                         $q->where('sasaran_indikator_id', $get_sasaran_indikator->id);
-                    //                                     })->first();
-                    //             if($cek_program_rpjmd)
+                    //             $cek_pivot = PivotSasaranIndikatorProgramRpjmd::where('program_rpjmd_id', $cek_program_rpjmd->id)
+                    //                             ->where('sasaran_indikator_kinerja_id', $get_sasaran_indikator->id)->first();
+                    //             if(!$cek_pivot)
                     //             {
-                    //                 $cek_pivot_opd_program_rpjmd = PivotOpdProgramRpjmd::where('program_rpjmd_id', $cek_program_rpjmd->id)
-                    //                                                     ->where('opd_id', $get_opd->id)->first();
-                    //                 if(!$cek_pivot_opd_program_rpjmd)
-                    //                 {
-                    //                     $pivot_opd_program_rpjmd = new PivotOpdProgramRpjmd;
-                    //                     $pivot_opd_program_rpjmd->program_rpjmd_id = $cek_program_rpjmd->id;
-                    //                     $pivot_opd_program_rpjmd->opd_id = $get_opd->id;
-                    //                     $pivot_opd_program_rpjmd->save();
-                    //                 }
-
-                    //                 $cek_pivot_sasaran_indikator_program_rpjmd = PivotSasaranIndikatorProgramRpjmd::where('program_rpjmd_id', $cek_program_rpjmd->id)
-                    //                                                                 ->where('sasaran_indikator_id', $get_sasaran_indikator->id)->first();
-                    //                 if(!$cek_pivot_sasaran_indikator_program_rpjmd)
-                    //                 {
-                    //                     $pivot_sasaran_indikator_program_rpjmd = new PivotSasaranIndikatorProgramRpjmd;
-                    //                     $pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id = $cek_program_rpjmd->id;
-                    //                     $pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_id = $get_sasaran_indikator->id;
-                    //                     $pivot_sasaran_indikator_program_rpjmd->save();
-                    //                 }
-                    //             } else {
-                    //                 $program_rpjmd = new ProgramRpjmd;
-                    //                 $program_rpjmd->program_id = $get_program->id;
-                    //                 $program_rpjmd->status_program = 'Program Prioritas';
-                    //                 $program_rpjmd->save();
-
-                    //                 $cek_pivot_opd_program_rpjmd = PivotOpdProgramRpjmd::where('program_rpjmd_id', $program_rpjmd->id)
-                    //                                                     ->where('opd_id', $get_opd->id)->first();
-                    //                 if(!$cek_pivot_opd_program_rpjmd)
-                    //                 {
-                    //                     $pivot_opd_program_rpjmd = new PivotOpdProgramRpjmd;
-                    //                     $pivot_opd_program_rpjmd->program_rpjmd_id = $program_rpjmd->id;
-                    //                     $pivot_opd_program_rpjmd->opd_id = $get_opd->id;
-                    //                     $pivot_opd_program_rpjmd->save();
-                    //                 }
-
-                    //                 $cek_pivot_sasaran_indikator_program_rpjmd = PivotSasaranIndikatorProgramRpjmd::where('program_rpjmd_id', $program_rpjmd->id)
-                    //                                                                 ->where('sasaran_indikator_id', $get_sasaran_indikator->id)->first();
-                    //                 if(!$cek_pivot_sasaran_indikator_program_rpjmd)
-                    //                 {
-                    //                     $pivot_sasaran_indikator_program_rpjmd = new PivotSasaranIndikatorProgramRpjmd;
-                    //                     $pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id = $program_rpjmd->id;
-                    //                     $pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_id = $get_sasaran_indikator->id;
-                    //                     $pivot_sasaran_indikator_program_rpjmd->save();
-                    //                 }
+                    //                 $pivot_sasaran_indikator_program_rpjmd = new PivotSasaranIndikatorProgramRpjmd;
+                    //                 $pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id = $cek_program_rpjmd->id;
+                    //                 $pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id = $get_sasaran_indikator->id;
+                    //                 $pivot_sasaran_indikator_program_rpjmd->save();
                     //             }
+                    //         } else {
+                    //             $program_rpjmd = new ProgramRpjmd;
+                    //             $program_rpjmd->program_id = $get_program->id;
+                    //             $program_rpjmd->save();
 
+                    //             $cek_pivot = PivotSasaranIndikatorProgramRpjmd::where('program_rpjmd_id', $program_rpjmd->id)
+                    //                             ->where('sasaran_indikator_kinerja_id', $get_sasaran_indikator->id)->first();
+                    //             if(!$cek_pivot)
+                    //             {
+                    //                 $pivot_sasaran_indikator_program_rpjmd = new PivotSasaranIndikatorProgramRpjmd;
+                    //                 $pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id = $program_rpjmd->id;
+                    //                 $pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id = $get_sasaran_indikator->id;
+                    //                 $pivot_sasaran_indikator_program_rpjmd->save();
+                    //             }
                     //         }
                     //     }
                     // }

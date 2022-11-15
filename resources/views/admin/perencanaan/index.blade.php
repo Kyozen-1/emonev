@@ -663,7 +663,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col">
+                                                        <div class="col" style="text-align: right">
                                                             <label for="" class="form-label">Aksi Filter</label>
                                                             <div class="form-group position-relative mb-3 justify-content-center align-self-center">
                                                                 <button class="btn btn-primary waves-effect waves-light mr-1 program_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
@@ -672,36 +672,17 @@
                                                         </div>
                                                     </div>
                                                     <div class="row mb-3">
-                                                        <div class="col-2 justify-content-center align-self-center">
+                                                        <div class="col-6 justify-content-center align-self-center">
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
                                                                 <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
                                                             </div>
                                                         </div>
-                                                        <div class="col-2">
-                                                            <form>
-                                                                Program:
-                                                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option1_{{$tahun}}" value="semua" checked="checked"/>
-                                                                    <label class="btn btn-outline-primary" for="status_program_option1_{{$tahun}}">Semua</label>
-                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option2_{{$tahun}}" value="prioritas"/>
-                                                                    <label class="btn btn-outline-primary" for="status_program_option2_{{$tahun}}">Prioritas</label>
-                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option3_{{$tahun}}" value="pendukung"/>
-                                                                    <label class="btn btn-outline-primary" for="status_program_option3_{{$tahun}}">Pendukung</label>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        <div class="col"></div>
-                                                    </div>
-                                                    <hr>
-                                                    <div class="row">
-                                                        <div class="col-6 justify-content-center align-self-center">
-                                                            <label for="" class="form-label">Tambah Program</label>
-                                                        </div>
                                                         <div class="col-6" style="text-align: right">
                                                             <button class="btn btn-primary waves-effect waves-light btn-icon program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program"><i class="fas fa-plus"></i></button>
                                                         </div>
                                                     </div>
+                                                    <hr>
                                                     <div id="programNavDiv{{$tahun}}"></div>
                                                 </div>
                                             @endforeach
@@ -1977,7 +1958,7 @@
 
     {{-- Program RPJMD Start --}}
     <div class="modal fade" id="addEditProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
@@ -1987,69 +1968,54 @@
                     <span id="program_form_result"></span>
                     <form id="program_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
                         @csrf
-                        <h2 class="small-title">Atur Program</h2>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Urusan</label>
-                            <select name="program_urusan_id" id="program_urusan_id" class="form-control" required>
-                                <option value="">--- Pilih Urusan ---</option>
-                                @foreach ($urusans as $urusan)
-                                    <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Program</label>
-                            <select name="program_program_id" id="program_program_id" class="form-control" disabled required>
-                                <option value="">--- Pilih Program ---</option>
-                            </select>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Status Program</label>
-                            <select name="program_status_program" id="program_status_program" class="form-control" required>
-                                <option value="">--- Pilih Status Program ---</option>
-                                <option value="Program Prioritas">Program Prioritas</option>
-                                <option value="Program Pendukung">Program Pendukung</option>
-                            </select>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Pagu</label>
-                            <input type="number" name="program_pagu" id="program_pagu" class="form-control" required>
-                        </div>
-                        <h2 class="small-title">Atur Sasaran Indikator</h2>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Misi</label>
-                            <select name="program_misi_id" id="program_misi_id" class="form-control" required>
-                                <option value="">--- Pilih Misi ---</option>
-                                @foreach ($misis as $misi)
-                                    <option value="{{$misi['id']}}">{{$misi['kode']}}. {{$misi['deskripsi']}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Tujuan</label>
-                            <select name="program_tujuan_id" id="program_tujuan_id" class="form-control" disabled required>
-                                <option value="">--- Pilih Tujuan ---</option>
-                            </select>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Sasaran</label>
-                            <select name="program_sasaran_id" id="program_sasaran_id" class="form-control" disabled required>
-                                <option value="">--- Pilih Sasaran ---</option>
-                            </select>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Sasaran Indikator</label>
-                            <select name="program_sasaran_indikator_id[]" id="program_sasaran_indikator_id" class="form-control" multiple="multiple" disabled required>
-                            </select>
-                        </div>
-                        <h2 class="small-title">Atur OPD Terkai</h2>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Pilih OPD</label>
-                            <select name="program_opd_id[]" id="program_opd_id" class="form-control" multiple="multiple" required>
-                                @foreach ($opds as $id => $nama)
-                                    <option value="{{$id}}">{{$nama}}</option>
-                                @endforeach
-                            </select>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <h2 class="small-title">Atur Program</h2>
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Urusan</label>
+                                    <select name="program_urusan_id" id="program_urusan_id" class="form-control" required>
+                                        <option value="">--- Pilih Urusan ---</option>
+                                        @foreach ($urusans as $urusan)
+                                            <option value="{{$urusan['id']}}">{{$urusan['kode']}}. {{$urusan['deskripsi']}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Program</label>
+                                    <select name="program_program_id" id="program_program_id" class="form-control" disabled required>
+                                        <option value="">--- Pilih Program ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <h2 class="small-title">Atur Indikator Kinerja Sasaran Yang Terkait</h2>
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Misi</label>
+                                    <select name="program_misi_id" id="program_misi_id" class="form-control" required>
+                                        <option value="">--- Pilih Misi ---</option>
+                                        @foreach ($misis as $misi)
+                                            <option value="{{$misi['id']}}">{{$misi['kode']}}. {{$misi['deskripsi']}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Tujuan</label>
+                                    <select name="program_tujuan_id" id="program_tujuan_id" class="form-control" disabled required>
+                                        <option value="">--- Pilih Tujuan ---</option>
+                                    </select>
+                                </div>
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Sasaran</label>
+                                    <select name="program_sasaran_id" id="program_sasaran_id" class="form-control" disabled required>
+                                        <option value="">--- Pilih Sasaran ---</option>
+                                    </select>
+                                </div>
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Sasaran Indikator</label>
+                                    <select name="program_sasaran_indikator_id[]" id="program_sasaran_indikator_id" class="form-control" multiple="multiple" disabled required>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -2062,114 +2028,7 @@
             </div>
         </div>
     </div>
-
-    <div class="modal modal-right large scroll-out-negative fade" id="detailProgramModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable full">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="scroll-track-visible">
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Visi</label>
-                            <div class="input-group">
-                                <div class="input-group-text"></div>
-                                <textarea id="program_detail_visi" class="form-control" rows="5" disabled></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Misi</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="program_detail_misi_kode"></span></div>
-                                <textarea id="program_detail_misi" class="form-control" rows="5" disabled></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Tujuan</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="program_detail_tujuan_kode"></span></div>
-                                <textarea id="program_detail_tujuan" class="form-control" rows="5" disabled></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Sasaran</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="program_detail_sasaran_kode"></span></div>
-                                <textarea id="program_detail_sasaran" class="form-control" rows="5" disabled></textarea>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="data-table-rows slim">
-                            <div class="row">
-                                <div class="col-12">
-                                    <label for="" class="form-label">Sasaran Indikator</label>
-                                </div>
-                            </div>
-                            <!-- Table Start -->
-                            <div class="data-table-responsive-wrapper">
-                                <table class="data-table w-100">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-muted text-small text-uppercase" width="50%">Indikator</th>
-                                            <th class="text-muted text-small text-uppercase" width="25%">Target</th>
-                                            <th class="text-muted text-small text-uppercase" width="25%">Satuan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="program_tbody_detail_sasaran_indikator">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- Table End -->
-                        </div>
-                        <hr>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Program</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="program_detail_program_kode"></span></div>
-                                <textarea id="program_detail_program" class="form-control" rows="5" disabled></textarea>
-                            </div>
-                        </div>
-                        <hr>
-                        <div id="program_atur_target_rp_pertahun"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal fade" id="editProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Edit Program RPJMD</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <span id="edit_program_form_result"></span>
-                    <form id="edit_program_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
-                        @csrf
-                        <div class="form-group position-relative">
-                            <label for="" class="form-label">Pagu Program RPJMD</label>
-                            <input type="number" name="edit_program_pagu" id="edit_program_pagu" class="form-control" required>
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="hidden" name="edit_program_aksi" id="edit_program_aksi" value="Save">
-                    <input type="hidden" name="edit_program_hidden_id" id="edit_program_hidden_id">
-                    <button type="submit" class="btn btn-primary" name="edit_program_aksi_button" id="edit_program_aksi_button">Edit</button>
-                </div>
-            </form>
-            </div>
-        </div>
-    </div>
-    {{-- <div class="modal fade" id="editProgramModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -2254,7 +2113,7 @@
             </form>
             </div>
         </div>
-    </div> --}}
+    </div>
     {{-- Program RPJMD End --}}
 
     {{-- Kegiatan Renstra Start --}}
@@ -3360,121 +3219,6 @@
         });
         // Sasaran End
 
-        // Sasaran Indikator Start
-        $(document).on('click','.sasaran_indikator_create',function(){
-            $('#sasaran_indikator_sasaran_id').val($(this).attr('data-sasaran-id'));
-            $('#sasaran_indikator_form')[0].reset();
-            $('#sasaran_indikator_aksi_button').text('Save');
-            $('#sasaran_indikator_aksi_button').prop('disabled', false);
-            $('.modal-title').text('Add Data Sasaran Indikator');
-            $('#sasaran_indikator_aksi_button').val('Save');
-            $('#sasaran_indikator_aksi').val('Save');
-            $('#sasaran_indikator_form_result').html('');
-        });
-
-        $('#sasaran_indikator_form').on('submit', function(e){
-            e.preventDefault();
-            if($('#sasaran_indikator_aksi').val() == 'Save')
-            {
-                $.ajax({
-                    url: "{{ route('admin.sasaran.indikator.store') }}",
-                    method: "POST",
-                    data: $(this).serialize(),
-                    dataType: "json",
-                    beforeSend: function()
-                    {
-                        $('#sasaran_indikator_aksi_button').text('Menyimpan...');
-                        $('#sasaran_indikator_aksi_button').prop('disabled', true);
-                    },
-                    success: function(data)
-                    {
-                        var html = '';
-                        if(data.errors)
-                        {
-                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
-                            $('#sasaran_indikator_aksi_button').prop('disabled', false);
-                            $('#sasaran_indikator_form')[0].reset();
-                            $('#sasaran_indikator_aksi_button').text('Save');
-                        }
-                        if(data.success)
-                        {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil Menambahkan Sasaran Indikator',
-                            },
-                            function(){
-                                location.reload();
-                            });
-                        }
-
-                        $('#sasaran_indikator_form_result').html(html);
-                    }
-                });
-            }
-
-            if($('#sasaran_indikator_aksi').val() == 'Edit')
-            {
-                $.ajax({
-                    url: "{{ route('admin.sasaran.indikator.update') }}",
-                    method: "POST",
-                    data: $(this).serialize(),
-                    dataType: "json",
-                    beforeSend: function()
-                    {
-                        $('#sasaran_indikator_aksi_button').text('Menyimpan...');
-                        $('#sasaran_indikator_aksi_button').prop('disabled', true);
-                    },
-                    success: function(data)
-                    {
-                        var html = '';
-                        if(data.errors)
-                        {
-                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
-                            $('#sasaran_indikator_aksi_button').prop('disabled', false);
-                            $('#sasaran_indikator_form')[0].reset();
-                            $('#sasaran_indikator_aksi_button').text('Save');
-                        }
-                        if(data.success)
-                        {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil Merubahan Sasaran Indikator',
-                            },
-                            function(){
-                                location.reload();
-                            });
-                        }
-
-                        $('#sasaran_indikator_form_result').html(html);
-                    }
-                });
-            }
-        });
-
-        $(document).on('click', '.edit-sasaran-indikator', function(){
-            var id = $(this).attr('data-sasaran-indikator-id');
-            $('#sasaran_indikator_sasaran_id').val($(this).attr('data-sasaran-id'));
-            $('#sasaran_indikator_form_result').html('');
-            $.ajax({
-                url: "{{ url('/admin/sasaran/indikator/edit') }}"+'/'+id,
-                dataType: "json",
-                success: function(data)
-                {
-                    $('#sasaran_indikator_indikator').val(data.result.indikator);
-                    $('#sasaran_indikator_target').val(data.result.target);
-                    $('#sasaran_indikator_satuan').val(data.result.satuan);
-                    $('#sasaran_indikator_hidden_id').val(id);
-                    $('.modal-title').text('Edit Data Sasaran Indikator');
-                    $('#sasaran_indikator_aksi_button').text('Edit');
-                    $('#sasaran_indikator_aksi_button').prop('disabled', false);
-                    $('#sasaran_indikator_aksi_button').val('Edit');
-                    $('#sasaran_indikator_aksi').val('Edit');
-                    $('#addEditSasaranIndikatorModal').modal('show');
-                }
-            });
-        });
-        // Sasaran Indikator End
-
         // Program Start
         var program_edit_program_id = 0;
         var program_edit_tujuan_id = 0;
@@ -3597,7 +3341,7 @@
                         $('#program_sasaran_indikator_id').prop('disabled', false);
                         $('#program_sasaran_indikator_id').append('<option value="">--- Pilih Sasaran Indikator ---</option>');
                         $.each(response, function(key, value){
-                            $('#program_sasaran_indikator_id').append(new Option(value.indikator, value.id));
+                            $('#program_sasaran_indikator_id').append(new Option(value.deskripsi, value.id));
                         });
                     }
                 });
@@ -3624,7 +3368,6 @@
             $("[name='program_tujuan_id']").val('').trigger('change');
             $("[name='program_sasaran_id']").val('').trigger('change');
             $("[name='program_sasaran_indikator_id[]']").val('').trigger('change');
-            $("[name='program_opd_id[]']").val('').trigger('change');
             $('#program_filter_visi').select2('destroy');
             $('#program_filter_misi').select2('destroy');
             $('#program_filter_tujuan').select2('destroy');
@@ -3670,9 +3413,8 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil Menambahkan Program',
-                            },
-                            function(){
-                                location.reload();
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -3720,46 +3462,6 @@
             }
         });
 
-        $(document).on('click', '.detail-program-rpjmd', function(){
-            var id = $(this).attr('data-program-rpjmd-id');
-            $.ajax({
-                url: "{{ url('/admin/program-rpjmd/detail') }}" + '/' +id,
-                dataType: "json",
-                success: function(data)
-                {
-                    $('#detail-title').text('Detail Data');
-                    $('#program_detail_visi').val(data.result.visi);
-                    $('#program_detail_misi').val(data.result.misi);
-                    $('#program_detail_misi_kode').text(data.result.misi_kode);
-                    $('#program_detail_tujuan').val(data.result.tujuan);
-                    $('#program_detail_tujuan_kode').text(data.result.tujuan_kode);
-                    $('#program_detail_sasaran').val(data.result.sasaran);
-                    $('#program_detail_sasaran_kode').text(data.result.sasaran_kode);
-                    $('#program_tbody_detail_sasaran_indikator').html(data.result.sasaran_indikator);
-                    $('#program_detail_program').val(data.result.program);
-                    $('#program_detail_program_kode').text(data.result.program_kode);
-                    $('#program_atur_target_rp_pertahun').html(data.result.target_rp_pertahun);
-                    $('#detailProgramModal').modal('show');
-                }
-            });
-        });
-
-        $(document).on('click', '.edit-program-rpjmd', function(){
-            var program_rpjmd_id = $(this).attr('data-program-rpjmd-id');
-            $.ajax({
-                url: "{{ url('/admin/program-rpjmd/edit') }}" + '/' + program_rpjmd_id,
-                dataType: "json",
-                success: function(data)
-                {
-                    $('#edit_program_pagu').val(data.pagu);
-                    $('#edit_program_hidden_id').val(program_rpjmd_id);
-                    $('.modal-title').text('Edit Program RPJMD');
-                    $('#edit_program_aksi').val('Edit');
-                    $('#editProgramModal').modal('show');
-                }
-            });
-        });
-
         $('#edit_program_form').on('submit', function(e){
             e.preventDefault();
             $.ajax({
@@ -3794,6 +3496,54 @@
                     }
 
                     $('#edit_program_form_result').html(html);
+                }
+            });
+        });
+
+        $(document).on('click', '.btn-hapus-pivot-sasaran-indikator-program-rpjmd', function(){
+            var pivot_sasaran_indikator_program_rpjmd_id = $(this).attr('data-pivot-sasaran-indikator-program-rpjmd-id');
+            var program_rpjmd_id = $(this).attr('data-program-rpjmd-id');
+            var sasaran_indikator_kinerja_id = $(this).attr('data-sasaran-indikator-kinerja-id');
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.program-rpjmd.pivot-sasaran-indikator-program-rpmjd.delete') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            pivot_sasaran_indikator_program_rpjmd_id:pivot_sasaran_indikator_program_rpjmd_id,
+                            program_rpjmd_id: program_rpjmd_id,
+                            sasaran_indikator_kinerja_id : sasaran_indikator_kinerja_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
                 }
             });
         });
