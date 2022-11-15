@@ -18,4 +18,9 @@ class SasaranIndikatorKinerja extends Model
     {
         return $this->hasMany('App\Models\SasaranTargetSatuanRpRealisasi', 'sasaran_indikator_kinerja_id');
     }
+
+    public function pivot_sasaran_indikator_program_rpjmd()
+    {
+        return $this->hasMany('App\Models\PivotSasaranIndikatorProgramRpjmd', 'sasaran_indikator_kinerja_id');
+    }
 }

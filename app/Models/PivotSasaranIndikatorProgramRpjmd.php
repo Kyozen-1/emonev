@@ -14,8 +14,8 @@ class PivotSasaranIndikatorProgramRpjmd extends Model
         return $this->belongsTo('App\Models\ProgramRpjmd', 'program_rpjmd_id');
     }
 
-    public function pivot_sasaran_indikator()
+    public function sasaran_indikator_kinerja()
     {
-        return $this->belongsTo('App\Models\PivotSasaranIndikator', 'sasaran_indikator_id');
+        return $this->belongsTo('App\Models\SasaranIndikatorKinerja', 'sasaran_indikator_kinerja_id');
     }
 }

@@ -16,7 +16,7 @@ class CreatePivotSasaranIndikatorProgramRpjmdsTable extends Migration
         Schema::create('pivot_sasaran_indikator_program_rpjmds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('program_rpjmd_id')->nullable();
-            $table->foreignId('sasaran_indikator_id')->nullable();
+            $table->foreignId('sasaran_indikator_kinerja_id')->nullable();
             $table->timestamps();
         });
     }
