@@ -8,6 +8,7 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renstra/kegiatan/store', 'Opd\RenstraController@store')->name('opd.renstra.kegiatan.store');
     Route::get('/opd/renstra/kegiatan/detail/{id}', 'Opd\RenstraController@detail');
     Route::post('/opd/renstra/kegiatan/detail/target-rp-pertahun', 'Opd\RenstraController@store_target_rp_pertahun')->name('opd.renstra.kegiatan.detail.target-rp-pertahun');
+    Route::get('/opd/renstra/get-misi', 'Opd\RenstraController@get_misi')->name('opd.renstra.get-misi');
     Route::get('/opd/renstra/get-tujuan', 'Opd\RenstraController@get_tujuan')->name('opd.renstra.get-tujuan');
     Route::get('/opd/renstra/get-sasaran', 'Opd\RenstraController@get_sasaran')->name('opd.renstra.get-sasaran');
     Route::get('/opd/renstra/get-program', 'Opd\RenstraController@get_program')->name('opd.renstra.get-program');
@@ -17,6 +18,8 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renstra/filter-get-sasaran', 'Opd\RenstraController@filter_get_sasaran')->name('opd.renstra.filter-get-sasaran');
     Route::post('/opd/renstra/filter-get-program', 'Opd\RenstraController@filter_get_program')->name('opd.renstra.filter-get-program');
     Route::post('/opd/renstra/filter-get-kegiatan', 'Opd\RenstraController@filter_get_kegiatan')->name('opd.renstra.filter-get-kegiatan');
+    Route::post('/opd/renstra/filter/get-misi', 'Opd\RenstraController@get_filter_misi')->name('opd.renstra.filter.get-misi');
+    Route::post('/opd/renstra/reset/get-misi', 'Opd\RenstraController@get_misi')->name('opd.renstra.reset.get-misi');
     Route::post('/opd/renstra/filter/get-tujuan', 'Opd\RenstraController@get_filter_tujuan')->name('opd.renstra.filter.get-tujuan');
     Route::post('/opd/renstra/reset/get-tujuan', 'Opd\RenstraController@get_tujuan')->name('opd.renstra.reset.get-tujuan');
     Route::post('/opd/renstra/filter/get-sasaran', 'Opd\RenstraController@get_filter_sasaran')->name('opd.renstra.filter.get-sasaran');

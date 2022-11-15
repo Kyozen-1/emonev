@@ -73,7 +73,10 @@
             <div class="card-header border-0 pb-0">
                 <ul class="nav nav-pills responsive-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="renstra_tujuan_tab_button" data-bs-toggle="tab" data-bs-target="#renstra_tujuan_pd" role="tab" aria-selected="true" type="button">Tujuan</button>
+                        <button class="nav-link active" id="renstra_misi_tab_button" data-bs-toggle="tab" data-bs-target="#renstra_misi_pd" role="tab" aria-selected="true" type="button">Misi</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="renstra_tujuan_tab_button" data-bs-toggle="tab" data-bs-target="#renstra_tujuan_pd" role="tab" aria-selected="true" type="button">Tujuan</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="renstra_sasaran_tab_button" data-bs-toggle="tab" data-bs-target="#renstra_sasaran_pd" role="tab" aria-selected="false" type="button">Sasaran</button>
@@ -88,7 +91,57 @@
             </div>
             <div class="card-body">
                 <div class="tab-content">
-                    <div class="tab-pane fade active show" id="renstra_tujuan_pd" role="tabpanel">
+                    {{-- Misi Start --}}
+                    <div class="tab-pane fade active show" id="renstra_misi_pd" role="tabpanel">
+                        <div class="row mb-5">
+                            <div class="col-12">
+                                <h2 class="small-title">Filter Data</h2>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Visi</label>
+                                    <select name="renstra_misi_filter_visi" id="renstra_misi_filter_visi" class="form-control">
+                                        <option value="">--- Pilih Visi ---</option>
+                                        <option value="aman">Aman</option>
+                                        <option value="mandiri">Mandiri</option>
+                                        <option value="sejahtera">Sejahtera</option>
+                                        <option value="berahlak">Berahlak</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="" class="form-label">Misi</label>
+                                    <select name="renstra_misi_filter_misi" id="renstra_misi_filter_misi" class="form-control" disabled>
+                                        <option value="">--- Pilih Misi ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                    <button class="btn btn-primary waves-effect waves-light mr-1" type="button" id="renstra_misi_btn_filter">Filter Data</button>
+                                    <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_misi_btn_reset">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraMisi" checked>
+                                            <label class="form-check-label" for="onOffTaggingRenstraMisi">On / Off Tagging</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div id="renstraMisiNavDiv"></div>
+                    </div>
+                    {{-- Misi End --}}
+                    {{-- Tujuan Start --}}
+                    <div class="tab-pane fade" id="renstra_tujuan_pd" role="tabpanel">
                         <div class="row mb-5">
                             <div class="col-12">
                                 <h2 class="small-title">Filter Data</h2>
@@ -128,9 +181,23 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraTujuan" checked>
+                                            <label class="form-check-label" for="onOffTaggingTujuan">On / Off Tagging</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <hr>
                         <div id="renstraTujuanNavDiv"></div>
                     </div>
+                    {{-- Tujuan End --}}
+                    {{-- Sasaran Start --}}
                     <div class="tab-pane fade" id="renstra_sasaran_pd" role="tabpanel">
                         <div class="row mb-5">
                             <div class="col-12">
@@ -182,6 +249,8 @@
                         <hr>
                         <div id="renstraSasaranNavDiv"></div>
                     </div>
+                    {{-- Sasaran End --}}
+                    {{-- Program Start --}}
                     <div class="tab-pane fade" id="renstra_program" role="tabpanel">
                         <div class="row mb-5">
                             <div class="col-12">
@@ -241,6 +310,8 @@
                         <hr>
                         <div id="renstraProgramNavDiv"></div>
                     </div>
+                    {{-- Program End --}}
+                    {{-- Kegiatan Start --}}
                     <div class="tab-pane fade" id="renstra_kegiatan" role="tabpanel">
                         <div class="row mb-5">
                             <div class="col-12">
@@ -308,6 +379,7 @@
                         <hr>
                         <div id="renstraKegiatanNavDiv"></div>
                     </div>
+                    {{-- Kegiatan End --}}
                 </div>
             </div>
         </div>
@@ -483,13 +555,32 @@
             $('#renstra_kegiatan_kegiatan_id').select2();
 
             $.ajax({
-                url: "{{ route('opd.renstra.get-tujuan') }}",
+                url: "{{ route('opd.renstra.get-misi') }}",
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#renstraTujuanNavDiv').html(data.html);
+                    $('#renstraMisiNavDiv').html(data.html);
                 }
             });
+        });
+
+        $('#renstra_misi_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('opd.renstra.get-misi') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraMisiNavDiv').html(data.html);
+                }
+            });
+        });
+        $(document).on('change', '#onOffTaggingRenstraMisi',function(){
+            if($(this).prop('checked') == true)
+            {
+                $('.renstra-misi-tagging').show();
+            } else {
+                $('.renstra-misi-tagging').hide();
+            }
         });
 
         $('#renstra_tujuan_tab_button').click(function(){
@@ -550,6 +641,68 @@
             } else {
                 $('.renstra-program-tagging').hide();
             }
+        });
+
+        // Filter Data Misi
+        $('#renstra_misi_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('opd.renstra.filter-get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renstra_misi_filter_misi').empty();
+                        $('#renstra_misi_filter_misi').prop('disabled', false);
+                        $('#renstra_misi_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renstra_misi_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renstra_misi_filter_misi').prop('disabled', true);
+                $("[name='renstra_misi_filter_misi']").val('').trigger('change');
+            }
+        });
+
+        $('#renstra_misi_btn_filter').click(function(){
+            var visi = $('#renstra_misi_filter_visi').val();
+            var misi = $('#renstra_misi_filter_misi').val();
+
+            $.ajax({
+                url: "{{ route('opd.renstra.filter.get-misi') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi
+                },
+                success: function(data)
+                {
+                    $('#renstraMisiNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('#renstra_misi_btn_reset').click(function(){
+            $('#renstra_misi_filter_misi').prop('disabled', true);
+            $("[name='renstra_misi_filter_visi']").val('').trigger('change');
+            $("[name='renstra_misi_filter_misi']").val('').trigger('change');
+            $.ajax({
+                url: "{{ route('opd.renstra.reset.get-misi') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renstraMisiNavDiv').html(data.html);
+                }
+            });
         });
 
         // Filter Data Tujuan
