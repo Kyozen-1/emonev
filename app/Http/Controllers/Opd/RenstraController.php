@@ -560,7 +560,7 @@ class RenstraController extends Controller
                         foreach ($visis as $visi) {
                             $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle">
+                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
                                         '.$visi['deskripsi'].'
                                         <br>
                                         <span class="badge bg-primary text-uppercase renstra-tujuan-tagging">Visi</span>
@@ -568,7 +568,7 @@ class RenstraController extends Controller
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="tujuan_visi'.$visi['id'].'">
+                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condesed">
                                                 <tbody>';
                                                 $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -597,10 +597,10 @@ class RenstraController extends Controller
                                                 }
                                                 $a = 1;
                                                 foreach ($misis as $misi) {
-                                                    $html .= '<tr>
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                        <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">
-                                                            '.$misi['deskripsi'].'
+                                                    $html .= '<tr style="background: #c04141;">
+                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                        <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                            '.strtoupper($misi['deskripsi']).'
                                                             <br>';
                                                             if($a == 1 || $a == 2)
                                                             {
@@ -623,7 +623,7 @@ class RenstraController extends Controller
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse" id="tujuan_misi'.$misi['id'].'">
+                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
                                                                 <table class="table table-striped table-condesed">
                                                                     <tbody>';
                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
@@ -732,17 +732,17 @@ class RenstraController extends Controller
                             </thead>
                             <tbody>';
                         foreach ($visis as $visi) {
-                            $html .= '<tr>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                            $html .= '<tr style="background: #bbbbbb;">
+                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
+                                        <span class="badge bg-primary text-uppercase renstra-tujuan-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="tujuan_visi'.$visi['id'].'">
+                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condesed">
                                                 <tbody>';
                                                 $get_misis = Misi::where('visi_id', $visi['id']);
@@ -794,18 +794,18 @@ class RenstraController extends Controller
                                                 }
                                                 $a = 1;
                                                 foreach ($misis as $misi) {
-                                                    $html .= '<tr>
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                        <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">
-                                                            '.$misi['deskripsi'].'
+                                                    $html .= '<tr style="background: #c04141;">
+                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                        <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                            '.strtoupper($misi['deskripsi']).'
                                                             <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
+                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-tujuan-tagging">Visi '.$request->visi.'</span>';
+                                                            $html .= ' <span class="badge bg-warning text-uppercase renstra-tujuan-tagging">Misi '.$misi['kode'].' </span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse" id="tujuan_misi'.$misi['id'].'">
+                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
                                                                 <table class="table table-striped table-condesed">
                                                                     <tbody>';
                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id']);
@@ -843,9 +843,9 @@ class RenstraController extends Controller
                                                                             <td width="95%">
                                                                                 '.$tujuan['deskripsi'].'
                                                                                 <br>';
-                                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-tujuan-tagging">Visi '.$request->visi.'</span>';
+                                                                                $html .= ' <span class="badge bg-warning text-uppercase renstra-tujuan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                <span class="badge bg-secondary text-uppercase renstra-tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                             </td>
                                                                         </tr>';
                                                                     }

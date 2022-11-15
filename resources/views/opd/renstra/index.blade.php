@@ -24,9 +24,6 @@
         .hiddenRow {
             padding: 0 !important;
         }
-        .select2-container{
-            z-index:100000;
-        }
         @media (min-width: 374px) {
             .scrollBarPagination {
                 height:200px;
@@ -530,6 +527,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         $(document).ready(function(){
+            $('#renstra_misi_filter_visi').select2();
+            $('#renstra_misi_filter_misi').select2();
+
             $('#renstra_tujuan_filter_visi').select2();
             $('#renstra_tujuan_filter_misi').select2();
             $('#renstra_tujuan_filter_tujuan').select2();
