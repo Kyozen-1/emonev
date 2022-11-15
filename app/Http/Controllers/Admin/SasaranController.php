@@ -21,8 +21,9 @@ use App\Models\Tujuan;
 use App\Models\PivotPerubahanTujuan;
 use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
-use App\Models\PivotSasaranIndikator;
 use App\Imports\SasaranImport;
+use App\Models\SasaranIndikatorKinerja;
+use App\Models\SasaranTargetSatuanRpRealisasi;
 
 class SasaranController extends Controller
 {
@@ -344,7 +345,7 @@ class SasaranController extends Controller
                 $html .= '<li><p>
                             Deskripsi Visi: '.$deskripsi_visi.' <br>
                             Kode Misi: '.$kode_misi.' <br>
-                            Kode Misi: '.$kode_tujuan.' <br>
+                            Kode Tujuan: '.$kode_tujuan.' <br>
                             Kode: '.$get_perubahan->kode.'<br>
                             Deskripsi: '.$get_perubahan->deskripsi.'<br>
                             Tahun Perubahan: '.$get_perubahan->tahun_perubahan.'<br>
@@ -431,32 +432,6 @@ class SasaranController extends Controller
 
         $html .='</div>';
 
-        // $cek_indikator = PivotSasaranIndikator::where('sasaran_id', $id)->first();
-        // $indikator = '<div>';
-
-        // if($cek_indikator){
-        //     $get_indikators = PivotSasaranIndikator::where('sasaran_id', $id)->get();
-        //     $indikator .= '<ul>';
-        //     foreach ($get_indikators as $get_indikator) {
-        //         $indikator .= '<li>'.$get_indikator->indikator.'</li>';
-        //     }
-        //     $indikator .= '</ul>';
-        // } else {
-        //     $indikator .= '<p>Tidak ada</p>';
-        // }
-
-        // $indikator .='</div>';
-
-        $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $id)->get();
-        $indikator = '';
-        foreach ($sasaran_indikators as $sasaran_indikator) {
-            $indikator .= '<tr>';
-            $indikator .= '<td>'.$sasaran_indikator->indikator.'</td>';
-            $indikator .= '<td>'.$sasaran_indikator->target.'</td>';
-            $indikator .= '<td>'.$sasaran_indikator->satuan.'</td>';
-            $indikator .= '</tr>';
-        }
-
         $array = [
             'visi' => $deskripsi_visi,
             'misi' => $deskripsi_misi,
@@ -466,8 +441,7 @@ class SasaranController extends Controller
             'kode' => $kode_sasaran,
             'deskripsi' => $deskripsi_sasaran,
             'tahun_perubahan' => $tahun_perubahan_sasaran,
-            'pivot_perubahan_sasaran' => $html,
-            'sasaran_indikator' => $indikator
+            'pivot_perubahan_sasaran' => $html
         ];
 
         return response()->json(['result' => $array]);
@@ -522,36 +496,32 @@ class SasaranController extends Controller
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
+        $cek_pivot = PivotPerubahanSasaran::where('sasaran_id', $request->sasaran_hidden_id)
+                        ->where('tujuan_id', $request->sasaran_tujuan_id)
+                        ->where('kode', $request->sasaran_kode)
+                        ->where('tahun_perubahan', $request->tahun_perubahan)
+                        ->first();
+        if($cek_pivot)
+        {
+            $pivot_perubahan_sasaran = new PivotPerubahanSasaran;
+            $pivot_perubahan_sasaran->sasaran_id = $request->sasaran_hidden_id;
+            $pivot_perubahan_sasaran->tujuan_id = $request->sasaran_tujuan_id;
+            $pivot_perubahan_sasaran->kode = $request->sasaran_kode;
+            $pivot_perubahan_sasaran->deskripsi = $request->sasaran_deskripsi;
+            $pivot_perubahan_sasaran->kabupaten_id = 62;
+            $pivot_perubahan_sasaran->tahun_perubahan = $request->sasaran_tahun_perubahan;
+            $pivot_perubahan_sasaran->save();
 
-        $pivot_perubahan_sasaran = new PivotPerubahanSasaran;
-        $pivot_perubahan_sasaran->sasaran_id = $request->sasaran_hidden_id;
-        $pivot_perubahan_sasaran->tujuan_id = $request->sasaran_tujuan_id;
-        $pivot_perubahan_sasaran->kode = $request->sasaran_kode;
-        $pivot_perubahan_sasaran->deskripsi = $request->sasaran_deskripsi;
-        $pivot_perubahan_sasaran->kabupaten_id = 62;
-        $pivot_perubahan_sasaran->tahun_perubahan = $request->sasaran_tahun_perubahan;
-        $pivot_perubahan_sasaran->save();
-
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->orderBy('tahun_perubahan', 'desc')
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
-                ];
-            } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
-                ];
-            }
+            PivotPerubahanSasaran::find($cek_pivot->id)->delete();
+        } else {
+            $pivot_perubahan_sasaran = new PivotPerubahanSasaran;
+            $pivot_perubahan_sasaran->sasaran_id = $request->sasaran_hidden_id;
+            $pivot_perubahan_sasaran->tujuan_id = $request->sasaran_tujuan_id;
+            $pivot_perubahan_sasaran->kode = $request->sasaran_kode;
+            $pivot_perubahan_sasaran->deskripsi = $request->sasaran_deskripsi;
+            $pivot_perubahan_sasaran->kabupaten_id = 62;
+            $pivot_perubahan_sasaran->tahun_perubahan = $request->sasaran_tahun_perubahan;
+            $pivot_perubahan_sasaran->save();
         }
         return response()->json(['success' => 'Berhasil']);
     }
@@ -564,9 +534,8 @@ class SasaranController extends Controller
      */
     public function impor(Request $request)
     {
-        $tujuan_id = $request->sasaran_impor_tujuan_id;
         $file = $request->file('impor_sasaran');
-        Excel::import(new SasaranImport($tujuan_id), $file->store('temp'));
+        Excel::import(new SasaranImport, $file->store('temp'));
         $msg = [session('import_status'), session('import_message')];
         if ($msg[0]) {
             Alert::success('Berhasil', $msg[1]);
@@ -577,18 +546,39 @@ class SasaranController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function indikator_kinerja_tambah(Request $request)
     {
-        //
+        $deskripsis = json_decode($request->indikator_kinerja_sasaran_deskripsi, true);
+        foreach ($deskripsis as $deskripsi) {
+            $indikator_kinerja = new SasaranIndikatorKinerja;
+            $indikator_kinerja->sasaran_id = $request->indikator_kinerja_sasaran_sasaran_id;
+            $indikator_kinerja->deskripsi = $deskripsi['value'];
+            $indikator_kinerja->save();
+        }
+
+        Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk Sasaran');
+        return redirect()->route('admin.perencanaan.index');
     }
 
-    public function sasaran_indikator_store(Request $request)
+    public function indikator_kinerja_hapus(Request $request)
+    {
+        $sasaran_target_satuan_rp_realisasies = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $request->sasaran_indikator_kinerja_id)->get();
+        foreach ($sasaran_target_satuan_rp_realisasies as $sasaran_target_satuan_rp_realisasi) {
+            SasaranTargetSatuanRpRealisasi::find($sasaran_target_satuan_rp_realisasi->id)->delete();
+        }
+        SasaranIndikatorKinerja::find($request->sasaran_indikator_kinerja_id)->delete();
+
+        return response()->json(['success' => 'Berhasil Menghapus Indikator Kinerja untuk Sasaran']);
+    }
+
+    public function store_sasaran_target_satuan_rp_realisasi(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'sasaran_indikator_indikator' => 'required',
-            'sasaran_indikator_target' => 'required',
-            'sasaran_indikator_satuan' => 'required',
-            'sasaran_indikator_sasaran_id' => 'required'
+            'tahun' => 'required',
+            'sasaran_indikator_kinerja_id' => 'required',
+            'target' => 'required',
+            'satuan' => 'required',
+            'realisasi' => 'required'
         ]);
 
         if($errors -> fails())
@@ -596,28 +586,24 @@ class SasaranController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $sasaran_indikator = new PivotSasaranIndikator;
-        $sasaran_indikator->sasaran_id = $request->sasaran_indikator_sasaran_id;
-        $sasaran_indikator->indikator = $request->sasaran_indikator_indikator;
-        $sasaran_indikator->target = $request->sasaran_indikator_target;
-        $sasaran_indikator->satuan = $request->sasaran_indikator_satuan;
-        $sasaran_indikator->save();
-        return response()->json(['success' => 'Berhasil']);
+        $sasaran_target_satuan_rp_realisasi = new SasaranTargetSatuanRpRealisasi;
+        $sasaran_target_satuan_rp_realisasi->sasaran_indikator_kinerja_id = $request->sasaran_indikator_kinerja_id;
+        $sasaran_target_satuan_rp_realisasi->target = $request->target;
+        $sasaran_target_satuan_rp_realisasi->satuan = $request->satuan;
+        $sasaran_target_satuan_rp_realisasi->realisasi = $request->realisasi;
+        $sasaran_target_satuan_rp_realisasi->tahun = $request->tahun;
+        $sasaran_target_satuan_rp_realisasi->save();
+
+        return response()->json(['success' => 'Berhasil menambahkan data']);
     }
 
-    public function sasaran_indikator_edit($id)
-    {
-        $data = PivotSasaranIndikator::find($id);
-        return response()->json(['result' => $data]);
-    }
-
-    public function sasaran_indikator_update(Request $request)
+    public function update_sasaran_target_satuan_rp_realisasi(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'sasaran_indikator_indikator' => 'required',
-            'sasaran_indikator_target' => 'required',
-            'sasaran_indikator_satuan' => 'required',
-            'sasaran_indikator_sasaran_id' => 'required'
+            'sasaran_target_satuan_rp_realisasi' => 'required',
+            'sasaran_edit_target' => 'required',
+            'sasaran_edit_satuan' => 'required',
+            'sasaran_edit_realisasi' => 'required'
         ]);
 
         if($errors -> fails())
@@ -625,11 +611,13 @@ class SasaranController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $sasaran_indikator = PivotSasaranIndikator::find($request->sasaran_indikator_hidden_id);
-        $sasaran_indikator->indikator = $request->sasaran_indikator_indikator;
-        $sasaran_indikator->target = $request->sasaran_indikator_target;
-        $sasaran_indikator->satuan = $request->sasaran_indikator_satuan;
-        $sasaran_indikator->save();
-        return response()->json(['success' => 'Berhasil']);
+        $sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::find($request->sasaran_target_satuan_rp_realisasi);
+        $sasaran_target_satuan_rp_realisasi->target = $request->sasaran_edit_target;
+        $sasaran_target_satuan_rp_realisasi->satuan = $request->sasaran_edit_satuan;
+        $sasaran_target_satuan_rp_realisasi->realisasi = $request->sasaran_edit_realisasi;
+        $sasaran_target_satuan_rp_realisasi->save();
+
+        Alert::success('Berhasil', 'Berhasil Merubahan Target Sasaran');
+        return redirect()->route('admin.perencanaan.index');
     }
 }

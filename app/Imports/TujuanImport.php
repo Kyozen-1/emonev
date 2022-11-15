@@ -18,6 +18,7 @@ use App\Models\Tujuan;
 use App\Models\PivotPerubahanTujuan;
 use App\Models\PivotTujuanIndikator;
 use App\Imports\TujuanImport;
+use App\Models\TujuanIndikatorKinerja;
 
 class TujuanImport implements ToCollection,WithStartRow
 {
@@ -69,7 +70,7 @@ class TujuanImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
-                    //
+                    // Impor Semua Tujuan
                     $cek_tujuan = Tujuan::where('kode', $row['2'])->whereHas('misi', function($q) use ($row) {
                         $q->where('kode', $row[1]);
                     })->first();
@@ -113,6 +114,32 @@ class TujuanImport implements ToCollection,WithStartRow
                             $tujuan->save();
                         }
                     }
+
+                    //Impor Tujuan Indikator Kinerja
+                    // $cek_tujuan = Tujuan::where('kode', $row['2'])->whereHas('misi', function($q) use ($row) {
+                    //     $q->where('kode', $row[1]);
+                    // })->first();
+                    // if($cek_tujuan)
+                    // {
+                    //     $cek_tujuan_indikator = TujuanIndikatorKinerja::where('tujuan_id', $cek_tujuan->id)
+                    //                             ->where('deskripsi', 'like', '%'.$row[3].'%')->first();
+                    //     if($cek_tujuan_indikator)
+                    //     {
+                    //         $indikator = new TujuanIndikatorKinerja;
+                    //         $indikator->tujuan_id = $cek_tujuan->id;
+                    //         $indikator->deskripsi = $row[3];
+                    //         $indikator->save();
+
+                    //         TujuanIndikatorKinerja::find($cek_tujuan_indikator->id)->delete();
+                    //     } else {
+                    //         $indikator = new TujuanIndikatorKinerja;
+                    //         $indikator->tujuan_id = $cek_tujuan->id;
+                    //         $indikator->deskripsi = $row[3];
+                    //         $indikator->save();
+                    //     }
+                    // }
+
+                    // Impor Spesifik Tujuan
                     // $cek_tujuan = Tujuan::where('kode', $row[1])->where('misi_id', $this->misi_id)->first();
                     // if($cek_tujuan)
                     // {

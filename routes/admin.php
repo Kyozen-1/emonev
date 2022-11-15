@@ -255,6 +255,10 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/sasaran/update','Admin\SasaranController@update')->name('admin.sasaran.update');
     Route::get('/admin/sasaran/destroy/{id}','Admin\SasaranController@destroy');
     Route::post('/admin/sasaran/destroy/impor', 'Admin\SasaranController@impor')->name('admin.sasaran.impor');
+    Route::post('/admin/sasaran/indikator-kinerja/tambah', 'Admin\SasaranController@indikator_kinerja_tambah')->name('admin.sasaran.indikator-kinerja.tambah');
+    Route::post('/admin/sasaran/indikator-kinerja/hapus', 'Admin\SasaranController@indikator_kinerja_hapus')->name('admin.sasaran.indikator-kinerja.hapus');
+    Route::post('/admin/sasaran/indikator-kinerja/target-satuan-rp-realisasi', 'Admin\SasaranController@store_sasaran_target_satuan_rp_realisasi')->name('admin.sasaran.indikator.target-satuan-rp-realisasi');
+    Route::post('/admin/sasaran/indikator-kinerja/target-satuan-rp-realisasi/update', 'Admin\SasaranController@update_sasaran_target_satuan_rp_realisasi')->name('admin.sasaran.indikator.target-satuan-rp-realisasi_update');
 
     // Sasaran Indikator
     Route::post('/admin/sasaran/indikator', 'Admin\SasaranController@sasaran_indikator_store')->name('admin.sasaran.indikator.store');

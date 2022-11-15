@@ -456,9 +456,14 @@
                                 <div class="tab-pane fade" id="sasaranNav" role="tabpanel">
                                     <div class="border-0 pb-0">
                                         <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                            <li class="nav-item active" role="presentation">
+                                                <button class="nav-link active navRpjmdSasaran" data-bs-toggle="tab" data-bs-target="#rpjmd_sasaran_semua" role="tab" aria-selected="true" type="button" data-tahun="semua">
+                                                    Semua
+                                                </button>
+                                            </li>
                                             @foreach ($tahuns as $tahun)
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link {{$loop->first ? 'active' : ''}} navRpjmdSasaran" data-bs-toggle="tab" data-bs-target="#rpjmd_sasaran_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                                    <button class="nav-link navRpjmdSasaran" data-bs-toggle="tab" data-bs-target="#rpjmd_sasaran_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
                                                         {{$tahun}}
                                                     </button>
                                                 </li>
@@ -467,8 +472,72 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="tab-content">
+                                            <div class="tab-pane fade active show" id="rpjmd_sasaran_semua" role="tabpanel">
+                                                <div class="row mb-2">
+                                                    <div class="col-12">
+                                                        <h2 class="small-title">Filter Data</h2>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Visi</label>
+                                                            <select id="sasaran_filter_visi_semua" class="form-control sasaran_filter_visi" data-tahun="semua">
+                                                                <option value="">--- Pilih Visi ---</option>
+                                                                <option value="aman">Aman</option>
+                                                                <option value="mandiri">Mandiri</option>
+                                                                <option value="sejahtera">Sejahtera</option>
+                                                                <option value="berahlak">Berahlak</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Misi</label>
+                                                            <select id="sasaran_filter_misi_semua" class="form-control sasaran_filter_misi" data-tahun="semua" disabled>
+                                                                <option value="">--- Pilih Misi ---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Tujuan</label>
+                                                            <select id="sasaran_filter_tujuan_semua" class="form-control sasaran_filter_tujuan" data-tahun="semua" disabled>
+                                                                <option value="">--- Pilih Tujuan ---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group position-relative mb-3">
+                                                            <label for="" class="form-label">Sasaran</label>
+                                                            <select id="sasaran_filter_sasaran_semua" class="form-control sasaran_filter_sasaran" data-tahun="semua" disabled>
+                                                                <option value="">--- Pilih Sasaran ---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label for="" class="form-label">Aksi Filter</label>
+                                                        <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                            <button class="btn btn-primary waves-effect waves-light mr-1 sasaran_btn_filter" type="button" data-tahun="semua">Filter Data</button>
+                                                            <button class="btn btn-secondary waves-effect waves-light sasaran_btn_reset" type="button" data-tahun="semua">Reset</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-6">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="onOffTaggingSasaran" checked>
+                                                            <label class="form-check-label" for="onOffTaggingSasaran">On / Off Tagging</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6" style="text-align: right">
+                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_sasaran.xlsx')}}" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
+                                                        <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button"><i class="fas fa-file-import"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div id="sasaranNavDivsemua"></div>
+                                            </div>
                                             @foreach ($tahuns as $tahun)
-                                                <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="rpjmd_sasaran_{{$tahun}}" role="tabpanel">
+                                                <div class="tab-pane fade" id="rpjmd_sasaran_{{$tahun}}" role="tabpanel">
                                                     <div class="row mb-2">
                                                         <div class="col-12">
                                                             <h2 class="small-title">Filter Data</h2>
@@ -518,11 +587,15 @@
                                                         </div>
                                                     </div>
                                                     <div class="row mb-3">
-                                                        <div class="col-12">
+                                                        <div class="col-6">
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input" type="checkbox" id="onOffTaggingSasaran" checked>
                                                                 <label class="form-check-label" for="onOffTaggingSasaran">On / Off Tagging</label>
                                                             </div>
+                                                        </div>
+                                                        <div class="col-6" style="text-align: right">
+                                                            <a class="btn btn-success waves-effect waves-light mr-2" href="{{asset('template/template_impor_sasaran.xlsx')}}" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
+                                                            <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button"><i class="fas fa-file-import"></i></button>
                                                         </div>
                                                     </div>
                                                     <hr>
@@ -1720,30 +1793,6 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="data-table-rows slim">
-                            <div class="row">
-                                <div class="col-12">
-                                    <label for="" class="form-label">Sasaran Indikator</label>
-                                </div>
-                            </div>
-                            <!-- Table Start -->
-                            <div class="data-table-responsive-wrapper">
-                                <table class="data-table w-100">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-muted text-small text-uppercase" width="50%">Indikator</th>
-                                            <th class="text-muted text-small text-uppercase" width="25%">Target</th>
-                                            <th class="text-muted text-small text-uppercase" width="25%">Satuan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbody_detail_sasaran_indikator">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- Table End -->
-                        </div>
-                        <hr>
                         <div class="form-group position-relative mb-3">
                             <label for="" class="form-label">Perubahan Sasaran</label>
                             <div id="div_pivot_perubahan_sasaran" class="scrollBarPagination"></div>
@@ -1767,12 +1816,67 @@
                 <div class="modal-body">
                     <form action="{{ route('admin.sasaran.impor') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="sasaran_impor_tujuan_id" id="sasaran_impor_tujuan_id">
                         <div class="mb-3 position-relative form-group">
                             <input type="file" class="dropify" id="impor_sasaran" name="impor_sasaran" data-height="150" data-allowed-file-extensions="xlsx" data-show-errors="true" required>
                         </div>
                         <div class="mb-3 position-relative form-group">
                             <button class="btn btn-success waves-effect waves-light">Impor</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="indikatorKinerjaSasaranModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaSasaranModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Indikator Kinerja Sasaran</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.sasaran.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_sasaran_sasaran_id" id="indikator_kinerja_sasaran_sasaran_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Tambah Indikator Kinerja</label>
+                            <input id="indikator_kinerja_sasaran_deskripsi" name="indikator_kinerja_sasaran_deskripsi"/>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTargetSasaranModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetSasaranModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.sasaran.indikator.target-satuan-rp-realisasi_update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sasaran_target_satuan_rp_realisasi" id="sasaran_target_satuan_rp_realisasi">
+                        <div class="form-group position-relative">
+                            <label for="sasaran_edit_target" class="form-label">Target</label>
+                            <input type="text" class="form-control" id="sasaran_edit_target" name="sasaran_edit_target" required>
+                        </div>
+                        <div class="form-group position-relative">
+                            <label for="sasaran_edit_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="sasaran_edit_satuan" name="sasaran_edit_satuan" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="sasaran_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="sasaran_edit_realisasi" name="sasaran_edit_realisasi" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -2390,6 +2494,7 @@
             @endforeach
 
             new Tagify(document.querySelector('#indikator_kinerja_tujuan_deskripsi'));
+            new Tagify(document.querySelector('#indikator_kinerja_sasaran_deskripsi'));
         });
         $(document).on('click', '.visi_detail', function(){
             var id = $(this).attr('id');
@@ -2971,7 +3076,7 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#sasaranNavDiv'+tahun_awal).html(data.html);
+                    $('#sasaranNavDivsemua').html(data.html);
                 }
             });
         });
@@ -3097,7 +3202,6 @@
                     $('#sasaran_detail_deskripsi').val(data.result.deskripsi);
                     $('#pivot_perubahan_sasaran').append(data.result.pivot_perubahan_sasaran);
                     $('#sasaran_detail_tahun_perubahan').val(data.result.tahun_perubahan);
-                    $('#tbody_detail_sasaran_indikator').html(data.result.sasaran_indikator);
                     $('#detailSasaranModal').modal('show');
                 }
             });
@@ -3127,9 +3231,132 @@
         });
 
         $(document).on('click','.sasaran_btn_impor_template',function(){
-            $('#sasaran_impor_tujuan_id').val($(this).attr('data-tujuan-id'));
             $('.modal-title').text('Import Data Sasaran');
             $('#importSasaranModal').modal('show');
+        });
+
+        $(document).on('click', '.tambah-sasaran-indikator-kinerja', function(){
+            $('#indikator_kinerja_sasaran_sasaran_id').val($(this).attr('data-sasaran-id'));
+            $('#indikatorKinerjaSasaranModal').modal('show');
+        });
+
+        $(document).on('click', '.btn-hapus-sasaran-indikator-kinerja', function(){
+            var sasaran_indikator_kinerja_id = $(this).attr('data-sasaran-indikator-kinerja-id');
+            var sasaran_id = $(this).attr('data-sasaran-id');
+
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.sasaran.indikator-kinerja.hapus') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            sasaran_id:sasaran_id,
+                            sasaran_indikator_kinerja_id: sasaran_indikator_kinerja_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-sasaran-target-satuan-rp-realisasi', function(){
+            var sasaran_indikator_kinerja_id = $(this).attr('data-sasaran-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+
+            var target = $('.sasaran-add-target.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).val();
+            var satuan = $('.sasaran-add-satuan.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).val();
+            var realisasi = $('.sasaran-add-realisasi.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).val();
+
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.sasaran.indikator.target-satuan-rp-realisasi') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tahun:tahun,
+                            sasaran_indikator_kinerja_id:sasaran_indikator_kinerja_id,
+                            target:target,
+                            satuan:satuan,
+                            realisasi:realisasi
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-sasaran-edit-target-satuan-rp-realisasi', function(){
+            var sasaran_indikator_kinerja_id = $(this).attr('data-sasaran-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var sasaran_target_satuan_rp_realisasi = $(this).attr('data-sasaran-target-satuan-rp-realisasi');
+            var target = $('.sasaran-span-target.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).text();
+            var satuan = $('.sasaran-span-satuan.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).text();
+            var realisasi = $('.sasaran-span-realisasi.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).text();
+
+            $('#sasaran_target_satuan_rp_realisasi').val(sasaran_target_satuan_rp_realisasi);
+            $('#sasaran_edit_target').val(target);
+            $('#sasaran_edit_satuan').val(satuan);
+            $('#sasaran_edit_realisasi').val(realisasi);
+
+            $('#editTargetSasaranModal').modal('show');
         });
         // Sasaran End
 

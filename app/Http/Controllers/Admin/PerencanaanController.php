@@ -42,6 +42,8 @@ use App\Models\SubKegiatan;
 use App\Models\PivotPerubahanSubKegiatan;
 use App\Models\TujuanIndikatorKinerja;
 use App\Models\TujuanTargetSatuanRpRealisasi;
+use App\Models\SasaranIndikatorKinerja;
+use App\Models\SasaranTargetSatuanRpRealisasi;
 
 class PerencanaanController extends Controller
 {
@@ -170,7 +172,7 @@ class PerencanaanController extends Controller
                                         ];
                                     }
                                 }
-                                $html .= '<tr style="background:#800000;">
+                                $html .= '<tr style="background: #bbbbbb;">
                                             <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                             <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle text-white">
                                                 '.strtoupper($visi['deskripsi']).'
@@ -292,7 +294,7 @@ class PerencanaanController extends Controller
                                         ];
                                     }
                                 }
-                                $html .= '<tr style="background:#800000">
+                                $html .= '<tr style="background: #bbbbbb;">
                                             <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                             <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle text-white">
                                                 '.strtoupper($visi['deskripsi']).'
@@ -400,7 +402,7 @@ class PerencanaanController extends Controller
                             </thead>
                             <tbody>';
                         foreach ($visis as $visi) {
-                            $html .= '<tr style="background:#800000">
+                            $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
                                         '.strtoupper($visi['deskripsi']).'
@@ -440,7 +442,7 @@ class PerencanaanController extends Controller
                                                 }
                                                 $a = 1;
                                                 foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background:#800080">
+                                                    $html .= '<tr style="background: #c04141;">
                                                         <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.strtoupper($misi['kode']).'</td>
                                                         <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
                                                             '.strtoupper($misi['deskripsi']).'
@@ -679,7 +681,7 @@ class PerencanaanController extends Controller
                             </thead>
                             <tbody>';
                         foreach ($visis as $visi) {
-                            $html .= '<tr style="background:#800000">
+                            $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
                                         '.strtoupper($visi['deskripsi']).'
@@ -719,7 +721,7 @@ class PerencanaanController extends Controller
                                                 }
                                                 $a = 1;
                                                 foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background:#800080">
+                                                    $html .= '<tr style="background: #c04141;">
                                                         <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.strtoupper($misi['kode']).'</td>
                                                         <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
                                                             '.strtoupper($misi['deskripsi']).'
@@ -927,11 +929,18 @@ class PerencanaanController extends Controller
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
 
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal-1;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $get_visis = Visi::all();
         $visis = [];
         foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun_awal)
-                                    ->latest()->first();
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->latest()->first();
             if($cek_perubahan_visi)
             {
                 $visis[] = [
@@ -948,36 +957,38 @@ class PerencanaanController extends Controller
             }
         }
 
-        $html = '
-                <div class="data-table-rows slim" id="sasaran_div_table">
+        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
                                     <th width="5%">Kode</th>
-                                    <th width="95%">Deskripsi</th>
+                                    <th width="45%">Deskripsi</th>
+                                    <th width="30%">Indikator Kinerja</th>
+                                    <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>';
                             foreach ($visis as $visi) {
-                                $html .= '<tr>
+                                $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
                                         <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
                                     </td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="sasaran_visi'.$visi['id'].'">
+                                    <td colspan="4" class="hiddenRow">
+                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
                                                     $misis = [];
                                                     foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_awal)
-                                                                                ->latest()->first();
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->latest()->first();
                                                         if($cek_perubahan_misi)
                                                         {
                                                             $misis[] = [
@@ -997,10 +1008,10 @@ class PerencanaanController extends Controller
                                                     }
                                                     $a = 1;
                                                     foreach ($misis as $misi) {
-                                                        $html .= '<tr>
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
-                                                                        '.$misi['deskripsi'].'
+                                                        $html .= '<tr style="background: #c04141;">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                                        '.strtoupper($misi['deskripsi']).'
                                                                         <br>';
                                                                         if($a == 1 || $a == 2)
                                                                         {
@@ -1020,16 +1031,18 @@ class PerencanaanController extends Controller
                                                                         }
                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
                                                                     </td>
+                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
+                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
                                                                                     $tujuans = [];
                                                                                     foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan',$tahun_awal)
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
                                                                                                                 ->latest()
                                                                                                                 ->first();
                                                                                         if($cek_perubahan_tujuan)
@@ -1050,10 +1063,10 @@ class PerencanaanController extends Controller
                                                                                         }
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
                                                                                                         <br>';
                                                                                                         if($a == 1 || $a == 2)
                                                                                                         {
@@ -1074,21 +1087,20 @@ class PerencanaanController extends Controller
                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
                                                                                                         <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                     </td>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="30%"></td>
                                                                                                     <td width ="20%">
                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
-                                                                                                        <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
                                                                                                     </td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_awal)
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
                                                                                                                                                     ->latest()->first();
                                                                                                                         if($cek_perubahan_sasaran)
                                                                                                                         {
@@ -1110,7 +1122,7 @@ class PerencanaanController extends Controller
                                                                                                                     foreach ($sasarans as $sasaran) {
                                                                                                                         $html .= '<tr>
                                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="75%">
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
                                                                                                                                         '.$sasaran['deskripsi'].'
                                                                                                                                         <br>';
                                                                                                                                         if($a == 1 || $a == 2)
@@ -1132,66 +1144,104 @@ class PerencanaanController extends Controller
                                                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
                                                                                                                                         <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                                                         <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>
-                                                                                                                                    <td width="20%">
-                                                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_indikator_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranIndikatorModal" title="Tambah Data Sasaran Indikator" data-sasaran-id="'.$sasaran['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                    </td>';
+                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                    $html .= '<td width="30%"><ul>';
+                                                                                                                                        foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
+                                                                                                                                        }
+                                                                                                                                    $html .= '</ul></td>';
+                                                                                                                                    $html .='<td width="20%">
+                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
                                                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
-                                                                                                                                                        <th width="5%"><strong>No</strong></th>
-                                                                                                                                                        <th width="50%"><strong>Sasaran Indikator</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Target</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Satuan</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Aksi</strong></th>
+                                                                                                                                                        <th>No</th>
+                                                                                                                                                        <th>Indikator</th>
+                                                                                                                                                        <th>Target</th>
+                                                                                                                                                        <th>Satuan</th>
+                                                                                                                                                        <th>Realisasi</th>
+                                                                                                                                                        <th>Tahun</th>
+                                                                                                                                                        <th>Aksi</th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
-                                                                                                                                                    $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($sasaran_indikators as $sasaran_indikator) {
-                                                                                                                                                        $html .= '<tr>
-                                                                                                                                                                    <td>'.$b++.'</td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>';
-                                                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        if($a == 3)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        if($a == 4)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        if($a == 5)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="15%">
-                                                                                                                                                                        '.$sasaran_indikator['target'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="15%">
-                                                                                                                                                                        '.$sasaran_indikator['satuan'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="20%">
-                                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran-indikator" data-sasaran-indikator-id="'.$sasaran_indikator['id'].'" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Edit Sasaran Indikator"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                    </td>
-                                                                                                                                                                </tr>';
-                                                                                                                                                    }
+                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
+                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                        $a = 1;
+                                                                                                                                                        foreach ($tahuns as $tahun) {
+                                                                                                                                                            if($a == 1)
+                                                                                                                                                            {
+                                                                                                                                                                    $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
+                                                                                                                                                                    if($cek_sasaran_target_satuan_rp_realisasi)
+                                                                                                                                                                    {
+                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                                        $html .= '<td><span class="sasaran-span-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->satuan.'</span></td>';
+                                                                                                                                                                        $html .= '<td><span class="sasaran-span-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->realisasi.'</span></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                                                                                                    </button>
+                                                                                                                                                                                </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                    } else {
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                    </button>
+                                                                                                                                                                                </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                    }
+                                                                                                                                                            } else {
+                                                                                                                                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
+                                                                                                                                                                if($cek_sasaran_target_satuan_rp_realisasi)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                                        $html .= '<td><span class="sasaran-span-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->satuan.'</span></td>';
+                                                                                                                                                                        $html .= '<td><span class="sasaran-span-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->realisasi.'</span></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                                                                                                        </button>
+                                                                                                                                                                                    </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                }
+                                                                                                                                                                $html .= '<tr>';
+                                                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                                                    $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                    $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                    $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                </button>
+                                                                                                                                                                            </td>';
+                                                                                                                                                                $html .='</tr>';
+                                                                                                                                                            }
+                                                                                                                                                            $a++;
+                                                                                                                                                        }
+                                                                                                                                                }
                                                                                                                                                 $html .= '</tbody>
                                                                                                                                             </table>
                                                                                                                                         </div>
@@ -1229,7 +1279,7 @@ class PerencanaanController extends Controller
         $get_visis = Visi::all();
         $visis = [];
         foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun)
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
                                     ->latest()->first();
             if($cek_perubahan_visi)
             {
@@ -1247,35 +1297,38 @@ class PerencanaanController extends Controller
             }
         }
 
-        $html = '
-                <div class="data-table-rows slim" id="sasaran_div_table">
+        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
                     <div class="data-table-responsive-wrapper">
                         <table class="table table-condensed table-striped">
                             <thead>
                                 <tr>
                                     <th width="5%">Kode</th>
-                                    <th width="95%">Deskripsi</th>
+                                    <th width="45%">Deskripsi</th>
+                                    <th width="30%">Indikator Kinerja</th>
+                                    <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>';
                             foreach ($visis as $visi) {
-                                $html .= '<tr>
+                                $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
                                         <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
                                     </td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="sasaran_visi'.$visi['id'].'">
+                                    <td colspan="4" class="hiddenRow">
+                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
                                                     $misis = [];
                                                     foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun)
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
                                                                                 ->latest()->first();
                                                         if($cek_perubahan_misi)
                                                         {
@@ -1296,9 +1349,9 @@ class PerencanaanController extends Controller
                                                     }
                                                     $a = 1;
                                                     foreach ($misis as $misi) {
-                                                        $html .= '<tr>
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
+                                                        $html .= '<tr style="background: #c04141;">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
                                                                         '.$misi['deskripsi'].'
                                                                         <br>';
                                                                         if($a == 1 || $a == 2)
@@ -1319,16 +1372,18 @@ class PerencanaanController extends Controller
                                                                         }
                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
                                                                     </td>
+                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
+                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
                                                                                     $tujuans = [];
                                                                                     foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan',$tahun)
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
                                                                                                                 ->latest()
                                                                                                                 ->first();
                                                                                         if($cek_perubahan_tujuan)
@@ -1349,10 +1404,10 @@ class PerencanaanController extends Controller
                                                                                         }
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
                                                                                                         <br>';
                                                                                                         if($a == 1 || $a == 2)
                                                                                                         {
@@ -1373,21 +1428,20 @@ class PerencanaanController extends Controller
                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
                                                                                                         <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                     </td>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="30%"></td>
                                                                                                     <td width ="20%">
                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
-                                                                                                        <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
                                                                                                     </td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun)
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
                                                                                                                                                     ->latest()->first();
                                                                                                                         if($cek_perubahan_sasaran)
                                                                                                                         {
@@ -1409,7 +1463,7 @@ class PerencanaanController extends Controller
                                                                                                                     foreach ($sasarans as $sasaran) {
                                                                                                                         $html .= '<tr>
                                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="75%">
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
                                                                                                                                         '.$sasaran['deskripsi'].'
                                                                                                                                         <br>';
                                                                                                                                         if($a == 1 || $a == 2)
@@ -1431,69 +1485,13 @@ class PerencanaanController extends Controller
                                                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
                                                                                                                                         <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                                                         <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>
-                                                                                                                                    <td width="20%">
-                                                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_indikator_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranIndikatorModal" title="Tambah Data Sasaran Indikator" data-sasaran-id="'.$sasaran['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%"><strong>No</strong></th>
-                                                                                                                                                        <th width="50%"><strong>Sasaran Indikator</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Target</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Satuan</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Aksi</strong></th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($sasaran_indikators as $sasaran_indikator) {
-                                                                                                                                                        $html .= '<tr>
-                                                                                                                                                                    <td>'.$b++.'</td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>';
-                                                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        if($a == 3)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        if($a == 4)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        if($a == 5)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="15%">
-                                                                                                                                                                        '.$sasaran_indikator['target'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="15%">
-                                                                                                                                                                        '.$sasaran_indikator['satuan'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="20%">
-                                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran-indikator" data-sasaran-indikator-id="'.$sasaran_indikator['id'].'" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Edit Sasaran Indikator"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                    </td>
-                                                                                                                                                                </tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
+                                                                                                                                    </td>';
+
+                                                                                                                                    $html .= '<td width="30%"></td>';
+                                                                                                                                    $html .= '<td width="20%">
+                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
                                                                                                                                     </td>
                                                                                                                                 </tr>';
                                                                                                                     }
@@ -2870,22 +2868,26 @@ class PerencanaanController extends Controller
                             <thead>
                                 <tr>
                                     <th width="5%">Kode</th>
-                                    <th width="95%">Deskripsi</th>
+                                    <th width="45%">Deskripsi</th>
+                                    <th width="30%">Indikator Kinerja</th>
+                                    <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>';
                             foreach ($visis as $visi) {
-                                $html .= '<tr>
+                                $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
                                         <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
                                     </td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="sasaran_visi'.$visi['id'].'">
+                                    <td colspan="4" class="hiddenRow">
+                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id']);
@@ -2935,18 +2937,20 @@ class PerencanaanController extends Controller
                                                     }
                                                     $a = 1;
                                                     foreach ($misis as $misi) {
-                                                        $html .= '<tr>
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
-                                                                        '.$misi['deskripsi'].'
+                                                        $html .= '<tr style="background: #c04141;">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                                        '.strtoupper($misi['deskripsi']).'
                                                                         <br>';
                                                                         $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
                                                                     </td>
+                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
+                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id']);
@@ -2978,10 +2982,10 @@ class PerencanaanController extends Controller
                                                                                         }
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
                                                                                                         <br>';
                                                                                                         $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
@@ -2989,13 +2993,11 @@ class PerencanaanController extends Controller
                                                                                                     </td>
                                                                                                     <td width ="20%">
                                                                                                         <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                        <a class="btn btn-success waves-effect waves-light mr-2" href="'.asset('template/template_impor_sasaran.xlsx').'" title="Download Template Import Data Sasaran"><i class="fas fa-file-excel"></i></a>
-                                                                                                        <button class="btn btn-info waves-effect waves-light sasaran_btn_impor_template" title="Import Data Sasaran" type="button" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-file-import"></i></button>
                                                                                                     </td>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
@@ -3028,61 +3030,34 @@ class PerencanaanController extends Controller
                                                                                                                     foreach ($sasarans as $sasaran) {
                                                                                                                         $html .= '<tr>
                                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="75%">
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
                                                                                                                                         '.$sasaran['deskripsi'].'
                                                                                                                                         <br>';
-                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
                                                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
                                                                                                                                         <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                                                         <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="30%"></td>
                                                                                                                                     <td width="20%">
-                                                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_indikator_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranIndikatorModal" title="Tambah Data Sasaran Indikator" data-sasaran-id="'.$sasaran['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tujuan-id="'.$tujuan['id'].'" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%"><strong>No</strong></th>
-                                                                                                                                                        <th width="50%"><strong>Sasaran Indikator</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Target</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Satuan</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Aksi</strong></th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($sasaran_indikators as $sasaran_indikator) {
-                                                                                                                                                        $html .= '<tr>
-                                                                                                                                                                    <td>'.$b++.'</td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>';
-                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="15%">
-                                                                                                                                                                        '.$sasaran_indikator['target'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="15%">
-                                                                                                                                                                        '.$sasaran_indikator['satuan'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td width="20%">
-                                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran-indikator" data-sasaran-indikator-id="'.$sasaran_indikator['id'].'" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Edit Sasaran Indikator"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                    </td>
-                                                                                                                                                                </tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
+                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
                                                                                                                                     </td>
                                                                                                                                 </tr>';
                                                                                                                     }
@@ -3149,7 +3124,7 @@ class PerencanaanController extends Controller
                             </thead>
                             <tbody>';
                         foreach ($visis as $visi) {
-                            $html .= '<tr style="background:#800000">
+                            $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
                                         '.strtoupper($visi['deskripsi']).'
@@ -3213,7 +3188,7 @@ class PerencanaanController extends Controller
                                                 }
                                                 $a = 1;
                                                 foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background:#800080">
+                                                    $html .= '<tr style="background: #c04141;">
                                                         <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
                                                         <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
                                                             '.strtoupper($misi['deskripsi']).'
@@ -3489,7 +3464,7 @@ class PerencanaanController extends Controller
                                         ];
                                     }
                                 }
-                                $html .= '<tr style="background:#800000;">
+                                $html .= '<tr style="background: #bbbbbb;">
                                             <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle"></td>
                                             <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle text-white">
                                                 '.strtoupper($visi['deskripsi']).'

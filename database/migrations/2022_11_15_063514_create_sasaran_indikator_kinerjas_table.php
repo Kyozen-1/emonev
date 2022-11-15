@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePivotSasaranIndikatorsTable extends Migration
+class CreateSasaranIndikatorKinerjasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreatePivotSasaranIndikatorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('pivot_sasaran_indikators', function (Blueprint $table) {
+        Schema::create('sasaran_indikator_kinerjas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sasaran_id')->nullable();
-            $table->longText('indikator')->nullable();
-            $table->string('target')->nullable();
-            $table->string('satuan')->nullable();
+            $table->string('deskripsi')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreatePivotSasaranIndikatorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pivot_sasaran_indikators');
+        Schema::dropIfExists('sasaran_indikator_kinerjas');
     }
 }
