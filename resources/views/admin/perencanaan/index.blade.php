@@ -672,11 +672,23 @@
                                                         </div>
                                                     </div>
                                                     <div class="row mb-3">
-                                                        <div class="col-6 justify-content-center align-self-center">
+                                                        <div class="col-3 justify-content-center align-self-center">
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input" type="checkbox" id="onOffTaggingProgram" checked>
                                                                 <label class="form-check-label" for="onOffTaggingProgram">On / Off Tagging</label>
                                                             </div>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <form>
+                                                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option1_{{$tahun}}" value="semua" checked="checked"/>
+                                                                    <label class="btn btn-outline-primary" for="status_program_option1_{{$tahun}}">Semua</label>
+                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option2_{{$tahun}}" value="prioritas"/>
+                                                                    <label class="btn btn-outline-primary" for="status_program_option2_{{$tahun}}">Prioritas</label>
+                                                                    <input type="radio" class="btn-check status_program_option" name="status_program_option_{{$tahun}}" id="status_program_option3_{{$tahun}}" value="pendukung"/>
+                                                                    <label class="btn btn-outline-primary" for="status_program_option3_{{$tahun}}">Pendukung</label>
+                                                                </div>
+                                                            </form>
                                                         </div>
                                                         <div class="col-6" style="text-align: right">
                                                             <button class="btn btn-primary waves-effect waves-light btn-icon program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program"><i class="fas fa-plus"></i></button>
@@ -5047,6 +5059,7 @@
                 method: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
+                    tahun:tahun,
                     value:$(this).val()
                 },
                 success: function(data)

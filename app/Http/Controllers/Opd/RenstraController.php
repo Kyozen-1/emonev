@@ -301,7 +301,25 @@ class RenstraController extends Controller
         $tahun_awal = $get_periode->tahun_awal;
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::whereHas('misi', function($q){
+            $q->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd', function($q){
+                                $q->whereHas('program', function($q){
+                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        })->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
@@ -332,7 +350,23 @@ class RenstraController extends Controller
                             </thead>
                             <tbody>';
                             foreach ($visis as $visi) {
-                                $get_misis = Misi::where('visi_id', $visi['id'])->get();
+                                $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q){
+                                    $q->whereHas('sasaran', function($q){
+                                        $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                $q->whereHas('program_rpjmd', function($q){
+                                                    $q->whereHas('program', function($q){
+                                                        $q->whereHas('program_indikator_kinerja', function($q){
+                                                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                            });
+                                                        });
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                })->get();
                                 $misis = [];
                                 foreach($get_misis as $get_misi)
                                 {
@@ -413,7 +447,25 @@ class RenstraController extends Controller
 
     public function get_filter_misi(Request $request)
     {
-        $get_visis = Visi::all();
+        $get_visis = Visi::whereHas('misi', function($q){
+            $q->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd', function($q){
+                                $q->whereHas('program', function($q){
+                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        })->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -541,7 +593,25 @@ class RenstraController extends Controller
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
         }
-        $get_visis = Visi::all();
+        $get_visis = Visi::whereHas('misi', function($q){
+            $q->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd', function($q){
+                                $q->whereHas('program', function($q){
+                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        })->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -589,7 +659,23 @@ class RenstraController extends Controller
                                         <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condesed">
                                                 <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id'])->get();
+                                                $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q){
+                                                    $q->whereHas('sasaran', function($q){
+                                                        $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                $q->whereHas('program_rpjmd', function($q){
+                                                                    $q->whereHas('program', function($q){
+                                                                        $q->whereHas('program_indikator_kinerja', function($q){
+                                                                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+                                                })->get();
                                                 $misis = [];
                                                 foreach ($get_misis as $get_misi) {
                                                     $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
@@ -645,7 +731,21 @@ class RenstraController extends Controller
                                                             <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
                                                                 <table class="table table-striped table-condesed">
                                                                     <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q){
+                                                                        $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                $q->whereHas('program_rpjmd', function($q){
+                                                                                    $q->whereHas('program', function($q){
+                                                                                        $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                            });
+                                                                                        });
+                                                                                    });
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    })->orderBy('kode', 'asc')->get();
                                                                     $tujuans = [];
                                                                     foreach ($get_tujuans as $get_tujuan) {
                                                                         $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
@@ -877,7 +977,25 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::whereHas('misi', function($q){
+            $q->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd', function($q){
+                                $q->whereHas('program', function($q){
+                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        })->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -948,7 +1066,23 @@ class RenstraController extends Controller
                                                 {
                                                     $get_misis = $get_misis->where('id', $request->misi);
                                                 }
-                                                $get_misis = $get_misis->get();
+                                                $get_misis = $get_misis->whereHas('tujuan', function($q){
+                                                    $q->whereHas('sasaran', function($q){
+                                                        $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                $q->whereHas('program_rpjmd', function($q){
+                                                                    $q->whereHas('program', function($q){
+                                                                        $q->whereHas('program_indikator_kinerja', function($q){
+                                                                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+                                                })->get();
                                                 $misis = [];
                                                 foreach ($get_misis as $get_misi) {
                                                     $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
@@ -994,7 +1128,21 @@ class RenstraController extends Controller
                                                                     {
                                                                         $get_tujuans = $get_tujuans->where('id', $request->tujuan);
                                                                     }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
+                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->whereHas('sasaran', function($q){
+                                                                        $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                $q->whereHas('program_rpjmd', function($q){
+                                                                                    $q->whereHas('program', function($q){
+                                                                                        $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                            });
+                                                                                        });
+                                                                                    });
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    })->get();
                                                                     $tujuans = [];
                                                                     foreach ($get_tujuans as $get_tujuan) {
                                                                         $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
@@ -1226,7 +1374,25 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::whereHas('misi', function($q){
+            $q->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd', function($q){
+                                $q->whereHas('program', function($q){
+                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        })->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -1276,7 +1442,23 @@ class RenstraController extends Controller
                                         <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id'])->get();
+                                                    $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q){
+                                                        $q->whereHas('sasaran', function($q){
+                                                            $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                    $q->whereHas('program_rpjmd', function($q){
+                                                                        $q->whereHas('program', function($q){
+                                                                            $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    })->get();
                                                     $misis = [];
                                                     foreach ($get_misis as $get_misi) {
                                                         $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_sekarang)
@@ -1331,7 +1513,21 @@ class RenstraController extends Controller
                                                                         <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q){
+                                                                                        $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                $q->whereHas('program_rpjmd', function($q){
+                                                                                                    $q->whereHas('program', function($q){
+                                                                                                        $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                            });
+                                                                                                        });
+                                                                                                    });
+                                                                                                });
+                                                                                            });
+                                                                                        });
+                                                                                    })->get();
                                                                                     $tujuans = [];
                                                                                     foreach ($get_tujuans as $get_tujuan) {
                                                                                         $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan',$tahun_sekarang)
@@ -1387,7 +1583,19 @@ class RenstraController extends Controller
                                                                                                         <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                                                                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                                            $q->whereHas('program_rpjmd', function($q){
+                                                                                                                                $q->whereHas('program', function($q){
+                                                                                                                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                        });
+                                                                                                                                    });
+                                                                                                                                });
+                                                                                                                            });
+                                                                                                                        });
+                                                                                                                    })->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
                                                                                                                         $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
@@ -1435,7 +1643,17 @@ class RenstraController extends Controller
                                                                                                                                         <span class="badge bg-secondary text-uppercase renstra-sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                                                         <span class="badge bg-danger text-uppercase renstra-sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                                                        $q->whereHas('program_rpjmd', function($q){
+                                                                                                                                            $q->whereHas('program', function($q){
+                                                                                                                                                $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                                                                    $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                                                        $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                    });
+                                                                                                                                                });
+                                                                                                                                            });
+                                                                                                                                        });
+                                                                                                                                    })->get();
                                                                                                                                     $html .= '<td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_sasaran_'.$sasaran['id'].'" class="accordion-toggle"><ul>';
                                                                                                                                         foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
                                                                                                                                         {
@@ -1624,7 +1842,25 @@ class RenstraController extends Controller
 
     public function get_filter_sasaran(Request $request)
     {
-        $get_visis = Visi::all();
+        $get_visis = Visi::whereHas('misi', function($q){
+            $q->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd', function($q){
+                                $q->whereHas('program', function($q){
+                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        })->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -1695,7 +1931,23 @@ class RenstraController extends Controller
                                                     {
                                                         $get_misis = $get_misis->where('id', $request->misi);
                                                     }
-                                                    $get_misis = $get_misis->get();
+                                                    $get_misis = $get_misis->whereHas('tujuan', function($q){
+                                                        $q->whereHas('sasaran', function($q){
+                                                            $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                    $q->whereHas('program_rpjmd', function($q){
+                                                                        $q->whereHas('program', function($q){
+                                                                            $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    })->get();
                                                     $misis = [];
                                                     foreach ($get_misis as $get_misi) {
                                                         $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_sekarang)
@@ -1739,7 +1991,21 @@ class RenstraController extends Controller
                                                                                     {
                                                                                         $get_tujuans = $get_tujuans->where('id', $request->tujuan);
                                                                                     }
-                                                                                    $get_tujuans = $get_tujuans->get();
+                                                                                    $get_tujuans = $get_tujuans->whereHas('sasaran', function($q){
+                                                                                        $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                $q->whereHas('program_rpjmd', function($q){
+                                                                                                    $q->whereHas('program', function($q){
+                                                                                                        $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                            });
+                                                                                                        });
+                                                                                                    });
+                                                                                                });
+                                                                                            });
+                                                                                        });
+                                                                                    })->get();
                                                                                     $tujuans = [];
                                                                                     foreach ($get_tujuans as $get_tujuan) {
                                                                                         $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan',$tahun_sekarang)
@@ -1784,7 +2050,19 @@ class RenstraController extends Controller
                                                                                                                     {
                                                                                                                         $get_sasarans = $get_sasarans->where('id', $request->sasaran);
                                                                                                                     }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
+                                                                                                                    $get_sasarans = $get_sasarans->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                                                                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                                            $q->whereHas('program_rpjmd', function($q){
+                                                                                                                                $q->whereHas('program', function($q){
+                                                                                                                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                        });
+                                                                                                                                    });
+                                                                                                                                });
+                                                                                                                            });
+                                                                                                                        });
+                                                                                                                    })->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
                                                                                                                         $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
@@ -1808,23 +2086,200 @@ class RenstraController extends Controller
                                                                                                                     }
                                                                                                                     foreach ($sasarans as $sasaran) {
                                                                                                                         $html .= '<tr>
-                                                                                                                                    <td width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td width="65%">
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_sasaran_'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_sasaran_'.$sasaran['id'].'" class="accordion-toggle" width="45%">
                                                                                                                                         '.$sasaran['deskripsi'].'
                                                                                                                                         <br>';
-                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi '.$request->visi.'</span>';
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
                                                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase renstra-sasaran-tagging">Misi '.$misi['kode'].'</span>
                                                                                                                                         <span class="badge bg-secondary text-uppercase renstra-sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                                                         <span class="badge bg-danger text-uppercase renstra-sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="30%"><ul>';
+                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                                                        $q->whereHas('program_rpjmd', function($q){
+                                                                                                                                            $q->whereHas('program', function($q){
+                                                                                                                                                $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                                                                    $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                                                        $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                    });
+                                                                                                                                                });
+                                                                                                                                            });
+                                                                                                                                        });
+                                                                                                                                    })->get();
+                                                                                                                                    $html .= '<td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_sasaran_'.$sasaran['id'].'" class="accordion-toggle"><ul>';
                                                                                                                                         foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
                                                                                                                                         {
                                                                                                                                             $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.'</li>';
                                                                                                                                         }
-                                                                                                                                    $html .= '</ul></td>';
-                                                                                                                                $html .= '</tr>';
+                                                                                                                                    $html .= '</ul></td>
+                                                                                                                                    <td width="20%">
+                                                                                                                                        <button class="btn btn-primary waves-effect waves-light button-tambah-sasaran-pd" type="button" data-sasaran-id="'.$sasaran['id'].'" title="Tambah Sasaran PD"><i class="fas fa-plus"></i></button>
+                                                                                                                                    </td>';
+                                                                                                                                $html .= '</tr>
+                                                                                                                                <tr>
+                                                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                                                        <div class="collapse show" id="sasaran_sasaran_'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-striped table-condensed">
+                                                                                                                                                <thead>
+                                                                                                                                                    <tr>
+                                                                                                                                                        <th width="5%">Kode</th>
+                                                                                                                                                        <th width="45%">Sasaran PD</th>
+                                                                                                                                                        <th width="30%">Indikator Kinerja</th>
+                                                                                                                                                        <th width="20%">Aksi</th>
+                                                                                                                                                    </tr>
+                                                                                                                                                </thead>
+                                                                                                                                                <tbody>';
+                                                                                                                                                $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                $sasaran_pds = [];
+                                                                                                                                                foreach ($get_sasaran_pds as $get_sasaran_pd) {
+                                                                                                                                                    $cek_perubahan_sasaran_opd = PivotPerubahanSasaranPd::where('sasaran_pd_id', $get_sasaran_pd->id)->latest()->first();
+                                                                                                                                                    if($cek_perubahan_sasaran_opd)
+                                                                                                                                                    {
+                                                                                                                                                        $sasaran_pds[] = [
+                                                                                                                                                            'id' => $cek_perubahan_sasaran_opd->id,
+                                                                                                                                                            'sasaran_pd_id' => $cek_perubahan_sasaran_opd->sasaran_pd_id,
+                                                                                                                                                            'sasaran_id' => $cek_perubahan_sasaran_opd->sasaran_id,
+                                                                                                                                                            'kode' => $cek_perubahan_sasaran_opd->kode,
+                                                                                                                                                            'deskripsi' => $cek_perubahan_sasaran_opd->deskripsi,
+                                                                                                                                                            'opd_id' => $cek_perubahan_sasaran_opd->opd_id,
+                                                                                                                                                            'tahun_perubahan' => $cek_perubahan_sasaran_opd->tahun_perubahan,
+                                                                                                                                                        ];
+                                                                                                                                                    } else {
+                                                                                                                                                        $sasaran_pds[] = [
+                                                                                                                                                            'id' => $get_sasaran_pd->id,
+                                                                                                                                                            'sasaran_id' => $get_sasaran_pd->sasaran_id,
+                                                                                                                                                            'kode' => $get_sasaran_pd->kode,
+                                                                                                                                                            'deskripsi' => $get_sasaran_pd->deskripsi,
+                                                                                                                                                            'opd_id' => $get_sasaran_pd->opd_id,
+                                                                                                                                                            'tahun_perubahan' => $get_sasaran_pd->tahun_perubahan,
+                                                                                                                                                        ];
+                                                                                                                                                    }
+                                                                                                                                                }
+                                                                                                                                                foreach ($sasaran_pds as $sasaran_pd) {
+                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                        $html .= '<td data-bs-toggle="collapse" data-bs-target="#sasaran_sasaran_pd_indikator_kinerja'.$sasaran_pd['id'].'" class="accordion-toggle">'.$sasaran_pd['kode'].'</td>';
+                                                                                                                                                        $html .= '<td data-bs-toggle="collapse" data-bs-target="#sasaran_sasaran_pd_indikator_kinerja'.$sasaran_pd['id'].'" class="accordion-toggle">'.$sasaran_pd['deskripsi'].'</td>';
+                                                                                                                                                        $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd['id'])->get();
+                                                                                                                                                        $html .= '<td><ul>';
+                                                                                                                                                        foreach ($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja) {
+                                                                                                                                                            $html .= '<li class="mb-2">'.$sasaran_pd_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-pd-id="'.$sasaran_pd['id'].'" data-sasaran-pd-indikator-kinerja-id="'.$sasaran_pd_indikator_kinerja->id.'"></button></li>';
+                                                                                                                                                        }
+                                                                                                                                                        $html .='</ul></td>';
+                                                                                                                                                        $html .= '<td><button class="btn btn-icon btn-warning waves-effect waves-light edit-sasaran-pd" data-sasaran-pd-id="'.$sasaran_pd['id'].'" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Edit Sasaran PD"><i class="fas fa-edit"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran-pd" data-sasaran-pd-id="'.$sasaran_pd['id'].'" data-sasaran-id="'.$sasaran['id'].'" type="button" title="Hapus Sasaran PD"><i class="fas fa-trash"></i></button>
+                                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-pd-indikator-kinerja" data-sasaran-pd-id="'.$sasaran_pd['id'].'" type="button" title="Tambah Sasaran PD Indikator Kinerja"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                    $html .= '</tr>
+                                                                                                                                                    <tr>
+                                                                                                                                                        <td colspan="4" class="hiddenRow">
+                                                                                                                                                            <div class="collapse" id="sasaran_sasaran_pd_indikator_kinerja'.$sasaran_pd['id'].'">
+                                                                                                                                                                <table class="table table-striped table-condesed">
+                                                                                                                                                                    <thead>
+                                                                                                                                                                        <tr>
+                                                                                                                                                                            <th>No</th>
+                                                                                                                                                                            <th>Indikator</th>
+                                                                                                                                                                            <th>Target</th>
+                                                                                                                                                                            <th>Satuan</th>
+                                                                                                                                                                            <th>Realisasi</th>
+                                                                                                                                                                            <th>Tahun</th>
+                                                                                                                                                                            <th>Aksi</th>
+                                                                                                                                                                        </tr>
+                                                                                                                                                                    </thead>
+                                                                                                                                                                    <tbody>';
+                                                                                                                                                                    $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd['id'])->get();
+                                                                                                                                                                    $no_sasaran_pd_indikator_kinerja = 1;
+                                                                                                                                                                    foreach ($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja) {
+                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                            $html .= '<td>'.$no_sasaran_pd_indikator_kinerja++.'</td>';
+                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                            $a = 1;
+                                                                                                                                                                            foreach ($tahuns as $tahun) {
+                                                                                                                                                                                if($a == 1)
+                                                                                                                                                                                {
+                                                                                                                                                                                        $cek_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                                                                                        if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td><span class="sasaran-pd-span-target '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'">'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                                                            $html .= '<td><span class="sasaran-pd-span-satuan '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'">'.$cek_sasaran_pd_target_satuan_rp_realisasi->satuan.'</span></td>';
+                                                                                                                                                                                            $html .= '<td><span class="sasaran-pd-span-realisasi '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'">'.$cek_sasaran_pd_target_satuan_rp_realisasi->realisasi.'</span></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-pd-edit-target-satuan-rp-realisasi" type="button" data-sasaran-pd-indikator-kinerja-id="'.$sasaran_pd_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-pd-target-satuan-rp-realisasi="'.$cek_sasaran_pd_target_satuan_rp_realisasi->id.'">
+                                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                    </td>';
+                                                                                                                                                                                        $html .='</tr>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td><input type="number" class="form-control sasaran-pd-add-target '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                                            $html .= '<td><input type="text" class="form-control sasaran-pd-add-satuan '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                                            $html .= '<td><input type="number" class="form-control sasaran-pd-add-realisasi '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-pd-target-satuan-rp-realisasi" type="button" data-sasaran-pd-indikator-kinerja-id="'.$sasaran_pd_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                    </td>';
+                                                                                                                                                                                        $html .='</tr>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                } else {
+                                                                                                                                                                                    $cek_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td><span class="sasaran-pd-span-target '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'">'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                                                            $html .= '<td><span class="sasaran-pd-span-satuan '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'">'.$cek_sasaran_pd_target_satuan_rp_realisasi->satuan.'</span></td>';
+                                                                                                                                                                                            $html .= '<td><span class="sasaran-pd-span-realisasi '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'">'.$cek_sasaran_pd_target_satuan_rp_realisasi->realisasi.'</span></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-pd-edit-target-satuan-rp-realisasi" type="button" data-sasaran-pd-indikator-kinerja-id="'.$sasaran_pd_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-pd-target-satuan-rp-realisasi="'.$cek_sasaran_pd_target_satuan_rp_realisasi->id.'">
+                                                                                                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                                                                                                                            </button>
+                                                                                                                                                                                                        </td>';
+                                                                                                                                                                                        $html .='</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-pd-add-target '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-pd-add-satuan '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-pd-add-realisasi '.$tahun.' data-sasaran-pd-indikator-kinerja-'.$sasaran_pd_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-pd-target-satuan-rp-realisasi" type="button" data-sasaran-pd-indikator-kinerja-id="'.$sasaran_pd_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                </td>';
+                                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                                }
+                                                                                                                                                                                $a++;
+                                                                                                                                                                            }
+                                                                                                                                                                    }
+                                                                                                                                                                    $html .= '</tbody>
+                                                                                                                                                                </table>
+                                                                                                                                                            </div>
+                                                                                                                                                        </td>
+                                                                                                                                                    </tr>';
+                                                                                                                                                }
+                                                                                                                                                $html .= '</tbody>
+                                                                                                                                            </table>
+                                                                                                                                        </div>
+                                                                                                                                    </td>
+                                                                                                                                </tr>';
+
                                                                                                                     }
                                                                                                                 $html .= '</tbody>
                                                                                                             </table>
