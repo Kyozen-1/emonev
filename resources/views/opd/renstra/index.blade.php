@@ -394,6 +394,251 @@
         </div>
     </div>
 
+    {{-- Tujuan PD Start --}}
+    <div id="tambahTujuanPDModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tambahTujuanPDModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Tujuan PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.tujuan-pd.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="tambah_tujuan_pd_tujuan_id" id="tambah_tujuan_pd_tujuan_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="tambah_tujuan_pd_kode" class="form-label">Kode</label>
+                            <input type="number" class="form-control" id="tambah_tujuan_pd_kode" name="tambah_tujuan_pd_kode" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="tambah_tujuan_pd_deskripsi" class="form-label">Deskripsi</label>
+                            <textarea name="tambah_tujuan_pd_deskripsi" id="tambah_tujuan_pd_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="tambah_tujuan_pd_tahun_perubahan" class="form-label">Tahun</label>
+                            <input type="number" class="form-control" id="tambah_tujuan_pd_tahun_perubahan" name="tambah_tujuan_pd_tahun_perubahan" required>
+                        </div>
+                        <div class="form-group position-relative" style="text-align: right">
+                            <button class="btn btn-primary waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTujuanPDModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTujuanPDModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Tujuan PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.tujuan-pd.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_tujuan_pd_tujuan_pd_id" id="edit_tujuan_pd_tujuan_pd_id">
+                        <input type="hidden" name="edit_tujuan_pd_tujuan_id" id="edit_tujuan_pd_tujuan_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_tujuan_pd_kode" class="form-label">Kode</label>
+                            <input type="number" class="form-control" id="edit_tujuan_pd_kode" name="edit_tujuan_pd_kode" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_tujuan_pd_deskripsi" class="form-label">Deskripsi</label>
+                            <textarea name="edit_tujuan_pd_deskripsi" id="edit_tujuan_pd_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_tujuan_pd_tahun_perubahan" class="form-label">Tahun</label>
+                            <input type="number" class="form-control" id="edit_tujuan_pd_tahun_perubahan" name="edit_tujuan_pd_tahun_perubahan" required>
+                        </div>
+                        <div class="form-group position-relative" style="text-align: right">
+                            <button class="btn btn-primary waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="indikatorKinerjaTujuanPdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaTujuanPdModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Indikator Kinerja Tujuan PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.tujuan-pd.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_tujuan_pd_tujuan_pd_id" id="indikator_kinerja_tujuan_pd_tujuan_pd_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Tambah Indikator Kinerja</label>
+                            <input id="indikator_kinerja_tujuan_pd_deskripsi" name="indikator_kinerja_tujuan_pd_deskripsi"/>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTargetTujuanPdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetTujuanPdModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.tujuan-pd.indikator-kinerja.target-satuan-realisasi.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="tujuan_pd_target_satuan_rp_realisasi" id="tujuan_pd_target_satuan_rp_realisasi">
+                        <div class="form-group position-relative">
+                            <label for="tujuan_pd_edit_target" class="form-label">Target</label>
+                            <input type="text" class="form-control" id="tujuan_pd_edit_target" name="tujuan_pd_edit_target" required>
+                        </div>
+                        <div class="form-group position-relative">
+                            <label for="tujuan_pd_edit_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="tujuan_pd_edit_satuan" name="tujuan_pd_edit_satuan" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="tujuan_pd_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="tujuan_pd_edit_realisasi" name="tujuan_pd_edit_realisasi" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Tujuan PD End --}}
+
+    {{-- Sasaran PD Start --}}
+    <div id="tambahSasaranPDModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tambahSasaranPDModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Sasaran PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.sasaran-pd.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="tambah_sasaran_pd_sasaran_id" id="tambah_sasaran_pd_sasaran_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="tambah_sasaran_pd_kode" class="form-label">Kode</label>
+                            <input type="number" class="form-control" id="tambah_sasaran_pd_kode" name="tambah_sasaran_pd_kode" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="tambah_sasaran_pd_deskripsi" class="form-label">Deskripsi</label>
+                            <textarea name="tambah_sasaran_pd_deskripsi" id="tambah_sasaran_pd_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="tambah_sasaran_pd_tahun_perubahan" class="form-label">Tahun</label>
+                            <input type="number" class="form-control" id="tambah_sasaran_pd_tahun_perubahan" name="tambah_sasaran_pd_tahun_perubahan" required>
+                        </div>
+                        <div class="form-group position-relative" style="text-align: right">
+                            <button class="btn btn-primary waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editSasaranPDModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editSasaranPDModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Sasaran PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.sasaran-pd.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_sasaran_pd_sasaran_pd_id" id="edit_sasaran_pd_sasaran_pd_id">
+                        <input type="hidden" name="edit_sasaran_pd_sasaran_id" id="edit_sasaran_pd_sasaran_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_sasaran_pd_kode" class="form-label">Kode</label>
+                            <input type="number" class="form-control" id="edit_sasaran_pd_kode" name="edit_sasaran_pd_kode" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_sasaran_pd_deskripsi" class="form-label">Deskripsi</label>
+                            <textarea name="edit_sasaran_pd_deskripsi" id="edit_sasaran_pd_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_sasaran_pd_tahun_perubahan" class="form-label">Tahun</label>
+                            <input type="number" class="form-control" id="edit_sasaran_pd_tahun_perubahan" name="edit_sasaran_pd_tahun_perubahan" required>
+                        </div>
+                        <div class="form-group position-relative" style="text-align: right">
+                            <button class="btn btn-primary waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="indikatorKinerjaSasaranPdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaSasaranPdModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Indikator Kinerja Sasaran PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.sasaran-pd.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_sasaran_pd_sasaran_pd_id" id="indikator_kinerja_sasaran_pd_sasaran_pd_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Tambah Indikator Kinerja</label>
+                            <input id="indikator_kinerja_sasaran_pd_deskripsi" name="indikator_kinerja_sasaran_pd_deskripsi"/>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="editTargetSasaranPdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetSasaranPdModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.sasaran-pd.indikator-kinerja.target-satuan-realisasi.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sasaran_pd_target_satuan_rp_realisasi" id="sasaran_pd_target_satuan_rp_realisasi">
+                        <div class="form-group position-relative">
+                            <label for="sasaran_pd_edit_target" class="form-label">Target</label>
+                            <input type="text" class="form-control" id="sasaran_pd_edit_target" name="sasaran_pd_edit_target" required>
+                        </div>
+                        <div class="form-group position-relative">
+                            <label for="sasaran_pd_edit_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="sasaran_pd_edit_satuan" name="sasaran_pd_edit_satuan" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="sasaran_pd_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="sasaran_pd_edit_realisasi" name="sasaran_pd_edit_realisasi" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Sasaran PD End --}}
+
     {{-- Kegiatan Renstra Start --}}
     <div class="modal fade" id="addEditRenstraKegiatanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -574,8 +819,12 @@
                     $('#renstraMisiNavDiv').html(data.html);
                 }
             });
+
+            new Tagify(document.querySelector('#indikator_kinerja_tujuan_pd_deskripsi'));
+            new Tagify(document.querySelector('#indikator_kinerja_sasaran_pd_deskripsi'));
         });
 
+        // Misi Start
         $('#renstra_misi_tab_button').click(function(){
             $.ajax({
                 url: "{{ route('opd.renstra.get-misi') }}",
@@ -594,7 +843,9 @@
                 $('.renstra-misi-tagging').hide();
             }
         });
+        // Misi End
 
+        // Tujuan Start
         $('#renstra_tujuan_tab_button').click(function(){
             $.ajax({
                 url: "{{ route('opd.renstra.get-tujuan') }}",
@@ -615,6 +866,199 @@
             }
         });
 
+        $(document).on('click', '.button-tambah-tujuan-pd', function(){
+            var tujuan_id = $(this).attr('data-tujuan-id');
+            $('#tambah_tujuan_pd_tujuan_id').val(tujuan_id);
+            $('#tambahTujuanPDModal').modal('show');
+        });
+
+        $(document).on('click', '.edit-tujuan-pd', function(){
+            var tujuan_pd_id = $(this).attr('data-tujuan-pd-id');
+            var tujuan_id = $(this).attr('data-tujuan-id');
+            $.ajax({
+                url : "{{ url('/opd/renstra/tujuan-pd/edit') }}" + '/' + tujuan_pd_id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#edit_tujuan_pd_tujuan_pd_id').val(tujuan_pd_id);
+                    $('#edit_tujuan_pd_tujuan_id').val(tujuan_id);
+                    $('#edit_tujuan_pd_kode').val(data.result.kode);
+                    $('#edit_tujuan_pd_deskripsi').val(data.result.deskripsi);
+                    $('#edit_tujuan_pd_tahun_perubahan').val(data.result.tahun_perubahan);
+                    $('#editTujuanPDModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '.hapus-tujuan-pd', function(){
+            var tujuan_pd_id = $(this).attr('data-tujuan-pd-id');
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.tujuan-pd.hapus') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tujuan_pd_id:tujuan_pd_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.tambah-tujuan-pd-indikator-kinerja', function(){
+            var tujuan_pd_id = $(this).attr('data-tujuan-pd-id');
+            $('#indikator_kinerja_tujuan_pd_tujuan_pd_id').val(tujuan_pd_id);
+            $('#indikatorKinerjaTujuanPdModal').modal('show');
+        });
+
+        $(document).on('click', '.btn-hapus-tujuan-indikator-kinerja', function(){
+            var tujuan_pd_indikator_kinerja_id = $(this).attr('data-tujuan-pd-indikator-kinerja-id');
+
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.tujuan-pd.indikator-kinerja.hapus') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tujuan_pd_indikator_kinerja_id:tujuan_pd_indikator_kinerja_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-tujuan-pd-target-satuan-rp-realisasi', function(){
+            var tujuan_pd_indikator_kinerja_id = $(this).attr('data-tujuan-pd-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+
+            var target = $('.tujuan-pd-add-target.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).val();
+            var satuan = $('.tujuan-pd-add-satuan.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).val();
+            var realisasi = $('.tujuan-pd-add-realisasi.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).val();
+
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.tujuan-pd.indikator-kinerja.target-satuan-realisasi.tambah') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tahun:tahun,
+                            tujuan_pd_indikator_kinerja_id:tujuan_pd_indikator_kinerja_id,
+                            target:target,
+                            satuan:satuan,
+                            realisasi:realisasi
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-tujuan-pd-edit-target-satuan-rp-realisasi', function(){
+            var tujuan_pd_indikator_kinerja_id = $(this).attr('data-tujuan-pd-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var tujuan_pd_target_satuan_rp_realisasi = $(this).attr('data-tujuan-pd-target-satuan-rp-realisasi');
+            var target = $('.tujuan-pd-span-target.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).text();
+            var satuan = $('.tujuan-pd-span-satuan.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).text();
+            var realisasi = $('.tujuan-pd-span-realisasi.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).text();
+
+            $('#tujuan_pd_target_satuan_rp_realisasi').val(tujuan_pd_target_satuan_rp_realisasi);
+            $('#tujuan_pd_edit_target').val(target);
+            $('#tujuan_pd_edit_satuan').val(satuan);
+            $('#tujuan_pd_edit_realisasi').val(realisasi);
+
+            $('#editTargetTujuanPdModal').modal('show');
+        });
+        // Tujuan End
+
+        // Sasaran Start
         $('#renstra_sasaran_tab_button').click(function(){
             $.ajax({
                 url: "{{ route('opd.renstra.get-sasaran') }}",
@@ -635,6 +1079,199 @@
             }
         });
 
+        $(document).on('click', '.button-tambah-sasaran-pd', function(){
+            var sasaran_id = $(this).attr('data-sasaran-id');
+            $('#tambah_sasaran_pd_sasaran_id').val(sasaran_id);
+            $('#tambahSasaranPDModal').modal('show');
+        });
+
+        $(document).on('click', '.edit-sasaran-pd', function(){
+            var sasaran_pd_id = $(this).attr('data-sasaran-pd-id');
+            var sasaran_id = $(this).attr('data-sasaran-id');
+            $.ajax({
+                url : "{{ url('/opd/renstra/sasaran-pd/edit') }}" + '/' + sasaran_pd_id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#edit_sasaran_pd_sasaran_pd_id').val(sasaran_pd_id);
+                    $('#edit_sasaran_pd_sasaran_id').val(sasaran_id);
+                    $('#edit_sasaran_pd_kode').val(data.result.kode);
+                    $('#edit_sasaran_pd_deskripsi').val(data.result.deskripsi);
+                    $('#edit_sasaran_pd_tahun_perubahan').val(data.result.tahun_perubahan);
+                    $('#editSasaranPDModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '.hapus-sasaran-pd', function(){
+            var sasaran_pd_id = $(this).attr('data-sasaran-pd-id');
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.sasaran-pd.hapus') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            sasaran_pd_id:sasaran_pd_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.tambah-sasaran-pd-indikator-kinerja', function(){
+            var sasaran_pd_id = $(this).attr('data-sasaran-pd-id');
+            $('#indikator_kinerja_sasaran_pd_sasaran_pd_id').val(sasaran_pd_id);
+            $('#indikatorKinerjaSasaranPdModal').modal('show');
+        });
+
+        $(document).on('click', '.btn-hapus-sasaran-indikator-kinerja', function(){
+            var sasaran_pd_indikator_kinerja_id = $(this).attr('data-sasaran-pd-indikator-kinerja-id');
+
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.sasaran-pd.indikator-kinerja.hapus') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            sasaran_pd_indikator_kinerja_id:sasaran_pd_indikator_kinerja_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-sasaran-pd-target-satuan-rp-realisasi', function(){
+            var sasaran_pd_indikator_kinerja_id = $(this).attr('data-sasaran-pd-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+
+            var target = $('.sasaran-pd-add-target.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).val();
+            var satuan = $('.sasaran-pd-add-satuan.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).val();
+            var realisasi = $('.sasaran-pd-add-realisasi.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).val();
+
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.sasaran-pd.indikator-kinerja.target-satuan-realisasi.tambah') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tahun:tahun,
+                            sasaran_pd_indikator_kinerja_id:sasaran_pd_indikator_kinerja_id,
+                            target:target,
+                            satuan:satuan,
+                            realisasi:realisasi
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-sasaran-pd-edit-target-satuan-rp-realisasi', function(){
+            var sasaran_pd_indikator_kinerja_id = $(this).attr('data-sasaran-pd-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var sasaran_pd_target_satuan_rp_realisasi = $(this).attr('data-sasaran-pd-target-satuan-rp-realisasi');
+            var target = $('.sasaran-pd-span-target.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).text();
+            var satuan = $('.sasaran-pd-span-satuan.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).text();
+            var realisasi = $('.sasaran-pd-span-realisasi.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).text();
+
+            $('#sasaran_pd_target_satuan_rp_realisasi').val(sasaran_pd_target_satuan_rp_realisasi);
+            $('#sasaran_pd_edit_target').val(target);
+            $('#sasaran_pd_edit_satuan').val(satuan);
+            $('#sasaran_pd_edit_realisasi').val(realisasi);
+
+            $('#editTargetSasaranPdModal').modal('show');
+        });
+        // Sasaran End
+
+        // Program Start
         $('#renstra_program_tab_button').click(function(){
             $.ajax({
                 url: "{{ route('opd.renstra.get-program') }}",
@@ -654,6 +1291,7 @@
                 $('.renstra-program-tagging').hide();
             }
         });
+        // Program End
 
         // Filter Data Misi
         $('#renstra_misi_filter_visi').on('change', function(){

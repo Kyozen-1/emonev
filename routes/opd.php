@@ -45,4 +45,22 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::get('/opd/renja', 'Opd\RenjaController@index')->name('opd.renja.index');
 
     Route::get('/opd/laporan', 'Opd\LaporanController@index')->name('opd.laporan.index');
+
+    Route::post('/opd/renstra/tujuan-pd/tambah', 'Opd\TujuanPdController@tambah')->name('opd.renstra.tujuan-pd.tambah');
+    Route::get('/opd/renstra/tujuan-pd/edit/{id}', 'Opd\TujuanPdController@edit');
+    Route::post('/opd/renstra/tujuan-pd/update', 'Opd\TujuanPdController@update')->name('opd.renstra.tujuan-pd.update');
+    Route::post('/opd/renstra/tujuan-pd/hapus', 'Opd\TujuanPdController@hapus')->name('opd.renstra.tujuan-pd.hapus');
+    Route::post('/opd/renstra/tujuan-pd/indikator-kinerja/tambah', 'Opd\TujuanPdController@indikator_kinerja_tambah')->name('opd.renstra.tujuan-pd.indikator-kinerja.tambah');
+    Route::post('/opd/renstra/tujuan-pd/indikator-kinerja/hapus', 'Opd\TujuanPdController@indikator_kinerja_hapus')->name('opd.renstra.tujuan-pd.indikator-kinerja.hapus');
+    Route::post('/opd/renstra/tujuan-pd/indikator-kinerja/target-satuan-realisasi/tambah', 'Opd\TujuanPdController@target_satuan_realisasi_tambah')->name('opd.renstra.tujuan-pd.indikator-kinerja.target-satuan-realisasi.tambah');
+    Route::post('/opd/renstra/tujuan-pd/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\TujuanPdController@target_satuan_realisasi_ubah')->name('opd.renstra.tujuan-pd.indikator-kinerja.target-satuan-realisasi.ubah');
+
+    Route::post('/opd/renstra/sasaran-pd/tambah', 'Opd\SasaranPdController@tambah')->name('opd.renstra.sasaran-pd.tambah');
+    Route::get('/opd/renstra/sasaran-pd/edit/{id}', 'Opd\SasaranPdController@edit');
+    Route::post('/opd/renstra/sasaran-pd/update', 'Opd\SasaranPdController@update')->name('opd.renstra.sasaran-pd.update');
+    Route::post('/opd/renstra/sasaran-pd/hapus', 'Opd\SasaranPdController@hapus')->name('opd.renstra.sasaran-pd.hapus');
+    Route::post('/opd/renstra/sasaran-pd/indikator-kinerja/tambah', 'Opd\SasaranPdController@indikator_kinerja_tambah')->name('opd.renstra.sasaran-pd.indikator-kinerja.tambah');
+    Route::post('/opd/renstra/sasaran-pd/indikator-kinerja/hapus', 'Opd\SasaranPdController@indikator_kinerja_hapus')->name('opd.renstra.sasaran-pd.indikator-kinerja.hapus');
+    Route::post('/opd/renstra/sasaran-pd/indikator-kinerja/target-satuan-realisasi/tambah', 'Opd\SasaranPdController@target_satuan_realisasi_tambah')->name('opd.renstra.sasaran-pd.indikator-kinerja.target-satuan-realisasi.tambah');
+    Route::post('/opd/renstra/sasaran-pd/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\SasaranPdController@target_satuan_realisasi_ubah')->name('opd.renstra.sasaran-pd.indikator-kinerja.target-satuan-realisasi.ubah');
 });

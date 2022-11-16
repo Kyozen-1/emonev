@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PivotPerubahanTujuanPd extends Model
 {
-    protected $table = 'pivot_perubahan_tujuan_pd';
+    protected $table = 'pivot_perubahan_tujuan_pds';
     protected $guarded = 'id';
 
     public function tujuan_pd()

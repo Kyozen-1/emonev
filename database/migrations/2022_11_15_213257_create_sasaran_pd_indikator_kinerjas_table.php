@@ -15,7 +15,7 @@ class CreateSasaranPdIndikatorKinerjasTable extends Migration
     {
         Schema::create('sasaran_pd_indikator_kinerjas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sasaran_id')->nullable();
+            $table->foreignId('sasaran_pd_id')->nullable();
             $table->string('deskripsi')->nullable();
             $table->timestamps();
         });
