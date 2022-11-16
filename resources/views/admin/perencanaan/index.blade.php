@@ -70,9 +70,7 @@
         use App\Models\Sasaran;
         use App\Models\PivotPerubahanSasaran;
         use App\Models\PivotSasaranIndikator;
-        use App\Models\TargetRpPertahunSasaran;
         use App\Models\ProgramRpjmd;
-        use App\Models\PivotOpdProgramRpjmd;
         use App\Models\Urusan;
         use App\Models\PivotPerubahanUrusan;
         use App\Models\MasterOpd;
@@ -80,9 +78,18 @@
         use App\Models\Program;
         use App\Models\PivotPerubahanProgram;
         use App\Models\PivotProgramKegiatanRenstra;
-        use App\Models\Kegiatan;
-        use App\Models\PivotPerubahanKegiatan;
         use App\Models\TargetRpPertahunProgram;
+        use App\Models\RenstraKegiatan;
+        use App\Models\PivotPerubahanKegiatan;
+        use App\Models\Kegiatan;
+        use App\Models\PivotOpdRentraKegiatan;
+        use App\Models\TargetRpPertahunRenstraKegiatan;
+        use App\Models\SubKegiatan;
+        use App\Models\PivotPerubahanSubKegiatan;
+        use App\Models\TujuanIndikatorKinerja;
+        use App\Models\TujuanTargetSatuanRpRealisasi;
+        use App\Models\SasaranIndikatorKinerja;
+        use App\Models\SasaranTargetSatuanRpRealisasi;
     @endphp
     <div class="container">
         <!-- Title and Top Buttons Start -->
@@ -793,79 +800,6 @@
                                                     </div>
                                                     <hr>
                                                     <div id="renstraTujuanNavDiv{{$tahun}}">
-                                                        <div class="data-table-rows slim">
-                                                            <div class="data-table-responsive-wrapper">
-                                                                <table class="table table-condensed table-striped">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th width="5%">Kode</th>
-                                                                            <th width="95%">Deskripsi</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @foreach ($misis as $misi)
-                                                                            <tr>
-                                                                                <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                                    {{$misi['kode']}}
-                                                                                </td>
-                                                                                <td data-bs-toggle="collapse" data-bs-target="#renstra_misi{{$misi['id']}}" class="accordion-toggle">
-                                                                                    {{$misi['deskripsi']}}
-                                                                                    <br>
-                                                                                    <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td colspan="3" class="hiddenRow">
-                                                                                    <div class="collapse" id="renstra_misi{{$misi['id']}}">
-                                                                                        <table class="table table-striped table-condesed">
-                                                                                            <tbody>
-                                                                                                @php
-                                                                                                    $renstra_get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
-                                                                                                    $renstra_tujuans = [];
-                                                                                                    foreach ($renstra_get_tujuans as $renstra_get_tujuan) {
-                                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $renstra_get_tujuan->id)
-                                                                                                                                ->where('tahun_perubahan', $tahun)->latest()->first();
-                                                                                                        if($cek_perubahan_tujuan)
-                                                                                                        {
-                                                                                                            $renstra_tujuans[] = [
-                                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
-                                                                                                            ];
-                                                                                                        } else {
-                                                                                                            $renstra_tujuans[] = [
-                                                                                                                'id' => $renstra_get_tujuan->id,
-                                                                                                                'kode' => $renstra_get_tujuan->kode,
-                                                                                                                'deskripsi' => $renstra_get_tujuan->deskripsi,
-                                                                                                                'tahun_perubahan' => $renstra_get_tujuan->tahun_perubahan
-                                                                                                            ];
-                                                                                                        }
-                                                                                                    }
-                                                                                                @endphp
-                                                                                                @foreach ($renstra_tujuans as $renstra_tujuan)
-                                                                                                    <tr>
-                                                                                                        <td>
-                                                                                                            {{$misi['kode']}}.{{$renstra_tujuan['kode']}}
-                                                                                                        </td>
-                                                                                                        <td>
-                                                                                                            {{$renstra_tujuan['deskripsi']}}
-                                                                                                            <br>
-                                                                                                            <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi {{$misi['kode']}}</span>
-                                                                                                            <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan {{$misi['kode']}}.{{$renstra_tujuan['kode']}}</span>
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                @endforeach
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -2374,6 +2308,15 @@
 
             new Tagify(document.querySelector('#indikator_kinerja_tujuan_deskripsi'));
             new Tagify(document.querySelector('#indikator_kinerja_sasaran_deskripsi'));
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renstra.get-tujuan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renstraTujuanNavDiv2019').html(data.html);
+                }
+            });
+
         });
         $(document).on('click', '.visi_detail', function(){
             var id = $(this).attr('id');
