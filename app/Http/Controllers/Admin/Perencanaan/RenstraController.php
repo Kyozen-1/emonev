@@ -43,6 +43,19 @@ use App\Models\TujuanIndikatorKinerja;
 use App\Models\TujuanTargetSatuanRpRealisasi;
 use App\Models\SasaranIndikatorKinerja;
 use App\Models\SasaranTargetSatuanRpRealisasi;
+use App\Models\TujuanPd;
+use App\Models\PivotPerubahanTujuanPd;
+use App\Models\TujuanPdIndikatorKinerja;
+use App\Models\TujuanPdTargetSatuanRpRealisasi;
+use App\Models\SasaranPd;
+use App\Models\PivotPerubahanSasaranPd;
+use App\Models\SasaranPdIndikatorKinerja;
+use App\Models\SasaranPdTargetSatuanRpRealisasi;
+use App\Models\ProgramIndikatorKinerja;
+use App\Models\OpdProgramIndikatorKinerja;
+use App\Models\ProgramTargetSatuanRpRealisasi;
+use App\Models\KegiatanIndikatorKinerja;
+use App\Models\KegiatanTargetSatuanRpRealisasi;
 
 class RenstraController extends Controller
 {
@@ -183,8 +196,8 @@ class RenstraController extends Controller
                                                                     }
                                                                     foreach ($tujuans as $tujuan) {
                                                                         $html .= '<tr>
-                                                                            <td width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="95%">
+                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                            <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
                                                                                 '.$tujuan['deskripsi'].'
                                                                                 <br>';
                                                                                 if($a == 1 || $a == 2)
@@ -205,6 +218,247 @@ class RenstraController extends Controller
                                                                                 }
                                                                                 $html .= ' <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi '.$misi['kode'].'</span>
                                                                                 <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colspan="4" class="hiddenRow">
+                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                                                                                    <table class="table table-bordered">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th width="20%">OPD</th>
+                                                                                                <th width="2%">Kode</th>
+                                                                                                <th width="18%">Tujuan PD</th>
+                                                                                                <th width="20%">Indikator</th>
+                                                                                                <th width="10%">Target</th>
+                                                                                                <th width="10%">Satuan</th>
+                                                                                                <th width="10%">Realisasi</th>
+                                                                                                <th width="10%">Tahun</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>';
+                                                                                        $opds = MasterOpd::all();
+                                                                                        foreach ($opds as $opd) {
+                                                                                            $html .= '<tr>';
+                                                                                                $html .= '<td>'.$opd->nama.'</td>';
+                                                                                                $tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])
+                                                                                                                ->where('opd_id', $opd->id)->get();
+                                                                                                $a = 1;
+                                                                                                foreach ($tujuan_pds as $tujuan_pd) {
+                                                                                                    if($a == 1)
+                                                                                                    {
+                                                                                                            $html .= '<td>'.$tujuan_pd->kode.'</td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->deskripsi.'</td>';
+                                                                                                            $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
+                                                                                                            $b = 1;
+                                                                                                            foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
+                                                                                                            {
+                                                                                                                if($b == 1)
+                                                                                                                {
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                } else {
+                                                                                                                    $html .= '<tr>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                            $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                }
+                                                                                                            }
+                                                                                                    } else {
+                                                                                                        $html .= '<tr>';
+                                                                                                            $html .= '<td></td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->kode.'</td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->deskripsi.'</td>';
+                                                                                                            $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
+                                                                                                            $b = 1;
+                                                                                                            foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
+                                                                                                            {
+                                                                                                                if($b == 1)
+                                                                                                                {
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                } else {
+                                                                                                                    $html .= '<tr>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                            $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                }
+                                                                                                            }
+                                                                                                    }
+                                                                                                    $a++;
+                                                                                                }
+                                                                                        }
+                                                                                        $html .= '</tbody>
+                                                                                    </table>
+                                                                                </div>
                                                                             </td>
                                                                         </tr>';
                                                                     }
@@ -230,6 +484,14 @@ class RenstraController extends Controller
 
     public function renstra_get_tujuan_tahun($tahun)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal-1;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $get_visis = Visi::all();
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -262,17 +524,17 @@ class RenstraController extends Controller
                             </thead>
                             <tbody>';
                         foreach ($visis as $visi) {
-                            $html .= '<tr>
+                            $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
                                         <span class="badge bg-primary text-uppercase tujuan-renstra-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="tujuan_visi'.$visi['id'].'">
+                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condesed">
                                                 <tbody>';
                                                 $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -301,10 +563,10 @@ class RenstraController extends Controller
                                                 }
                                                 $a = 1;
                                                 foreach ($misis as $misi) {
-                                                    $html .= '<tr>
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                        <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">
-                                                            '.$misi['deskripsi'].'
+                                                    $html .= '<tr style="background: #c04141;">
+                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                        <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                            '.strtoupper($misi['deskripsi']).'
                                                             <br>';
                                                             if($a == 1 || $a == 2)
                                                             {
@@ -327,7 +589,7 @@ class RenstraController extends Controller
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse" id="tujuan_misi'.$misi['id'].'">
+                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
                                                                 <table class="table table-striped table-condesed">
                                                                     <tbody>';
                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
@@ -356,8 +618,8 @@ class RenstraController extends Controller
                                                                     }
                                                                     foreach ($tujuans as $tujuan) {
                                                                         $html .= '<tr>
-                                                                            <td width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="95%">
+                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                            <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
                                                                                 '.$tujuan['deskripsi'].'
                                                                                 <br>';
                                                                                 if($a == 1 || $a == 2)
@@ -378,6 +640,247 @@ class RenstraController extends Controller
                                                                                 }
                                                                                 $html .= ' <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi '.$misi['kode'].'</span>
                                                                                 <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colspan="4" class="hiddenRow">
+                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                                                                                    <table class="table table-bordered">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th width="20%">OPD</th>
+                                                                                                <th width="2%">Kode</th>
+                                                                                                <th width="18%">Tujuan PD</th>
+                                                                                                <th width="20%">Indikator</th>
+                                                                                                <th width="10%">Target</th>
+                                                                                                <th width="10%">Satuan</th>
+                                                                                                <th width="10%">Realisasi</th>
+                                                                                                <th width="10%">Tahun</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>';
+                                                                                        $opds = MasterOpd::all();
+                                                                                        foreach ($opds as $opd) {
+                                                                                            $html .= '<tr>';
+                                                                                                $html .= '<td>'.$opd->nama.'</td>';
+                                                                                                $tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])
+                                                                                                                ->where('opd_id', $opd->id)->get();
+                                                                                                $a = 1;
+                                                                                                foreach ($tujuan_pds as $tujuan_pd) {
+                                                                                                    if($a == 1)
+                                                                                                    {
+                                                                                                            $html .= '<td>'.$tujuan_pd->kode.'</td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->deskripsi.'</td>';
+                                                                                                            $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
+                                                                                                            $b = 1;
+                                                                                                            foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
+                                                                                                            {
+                                                                                                                if($b == 1)
+                                                                                                                {
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                } else {
+                                                                                                                    $html .= '<tr>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                            $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                }
+                                                                                                            }
+                                                                                                    } else {
+                                                                                                        $html .= '<tr>';
+                                                                                                            $html .= '<td></td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->kode.'</td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->deskripsi.'</td>';
+                                                                                                            $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
+                                                                                                            $b = 1;
+                                                                                                            foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
+                                                                                                            {
+                                                                                                                if($b == 1)
+                                                                                                                {
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                } else {
+                                                                                                                    $html .= '<tr>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                            $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                }
+                                                                                                            }
+                                                                                                    }
+                                                                                                    $a++;
+                                                                                                }
+                                                                                        }
+                                                                                        $html .= '</tbody>
+                                                                                    </table>
+                                                                                </div>
                                                                             </td>
                                                                         </tr>';
                                                                     }
@@ -403,6 +906,14 @@ class RenstraController extends Controller
 
     public function renstra_filter_tujuan(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal-1;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $get_visis = Visi::all();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
@@ -436,17 +947,17 @@ class RenstraController extends Controller
                             </thead>
                             <tbody>';
                         foreach ($visis as $visi) {
-                            $html .= '<tr>
+                            $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
                                         <span class="badge bg-primary text-uppercase tujuan-renstra-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="tujuan_visi'.$visi['id'].'">
+                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condesed">
                                                 <tbody>';
                                                 $get_misis = Misi::where('visi_id', $visi['id']);
@@ -498,10 +1009,10 @@ class RenstraController extends Controller
                                                 }
                                                 $a = 1;
                                                 foreach ($misis as $misi) {
-                                                    $html .= '<tr>
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                        <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle">
-                                                            '.$misi['deskripsi'].'
+                                                    $html .= '<tr style="background: #c04141;">
+                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                        <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                            '.strtoupper($misi['deskripsi']).'
                                                             <br>';
                                                             $html .= '<span class="badge bg-primary text-uppercase tujuan-renstra-tagging">Visi '.$request->visi.'</span>';
                                                             $html .= ' <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi '.$misi['kode'].' </span>
@@ -509,7 +1020,7 @@ class RenstraController extends Controller
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse" id="tujuan_misi'.$misi['id'].'">
+                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
                                                                 <table class="table table-striped table-condesed">
                                                                     <tbody>';
                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id']);
@@ -543,13 +1054,269 @@ class RenstraController extends Controller
                                                                     }
                                                                     foreach ($tujuans as $tujuan) {
                                                                         $html .= '<tr>
-                                                                            <td width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="95%">
+                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                            <td width="95%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
                                                                                 '.$tujuan['deskripsi'].'
                                                                                 <br>';
-                                                                                $html .= '<span class="badge bg-primary text-uppercase tujuan-renstra-tagging">Visi '.$request->visi.'</span>';
+                                                                                if($a == 1 || $a == 2)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-renstra-tagging">Visi [Aman]</span>';
+                                                                                }
+                                                                                if($a == 3)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-renstra-tagging">Visi [Mandiri]</span>';
+                                                                                }
+                                                                                if($a == 4)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-renstra-tagging">Visi [Sejahtera]</span>';
+                                                                                }
+                                                                                if($a == 5)
+                                                                                {
+                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-renstra-tagging">Visi [Berahlak]</span>';
+                                                                                }
                                                                                 $html .= ' <span class="badge bg-warning text-uppercase tujuan-renstra-tagging">Misi '.$misi['kode'].'</span>
                                                                                 <span class="badge bg-secondary text-uppercase tujuan-renstra-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colspan="4" class="hiddenRow">
+                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                                                                                    <table class="table table-bordered">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th width="20%">OPD</th>
+                                                                                                <th width="2%">Kode</th>
+                                                                                                <th width="18%">Tujuan PD</th>
+                                                                                                <th width="20%">Indikator</th>
+                                                                                                <th width="10%">Target</th>
+                                                                                                <th width="10%">Satuan</th>
+                                                                                                <th width="10%">Realisasi</th>
+                                                                                                <th width="10%">Tahun</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>';
+                                                                                        $opds = MasterOpd::all();
+                                                                                        foreach ($opds as $opd) {
+                                                                                            $html .= '<tr>';
+                                                                                                $html .= '<td>'.$opd->nama.'</td>';
+                                                                                                $tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])
+                                                                                                                ->where('opd_id', $opd->id)->get();
+                                                                                                $a = 1;
+                                                                                                foreach ($tujuan_pds as $tujuan_pd) {
+                                                                                                    if($a == 1)
+                                                                                                    {
+                                                                                                            $html .= '<td>'.$tujuan_pd->kode.'</td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->deskripsi.'</td>';
+                                                                                                            $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
+                                                                                                            $b = 1;
+                                                                                                            foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
+                                                                                                            {
+                                                                                                                if($b == 1)
+                                                                                                                {
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                } else {
+                                                                                                                    $html .= '<tr>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                            $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                }
+                                                                                                            }
+                                                                                                    } else {
+                                                                                                        $html .= '<tr>';
+                                                                                                            $html .= '<td></td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->kode.'</td>';
+                                                                                                            $html .= '<td>'.$tujuan_pd->deskripsi.'</td>';
+                                                                                                            $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
+                                                                                                            $b = 1;
+                                                                                                            foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
+                                                                                                            {
+                                                                                                                if($b == 1)
+                                                                                                                {
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                } else {
+                                                                                                                    $html .= '<tr>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td></td>';
+                                                                                                                        $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                        $c = 1;
+                                                                                                                        foreach($tahuns as $tahun)
+                                                                                                                        {
+                                                                                                                            $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)
+                                                                                                                                                                    ->where('tahun', $tahun)->first();
+                                                                                                                            if($c == 1)
+                                                                                                                            {
+                                                                                                                                if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                {
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                    $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                } else {
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                }
+                                                                                                                            $html .= '</tr>';
+                                                                                                                            } else {
+                                                                                                                                $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                    if($tujuan_pd_target_satuan_rp_realisasi)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                        $html .= '<td>'.$tujuan_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    } else {
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</tr>';
+                                                                                                                            }
+                                                                                                                            $c++;
+                                                                                                                        }
+                                                                                                                }
+                                                                                                            }
+                                                                                                    }
+                                                                                                    $a++;
+                                                                                                }
+                                                                                        }
+                                                                                        $html .= '</tbody>
+                                                                                    </table>
+                                                                                </div>
                                                                             </td>
                                                                         </tr>';
                                                                     }
@@ -575,6 +1342,14 @@ class RenstraController extends Controller
 
     public function renstra_get_sasaran()
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal-1;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
         $get_visis = Visi::all();
@@ -610,17 +1385,17 @@ class RenstraController extends Controller
                             </thead>
                             <tbody>';
                             foreach ($visis as $visi) {
-                                $html .= '<tr>
+                                $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
                                         <span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="sasaran_visi'.$visi['id'].'">
+                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -647,10 +1422,10 @@ class RenstraController extends Controller
                                                     }
                                                     $a = 1;
                                                     foreach ($misis as $misi) {
-                                                        $html .= '<tr>
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
-                                                                        '.$misi['deskripsi'].'
+                                                        $html .= '<tr style="background: #c04141;">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                                        '.strtoupper($misi['deskripsi']).'
                                                                         <br>';
                                                                         if($a == 1 || $a == 2)
                                                                         {
@@ -673,7 +1448,7 @@ class RenstraController extends Controller
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
@@ -700,10 +1475,10 @@ class RenstraController extends Controller
                                                                                         }
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
                                                                                                         <br>';
                                                                                                         if($a == 1 || $a == 2)
                                                                                                         {
@@ -727,7 +1502,7 @@ class RenstraController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
@@ -781,53 +1556,240 @@ class RenstraController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
+                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-bordered">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
-                                                                                                                                                        <th width="5%"><strong>No</strong></th>
-                                                                                                                                                        <th width="65%"><strong>Sasaran Indikator</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Target</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Satuan</strong></th>
+                                                                                                                                                        <th width="20%">OPD</th>
+                                                                                                                                                        <th width="2%">Kode</th>
+                                                                                                                                                        <th width="18%">Tujuan PD</th>
+                                                                                                                                                        <th width="20%">Indikator</th>
+                                                                                                                                                        <th width="10%">Target</th>
+                                                                                                                                                        <th width="10%">Satuan</th>
+                                                                                                                                                        <th width="10%">Realisasi</th>
+                                                                                                                                                        <th width="10%">Tahun</th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
-                                                                                                                                                    $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($sasaran_indikators as $sasaran_indikator) {
-                                                                                                                                                        $html .= '<tr>
-                                                                                                                                                                    <td>'.$b++.'</td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>';
-                                                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                                $opds = MasterOpd::all();
+                                                                                                                                                foreach ($opds as $opd) {
+                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                        $html .= '<td>'.$opd->nama.'</td>';
+                                                                                                                                                        $sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])
+                                                                                                                                                                        ->where('opd_id', $opd->id)->get();
+                                                                                                                                                        $a = 1;
+                                                                                                                                                        foreach ($sasaran_pds as $sasaran_pd) {
+                                                                                                                                                            if($a == 1)
+                                                                                                                                                            {
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->kode.'</td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->deskripsi.'</td>';
+                                                                                                                                                                    $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
+                                                                                                                                                                    $b = 1;
+                                                                                                                                                                    foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
+                                                                                                                                                                    {
+                                                                                                                                                                        if($b == 1)
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Aman]</span>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $html .= '<tr>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
                                                                                                                                                                         }
-                                                                                                                                                                        if($a == 3)
+                                                                                                                                                                    }
+                                                                                                                                                            } else {
+                                                                                                                                                                $html .= '<tr>';
+                                                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->kode.'</td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->deskripsi.'</td>';
+                                                                                                                                                                    $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
+                                                                                                                                                                    $b = 1;
+                                                                                                                                                                    foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
+                                                                                                                                                                    {
+                                                                                                                                                                        if($b == 1)
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $html .= '<tr>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
                                                                                                                                                                         }
-                                                                                                                                                                        if($a == 4)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        if($a == 5)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Berahlak]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-renstra-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['target'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['satuan'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                </tr>';
-                                                                                                                                                    }
+                                                                                                                                                                    }
+                                                                                                                                                            }
+                                                                                                                                                            $a++;
+                                                                                                                                                        }
+                                                                                                                                                }
                                                                                                                                                 $html .= '</tbody>
                                                                                                                                             </table>
                                                                                                                                         </div>
@@ -862,6 +1824,14 @@ class RenstraController extends Controller
 
     public function renstra_get_sasaran_tahun($tahun)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal-1;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $get_visis = Visi::all();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
@@ -895,17 +1865,17 @@ class RenstraController extends Controller
                             </thead>
                             <tbody>';
                             foreach ($visis as $visi) {
-                                $html .= '<tr>
+                                $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle  text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
                                         <span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="sasaran_visi'.$visi['id'].'">
+                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id'])->get();
@@ -932,10 +1902,10 @@ class RenstraController extends Controller
                                                     }
                                                     $a = 1;
                                                     foreach ($misis as $misi) {
-                                                        $html .= '<tr>
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
-                                                                        '.$misi['deskripsi'].'
+                                                        $html .= '<tr style="background: #c04141;">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                                        '.strtoupper($misi['deskripsi']).'
                                                                         <br>';
                                                                         if($a == 1 || $a == 2)
                                                                         {
@@ -958,7 +1928,7 @@ class RenstraController extends Controller
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
@@ -985,10 +1955,10 @@ class RenstraController extends Controller
                                                                                         }
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
                                                                                                         <br>';
                                                                                                         if($a == 1 || $a == 2)
                                                                                                         {
@@ -1012,7 +1982,7 @@ class RenstraController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
@@ -1066,53 +2036,240 @@ class RenstraController extends Controller
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
+                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-bordered">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
-                                                                                                                                                        <th width="5%"><strong>No</strong></th>
-                                                                                                                                                        <th width="65%"><strong>Sasaran Indikator</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Target</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Satuan</strong></th>
+                                                                                                                                                        <th width="20%">OPD</th>
+                                                                                                                                                        <th width="2%">Kode</th>
+                                                                                                                                                        <th width="18%">Tujuan PD</th>
+                                                                                                                                                        <th width="20%">Indikator</th>
+                                                                                                                                                        <th width="10%">Target</th>
+                                                                                                                                                        <th width="10%">Satuan</th>
+                                                                                                                                                        <th width="10%">Realisasi</th>
+                                                                                                                                                        <th width="10%">Tahun</th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
-                                                                                                                                                    $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($sasaran_indikators as $sasaran_indikator) {
-                                                                                                                                                        $html .= '<tr>
-                                                                                                                                                                    <td>'.$b++.'</td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>';
-                                                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                                $opds = MasterOpd::all();
+                                                                                                                                                foreach ($opds as $opd) {
+                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                        $html .= '<td>'.$opd->nama.'</td>';
+                                                                                                                                                        $sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])
+                                                                                                                                                                        ->where('opd_id', $opd->id)->get();
+                                                                                                                                                        $a = 1;
+                                                                                                                                                        foreach ($sasaran_pds as $sasaran_pd) {
+                                                                                                                                                            if($a == 1)
+                                                                                                                                                            {
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->kode.'</td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->deskripsi.'</td>';
+                                                                                                                                                                    $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
+                                                                                                                                                                    $b = 1;
+                                                                                                                                                                    foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
+                                                                                                                                                                    {
+                                                                                                                                                                        if($b == 1)
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Aman]</span>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $html .= '<tr>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
                                                                                                                                                                         }
-                                                                                                                                                                        if($a == 3)
+                                                                                                                                                                    }
+                                                                                                                                                            } else {
+                                                                                                                                                                $html .= '<tr>';
+                                                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->kode.'</td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->deskripsi.'</td>';
+                                                                                                                                                                    $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
+                                                                                                                                                                    $b = 1;
+                                                                                                                                                                    foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
+                                                                                                                                                                    {
+                                                                                                                                                                        if($b == 1)
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $html .= '<tr>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
                                                                                                                                                                         }
-                                                                                                                                                                        if($a == 4)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        if($a == 5)
-                                                                                                                                                                        {
-                                                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Berahlak]</span>';
-                                                                                                                                                                        }
-                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-renstra-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['target'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['satuan'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                </tr>';
-                                                                                                                                                    }
+                                                                                                                                                                    }
+                                                                                                                                                            }
+                                                                                                                                                            $a++;
+                                                                                                                                                        }
+                                                                                                                                                }
                                                                                                                                                 $html .= '</tbody>
                                                                                                                                             </table>
                                                                                                                                         </div>
@@ -1147,6 +2304,14 @@ class RenstraController extends Controller
 
     public function renstra_filter_sasaran(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal-1;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $get_visis = Visi::all();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
@@ -1180,17 +2345,17 @@ class RenstraController extends Controller
                             </thead>
                             <tbody>';
                             foreach ($visis as $visi) {
-                                $html .= '<tr>
+                                $html .= '<tr style="background: #bbbbbb;">
                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle">
-                                        '.$visi['deskripsi'].'
+                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
                                         <br>
                                         <span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="hiddenRow">
-                                        <div class="collapse" id="sasaran_visi'.$visi['id'].'">
+                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
                                             <table class="table table-striped table-condensed">
                                                 <tbody>';
                                                     $get_misis = Misi::where('visi_id', $visi['id']);
@@ -1240,10 +2405,10 @@ class RenstraController extends Controller
                                                     }
                                                     $a = 1;
                                                     foreach ($misis as $misi) {
-                                                        $html .= '<tr>
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">'.$misi['kode'].'</td>
-                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle">
-                                                                        '.$misi['deskripsi'].'
+                                                        $html .= '<tr style="background: #c04141;">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                                        '.strtoupper($misi['deskripsi']).'
                                                                         <br>';
                                                                         $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi '.$request->visi.'</span>';
                                                                         $html .= ' <span class="badge bg-warning text-uppercase renstra-sasaran-tagging">'.$misi['kode'].' Misi</span>
@@ -1251,7 +2416,7 @@ class RenstraController extends Controller
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse" id="sasaran_misi'.$misi['id'].'">
+                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
                                                                             <table class="table table-striped table-condensed">
                                                                                 <tbody>';
                                                                                     $get_tujuans = Tujuan::where('misi_id', $misi['id']);
@@ -1283,10 +2448,10 @@ class RenstraController extends Controller
                                                                                         }
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr>
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="95%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
                                                                                                         <br>';
                                                                                                         $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi '.$request->visi.'</span>';
                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase renstra-sasaran-tagging">Misi '.$misi['kode'].'</span>
@@ -1295,7 +2460,7 @@ class RenstraController extends Controller
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse" id="sasaran_tujuan'.$tujuan['id'].'">
+                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
                                                                                                             <table class="table table-striped table-condensed">
                                                                                                                 <tbody>';
                                                                                                                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
@@ -1331,46 +2496,263 @@ class RenstraController extends Controller
                                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="95%">
                                                                                                                                         '.$sasaran['deskripsi'].'
                                                                                                                                         <br>';
-                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase renstra-sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase renstra-sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-renstra-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-renstra-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-renstra-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-renstra-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 <tr>
                                                                                                                                     <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
+                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                                                                                                                            <table class="table table-bordered">
                                                                                                                                                 <thead>
                                                                                                                                                     <tr>
-                                                                                                                                                        <th width="5%"><strong>No</strong></th>
-                                                                                                                                                        <th width="65%"><strong>Sasaran Indikator</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Target</strong></th>
-                                                                                                                                                        <th width="15%"><strong>Satuan</strong></th>
+                                                                                                                                                        <th width="20%">OPD</th>
+                                                                                                                                                        <th width="2%">Kode</th>
+                                                                                                                                                        <th width="18%">Tujuan PD</th>
+                                                                                                                                                        <th width="20%">Indikator</th>
+                                                                                                                                                        <th width="10%">Target</th>
+                                                                                                                                                        <th width="10%">Satuan</th>
+                                                                                                                                                        <th width="10%">Realisasi</th>
+                                                                                                                                                        <th width="10%">Tahun</th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
-                                                                                                                                                    $sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($sasaran_indikators as $sasaran_indikator) {
-                                                                                                                                                        $html .= '<tr>
-                                                                                                                                                                    <td>'.$b++.'</td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['indikator'].'
-                                                                                                                                                                        <br>';
-                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-secondary text-uppercase renstra-sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                                                        <span class="badge bg-danger text-uppercase renstra-sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['target'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                    <td>
-                                                                                                                                                                        '.$sasaran_indikator['satuan'].'
-                                                                                                                                                                    </td>
-                                                                                                                                                                </tr>';
-                                                                                                                                                    }
+                                                                                                                                                $opds = MasterOpd::all();
+                                                                                                                                                foreach ($opds as $opd) {
+                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                        $html .= '<td>'.$opd->nama.'</td>';
+                                                                                                                                                        $sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])
+                                                                                                                                                                        ->where('opd_id', $opd->id)->get();
+                                                                                                                                                        $a = 1;
+                                                                                                                                                        foreach ($sasaran_pds as $sasaran_pd) {
+                                                                                                                                                            if($a == 1)
+                                                                                                                                                            {
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->kode.'</td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->deskripsi.'</td>';
+                                                                                                                                                                    $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
+                                                                                                                                                                    $b = 1;
+                                                                                                                                                                    foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
+                                                                                                                                                                    {
+                                                                                                                                                                        if($b == 1)
+                                                                                                                                                                        {
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $html .= '<tr>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
+                                                                                                                                                                        }
+                                                                                                                                                                    }
+                                                                                                                                                            } else {
+                                                                                                                                                                $html .= '<tr>';
+                                                                                                                                                                    $html .= '<td></td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->kode.'</td>';
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd->deskripsi.'</td>';
+                                                                                                                                                                    $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
+                                                                                                                                                                    $b = 1;
+                                                                                                                                                                    foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
+                                                                                                                                                                    {
+                                                                                                                                                                        if($b == 1)
+                                                                                                                                                                        {
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $html .= '<tr>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                foreach($tahuns as $tahun)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
+                                                                                                                                                                                                                            ->where('tahun', $tahun)->first();
+                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                        }
+                                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                            if($sasaran_pd_target_satuan_rp_realisasi)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$sasaran_pd_target_satuan_rp_realisasi->realisasi.'</td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $c++;
+                                                                                                                                                                                }
+                                                                                                                                                                        }
+                                                                                                                                                                    }
+                                                                                                                                                            }
+                                                                                                                                                            $a++;
+                                                                                                                                                        }
+                                                                                                                                                }
                                                                                                                                                 $html .= '</tbody>
                                                                                                                                             </table>
                                                                                                                                         </div>
