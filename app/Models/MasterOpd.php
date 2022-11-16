@@ -33,4 +33,9 @@ class MasterOpd extends Model
     {
         return $this->hasMany('App\Models\SasaranPd', 'opd_id');
     }
+
+    public function opd_kegiatan_indikator_kinerja()
+    {
+        return $this->hasMany('App\Models\OpdKegiatanIndikatorKinerja', 'opd_id');
+    }
 }

@@ -13,4 +13,9 @@ class KegiatanIndikatorKinerja extends Model
     {
         return $this->belongsTo('App\Models\Kegiatan', 'kegiatan_id');
     }
+
+    public function opd_kegiatan_indikator_kinerja()
+    {
+        return $this->hasMany('App\Models\OpdKegiatanIndikatorKinerja', 'kegiatan_indikator_kinerja_id');
+    }
 }

@@ -316,6 +316,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraProgram" checked>
+                                            <label class="form-check-label" for="onOffTaggingRenstraProgram">On / Off Tagging</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <hr>
                         <div id="renstraProgramNavDiv"></div>
                     </div>
@@ -382,6 +394,14 @@
                                 <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
                                     <button class="btn btn-primary waves-effect waves-light mr-1 mb-2" type="button" id="renstra_kegiatan_btn_filter">Filter Data</button>
                                     <button class="btn btn-secondary waves-effect waves-light" type="button" id="renstra_kegiatan_btn_reset">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="onOffTaggingRenstraKegiatan" checked>
+                                    <label class="form-check-label" for="onOffTaggingRenstraKegiatan">On / Off Tagging</label>
                                 </div>
                             </div>
                         </div>
@@ -639,129 +659,101 @@
     </div>
     {{-- Sasaran PD End --}}
 
-    {{-- Kegiatan Renstra Start --}}
-    <div class="modal fade" id="addEditRenstraKegiatanModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    {{-- Program Start --}}
+    <div id="editTargetProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetProgramModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.program.indikator.target-satuan-rp-realisasi.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="program_target_satuan_rp_realisasi" id="program_target_satuan_rp_realisasi">
+                        <div class="form-group position-relative">
+                            <label for="program_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="program_edit_realisasi" name="program_edit_realisasi" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="program_edit_realisasi_rp" class="form-label">RP</label>
+                            <input type="text" class="form-control" id="program_edit_realisasi_rp" name="program_edit_realisasi_rp" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Program End --}}
+
+    {{-- Kegiatan Start --}}
+    <div id="indikatorKinerjaKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaKegiatanModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Tambah Baru</h5>
+                    <h4 class="modal-title" id="detail-title">Tambah Indikator Kinerja Kegiatan</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <span id="renstra_kegiatan_form_result"></span>
-                    <form id="renstra_kegiatan_form" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                    <form action="{{ route('opd.renstra.kegiatan.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="renstra_kegiatan_program_rpjmd_id" id="renstra_kegiatan_program_rpjmd_id">
-                        <input type="hidden" name="renstra_kegiatan_opd_id" value="{{Auth::user()->opd->opd_id}}">
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Kegiatan</label>
-                            <select name="renstra_kegiatan_kegiatan_id" id="renstra_kegiatan_kegiatan_id" class="form-control" required>
-                                <option value="">--- Pilih Kegiatan ---</option>
-                            </select>
+                        <input type="hidden" name="indikator_kinerja_kegiatan_kegiatan_id" id="indikator_kinerja_kegiatan_kegiatan_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Tambah Indikator Kinerja</label>
+                            <input id="indikator_kinerja_kegiatan_deskripsi" name="indikator_kinerja_kegiatan_deskripsi"/>
                         </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="renstra_kegiatan_pagu" class="form-label">Pagu</label>
-                            <input type="number" name="renstra_kegiatan_pagu" id="renstra_kegiatan_pagu" class="form-control" required>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
                         </div>
+                    </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="hidden" name="renstra_kegiatan_aksi" id="renstra_kegiatan_aksi" value="Save">
-                    <input type="hidden" name="renstra_kegiatan_hidden_id" id="renstra_kegiatan_hidden_id">
-                    <button type="submit" class="btn btn-primary" name="renstra_kegiatan_aksi_button" id="renstra_kegiatan_aksi_button">Add</button>
-                </div>
-            </form>
             </div>
         </div>
     </div>
 
-    <div class="modal modal-right large scroll-out-negative fade" id="detailRenstraKegiatanModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable full">
+    <div id="editTargetKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetKegiatanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="scroll-track-visible">
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Visi</label>
-                            <div class="input-group">
-                                <div class="input-group-text"></div>
-                                <textarea id="renstra_kegiatan_detail_visi" class="form-control" rows="5" disabled></textarea>
-                            </div>
+                    <form action="{{ route('opd.renstra.kegiatan.indikator-kinerja.target-satuan-realisasi.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="kegiatan_target_satuan_rp_realisasi" id="kegiatan_target_satuan_rp_realisasi">
+                        <div class="form-group position-relative">
+                            <label for="kegiatan_edit_target" class="form-label">Target</label>
+                            <input type="text" class="form-control" id="kegiatan_edit_target" name="kegiatan_edit_target" required>
+                        </div>
+                        <div class="form-group position-relative">
+                            <label for="kegiatan_edit_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="kegiatan_edit_satuan" name="kegiatan_edit_satuan" required>
+                        </div>
+                        <div class="form-group position-relative">
+                            <label for="kegiatan_edit_target_rp" class="form-label">Target RP</label>
+                            <input type="text" class="form-control" id="kegiatan_edit_target_rp" name="kegiatan_edit_target_rp" required>
                         </div>
                         <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Misi</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="renstra_kegiatan_detail_misi_kode"></span></div>
-                                <textarea id="renstra_kegiatan_detail_misi" class="form-control" rows="5" disabled></textarea>
-                            </div>
+                            <label for="kegiatan_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="kegiatan_edit_realisasi" name="kegiatan_edit_realisasi" required>
                         </div>
                         <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Tujuan</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="renstra_kegiatan_detail_tujuan_kode"></span></div>
-                                <textarea id="renstra_kegiatan_detail_tujuan" class="form-control" rows="5" disabled></textarea>
-                            </div>
+                            <label for="kegiatan_edit_realisasi_rp" class="form-label">Realisasi RP</label>
+                            <input type="text" class="form-control" id="kegiatan_edit_realisasi_rp" name="kegiatan_edit_realisasi_rp" required>
                         </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Sasaran</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="renstra_kegiatan_detail_sasaran_kode"></span></div>
-                                <textarea id="renstra_kegiatan_detail_sasaran" class="form-control" rows="5" disabled></textarea>
-                            </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
                         </div>
-                        <hr>
-                        <div class="data-table-rows slim">
-                            <div class="row">
-                                <div class="col-12">
-                                    <label for="" class="form-label">Sasaran Indikator</label>
-                                </div>
-                            </div>
-                            <!-- Table Start -->
-                            <div class="data-table-responsive-wrapper">
-                                <table class="data-table w-100">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-muted text-small text-uppercase" width="50%">Indikator</th>
-                                            <th class="text-muted text-small text-uppercase" width="25%">Target</th>
-                                            <th class="text-muted text-small text-uppercase" width="25%">Satuan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="renstra_kegiatan_tbody_detail_sasaran_indikator">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- Table End -->
-                        </div>
-                        <hr>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Program</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="renstra_kegiatan_detail_program_kode"></span></div>
-                                <textarea id="renstra_kegiatan_detail_program" class="form-control" rows="5" disabled></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="" class="form-label">Kegiatan</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><span id="renstra_kegiatan_detail_kegiatan_kode"></span></div>
-                                <textarea id="renstra_kegiatan_detail_kegiatan" class="form-control" rows="5" disabled></textarea>
-                            </div>
-                        </div>
-                        <hr>
-                        <div id="renstra_kegiatan_atur_target_rp_pertahun"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-    {{-- Kegiatan Renstra End --}}
+    {{-- Kegiatan End --}}
 @endsection
 
 @section('js')
@@ -822,6 +814,7 @@
 
             new Tagify(document.querySelector('#indikator_kinerja_tujuan_pd_deskripsi'));
             new Tagify(document.querySelector('#indikator_kinerja_sasaran_pd_deskripsi'));
+            new Tagify(document.querySelector('#indikator_kinerja_kegiatan_deskripsi'));
         });
 
         // Misi Start
@@ -1291,7 +1284,156 @@
                 $('.renstra-program-tagging').hide();
             }
         });
+
+        $(document).on('click', '.button-program-edit-target-satuan-rp-realisasi', function(){
+            var opd_program_indikator_kinerja_id = $(this).attr('data-opd-program-indikator-kinerja-id');
+            var sasaran_id = $(this).attr('data-sasaran-id');
+            var tahun = $(this).attr('data-tahun');
+            var program_target_satuan_rp_realisasi = $(this).attr('data-program-target-satuan-rp-realisasi');
+            var realisasi = $('.program-span-realisasi.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
+            var realisasi_rp = $('.program-span-realisasi-rp.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).attr('data-realisasi-rp');
+
+            $('#program_target_satuan_rp_realisasi').val(program_target_satuan_rp_realisasi);
+            $('#program_edit_realisasi').val(realisasi);
+            $('#program_edit_realisasi_rp').val(realisasi_rp);
+
+            $('#editTargetProgramModal').modal('show');
+        });
         // Program End
+
+        // Kegiatan Start
+        $(document).on('click', '.tambah-kegiatan-indikator-kinerja', function(){
+            var kegiatan_id = $(this).attr('data-kegiatan-id');
+            $('#indikator_kinerja_kegiatan_kegiatan_id').val(kegiatan_id);
+            $('#indikatorKinerjaKegiatanModal').modal('show');
+        });
+
+        $(document).on('click', '.btn-hapus-kegiatan-indikator-kinerja', function(){
+            var kegiatan_indikator_kinerja_id = $(this).attr('data-kegiatan-indikator-kinerja-id');
+
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.kegiatan.indikator-kinerja.hapus') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            kegiatan_indikator_kinerja_id:kegiatan_indikator_kinerja_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-kegiatan-target-satuan-rp-realisasi', function(){
+            var kegiatan_indikator_kinerja_id = $(this).attr('data-kegiatan-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+
+            var target = $('.kegiatan-add-target.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
+            var satuan = $('.kegiatan-add-satuan.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
+            var target_rp = $('.kegiatan-add-target-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
+            var realisasi = $('.kegiatan-add-realisasi.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
+            var realisasi_rp = $('.kegiatan-add-realisasi-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
+
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.kegiatan.indikator-kinerja.target-satuan-realisasi.tambah') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tahun:tahun,
+                            kegiatan_indikator_kinerja_id:kegiatan_indikator_kinerja_id,
+                            target:target,
+                            satuan:satuan,
+                            target_rp:target_rp,
+                            realisasi:realisasi,
+                            realisasi_rp:realisasi_rp
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-kegiatan-edit-target-satuan-rp-realisasi', function(){
+            var kegiatan_indikator_kinerja_id = $(this).attr('data-kegiatan-indikator-kinerja-id');
+            var sasaran_id = $(this).attr('data-sasaran-id');
+            var tahun = $(this).attr('data-tahun');
+            var kegiatan_target_satuan_rp_realisasi = $(this).attr('data-kegiatan-target-satuan-rp-realisasi');
+            var target = $('.kegiatan-span-target.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
+            var satuan = $('.kegiatan-span-satuan.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
+            var target_rp = $('.kegiatan-span-target-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).attr('data-target-rp');
+            var realisasi = $('.kegiatan-span-realisasi.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
+            var realisasi_rp = $('.kegiatan-span-realisasi-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).attr('data-realisasi-rp');
+
+            $('#kegiatan_target_satuan_rp_realisasi').val(kegiatan_target_satuan_rp_realisasi);
+            $('#kegiatan_edit_target').val(target);
+            $('#kegiatan_edit_satuan').val(satuan);
+            $('#kegiatan_edit_target_rp').val(target_rp);
+            $('#kegiatan_edit_realisasi').val(realisasi);
+            $('#kegiatan_edit_realisasi_rp').val(realisasi_rp);
+
+            $('#editTargetKegiatanModal').modal('show');
+        });
+        // Kegiatan End
 
         // Filter Data Misi
         $('#renstra_misi_filter_visi').on('change', function(){
@@ -1764,176 +1906,6 @@
             } else {
                 $('.renstra-kegiatan-tagging').hide();
             }
-        });
-
-        $(document).on('click','.renstra_kegiatan_create',function(){
-            $('#renstra_kegiatan_form')[0].reset();
-            $("[name='renstra_kegiatan_kegiatan_id']").val('').trigger('change');
-            $('#renstra_kegiatan_aksi_button').text('Save');
-            $('#renstra_kegiatan_aksi_button').prop('disabled', false);
-            $('.modal-title').text('Add Data Kegiatan');
-            $('#renstra_kegiatan_aksi_button').val('Save');
-            $('#renstra_kegiatan_aksi').val('Save');
-            $('#kegiatan_renstra_form_result').html('');
-            $('#renstra_kegiatan_program_rpjmd_id').val($(this).attr('data-program-rpjmd-id'));
-            $.ajax({
-                url: "{{ route('opd.renstra.option.kegiatan') }}",
-                method: 'POST',
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    id:$(this).attr('data-program-id')
-                },
-                success: function(response){
-                    $('#renstra_kegiatan_kegiatan_id').empty();
-                    $('#renstra_kegiatan_kegiatan_id').append('<option value="">--- Pilih Kegiatan ---</option>');
-                    $.each(response, function(key, value){
-                        $('#renstra_kegiatan_kegiatan_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
-                    });
-                }
-            });
-            // $('#renstra_kegiatan_kegiatan_id').siblings('.select2').children('.selection').children('.select2-selection').css('z-index', '10000');
-        });
-
-        $('#renstra_kegiatan_form').on('submit', function(e){
-            e.preventDefault();
-            if($('#renstra_kegiatan_aksi').val() == 'Save')
-            {
-                $.ajax({
-                    url: "{{ route('opd.renstra.kegiatan.store') }}",
-                    method: "POST",
-                    data: $(this).serialize(),
-                    dataType: "json",
-                    beforeSend: function()
-                    {
-                        $('#renstra_kegiatan_aksi_button').text('Menyimpan...');
-                        $('#renstra_kegiatan_aksi_button').prop('disabled', true);
-                    },
-                    success: function(data)
-                    {
-                        var html = '';
-                        if(data.errors)
-                        {
-                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
-                            $('#renstra_kegiatan_aksi_button').prop('disabled', false);
-                            $('#renstra_kegiatan_form')[0].reset();
-                            $('#renstra_kegiatan_aksi_button').text('Save');
-                        }
-                        if(data.success)
-                        {
-                            $('#addEditRenstraKegiatanModal').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil Menambahkan Kegiatan',
-                                showConfirmButton: true
-                            });
-                            $('#renstra_kegiatan').html(data.success);
-                        }
-
-                        $('#renstra_kegiatan_form_result').html(html);
-                    }
-                });
-            }
-        });
-
-        $(document).on('click', '.detail-renstra-kegiatan', function(){
-            var id = $(this).attr('data-renstra-kegiatan-id');
-            $.ajax({
-                url: "{{ url('/opd/renstra/kegiatan/detail') }}" + '/' +id,
-                dataType: "json",
-                success: function(data)
-                {
-                    $('#detail-title').text('Detail Renstra Kegiatan');
-                    $('#renstra_kegiatan_detail_visi').val(data.result.visi);
-                    $('#renstra_kegiatan_detail_misi').val(data.result.misi);
-                    $('#renstra_kegiatan_detail_misi_kode').text(data.result.misi_kode);
-                    $('#renstra_kegiatan_detail_tujuan').val(data.result.tujuan);
-                    $('#renstra_kegiatan_detail_tujuan_kode').text(data.result.tujuan_kode);
-                    $('#renstra_kegiatan_detail_sasaran').val(data.result.sasaran);
-                    $('#renstra_kegiatan_detail_sasaran_kode').text(data.result.sasaran_kode);
-                    $('#renstra_kegiatan_tbody_detail_sasaran_indikator').html(data.result.sasaran_indikator);
-                    $('#renstra_kegiatan_detail_program').val(data.result.program);
-                    $('#renstra_kegiatan_detail_program_kode').text(data.result.program_kode);
-                    $('#renstra_kegiatan_detail_kegiatan').val(data.result.kegiatan);
-                    $('#renstra_kegiatan_detail_kegiatan_kode').text(data.result.kegiatan_kode);
-                    $('#renstra_kegiatan_atur_target_rp_pertahun').html(data.result.target_rp_pertahun);
-                    $('#detailRenstraKegiatanModal').modal('show');
-                }
-            });
-        });
-
-        $(document).on('click', '.button-target-rp-pertahun-renstra-kegiatan', function(){
-            var tahun = $(this).attr('data-tahun');
-            var opd_id = $(this).attr('data-opd-id');
-            var renstra_kegiatan_id = $(this).attr('data-renstra-kegiatan-id');
-            var target_rp_pertahun_renstra_kegiatan_id = $(this).attr('data-target-rp-pertahun-renstra-kegiatan-id');
-
-            var target = $('.add-target.'+tahun+'.data-opd-'+opd_id+'.data-renstra-kegiatan-'+renstra_kegiatan_id).val();
-            var satuan = $('.add-satuan.'+tahun+'.data-opd-'+opd_id+'.data-renstra-kegiatan-'+renstra_kegiatan_id).val();
-            var rp = $('.add-rp.'+tahun+'.data-opd-'+opd_id+'.data-renstra-kegiatan-'+renstra_kegiatan_id).val();
-
-            return new swal({
-                title: "Apakah Anda Yakin?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#1976D2",
-                confirmButtonText: "Ya"
-            }).then((result)=>{
-                if(result.value)
-                {
-                    $.ajax({
-                        url: "{{ route('opd.renstra.kegiatan.detail.target-rp-pertahun') }}",
-                        method: 'POST',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            tahun:tahun,
-                            opd_id:opd_id,
-                            renstra_kegiatan_id:renstra_kegiatan_id,
-                            target:target,
-                            satuan:satuan,
-                            rp:rp,
-                            target_rp_pertahun_renstra_kegiatan_id:target_rp_pertahun_renstra_kegiatan_id
-                        },
-                        dataType: "json",
-                        success: function(data)
-                        {
-                            if(data.errors)
-                            {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: data.errors,
-                                    showConfirmButton: true
-                                });
-                            }
-
-                            if(data.success)
-                            {
-                                $('#renstra_kegiatan_atur_target_rp_pertahun').html(data.success);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        $(document).on('click', '.button-edit-target-rp-pertahun-renstra-kegiatan', function(){
-            var tahun = $(this).attr('data-tahun');
-            var opd_id = $(this).attr('data-opd-id');
-            var renstra_kegiatan_id = $(this).attr('data-renstra-kegiatan-id');
-            var target_rp_pertahun_renstra_kegiatan_id = $(this).attr('data-target-rp-pertahun-renstra-kegiatan-id');
-            var target = $('.span-target.'+tahun+'.data-opd-'+opd_id+'.data-renstra-kegiatan-'+renstra_kegiatan_id).text();
-            var satuan = $('.span-satuan.'+tahun+'.data-opd-'+opd_id+'.data-renstra-kegiatan-'+renstra_kegiatan_id).text();
-            var rp = $('.span-rp.'+tahun+'.data-opd-'+opd_id+'.data-renstra-kegiatan-'+renstra_kegiatan_id).text();
-
-            target_rp_pertahun = '<td><input type="number" class="form-control add-target '+tahun+' data-opd-'+opd_id+' data-renstra-kegiatan-'+renstra_kegiatan_id+'" value="'+target+'"></td>';
-            target_rp_pertahun += '<td><input type="text" class="form-control add-satuan '+tahun+' data-opd-'+opd_id+' data-renstra-kegiatan-'+renstra_kegiatan_id+'" value="'+satuan+'"></td>';
-            target_rp_pertahun += '<td><input type="text" class="form-control add-rp '+tahun+' data-opd-'+opd_id+' data-renstra-kegiatan-'+renstra_kegiatan_id+'" value="'+rp+'"></td>';
-            target_rp_pertahun += '<td>'+tahun+'</td>';
-            target_rp_pertahun += '<td>'+
-                                        '<button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-target-rp-pertahun-renstra-kegiatan" type="button" data-opd-id="'+opd_id+'" data-tahun="'+tahun+'" data-renstra-kegiatan-id="'+renstra_kegiatan_id+'" data-target-rp-pertahun-renstra-kegiatan-id='+target_rp_pertahun_renstra_kegiatan_id+'>'+
-                                        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>'+
-                                        '</button>'+
-                                    '</td>';
-            $('.tr-target-rp.'+tahun+'.data-opd-'+opd_id+'.data-renstra-kegiatan-'+renstra_kegiatan_id).html(target_rp_pertahun);
         });
 
         // Filter Data Kegiatan

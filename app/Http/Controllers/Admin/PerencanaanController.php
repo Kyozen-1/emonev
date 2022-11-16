@@ -2488,9 +2488,9 @@ class PerencanaanController extends Controller
                                                                                     }
                                                                                     foreach ($tujuans as $tujuan) {
                                                                                         $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                                        '.$tujuan['deskripsi'].'
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
                                                                                                         <br>';
                                                                                                         $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi '.$request->visi.'</span>';
                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
@@ -2536,22 +2536,7 @@ class PerencanaanController extends Controller
                                                                                                                                     <td width="45%">
                                                                                                                                         '.$sasaran['deskripsi'].'
                                                                                                                                         <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
+                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi '.$request->visi.'</span>';
                                                                                                                                         $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
                                                                                                                                         <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                                                                                         <span class="badge bg-danger text-uppercase program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
