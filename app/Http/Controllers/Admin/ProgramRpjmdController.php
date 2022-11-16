@@ -159,6 +159,7 @@ class ProgramRpjmdController extends Controller
         $errors = Validator::make($request->all(), [
             'program_urusan_id' => 'required',
             'program_program_id' => 'required',
+            'program_status_program' => 'required',
             'program_misi_id' => 'required',
             'program_tujuan_id' => 'required',
             'program_sasaran_id' => 'required',
@@ -173,6 +174,7 @@ class ProgramRpjmdController extends Controller
 
         $program_rpjmd = new ProgramRpjmd;
         $program_rpjmd->program_id = $request->program_program_id;
+        $program_rpjmd->status_program = $request->program_status_program;
         $program_rpjmd->save();
 
         $sasaran_indikator_id = $request->program_sasaran_indikator_id;

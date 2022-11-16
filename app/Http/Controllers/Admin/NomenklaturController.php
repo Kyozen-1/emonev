@@ -146,10 +146,10 @@ class NomenklaturController extends Controller
                                                                             <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="5%">'.$urusan['kode'].'.'.$program['kode'].'</td>
                                                                             <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="40%">
                                                                                 '.$program['deskripsi'];
-                                                                                $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
+                                                                                $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->where('status_program', 'Prioritas')->first();
                                                                                 if($cek_program_rjmd)
                                                                                 {
-                                                                                    $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
+                                                                                    $html .= '<i class="fas fa-star text-primary" title="Program Prioritas">';
                                                                                 }
                                                                                 $html .= '<br>
                                                                                 <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
@@ -485,10 +485,10 @@ class NomenklaturController extends Controller
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="5%">'.$urusan['kode'].'.'.$program['kode'].'</td>
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="40%">
                                                                                     '.$program['deskripsi'];
-                                                                                    $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
+                                                                                    $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->where('status_program', 'Prioritas')->first();
                                                                                     if($cek_program_rjmd)
                                                                                     {
-                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
+                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program Prioritas">';
                                                                                     }
                                                                                     $html .= '<br>
                                                                                     <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
@@ -800,10 +800,10 @@ class NomenklaturController extends Controller
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="5%">'.$urusan['kode'].'.'.$program['kode'].'</td>
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="40%">
                                                                                     '.$program['deskripsi'];
-                                                                                    $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
+                                                                                    $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->where('status_program', 'Prioritas')->first();
                                                                                     if($cek_program_rjmd)
                                                                                     {
-                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
+                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program Prioritas">';
                                                                                     }
                                                                                     $html .= '<br>
                                                                                     <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
@@ -3296,10 +3296,10 @@ class NomenklaturController extends Controller
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="5%">'.$urusan['kode'].'.'.$program['kode'].'</td>
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="40%">
                                                                                     '.$program['deskripsi'];
-                                                                                    $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
+                                                                                    $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->where('status_program', 'Prioritas')->first();
                                                                                     if($cek_program_rjmd)
                                                                                     {
-                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
+                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program Prioritas">';
                                                                                     }
                                                                                     $html .= '<br>
                                                                                     <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
@@ -3622,10 +3622,10 @@ class NomenklaturController extends Controller
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="5%">'.$urusan['kode'].'.'.$program['kode'].'</td>
                                                                                 <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="40%">
                                                                                     '.$program['deskripsi'];
-                                                                                    $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
+                                                                                    $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->where('status_program', 'Prioritas')->first();
                                                                                     if($cek_program_rjmd)
                                                                                     {
-                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
+                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program Prioritas">';
                                                                                     }
                                                                                     $html .= '<br>
                                                                                     <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>

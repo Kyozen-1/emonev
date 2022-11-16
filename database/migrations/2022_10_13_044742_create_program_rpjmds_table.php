@@ -16,6 +16,7 @@ class CreateProgramRpjmdsTable extends Migration
         Schema::create('program_rpjmds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('program_id')->nullable();
+            $table->enum('status_program', ['Prioritas', 'Pendukung']);
             $table->timestamps();
         });
     }

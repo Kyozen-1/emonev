@@ -1986,6 +1986,14 @@
                                         <option value="">--- Pilih Program ---</option>
                                     </select>
                                 </div>
+                                <div class="form-group position-relative mb-3">
+                                    <label for="program_status_program" class="form-label">Status Program</label>
+                                    <select name="program_status_program" id="program_status_program" class="form-control" required>
+                                        <option value="">--- Pilih Status Program ---</option>
+                                        <option value="Prioritas">Prioritas</option>
+                                        <option value="Pendukung">Pendukung</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <h2 class="small-title">Atur Indikator Kinerja Sasaran Yang Terkait</h2>
