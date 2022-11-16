@@ -557,14 +557,14 @@ class PerencanaanController extends Controller
                                                                                             $html .= '<tr>';
                                                                                                 $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
                                                                                                 $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $a = 1;
+                                                                                                $c = 1;
                                                                                                 foreach ($tahuns as $tahun) {
-                                                                                                    if($a == 1)
-                                                                                                    {
-                                                                                                            $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
                                                                                                                                                         ->where('tahun', $tahun)->first();
-                                                                                                            if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                            {
+                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
+                                                                                                    {
+                                                                                                        if($c == 1)
+                                                                                                        {
                                                                                                                 $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
                                                                                                                 $html .= '<td><span class="tujuan-span-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->satuan.'</span></td>';
                                                                                                                 $html .= '<td><span class="tujuan-span-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->realisasi.'</span></td>';
@@ -574,22 +574,7 @@ class PerencanaanController extends Controller
                                                                                                                             </button>
                                                                                                                         </td>';
                                                                                                             $html .='</tr>';
-                                                                                                            } else {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                            }
-                                                                                                    } else {
-                                                                                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                        if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                        {
+                                                                                                        } else {
                                                                                                             $html .= '<tr>';
                                                                                                                 $html .= '<td></td>';
                                                                                                                 $html .= '<td></td>';
@@ -603,20 +588,35 @@ class PerencanaanController extends Controller
                                                                                                                             </td>';
                                                                                                             $html .='</tr>';
                                                                                                         }
-                                                                                                        $html .= '<tr>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                        </button>
-                                                                                                                    </td>';
-                                                                                                        $html .='</tr>';
+                                                                                                        $c++;
+                                                                                                    } else {
+                                                                                                        if($c == 1)
+                                                                                                        {
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                            </button>
+                                                                                                                        </td>';
+                                                                                                            $html .='</tr>';
+                                                                                                        } else {
+                                                                                                            $html .= '<tr>';
+                                                                                                                $html .= '<td></td>';
+                                                                                                                $html .= '<td></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                            </button>
+                                                                                                                        </td>';
+                                                                                                            $html .='</tr>';
+                                                                                                        }
+                                                                                                        $c++;
                                                                                                     }
-                                                                                                    $a++;
                                                                                                 }
                                                                                         }
                                                                                         $html .= '</tbody>
@@ -647,6 +647,17 @@ class PerencanaanController extends Controller
 
     public function get_tujuan_tahun($tahun)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal;
+
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal-1;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $get_visis = Visi::all();
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -835,14 +846,14 @@ class PerencanaanController extends Controller
                                                                                             $html .= '<tr>';
                                                                                                 $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
                                                                                                 $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $a = 1;
+                                                                                                $c = 1;
                                                                                                 foreach ($tahuns as $tahun) {
-                                                                                                    if($a == 1)
-                                                                                                    {
-                                                                                                            $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
                                                                                                                                                         ->where('tahun', $tahun)->first();
-                                                                                                            if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                            {
+                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
+                                                                                                    {
+                                                                                                        if($c == 1)
+                                                                                                        {
                                                                                                                 $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
                                                                                                                 $html .= '<td><span class="tujuan-span-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->satuan.'</span></td>';
                                                                                                                 $html .= '<td><span class="tujuan-span-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->realisasi.'</span></td>';
@@ -852,22 +863,7 @@ class PerencanaanController extends Controller
                                                                                                                             </button>
                                                                                                                         </td>';
                                                                                                             $html .='</tr>';
-                                                                                                            } else {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                            }
-                                                                                                    } else {
-                                                                                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                        if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                        {
+                                                                                                        } else {
                                                                                                             $html .= '<tr>';
                                                                                                                 $html .= '<td></td>';
                                                                                                                 $html .= '<td></td>';
@@ -881,20 +877,35 @@ class PerencanaanController extends Controller
                                                                                                                             </td>';
                                                                                                             $html .='</tr>';
                                                                                                         }
-                                                                                                        $html .= '<tr>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                        </button>
-                                                                                                                    </td>';
-                                                                                                        $html .='</tr>';
+                                                                                                        $c++;
+                                                                                                    } else {
+                                                                                                        if($c == 1)
+                                                                                                        {
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                            </button>
+                                                                                                                        </td>';
+                                                                                                            $html .='</tr>';
+                                                                                                        } else {
+                                                                                                            $html .= '<tr>';
+                                                                                                                $html .= '<td></td>';
+                                                                                                                $html .= '<td></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                            </button>
+                                                                                                                        </td>';
+                                                                                                            $html .='</tr>';
+                                                                                                        }
+                                                                                                        $c++;
                                                                                                     }
-                                                                                                    $a++;
                                                                                                 }
                                                                                         }
                                                                                         $html .= '</tbody>
@@ -1179,15 +1190,15 @@ class PerencanaanController extends Controller
                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                         $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
                                                                                                                                                         $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $a = 1;
+                                                                                                                                                        $b = 1;
                                                                                                                                                         foreach ($tahuns as $tahun) {
-                                                                                                                                                            if($a == 1)
-                                                                                                                                                            {
-                                                                                                                                                                    $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
                                                                                                                                                                                                                 ->where('tahun', $tahun)->first();
-                                                                                                                                                                    if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                                    {
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
+                                                                                                                                                            {
+                                                                                                                                                                if($b == 1)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
                                                                                                                                                                         $html .= '<td><span class="sasaran-span-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->satuan.'</span></td>';
                                                                                                                                                                         $html .= '<td><span class="sasaran-span-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->realisasi.'</span></td>';
                                                                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -1196,22 +1207,7 @@ class PerencanaanController extends Controller
                                                                                                                                                                                     </button>
                                                                                                                                                                                 </td>';
                                                                                                                                                                     $html .='</tr>';
-                                                                                                                                                                    } else {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                    }
-                                                                                                                                                            } else {
-                                                                                                                                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                                if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                                {
+                                                                                                                                                                } else {
                                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                         $html .= '<td></td>';
@@ -1225,20 +1221,35 @@ class PerencanaanController extends Controller
                                                                                                                                                                                     </td>';
                                                                                                                                                                     $html .='</tr>';
                                                                                                                                                                 }
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                </button>
-                                                                                                                                                                            </td>';
-                                                                                                                                                                $html .='</tr>';
+                                                                                                                                                                $b++;
+                                                                                                                                                            } else {
+                                                                                                                                                                if($b == 1)
+                                                                                                                                                                {
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                    </button>
+                                                                                                                                                                                </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                } else {
+                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                    </button>
+                                                                                                                                                                                </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                }
+                                                                                                                                                                $b++;
                                                                                                                                                             }
-                                                                                                                                                            $a++;
                                                                                                                                                         }
                                                                                                                                                 }
                                                                                                                                                 $html .= '</tbody>
@@ -1528,15 +1539,15 @@ class PerencanaanController extends Controller
                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                         $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
                                                                                                                                                         $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $a = 1;
+                                                                                                                                                        $b = 1;
                                                                                                                                                         foreach ($tahuns as $tahun) {
-                                                                                                                                                            if($a == 1)
-                                                                                                                                                            {
-                                                                                                                                                                    $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
                                                                                                                                                                                                                 ->where('tahun', $tahun)->first();
-                                                                                                                                                                    if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                                    {
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
+                                                                                                                                                            {
+                                                                                                                                                                if($b == 1)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
                                                                                                                                                                         $html .= '<td><span class="sasaran-span-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->satuan.'</span></td>';
                                                                                                                                                                         $html .= '<td><span class="sasaran-span-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->realisasi.'</span></td>';
                                                                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -1545,22 +1556,7 @@ class PerencanaanController extends Controller
                                                                                                                                                                                     </button>
                                                                                                                                                                                 </td>';
                                                                                                                                                                     $html .='</tr>';
-                                                                                                                                                                    } else {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                    }
-                                                                                                                                                            } else {
-                                                                                                                                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                                if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                                {
+                                                                                                                                                                } else {
                                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                         $html .= '<td></td>';
@@ -1574,20 +1570,35 @@ class PerencanaanController extends Controller
                                                                                                                                                                                     </td>';
                                                                                                                                                                     $html .='</tr>';
                                                                                                                                                                 }
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                </button>
-                                                                                                                                                                            </td>';
-                                                                                                                                                                $html .='</tr>';
+                                                                                                                                                                $b++;
+                                                                                                                                                            } else {
+                                                                                                                                                                if($b == 1)
+                                                                                                                                                                {
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                    </button>
+                                                                                                                                                                                </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                } else {
+                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                    </button>
+                                                                                                                                                                                </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                }
+                                                                                                                                                                $b++;
                                                                                                                                                             }
-                                                                                                                                                            $a++;
                                                                                                                                                         }
                                                                                                                                                 }
                                                                                                                                                 $html .= '</tbody>
@@ -2876,15 +2887,15 @@ class PerencanaanController extends Controller
                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                         $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
                                                                                                                                                         $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $a = 1;
+                                                                                                                                                        $b = 1;
                                                                                                                                                         foreach ($tahuns as $tahun) {
-                                                                                                                                                            if($a == 1)
-                                                                                                                                                            {
-                                                                                                                                                                    $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
                                                                                                                                                                                                                 ->where('tahun', $tahun)->first();
-                                                                                                                                                                    if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                                    {
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
+                                                                                                                                                            {
+                                                                                                                                                                if($b == 1)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
                                                                                                                                                                         $html .= '<td><span class="sasaran-span-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->satuan.'</span></td>';
                                                                                                                                                                         $html .= '<td><span class="sasaran-span-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->realisasi.'</span></td>';
                                                                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -2893,22 +2904,7 @@ class PerencanaanController extends Controller
                                                                                                                                                                                     </button>
                                                                                                                                                                                 </td>';
                                                                                                                                                                     $html .='</tr>';
-                                                                                                                                                                    } else {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                    }
-                                                                                                                                                            } else {
-                                                                                                                                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                                if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                                {
+                                                                                                                                                                } else {
                                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                         $html .= '<td></td>';
@@ -2922,20 +2918,35 @@ class PerencanaanController extends Controller
                                                                                                                                                                                     </td>';
                                                                                                                                                                     $html .='</tr>';
                                                                                                                                                                 }
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                </button>
-                                                                                                                                                                            </td>';
-                                                                                                                                                                $html .='</tr>';
+                                                                                                                                                                $b++;
+                                                                                                                                                            } else {
+                                                                                                                                                                if($b == 1)
+                                                                                                                                                                {
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                    </button>
+                                                                                                                                                                                </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                } else {
+                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="text" class="form-control sasaran-add-satuan '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-realisasi '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                    </button>
+                                                                                                                                                                                </td>';
+                                                                                                                                                                    $html .='</tr>';
+                                                                                                                                                                }
+                                                                                                                                                                $b++;
                                                                                                                                                             }
-                                                                                                                                                            $a++;
                                                                                                                                                         }
                                                                                                                                                 }
                                                                                                                                                 $html .= '</tbody>
@@ -2972,6 +2983,17 @@ class PerencanaanController extends Controller
 
     public function filter_tujuan(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal;
+
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal-1;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $get_visis = Visi::all();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
@@ -3177,14 +3199,14 @@ class PerencanaanController extends Controller
                                                                                             $html .= '<tr>';
                                                                                                 $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
                                                                                                 $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $a = 1;
+                                                                                                $c = 1;
                                                                                                 foreach ($tahuns as $tahun) {
-                                                                                                    if($a == 1)
-                                                                                                    {
-                                                                                                            $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
                                                                                                                                                         ->where('tahun', $tahun)->first();
-                                                                                                            if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                            {
+                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
+                                                                                                    {
+                                                                                                        if($c == 1)
+                                                                                                        {
                                                                                                                 $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
                                                                                                                 $html .= '<td><span class="tujuan-span-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->satuan.'</span></td>';
                                                                                                                 $html .= '<td><span class="tujuan-span-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->realisasi.'</span></td>';
@@ -3194,22 +3216,7 @@ class PerencanaanController extends Controller
                                                                                                                             </button>
                                                                                                                         </td>';
                                                                                                             $html .='</tr>';
-                                                                                                            } else {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                            }
-                                                                                                    } else {
-                                                                                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                        if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                        {
+                                                                                                        } else {
                                                                                                             $html .= '<tr>';
                                                                                                                 $html .= '<td></td>';
                                                                                                                 $html .= '<td></td>';
@@ -3223,20 +3230,35 @@ class PerencanaanController extends Controller
                                                                                                                             </td>';
                                                                                                             $html .='</tr>';
                                                                                                         }
-                                                                                                        $html .= '<tr>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                        </button>
-                                                                                                                    </td>';
-                                                                                                        $html .='</tr>';
+                                                                                                        $c++;
+                                                                                                    } else {
+                                                                                                        if($c == 1)
+                                                                                                        {
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                            </button>
+                                                                                                                        </td>';
+                                                                                                            $html .='</tr>';
+                                                                                                        } else {
+                                                                                                            $html .= '<tr>';
+                                                                                                                $html .= '<td></td>';
+                                                                                                                $html .= '<td></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="text" class="form-control tujuan-add-satuan '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-realisasi '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                            </button>
+                                                                                                                        </td>';
+                                                                                                            $html .='</tr>';
+                                                                                                        }
+                                                                                                        $c++;
                                                                                                     }
-                                                                                                    $a++;
                                                                                                 }
                                                                                         }
                                                                                         $html .= '</tbody>
