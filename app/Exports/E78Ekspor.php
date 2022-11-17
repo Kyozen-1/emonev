@@ -16,7 +16,6 @@ use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
 use App\Models\PivotSasaranIndikator;
 use App\Models\ProgramRpjmd;
-use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
 use App\Models\PivotPerubahanUrusan;
 use App\Models\MasterOpd;
@@ -30,6 +29,26 @@ use App\Models\PivotPerubahanKegiatan;
 use App\Models\Kegiatan;
 use App\Models\PivotOpdRentraKegiatan;
 use App\Models\TargetRpPertahunRenstraKegiatan;
+use App\Models\SubKegiatan;
+use App\Models\PivotPerubahanSubKegiatan;
+use App\Models\TujuanIndikatorKinerja;
+use App\Models\TujuanTargetSatuanRpRealisasi;
+use App\Models\SasaranIndikatorKinerja;
+use App\Models\SasaranTargetSatuanRpRealisasi;
+use App\Models\TujuanPd;
+use App\Models\PivotPerubahanTujuanPd;
+use App\Models\TujuanPdIndikatorKinerja;
+use App\Models\TujuanPdTargetSatuanRpRealisasi;
+use App\Models\SasaranPd;
+use App\Models\PivotPerubahanSasaranPd;
+use App\Models\SasaranPdIndikatorKinerja;
+use App\Models\SasaranPdTargetSatuanRpRealisasi;
+use App\Models\ProgramIndikatorKinerja;
+use App\Models\OpdProgramIndikatorKinerja;
+use App\Models\ProgramTargetSatuanRpRealisasi;
+use App\Models\KegiatanIndikatorKinerja;
+use App\Models\KegiatanTargetSatuanRpRealisasi;
+use App\Models\OpdKegiatanIndikatorKinerja;
 
 class E78Ekspor implements FromView
 {
@@ -68,49 +87,87 @@ class E78Ekspor implements FromView
         $a = 1;
         foreach ($sasarans as $sasaran) {
             $e_78 .= '<tr>';
-                $e_78 .= '<td colspan="41" style="text-align: left"><strong>Sasaran</strong></td>';
-            $e_78 .= '</tr>';
-            $e_78 .= '<tr>';
                 $e_78 .= '<td>'.$a++.'</td>';
                 $e_78 .= '<td>'.$sasaran['deskripsi'].'</td>';
 
-            $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran){
-                $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran) {
-                    $q->where('sasaran_id', $sasaran['id']);
-                });
-            })->where('status_program', 'Program Prioritas')->get();
-            $program = [];
-            $urutan_a = 1;
-            foreach ($get_program_rpjmds as $get_program_rpjmd) {
-                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
-                                            ->where('tahun_perubahan', $tahun)->latest()->first();
-                if($cek_perubahan_program)
-                {
-                    $program = [
-                        'id' => $cek_perubahan_program->program_id,
-                        'kode' => $cek_perubahan_program->kode,
-                        'deskripsi' => $cek_perubahan_program->deskripsi
-                    ];
-                } else {
-                    $program = [
-                        'id' => $get_program_rpjmd->program_id,
-                        'kode' => $get_program_rpjmd->program->kode,
-                        'deskripsi' => $get_program_rpjmd->program->deskripsi
-                    ];
+                $get_programs = Program::whereHas('program_rpjmd', function($q) use ($sasaran) {
+                    $q->where('status_program', 'Prioritas');
+                    $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran) {
+                        $q->whereHas('sasaran_indikator_kinerja', function($q) use ($sasaran) {
+                            $q->whereHas('sasaran', function($q) use ($sasaran) {
+                                $q->where('id', $sasaran['id']);
+                            });
+                        });
+                    });
+                })->get();
+                $programs = [];
+                foreach ($get_programs as $get_program) {
+                    $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
+                    if($cek_perubahan_program)
+                    {
+                        $programs[] = [
+                            'id' => $cek_perubahan_program->program_id,
+                            'kode' => $cek_perubahan_program->kode,
+                            'deskripsi' => $cek_perubahan_program->deskripsi
+                        ];
+                    } else {
+                        $programs[] = [
+                            'id' => $get_program->id,
+                            'kode' => $get_program->kode,
+                            'deskripsi' => $get_program->deskripsi
+                        ];
+                    }
                 }
-                if($urutan_a == 1)
-                {
+
+                $b = 1;
+                foreach ($programs as $program) {
+                    if($b == 1)
+                    {
                         $e_78 .= '<td>'.$program['deskripsi'].'</td>';
-                    $e_78 .= '</tr>';
-                } else {
-                    $e_78 .= '<tr>';
-                        $e_78 .= '<td>'.$a++.'</td>';
-                        $e_78 .= '<td>'.$sasaran['deskripsi'].'</td>';
+                        // Indikator Program Start
+                        $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
+                        $c = 1;
+                        foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                            if($c == 1)
+                            {
+                                    $e_78 .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
+                                $e_78 .= '</tr>';
+                            } else {
+                                $e_78 .= '<tr>';
+                                    $e_78 .= '<td></td>';
+                                    $e_78 .= '<td></td>';
+                                    $e_78 .= '<td></td>';
+                                    $e_78 .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
+                                $e_78 .= '</tr>';
+                            }
+                            $c++;
+                        }
+                    } else {
+                        $e_78 .= '<tr>';
+                        $e_78 .= '<td></td>';
+                        $e_78 .= '<td></td>';
                         $e_78 .= '<td>'.$program['deskripsi'].'</td>';
-                    $e_78 .= '</tr>';
+                        // Indikator Program Start
+                        $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
+                        $c = 1;
+                        foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                            if($c == 1)
+                            {
+                                    $e_78 .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
+                                $e_78 .= '</tr>';
+                            } else {
+                                $e_78 .= '<tr>';
+                                    $e_78 .= '<td></td>';
+                                    $e_78 .= '<td></td>';
+                                    $e_78 .= '<td></td>';
+                                    $e_78 .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
+                                $e_78 .= '</tr>';
+                            }
+                            $c++;
+                        }
+                    }
+                    $b++;
                 }
-                $urutan_a++;
-            }
         }
 
         // E 78 End

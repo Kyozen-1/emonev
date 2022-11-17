@@ -16,7 +16,6 @@ use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
 use App\Models\PivotSasaranIndikator;
 use App\Models\ProgramRpjmd;
-use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
 use App\Models\PivotPerubahanUrusan;
 use App\Models\MasterOpd;
@@ -30,6 +29,26 @@ use App\Models\PivotPerubahanKegiatan;
 use App\Models\Kegiatan;
 use App\Models\PivotOpdRentraKegiatan;
 use App\Models\TargetRpPertahunRenstraKegiatan;
+use App\Models\SubKegiatan;
+use App\Models\PivotPerubahanSubKegiatan;
+use App\Models\TujuanIndikatorKinerja;
+use App\Models\TujuanTargetSatuanRpRealisasi;
+use App\Models\SasaranIndikatorKinerja;
+use App\Models\SasaranTargetSatuanRpRealisasi;
+use App\Models\TujuanPd;
+use App\Models\PivotPerubahanTujuanPd;
+use App\Models\TujuanPdIndikatorKinerja;
+use App\Models\TujuanPdTargetSatuanRpRealisasi;
+use App\Models\SasaranPd;
+use App\Models\PivotPerubahanSasaranPd;
+use App\Models\SasaranPdIndikatorKinerja;
+use App\Models\SasaranPdTargetSatuanRpRealisasi;
+use App\Models\ProgramIndikatorKinerja;
+use App\Models\OpdProgramIndikatorKinerja;
+use App\Models\ProgramTargetSatuanRpRealisasi;
+use App\Models\KegiatanIndikatorKinerja;
+use App\Models\KegiatanTargetSatuanRpRealisasi;
+use App\Models\OpdKegiatanIndikatorKinerja;
 
 class Tc14Ekspor implements FromView
 {
@@ -43,7 +62,26 @@ class Tc14Ekspor implements FromView
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $new_get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $new_tahun_awal = $new_get_periode->tahun_awal-1;
+        $new_jarak_tahun = $new_get_periode->tahun_akhir - $new_tahun_awal;
+        $new_tahun_akhir = $new_get_periode->tahun_akhir;
+        $new_tahuns = [];
+        for ($i=0; $i < $new_jarak_tahun + 1; $i++) {
+            $new_tahuns[] = $new_tahun_awal + $i;
+        }
+
+        $get_visis = Visi::whereHas('misi', function($q){
+            $q->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd');
+                        });
+                    });
+                });
+            });
+        })->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
@@ -66,7 +104,15 @@ class Tc14Ekspor implements FromView
         // TC 14 Start
         $tc_14 = '';
         foreach ($visis as $visi) {
-            $get_misis = Misi::where('visi_id', $visi['id'])->get();
+            $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd');
+                        });
+                    });
+                });
+            })->get();
             $misis = [];
             foreach ($get_misis as $get_misi) {
                 $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
@@ -87,10 +133,8 @@ class Tc14Ekspor implements FromView
                     ];
                 }
             }
+            // Misi
             foreach ($misis as $misi) {
-                $tc_14 .= '<tr>';
-                    $tc_14 .= '<td colspan="19" style="text-align:left"><strong>Misi</strong></td>';
-                $tc_14 .='</tr>';
                 $tc_14 .= '<tr>';
                     $tc_14 .= '<td>'.$misi['kode'].'</td>';
                     $tc_14 .= '<td></td>';
@@ -99,12 +143,16 @@ class Tc14Ekspor implements FromView
                     $tc_14 .= '<td colspan="15"></td>';
                 $tc_14 .= '</tr>';
 
-                $get_tujuans = Tujuan::where('misi_id', $misi['id'])->get();
+                $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd');
+                        });
+                    });
+                })->get();
                 $tujuans = [];
                 foreach ($get_tujuans as $get_tujuan) {
-                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
-                                            ->orderBy('tahun_perubahan', 'desc')
-                                            ->latest()->first();
+                    $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->latest()->first();
                     if($cek_perubahan_tujuan)
                     {
                         $tujuans[] = [
@@ -114,30 +162,42 @@ class Tc14Ekspor implements FromView
                         ];
                     } else {
                         $tujuans[] = [
-                            'id' => $get_tujuan->id,
+                            'id' => $get_tujuan->tujuan_id,
                             'kode' => $get_tujuan->kode,
                             'deskripsi' => $get_tujuan->deskripsi
                         ];
                     }
                 }
+                // Tujuan
                 foreach ($tujuans as $tujuan) {
-                    $tc_14 .= '<tr>';
-                        $tc_14 .= '<td colspan="19" style="text-align:left"><strong>Tujuan</strong></td>';
-                    $tc_14 .= '</tr>';
                     $tc_14 .= '<tr>';
                         $tc_14 .= '<td>'.$misi['kode'].'</td>';
                         $tc_14 .= '<td>'.$tujuan['kode'].'</td>';
                         $tc_14 .= '<td></td>';
                         $tc_14 .= '<td style="text-align:left">'.$tujuan['deskripsi'].'</td>';
-                        $tc_14 .= '<td colspan="15"></td>';
-                    $tc_14 .= '</tr>';
+                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                        $a = 1;
+                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                            if($a == 1)
+                            {
+                                    $tc_14 .= '<td style="text-align:left">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                $tc_14 .='</tr>';
+                            } else {
+                                $tc_14 .= '<tr>';
+                                    $tc_14 .= '<td></td>';
+                                    $tc_14 .= '<td></td>';
+                                    $tc_14 .= '<td></td>';
+                                    $tc_14 .= '<td></td>';
+                                    $tc_14 .= '<td style="text-align:left">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                $tc_14 .='</tr>';
+                            }
+                            $a++;
+                        }
 
                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
                     $sasarans = [];
                     foreach ($get_sasarans as $get_sasaran) {
-                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
-                                                    ->orderBy('tahun_perubahan', 'desc')
-                                                    ->latest()->first();
+                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
                         if($cek_perubahan_sasaran)
                         {
                             $sasarans[] = [
@@ -149,108 +209,457 @@ class Tc14Ekspor implements FromView
                             $sasarans[] = [
                                 'id' => $get_sasaran->id,
                                 'kode' => $get_sasaran->kode,
-                                'deskripsi' => $get_sasaran->deskripsi
+                                'deskripsi' => $get_sasaran->deskripsi,
                             ];
                         }
                     }
+
+                    // Sasaran
+
                     foreach ($sasarans as $sasaran) {
-                        $tc_14 .= '<tr>';
-                            $tc_14 .= '<td colspan="19" style="text-align: left"><strong>Sasaran</strong></td>';
-                        $tc_14 .= '</tr>';
                         $tc_14 .= '<tr>';
                             $tc_14 .= '<td>'.$misi['kode'].'</td>';
                             $tc_14 .= '<td>'.$tujuan['kode'].'</td>';
                             $tc_14 .= '<td>'.$sasaran['kode'].'</td>';
                             $tc_14 .= '<td style="text-align:left">'.$sasaran['deskripsi'].'</td>';
-                            $get_sasaran_indikators = PivotSasaranIndikator::where('sasaran_id', $sasaran['id'])->get();
-                            $a = 0;
-                            foreach ($get_sasaran_indikators as $get_sasaran_indikator) {
-                                if($a == 0)
+                            // Sasaran Indikator Kinerja
+                            $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                            $b = 1;
+                            foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                if($b == 1)
                                 {
-                                        $tc_14 .= '<td style="text-align:left">'.$get_sasaran_indikator->indikator.'</td>';
-                                        $tc_14 .= '<td colspan="14"></td>';
-                                    $tc_14 .= '</tr>';
-                                } else {
-                                    $tc_14 .= '<tr>';
-                                        $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td style="text-align:left">'.$get_sasaran_indikator->indikator.'</td>';
-                                        $tc_14 .= '<td colspan="14"></td>';
-                                    $tc_14 .= '</tr>';
-                                }
-                                $a++;
-                            }
-                            $tc_14 .= '<tr>';
-                                $tc_14 .= '<td colspan="19" style="text-align:left"><strong>Program</strong></td>';
-                            $tc_14 .= '</tr>';
-                            $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran) {
-                                $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran){
-                                    $q->where('sasaran_id', $sasaran['id']);
-                                });
-                            })->distinct('id')->get();
-                            foreach ($get_program_rpjmds as $get_program_rpjmd) {
-                                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
-                                                            ->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                if($cek_perubahan_program)
-                                {
-                                    $program = [
-                                        'id' => $cek_perubahan_program->program_id,
-                                        'deskripsi' => $cek_perubahan_program->deskripsi
-                                    ];
-                                } else {
-                                    $get_program = Program::find($get_program_rpjmd->program_id);
-                                    $program = [
-                                        'id' => $get_program->id,
-                                        'deskripsi' => $get_program->deskripsi
-                                    ];
-                                }
-
-                                $get_opds = PivotOpdProgramRpjmd::where('program_rpjmd_id', $get_program_rpjmd->id)->get();
-                                foreach ($get_opds as $get_opd) {
-                                    $tc_14 .= '<tr>';
-                                        $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td style="text-align:left">'.$program['deskripsi'].'</td>';
-                                        $tc_14 .= '<td></td>';
-                                        $tc_14 .= '<td></td>';
-                                        $len = count($tahuns);
-                                        $program_a = 0;
-                                        foreach ($tahuns as $tahun) {
-                                            $target_rp_pertahun_program = TargetRpPertahunProgram::where('program_rpjmd_id', $get_program_rpjmd->id)
-                                                                            ->where('tahun', $tahun)->where('opd_id', $get_opd->opd_id)
-                                                                            ->first();
-                                            if($target_rp_pertahun_program)
-                                            {
-                                                $tc_14 .= '<td style="text-align:left">'.$target_rp_pertahun_program->target.' / '.$target_rp_pertahun_program->satuan.'</td>';
-                                                $tc_14 .= '<td style="text-align:left">Rp. '.number_format($target_rp_pertahun_program->rp, 2).'</td>';
-                                                if($program_a == $len - 1)
+                                        $tc_14 .= '<td style="text-align:left">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                    $tc_14 .='</tr>';
+                                    // Permulaan Permasalahan
+                                    $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)->get();
+                                    foreach ($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd) {
+                                        $tc_14 .= '<tr>';
+                                            $tc_14 .= '<td></td>';
+                                            $tc_14 .= '<td></td>';
+                                            $tc_14 .= '<td></td>';
+                                            $tc_14 .= '<td style="text-align:left">'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi.'</td>';
+                                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)->get();
+                                            $c = 1;
+                                            foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                                                if($c == 1)
                                                 {
-                                                    $last_satuan = $target_rp_pertahun_program->satuan;
-                                                    $last_target = $target_rp_pertahun_program->target;
-                                                    $last_rp = $target_rp_pertahun_program->rp;
-
-                                                    $tc_14 .= '<td style="text-align:left">'.$last_target.' / '.$last_satuan.'</td>';
-                                                    $tc_14 .= '<td style="text-align:left">Rp. '.number_format($last_rp,2).'</td>';
-                                                    $tc_14 .= '<td style="text-align:left">'.$get_opd->opd->nama.'</td>';
+                                                    $tc_14 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                                    $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
+                                                    $d = 1;
+                                                    // Lokasi 2 source
+                                                    foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
+                                                        if($d == 1)
+                                                        {
+                                                                $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                        ->where('tahun', $new_tahun_awal)->first();
+                                                                if($kondisi_kinerja_awal)
+                                                                {
+                                                                    $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
+                                                                } else {
+                                                                    $tc_14 .= '<td></td>';
+                                                                }
+                                                                $data_target = [];
+                                                                $data_satuan = '';
+                                                                $data_target_rp = [];
+                                                                foreach ($tahuns as $tahun) {
+                                                                    $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                                            ->where('tahun', $tahun)->first();
+                                                                    if($program_target_satuan_rp_realisasi)
+                                                                    {
+                                                                        $data_target[] =  $program_target_satuan_rp_realisasi->target;
+                                                                        $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                        $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
+                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                        $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                }
+                                                                $kondisi_akhir_tahun = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                        ->where('tahun', $new_tahun_akhir)->first();
+                                                                if($kondisi_akhir_tahun)
+                                                                {
+                                                                    $tc_14 .= '<td>'.array_sum($data_target).'/'.$data_satuan.'</td>';
+                                                                    $tc_14 .= '<td>Rp. '.number_format(array_sum($data_target_rp), 2).'</td>';
+                                                                } else {
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                }
+                                                                $tc_14 .= '<td style="text-align:left">'.$get_opd_program_indikator_kinerja->opd->nama.'</td>';
+                                                            $tc_14 .='</tr>';
+                                                        } else {
+                                                            $tc_14 .= '<tr>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                        ->where('tahun', $new_tahun_awal)->first();
+                                                                if($kondisi_kinerja_awal)
+                                                                {
+                                                                    $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
+                                                                } else {
+                                                                    $tc_14 .= '<td></td>';
+                                                                }
+                                                                $data_target = [];
+                                                                $data_satuan = '';
+                                                                $data_target_rp = [];
+                                                                foreach ($tahuns as $tahun) {
+                                                                    $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                                            ->where('tahun', $tahun)->first();
+                                                                    if($program_target_satuan_rp_realisasi)
+                                                                    {
+                                                                        $data_target[] =  $program_target_satuan_rp_realisasi->target;
+                                                                        $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                        $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
+                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                        $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                }
+                                                                $kondisi_akhir_tahun = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                        ->where('tahun', $new_tahun_akhir)->first();
+                                                                if($kondisi_akhir_tahun)
+                                                                {
+                                                                    $tc_14 .= '<td>'.array_sum($data_target).'/'.$data_satuan.'</td>';
+                                                                    $tc_14 .= '<td>Rp. '.number_format(array_sum($data_target_rp), 2).'</td>';
+                                                                } else {
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                }
+                                                                $tc_14 .= '<td style="text-align:left">'.$get_opd_program_indikator_kinerja->opd->nama.'</td>';
+                                                            $tc_14 .='</tr>';
+                                                        }
+                                                        $d++;
+                                                    }
+                                                } else {
+                                                    $tc_14 .= '<tr>';
+                                                        $tc_14 .= '<td></td>';
+                                                        $tc_14 .= '<td></td>';
+                                                        $tc_14 .= '<td></td>';
+                                                        $tc_14 .= '<td></td>';
+                                                        $tc_14 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                                        $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
+                                                        $d = 1;
+                                                        // Lokasi 2 Destinasi
+                                                        foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
+                                                            if($d == 1)
+                                                            {
+                                                                    $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                            ->where('tahun', $new_tahun_awal)->first();
+                                                                    if($kondisi_kinerja_awal)
+                                                                    {
+                                                                        $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                    $data_target = [];
+                                                                    $data_satuan = '';
+                                                                    $data_target_rp = [];
+                                                                    foreach ($tahuns as $tahun) {
+                                                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                                                ->where('tahun', $tahun)->first();
+                                                                        if($program_target_satuan_rp_realisasi)
+                                                                        {
+                                                                            $data_target[] =  $program_target_satuan_rp_realisasi->target;
+                                                                            $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                            $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
+                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                            $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                        } else {
+                                                                            $tc_14 .= '<td></td>';
+                                                                            $tc_14 .= '<td></td>';
+                                                                        }
+                                                                    }
+                                                                    $kondisi_akhir_tahun = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                            ->where('tahun', $new_tahun_akhir)->first();
+                                                                    if($kondisi_akhir_tahun)
+                                                                    {
+                                                                        $tc_14 .= '<td>'.array_sum($data_target).'/'.$data_satuan.'</td>';
+                                                                        $tc_14 .= '<td>Rp. '.number_format(array_sum($data_target_rp), 2).'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                    $tc_14 .= '<td style="text-align:left">'.$get_opd_program_indikator_kinerja->opd->nama.'</td>';
+                                                                $tc_14 .='</tr>';
+                                                            } else {
+                                                                $tc_14 .= '<tr>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                            ->where('tahun', $new_tahun_awal)->first();
+                                                                    if($kondisi_kinerja_awal)
+                                                                    {
+                                                                        $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                    $data_target = [];
+                                                                    $data_satuan = '';
+                                                                    $data_target_rp = [];
+                                                                    foreach ($tahuns as $tahun) {
+                                                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                                                ->where('tahun', $tahun)->first();
+                                                                        if($program_target_satuan_rp_realisasi)
+                                                                        {
+                                                                            $data_target[] =  $program_target_satuan_rp_realisasi->target;
+                                                                            $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                            $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
+                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                            $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                        } else {
+                                                                            $tc_14 .= '<td></td>';
+                                                                            $tc_14 .= '<td></td>';
+                                                                        }
+                                                                    }
+                                                                    $kondisi_akhir_tahun = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                            ->where('tahun', $new_tahun_akhir)->first();
+                                                                    if($kondisi_akhir_tahun)
+                                                                    {
+                                                                        $tc_14 .= '<td>'.array_sum($data_target).'/'.$data_satuan.'</td>';
+                                                                        $tc_14 .= '<td>Rp. '.number_format(array_sum($data_target_rp), 2).'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                    $tc_14 .= '<td style="text-align:left">'.$get_opd_program_indikator_kinerja->opd->nama.'</td>';
+                                                                $tc_14 .='</tr>';
+                                                            }
+                                                            $d++;
+                                                        }
                                                 }
-                                            } else {
-                                                $tc_14 .= '<td></td>';
-                                                $tc_14 .= '<td></td>';
-                                                if($program_a == $len - 1)
-                                                {
-                                                    $tc_14 .= '<td colspan="2"></td>';
-                                                    $tc_14 .= '<td style="text-align:left">'.$get_opd->opd->nama.'</td>';
-                                                }
+                                                $c++;
                                             }
-                                            $program_a++;
-                                        }
-                                    $tc_14 .= '</tr>';
-                                }
-                            }
+                                    }
+                                } else {
+                                    $tc_14 .= '<tr>';
+                                        $tc_14 .= '<td></td>';
+                                        $tc_14 .= '<td></td>';
+                                        $tc_14 .= '<td></td>';
+                                        $tc_14 .= '<td></td>';
+                                        $tc_14 .= '<td style="text-align:left">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                    $tc_14 .='</tr>';
+                                    // Belum di konfigurasi
+                                    $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)->get();
+                                    foreach ($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd) {
+                                        $tc_14 .= '<tr>';
+                                            $tc_14 .= '<td></td>';
+                                            $tc_14 .= '<td></td>';
+                                            $tc_14 .= '<td></td>';
+                                            $tc_14 .= '<td style="text-align:left">'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi.'</td>';
+                                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)->get();
+                                            $c = 1;
+                                            foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                                                if($c == 1)
+                                                {
+                                                    $tc_14 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                                    $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
+                                                    $d = 1;
+                                                    // Lokasi 2 source
+                                                    foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
+                                                        if($d == 1)
+                                                        {
+                                                                $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                        ->where('tahun', $new_tahun_awal)->first();
+                                                                if($kondisi_kinerja_awal)
+                                                                {
+                                                                    $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
+                                                                } else {
+                                                                    $tc_14 .= '<td></td>';
+                                                                }
 
+                                                                $data_target = [];
+                                                                $data_satuan = '';
+                                                                $data_target_rp = [];
+                                                                foreach ($tahuns as $tahun) {
+                                                                    $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                                            ->where('tahun', $tahun)->first();
+                                                                    if($program_target_satuan_rp_realisasi)
+                                                                    {
+                                                                        $data_target[] =  $program_target_satuan_rp_realisasi->target;
+                                                                        $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                        $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
+                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                        $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                }
+                                                                $kondisi_akhir_tahun = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                        ->where('tahun', $new_tahun_akhir)->first();
+                                                                if($kondisi_akhir_tahun)
+                                                                {
+                                                                    $tc_14 .= '<td>'.array_sum($data_target).'/'.$data_satuan.'</td>';
+                                                                    $tc_14 .= '<td>Rp. '.number_format(array_sum($data_target_rp), 2).'</td>';
+                                                                } else {
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                }
+                                                                $tc_14 .= '<td style="text-align:left">'.$get_opd_program_indikator_kinerja->opd->nama.'</td>';
+                                                            $tc_14 .='</tr>';
+                                                        } else {
+                                                            $tc_14 .= '<tr>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $tc_14 .= '<td></td>';
+                                                                $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                        ->where('tahun', $new_tahun_awal)->first();
+                                                                if($kondisi_kinerja_awal)
+                                                                {
+                                                                    $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
+                                                                } else {
+                                                                    $tc_14 .= '<td></td>';
+                                                                }
+                                                                $data_target = [];
+                                                                $data_satuan = '';
+                                                                $data_target_rp = [];
+                                                                foreach ($tahuns as $tahun) {
+                                                                    $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                                            ->where('tahun', $tahun)->first();
+                                                                    if($program_target_satuan_rp_realisasi)
+                                                                    {
+                                                                        $data_target[] =  $program_target_satuan_rp_realisasi->target;
+                                                                        $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                        $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
+                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                        $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                }
+                                                                $kondisi_akhir_tahun = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                        ->where('tahun', $new_tahun_akhir)->first();
+                                                                if($kondisi_akhir_tahun)
+                                                                {
+                                                                    $tc_14 .= '<td>'.array_sum($data_target).'/'.$data_satuan.'</td>';
+                                                                    $tc_14 .= '<td>Rp. '.number_format(array_sum($data_target_rp), 2).'</td>';
+                                                                } else {
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                }
+                                                                $tc_14 .= '<td style="text-align:left">'.$get_opd_program_indikator_kinerja->opd->nama.'</td>';
+                                                            $tc_14 .='</tr>';
+                                                        }
+                                                        $d++;
+                                                    }
+                                                } else {
+                                                    $tc_14 .= '<tr>';
+                                                        $tc_14 .= '<td></td>';
+                                                        $tc_14 .= '<td></td>';
+                                                        $tc_14 .= '<td></td>';
+                                                        $tc_14 .= '<td></td>';
+                                                        $tc_14 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                                        $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
+                                                        $d = 1;
+                                                        // Lokasi 2 source
+                                                        foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
+                                                            if($d == 1)
+                                                            {
+                                                                    $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                            ->where('tahun', $new_tahun_awal)->first();
+                                                                    if($kondisi_kinerja_awal)
+                                                                    {
+                                                                        $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                    $data_target = [];
+                                                                    $data_satuan = '';
+                                                                    $data_target_rp = [];
+                                                                    foreach ($tahuns as $tahun) {
+                                                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                                                ->where('tahun', $tahun)->first();
+                                                                        if($program_target_satuan_rp_realisasi)
+                                                                        {
+                                                                            $data_target[] =  $program_target_satuan_rp_realisasi->target;
+                                                                            $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                            $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
+                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                            $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                        } else {
+                                                                            $tc_14 .= '<td></td>';
+                                                                            $tc_14 .= '<td></td>';
+                                                                        }
+                                                                    }
+                                                                    $kondisi_akhir_tahun = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                            ->where('tahun', $new_tahun_akhir)->first();
+                                                                    if($kondisi_akhir_tahun)
+                                                                    {
+                                                                        $tc_14 .= '<td>'.array_sum($data_target).'/'.$data_satuan.'</td>';
+                                                                        $tc_14 .= '<td>Rp. '.number_format(array_sum($data_target_rp), 2).'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                    $tc_14 .= '<td style="text-align:left">'.$get_opd_program_indikator_kinerja->opd->nama.'</td>';
+                                                                $tc_14 .='</tr>';
+                                                            } else {
+                                                                $tc_14 .= '<tr>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $tc_14 .= '<td></td>';
+                                                                    $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                            ->where('tahun', $new_tahun_awal)->first();
+                                                                    if($kondisi_kinerja_awal)
+                                                                    {
+                                                                        $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                    $data_target = [];
+                                                                    $data_satuan = '';
+                                                                    $data_target_rp = [];
+                                                                    foreach ($tahuns as $tahun) {
+                                                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                                                ->where('tahun', $tahun)->first();
+                                                                        if($program_target_satuan_rp_realisasi)
+                                                                        {
+                                                                            $data_target[] =  $program_target_satuan_rp_realisasi->target;
+                                                                            $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                            $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
+                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                            $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                        } else {
+                                                                            $tc_14 .= '<td></td>';
+                                                                            $tc_14 .= '<td></td>';
+                                                                        }
+                                                                    }
+                                                                    $kondisi_akhir_tahun = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
+                                                                                            ->where('tahun', $new_tahun_akhir)->first();
+                                                                    if($kondisi_akhir_tahun)
+                                                                    {
+                                                                        $tc_14 .= '<td>'.array_sum($data_target).'/'.$data_satuan.'</td>';
+                                                                        $tc_14 .= '<td>Rp. '.number_format(array_sum($data_target_rp), 2).'</td>';
+                                                                    } else {
+                                                                        $tc_14 .= '<td></td>';
+                                                                        $tc_14 .= '<td></td>';
+                                                                    }
+                                                                    $tc_14 .= '<td style="text-align:left">'.$get_opd_program_indikator_kinerja->opd->nama.'</td>';
+                                                                $tc_14 .='</tr>';
+                                                            }
+                                                            $d++;
+                                                        }
+                                                }
+                                                $c++;
+                                            }
+                                    }
+                                }
+                                $b++;
+                            }
                     }
                 }
             }

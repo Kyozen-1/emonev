@@ -132,7 +132,7 @@
                             {{-- <label for="" class="control-label">(*) = Program Prioritas, (**) = Program Pendukung</label> --}}
                         </div>
                         <!-- Table Start -->
-                        <div class="data-table-responsive-wrapper">
+                        <div class="table-responsive">
                             <table class="table table-striped table-bordered text-center">
                                 <thead>
                                     <tr>
@@ -227,7 +227,7 @@
                                             </div>
                                         </div>
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
-                                        <div class="data-table-responsive-wrapper">
+                                        <div class="table-responsive">
                                             <div class="text-center">
                                                 <h1>Tabel T-C.19</h1>
                                                 <h1>Evaluasi Hasil Pelaksanaan Perencanaan Daerah sampai dengan Tahun {{$tahun}} Berjalan</h1>
