@@ -13,4 +13,9 @@ class SubKegiatanIndikatorKinerja extends Model
     {
         return $this->belongsTo('App\Models\SubKegiatan', 'sub_kegiatan_id');
     }
+
+    public function opd_sub_kegiatan_indikator_kinerja()
+    {
+        return $this->hasMany('App\Models\OpdSubKegiatanIndikatorKinerja', 'sub_kegiatan_indikator_kinerja_id');
+    }
 }

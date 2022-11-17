@@ -13,4 +13,9 @@ class ProgramTargetSatuanRpRealisasi extends Model
     {
         return $this->belongsTo('App\Models\OpdProgramIndikatorKinerja', 'opd_program_indikator_kinerja_id');
     }
+
+    public function program_tw_realisasi()
+    {
+        return $this->hasMany('App\Models\ProgramTwRealisasi', 'program_target_satuan_rp_realisasi_id');
+    }
 }

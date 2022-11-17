@@ -25,21 +25,25 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renstra/reset/get-program', 'Opd\RenstraController@get_program')->name('opd.renstra.reset.get-program');
     Route::post('/opd/renstra/filter/get-kegiatan', 'Opd\RenstraController@get_filter_kegiatan')->name('opd.renstra.filter.get-kegiatan');
     Route::post('/opd/renstra/reset/get-kegiatan', 'Opd\RenstraController@get_kegiatan')->name('opd.renstra.reset.get-kegiatan');
-    // Route::post('/opd/renstra/get-tujuan', 'Opd\RenstraController@get_tujuan')->name('opd.renstra.get-tujuan');
-    // Route::post('/opd/renstra/get-sasaran', 'Opd\RenstraController@get_sasaran')->name('opd.renstra.get-sasaran');
-    // Route::post('/opd/renstra/get-program-rpjmd', 'Opd\RenstraController@get_program_rpjmd')->name('opd.renstra.get-program-rpjmd');
-    // Route::post('/opd/renstra/tambah-item-renstra', 'Opd\RenstraController@tambah_item_renstra')->name('opd.renstra.tambah-item-renstra');
-    // Route::post('/opd/renstra/target-rp-pertahun-tujuan/tambah', 'Opd\RenstraController@tambah_target_rp_pertahun_tujuan')->name('opd.renstra.target-rp-pertahun-tujuan.tambah');
-    // Route::get('/opd/renstra/target-rp-pertahun-tujuan/edit/{id}', 'Opd\RenstraController@edit_target_rp_pertahun_tujuan');
-    // Route::post('/opd/renstra/target-rp-pertahun-tujuan/update', 'Opd\RenstraController@update_target_rp_pertahun_tujuan')->name('opd.renstra.target-rp-pertahun-tujuan.update');
-    // Route::post('/opd/renstra/target-rp-pertahun-sasaran/tambah', 'Opd\RenstraController@tambah_target_rp_pertahun_sasaran')->name('opd.renstra.target-rp-pertahun-sasaran.tambah');
-    // Route::get('/opd/renstra/target-rp-pertahun-sasaran/edit/{id}', 'Opd\RenstraController@edit_target_rp_pertahun_sasaran');
-    // Route::post('/opd/renstra/target-rp-pertahun-sasaran/update', 'Opd\RenstraController@update_target_rp_pertahun_sasaran')->name('opd.renstra.target-rp-pertahun-sasaran.update');
-    // Route::post('/opd/renstra/target-rp-pertahun-program/tambah', 'Opd\RenstraController@tambah_target_rp_pertahun_program')->name('opd.renstra.target-rp-pertahun-program.tambah');
-    // Route::get('/opd/renstra/target-rp-pertahun-program/edit/{id}', 'Opd\RenstraController@edit_target_rp_pertahun_program');
-    // Route::post('/opd/renstra/target-rp-pertahun-program/update', 'Opd\RenstraController@update_target_rp_pertahun_program')->name('opd.renstra.target-rp-pertahun-program.update');
 
     Route::get('/opd/renja', 'Opd\RenjaController@index')->name('opd.renja.index');
+    Route::get('/opd/renja/get-program', 'Opd\RenjaController@get_program')->name('opd.renja.get_program');
+    Route::get('/opd/renja/get-kegiatan', 'Opd\RenjaController@get_kegiatan')->name('opd.renja.get_kegiatan');
+    Route::get('/opd/renja/get-sub-kegiatan', 'Opd\RenjaController@get_sub_kegiatan')->name('opd.renja.get-sub-kegiatan');
+    // Renja Sub Kegiatan
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tambah', 'Opd\Renja\SubKegiatanController@indikator_kinerja_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tambah');
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/hapus', 'Opd\Renja\SubKegiatanController@indikator_kinerja_hapus')->name('opd.renja.sub-kegiatan.indikator-kinerja.hapus');
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/target-satuan-realisasi/tambah', 'Opd\Renja\SubKegiatanController@target_satuan_realisasi_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.target-satuan-realisasi.tambah');
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\Renja\SubKegiatanController@target_satuan_realisasi_ubah')->name('opd.renja.sub-kegiatan.indikator-kinerja.target-satuan-realisasi.ubah');
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/target-satuan-realisasi/tambah', 'Opd\Renja\SubKegiatanController@target_satuan_realisasi_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.target-satuan-realisasi.tambah');
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\Renja\SubKegiatanController@target_satuan_realisasi_ubah')->name('opd.renja.sub-kegiatan.indikator-kinerja.target-satuan-realisasi.ubah');
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tw/tambah', 'Opd\Renja\SubKegiatanController@tw_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tw.tambah');
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tw/ubah', 'Opd\Renja\SubKegiatanController@tw_ubah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tw.ubah');
+    // Atur TW
+    Route::post('/opd/renja/program/tw/tambah', 'Opd\Renja\ProgramTwController@tambah')->name('opd.renja.program.tw.tambah');
+    Route::post('/opd/renja/program/tw/ubah', 'Opd\Renja\ProgramTwController@ubah')->name('opd.renja.program.tw.ubah');
+    Route::post('/opd/renja/kegiatan/tw/tambah', 'Opd\Renja\KegiatanTwController@tambah')->name('opd.renja.kegiatan.tw.tambah');
+    Route::post('/opd/renja/kegiatan/tw/ubah', 'Opd\Renja\KegiatanTwController@ubah')->name('opd.renja.kegiatan.tw.ubah');
 
     Route::get('/opd/laporan', 'Opd\LaporanController@index')->name('opd.laporan.index');
 

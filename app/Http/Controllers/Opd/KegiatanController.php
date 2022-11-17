@@ -78,8 +78,6 @@ class KegiatanController extends Controller
             'target' => 'required',
             'satuan' => 'required',
             'target_rp' => 'required',
-            'realisasi' => 'required',
-            'realisasi_rp' => 'required'
         ]);
 
         if($errors -> fails())
@@ -95,8 +93,6 @@ class KegiatanController extends Controller
         $kegiatan_target_satuan_rp_realisasi->target = $request->target;
         $kegiatan_target_satuan_rp_realisasi->satuan = $request->satuan;
         $kegiatan_target_satuan_rp_realisasi->target_rp = $request->target_rp;
-        $kegiatan_target_satuan_rp_realisasi->realisasi = $request->realisasi;
-        $kegiatan_target_satuan_rp_realisasi->realisasi_rp = $request->realisasi_rp;
         $kegiatan_target_satuan_rp_realisasi->tahun = $request->tahun;
         $kegiatan_target_satuan_rp_realisasi->save();
 
@@ -110,8 +106,6 @@ class KegiatanController extends Controller
             'kegiatan_edit_target' => 'required',
             'kegiatan_edit_satuan' => 'required',
             'kegiatan_edit_target_rp' => 'required',
-            'kegiatan_edit_realisasi' => 'required',
-            'kegiatan_edit_realisasi_rp' => 'required'
         ]);
 
         if($errors -> fails())
@@ -123,8 +117,6 @@ class KegiatanController extends Controller
         $kegiatan_target_satuan_rp_realisasi->target = $request->kegiatan_edit_target;
         $kegiatan_target_satuan_rp_realisasi->satuan = $request->kegiatan_edit_satuan;
         $kegiatan_target_satuan_rp_realisasi->target_rp = $request->kegiatan_edit_target_rp;
-        $kegiatan_target_satuan_rp_realisasi->realisasi = $request->kegiatan_edit_realisasi;
-        $kegiatan_target_satuan_rp_realisasi->realisasi_rp = $request->kegiatan_edit_realisasi_rp;
         $kegiatan_target_satuan_rp_realisasi->save();
 
         Alert::success('Berhasil', 'Berhasil Merubah Target Kegiatan');

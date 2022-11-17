@@ -13,4 +13,9 @@ class KegiatanTargetSatuanRpRealisasi extends Model
     {
         return $this->belongsTo('App\Models\OpdKegiatanIndikatorKinerja', 'opd_kegiatan_indikator_kinerja_id');
     }
+
+    public function kegiatan_tw_realisasi()
+    {
+        return $this->hasMany('App\Models\KegiatanTwRealisasi', 'kegiatan_target_satuan_rp_realisasi_id');
+    }
 }

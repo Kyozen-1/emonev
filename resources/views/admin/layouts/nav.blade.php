@@ -404,7 +404,8 @@
                 request()->routeIs('admin.kelurahan.index') ||
                 request()->routeIs('admin.jenis-opd.index') ||
                 request()->routeIs('admin.master-opd.index') ||
-                request()->routeIs('admin.tahun-periode.index'))
+                request()->routeIs('admin.tahun-periode.index')||
+                request()->routeIs('admin.master-tw.index'))
                     <a href="#master_data" class="active">
                 @else
                     <a href="#master_data">
@@ -456,6 +457,15 @@
                             <a href="{{ route('admin.tahun-periode.index') }}">
                         @endif
                             <span class="label">Tahun Periode</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.master-tw.index'))
+                            <a href="{{ route('admin.master-tw.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.master-tw.index') }}">
+                        @endif
+                            <span class="label">Master TW</span>
                         </a>
                     </li>
                 </ul>

@@ -43,6 +43,14 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/manajemen-akun/opd/change-password','Admin\ManajemenAkun\OpdController@change_password')->name('admin.manajemen-akun.opd.change-password');
     Route::post('/admin/manajemen-akun/opd/destroy','Admin\ManajemenAkun\OpdController@destroy')->name('admin.manajemen-akun.opd.destroy');
 
+    //Master TW
+    Route::get('/admin/master-tw', 'Admin\MasterTwController@index')->name('admin.master-tw.index');
+    Route::get('/admin/master-tw/detail/{id}', 'Admin\MasterTwController@show');
+    Route::post('/admin/master-tw','Admin\MasterTwController@store')->name('admin.master-tw.store');
+    Route::get('/admin/master-tw/edit/{id}','Admin\MasterTwController@edit');
+    Route::post('/admin/master-tw/update','Admin\MasterTwController@update')->name('admin.master-tw.update');
+    Route::get('/admin/master-tw/destroy/{id}','Admin\MasterTwController@destroy');
+
     //Nomenklatur
     Route::get('/admin/nomenklatur', 'Admin\NomenklaturController@index')->name('admin.nomenklatur.index');
     Route::get('/admin/nomenklatur/get-program', 'Admin\NomenklaturController@get_program')->name('admin.nomenklatur.get-program');

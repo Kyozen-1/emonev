@@ -737,14 +737,6 @@
                             <label for="kegiatan_edit_target_rp" class="form-label">Target RP</label>
                             <input type="text" class="form-control" id="kegiatan_edit_target_rp" name="kegiatan_edit_target_rp" required>
                         </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="kegiatan_edit_realisasi" class="form-label">Realisasi</label>
-                            <input type="text" class="form-control" id="kegiatan_edit_realisasi" name="kegiatan_edit_realisasi" required>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="kegiatan_edit_realisasi_rp" class="form-label">Realisasi RP</label>
-                            <input type="text" class="form-control" id="kegiatan_edit_realisasi_rp" name="kegiatan_edit_realisasi_rp" required>
-                        </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
                         </div>
@@ -1360,8 +1352,6 @@
             var target = $('.kegiatan-add-target.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
             var satuan = $('.kegiatan-add-satuan.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
             var target_rp = $('.kegiatan-add-target-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
-            var realisasi = $('.kegiatan-add-realisasi.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
-            var realisasi_rp = $('.kegiatan-add-realisasi-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
 
             return new swal({
                 title: "Apakah Anda Yakin?",
@@ -1381,9 +1371,7 @@
                             kegiatan_indikator_kinerja_id:kegiatan_indikator_kinerja_id,
                             target:target,
                             satuan:satuan,
-                            target_rp:target_rp,
-                            realisasi:realisasi,
-                            realisasi_rp:realisasi_rp
+                            target_rp:target_rp
                         },
                         dataType: "json",
                         success: function(data)
@@ -1421,15 +1409,11 @@
             var target = $('.kegiatan-span-target.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
             var satuan = $('.kegiatan-span-satuan.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
             var target_rp = $('.kegiatan-span-target-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).attr('data-target-rp');
-            var realisasi = $('.kegiatan-span-realisasi.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
-            var realisasi_rp = $('.kegiatan-span-realisasi-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).attr('data-realisasi-rp');
 
             $('#kegiatan_target_satuan_rp_realisasi').val(kegiatan_target_satuan_rp_realisasi);
             $('#kegiatan_edit_target').val(target);
             $('#kegiatan_edit_satuan').val(satuan);
             $('#kegiatan_edit_target_rp').val(target_rp);
-            $('#kegiatan_edit_realisasi').val(realisasi);
-            $('#kegiatan_edit_realisasi_rp').val(realisasi_rp);
 
             $('#editTargetKegiatanModal').modal('show');
         });
