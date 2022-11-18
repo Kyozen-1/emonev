@@ -71,7 +71,7 @@
 
         <ul class="nav nav-tabs nav-tabs-title nav-tabs-line-title responsive-tabs" id="lineTitleTabsContainer" role="tablist">
             <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#tc_23" role="tab" aria-selected="false">TC. 23</a>
+                <a class="nav-link active" data-bs-toggle="tab" href="#tc_23" role="tab" aria-selected="false">TC. 23</a>
             </li>
             <li class="nav-item" role="presentation">
                 <a class="nav-link" data-bs-toggle="tab" href="#tc_24" role="tab" aria-selected="false">TC. 24</a>
@@ -261,7 +261,23 @@
 
                     {{-- TC 27 Start --}}
                     <div class="tab-pane fade" id="tc_27" role="tabpanel">
-                        <div class="data-table-responsive-wrapper">
+                        <div class="d-flex justify-content-between">
+                            <div></div>
+                            <button
+                                class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                            >
+                                <i data-acorn-icon="download" data-acorn-size="15"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                <a class="dropdown-item" href="{{ route('opd.laporan.tc-27.ekspor.pdf') }}">PDF</a>
+                                <a class="dropdown-item" href="{{ route('opd.laporan.tc-27.ekspor.excel') }}">Excel</a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
                             <div class="text-center">
                                 <h1>Tabel T-C.27</h1>
                                 <h3>Rencana Program, Kegiatan, dan Pendanaan Perangkat Daerah {{Auth::user()->opd->nama}}</h3>
@@ -328,6 +344,9 @@
                                         <th>(21)</th>
                                     </tr>
                                 </thead>
+                                <tbody id="tbodyTc17">
+                                    {!! $tc_27 !!}
+                                </tbody>
                             </table>
                         </div>
                     </div>
