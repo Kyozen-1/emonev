@@ -45,8 +45,6 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renja/kegiatan/tw/tambah', 'Opd\Renja\KegiatanTwController@tambah')->name('opd.renja.kegiatan.tw.tambah');
     Route::post('/opd/renja/kegiatan/tw/ubah', 'Opd\Renja\KegiatanTwController@ubah')->name('opd.renja.kegiatan.tw.ubah');
 
-    Route::get('/opd/laporan', 'Opd\LaporanController@index')->name('opd.laporan.index');
-
     Route::post('/opd/renstra/tujuan-pd/tambah', 'Opd\TujuanPdController@tambah')->name('opd.renstra.tujuan-pd.tambah');
     Route::get('/opd/renstra/tujuan-pd/edit/{id}', 'Opd\TujuanPdController@edit');
     Route::post('/opd/renstra/tujuan-pd/update', 'Opd\TujuanPdController@update')->name('opd.renstra.tujuan-pd.update');
@@ -71,4 +69,8 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renstra/kegiatan/indikator-kinerja/hapus', 'Opd\KegiatanController@indikator_kinerja_hapus')->name('opd.renstra.kegiatan.indikator-kinerja.hapus');
     Route::post('/opd/renstra/kegiatan/indikator-kinerja/target-satuan-realisasi/tambah', 'Opd\KegiatanController@target_satuan_realisasi_tambah')->name('opd.renstra.kegiatan.indikator-kinerja.target-satuan-realisasi.tambah');
     Route::post('/opd/renstra/kegiatan/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\KegiatanController@target_satuan_realisasi_ubah')->name('opd.renstra.kegiatan.indikator-kinerja.target-satuan-realisasi.ubah');
+
+    Route::get('/opd/laporan', 'Opd\LaporanController@index')->name('opd.laporan.index');
+    Route::get('/opd/laporan/tc-27/ekspor/pdf', 'Opd\Laporan\Tc27Controller@tc_27_ekspor_pdf')->name('opd.laporan.tc-27.ekspor.pdf');
+    Route::get('/opd/laporan/tc-27/ekspor/excel', 'Opd\Laporan\Tc27Controller@tc_27_ekspor_excel')->name('opd.laporan.tc-27.ekspor.excel');
 });
