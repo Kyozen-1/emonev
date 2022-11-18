@@ -344,9 +344,7 @@
                                         <th>(21)</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tbodyTc17">
-                                    {!! $tc_27 !!}
-                                </tbody>
+                                <tbody id="tbodyTc27"></tbody>
                             </table>
                         </div>
                     </div>
@@ -370,7 +368,7 @@
                                 @foreach ($tahuns as $tahun)
                                     <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_80_{{$tahun}}" role="tabpanel">
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
-                                        <div class="data-table-responsive-wrapper">
+                                        <div class="table-responsive">
                                             <div class="text-center">
                                                 <h1>Tabel E.80</h1>
                                                 <h3>Evaluasi Terhadap Hasil Renstra Perangkat Daerah Lingkup {{ Auth::user()->opd->kabupaten->nama }} </h3>
@@ -494,7 +492,23 @@
                                 @foreach ($tahuns as $tahun)
                                     <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_81_{{$tahun}}" role="tabpanel">
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
-                                        <div class="data-table-responsive-wrapper">
+                                        <div class="d-flex justify-content-between">
+                                            <div></div>
+                                            <button
+                                                class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                                type="button"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                                aria-haspopup="true"
+                                            >
+                                                <i data-acorn-icon="download" data-acorn-size="15"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                                <a class="dropdown-item" href="{{ route('opd.laporan.e-81.ekspor.pdf', ['tahun' => $tahun]) }}">PDF</a>
+                                                <a class="dropdown-item" href="{{ route('opd.laporan.e-81.ekspor.excel', ['tahun' => $tahun]) }}">Excel</a>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
                                             <div class="text-center">
                                                 <h1>Tabel E.81</h1>
                                                 <h3>Evaluasi Terhadap Hasil Renja Perangkat Daerah Lingkup {{ Auth::user()->opd->kabupaten->nama }} </h3>
@@ -563,6 +577,7 @@
                                                         <th>Rp</th>
                                                     </tr>
                                                 </thead>
+                                                <tbody id="tbodyE81{{$tahun}}"></tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -595,4 +610,46 @@
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        var tahun_awal = "{{ $tahun_awal }}";
+        $(document).ready(function(){
+            $.ajax({
+                url: "{{ route('opd.laporan.e-81') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    tahun:tahun_awal
+                },
+                success: function(data)
+                {
+                    $('#tbodyE81'+tahun_awal).html(data.e_81);
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('opd.laporan.tc-27') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#tbodyTc27').html(data.tc_27);
+                }
+            });
+        });
+
+        $('.navE81').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $.ajax({
+                url: "{{ route('opd.laporan.e-81') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    tahun:tahun
+                },
+                success: function(data)
+                {
+                    $('#tbodyE81'+tahun).html(data.e_81);
+                }
+            });
+        });
+    </script>
 @endsection
