@@ -71,6 +71,10 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renstra/kegiatan/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\KegiatanController@target_satuan_realisasi_ubah')->name('opd.renstra.kegiatan.indikator-kinerja.target-satuan-realisasi.ubah');
 
     Route::get('/opd/laporan', 'Opd\LaporanController@index')->name('opd.laporan.index');
+    Route::get('/opd/laporan/tc-27', 'Opd\Laporan\Tc27Controller@tc_27')->name('opd.laporan.tc-27');
     Route::get('/opd/laporan/tc-27/ekspor/pdf', 'Opd\Laporan\Tc27Controller@tc_27_ekspor_pdf')->name('opd.laporan.tc-27.ekspor.pdf');
     Route::get('/opd/laporan/tc-27/ekspor/excel', 'Opd\Laporan\Tc27Controller@tc_27_ekspor_excel')->name('opd.laporan.tc-27.ekspor.excel');
+    Route::post('/opd/laporan/e-81', 'Opd\Laporan\E81Controller@e_81')->name('opd.laporan.e-81');
+    Route::get('/opd/laporan/e-81/ekspor/pdf/{tahun}', 'Opd\Laporan\E81Controller@e_81_ekspor_pdf')->name('opd.laporan.e-81.ekspor.pdf');
+    Route::get('/opd/laporan/e-81/ekspor/excel/{tahun}', 'Opd\Laporan\E81Controller@e_81_ekspor_excel')->name('opd.laporan.e-81.ekspor.excel');
 });
