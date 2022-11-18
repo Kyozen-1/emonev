@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 17 Nov 2022 pada 09.04
+-- Waktu pembuatan: 17 Nov 2022 pada 18.00
 -- Versi server: 5.7.33
 -- Versi PHP: 8.0.2
 
@@ -937,6 +937,29 @@ INSERT INTO `kegiatan_target_satuan_rp_realisasis` (`id`, `opd_kegiatan_indikato
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `kegiatan_tw_realisasis`
+--
+
+CREATE TABLE `kegiatan_tw_realisasis` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kegiatan_target_satuan_rp_realisasi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tw_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `realisasi_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `kegiatan_tw_realisasis`
+--
+
+INSERT INTO `kegiatan_tw_realisasis` (`id`, `kegiatan_target_satuan_rp_realisasi_id`, `tw_id`, `realisasi`, `realisasi_rp`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '112', '100001', '2022-11-17 14:20:45', '2022-11-17 14:21:09');
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `kelurahans`
 --
 
@@ -1233,6 +1256,29 @@ INSERT INTO `master_opds` (`id`, `jenis_opd_id`, `nama`, `created_at`, `updated_
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `master_tws`
+--
+
+CREATE TABLE `master_tws` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `master_tws`
+--
+
+INSERT INTO `master_tws` (`id`, `nama`, `created_at`, `updated_at`) VALUES
+(1, 'TW 1', '2022-11-17 11:03:01', '2022-11-17 11:03:01'),
+(2, 'TW 2', '2022-11-17 11:03:07', '2022-11-17 11:03:07'),
+(3, 'TW 3', '2022-11-17 11:03:10', '2022-11-17 11:03:10'),
+(4, 'TW 4', '2022-11-17 11:03:14', '2022-11-17 11:03:14');
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `migrations`
 --
 
@@ -1297,7 +1343,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (78, '2022_11_15_213257_create_sasaran_pd_indikator_kinerjas_table', 18),
 (79, '2022_11_15_213638_create_sasaran_pd_target_satuan_rp_realisasis_table', 18),
 (80, '2022_11_16_150502_create_opd_kegiatan_indikator_kinerjas_table', 19),
-(81, '2022_11_16_151230_create_kegiatan_target_satuan_rp_realisasis_table', 19);
+(81, '2022_11_16_151230_create_kegiatan_target_satuan_rp_realisasis_table', 19),
+(82, '2022_11_17_173638_create_master_tws_table', 20),
+(83, '2022_11_17_173838_create_program_tw_realisasis_table', 20),
+(84, '2022_11_17_174413_create_kegiatan_tw_realisasis_table', 20),
+(87, '2022_11_17_205820_create_opd_sub_kegiatan_indikator_kinerjas_table', 21),
+(88, '2022_11_17_210225_create_sub_kegiatan_target_satuan_rp_realisasis_table', 21),
+(89, '2022_11_17_210602_create_sub_kegiatan_tw_realisasis_table', 21);
 
 -- --------------------------------------------------------
 
@@ -1418,7 +1470,29 @@ CREATE TABLE `opd_program_indikator_kinerjas` (
 
 INSERT INTO `opd_program_indikator_kinerjas` (`id`, `program_indikator_kinerja_id`, `opd_id`, `created_at`, `updated_at`) VALUES
 (1, 743, 16, '2022-11-15 09:52:25', '2022-11-15 09:52:25'),
-(2, 1345, 16, '2022-11-16 04:14:18', '2022-11-16 04:14:18');
+(2, 1345, 16, '2022-11-16 04:14:18', '2022-11-16 04:14:18'),
+(5, 1326, 16, '2022-11-17 14:53:36', '2022-11-17 14:53:36');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `opd_sub_kegiatan_indikator_kinerjas`
+--
+
+CREATE TABLE `opd_sub_kegiatan_indikator_kinerjas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `sub_kegiatan_indikator_kinerja_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `opd_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `opd_sub_kegiatan_indikator_kinerjas`
+--
+
+INSERT INTO `opd_sub_kegiatan_indikator_kinerjas` (`id`, `sub_kegiatan_indikator_kinerja_id`, `opd_id`, `created_at`, `updated_at`) VALUES
+(2, 2, 16, '2022-11-17 15:55:02', '2022-11-17 15:55:02');
 
 -- --------------------------------------------------------
 
@@ -3077,7 +3151,8 @@ INSERT INTO `pivot_sasaran_indikator_program_rpjmds` (`id`, `program_rpjmd_id`, 
 (89, 45, 115, '2022-11-15 09:41:46', '2022-11-15 09:41:46'),
 (90, 46, 115, '2022-11-15 09:41:46', '2022-11-15 09:41:46'),
 (91, 28, 103, '2022-11-15 09:41:46', '2022-11-15 09:41:46'),
-(92, 47, 118, '2022-11-16 02:42:22', '2022-11-16 02:42:22');
+(92, 47, 118, '2022-11-16 02:42:22', '2022-11-16 02:42:22'),
+(93, 48, 76, '2022-11-17 15:02:26', '2022-11-17 15:02:26');
 
 -- --------------------------------------------------------
 
@@ -4548,7 +4623,8 @@ INSERT INTO `program_rpjmds` (`id`, `program_id`, `status_program`, `created_at`
 (44, 391, 'Prioritas', '2022-11-15 09:41:46', '2022-11-15 09:41:46'),
 (45, 373, 'Prioritas', '2022-11-15 09:41:46', '2022-11-15 09:41:46'),
 (46, 374, 'Prioritas', '2022-11-15 09:41:46', '2022-11-15 09:41:46'),
-(47, 3, 'Pendukung', '2022-11-16 02:42:22', '2022-11-16 02:42:22');
+(47, 3, 'Pendukung', '2022-11-16 02:42:22', '2022-11-16 02:42:22'),
+(48, 1, 'Pendukung', '2022-11-17 15:02:26', '2022-11-17 15:02:26');
 
 -- --------------------------------------------------------
 
@@ -4580,6 +4656,29 @@ INSERT INTO `program_target_satuan_rp_realisasis` (`id`, `opd_program_indikator_
 (4, 1, '100', 'buku', '100000', NULL, NULL, '2021', '2022-11-16 23:12:59', '2022-11-16 23:12:59'),
 (5, 1, '90', 'buku', '100000', NULL, NULL, '2022', '2022-11-16 23:13:25', '2022-11-16 23:13:25'),
 (6, 1, '80', 'buku', '100000', NULL, NULL, '2023', '2022-11-16 23:13:53', '2022-11-16 23:13:53');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `program_tw_realisasis`
+--
+
+CREATE TABLE `program_tw_realisasis` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `program_target_satuan_rp_realisasi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tw_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `realisasi_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `program_tw_realisasis`
+--
+
+INSERT INTO `program_tw_realisasis` (`id`, `program_target_satuan_rp_realisasi_id`, `tw_id`, `realisasi`, `realisasi_rp`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '51', '200001', '2022-11-17 12:59:51', '2022-11-17 13:20:14');
 
 -- --------------------------------------------------------
 
@@ -4945,6 +5044,62 @@ CREATE TABLE `sub_kegiatan_indikator_kinerjas` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `sub_kegiatan_indikator_kinerjas`
+--
+
+INSERT INTO `sub_kegiatan_indikator_kinerjas` (`id`, `sub_kegiatan_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
+(2, 1, 'testing1', '2022-11-17 15:55:02', '2022-11-17 15:55:02');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `sub_kegiatan_target_satuan_rp_realisasis`
+--
+
+CREATE TABLE `sub_kegiatan_target_satuan_rp_realisasis` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `opd_sub_kegiatan_indikator_kinerja_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `target_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `sub_kegiatan_target_satuan_rp_realisasis`
+--
+
+INSERT INTO `sub_kegiatan_target_satuan_rp_realisasis` (`id`, `opd_sub_kegiatan_indikator_kinerja_id`, `target`, `satuan`, `target_rp`, `tahun`, `created_at`, `updated_at`) VALUES
+(1, 2, '1000', 'buku', '10000000', '2018', '2022-11-17 16:47:11', '2022-11-17 17:44:17'),
+(2, 2, '12', 'buku', '50000', '2019', '2022-11-17 16:53:28', '2022-11-17 17:59:10'),
+(3, 2, '1', 'celana', '100000', '2020', '2022-11-17 17:59:25', '2022-11-17 17:59:25');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `sub_kegiatan_tw_realisasis`
+--
+
+CREATE TABLE `sub_kegiatan_tw_realisasis` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `sub_kegiatan_target_satuan_rp_realisasi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tw_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `realisasi_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `sub_kegiatan_tw_realisasis`
+--
+
+INSERT INTO `sub_kegiatan_tw_realisasis` (`id`, `sub_kegiatan_target_satuan_rp_realisasi_id`, `tw_id`, `realisasi`, `realisasi_rp`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '100', '1000000', '2022-11-17 17:47:11', '2022-11-17 17:57:16');
 
 -- --------------------------------------------------------
 
@@ -5344,6 +5499,12 @@ ALTER TABLE `kegiatan_target_satuan_rp_realisasis`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `kegiatan_tw_realisasis`
+--
+ALTER TABLE `kegiatan_tw_realisasis`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `kelurahans`
 --
 ALTER TABLE `kelurahans`
@@ -5353,6 +5514,12 @@ ALTER TABLE `kelurahans`
 -- Indeks untuk tabel `master_opds`
 --
 ALTER TABLE `master_opds`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `master_tws`
+--
+ALTER TABLE `master_tws`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -5389,6 +5556,12 @@ ALTER TABLE `opd_kegiatan_indikator_kinerjas`
 -- Indeks untuk tabel `opd_program_indikator_kinerjas`
 --
 ALTER TABLE `opd_program_indikator_kinerjas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `opd_sub_kegiatan_indikator_kinerjas`
+--
+ALTER TABLE `opd_sub_kegiatan_indikator_kinerjas`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -5500,6 +5673,12 @@ ALTER TABLE `program_target_satuan_rp_realisasis`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `program_tw_realisasis`
+--
+ALTER TABLE `program_tw_realisasis`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `provinsis`
 --
 ALTER TABLE `provinsis`
@@ -5557,6 +5736,18 @@ ALTER TABLE `sub_kegiatans`
 -- Indeks untuk tabel `sub_kegiatan_indikator_kinerjas`
 --
 ALTER TABLE `sub_kegiatan_indikator_kinerjas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `sub_kegiatan_target_satuan_rp_realisasis`
+--
+ALTER TABLE `sub_kegiatan_target_satuan_rp_realisasis`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `sub_kegiatan_tw_realisasis`
+--
+ALTER TABLE `sub_kegiatan_tw_realisasis`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -5685,6 +5876,12 @@ ALTER TABLE `kegiatan_target_satuan_rp_realisasis`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT untuk tabel `kegiatan_tw_realisasis`
+--
+ALTER TABLE `kegiatan_tw_realisasis`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT untuk tabel `kelurahans`
 --
 ALTER TABLE `kelurahans`
@@ -5697,10 +5894,16 @@ ALTER TABLE `master_opds`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
+-- AUTO_INCREMENT untuk tabel `master_tws`
+--
+ALTER TABLE `master_tws`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
 
 --
 -- AUTO_INCREMENT untuk tabel `misis`
@@ -5730,6 +5933,12 @@ ALTER TABLE `opd_kegiatan_indikator_kinerjas`
 -- AUTO_INCREMENT untuk tabel `opd_program_indikator_kinerjas`
 --
 ALTER TABLE `opd_program_indikator_kinerjas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT untuk tabel `opd_sub_kegiatan_indikator_kinerjas`
+--
+ALTER TABLE `opd_sub_kegiatan_indikator_kinerjas`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
@@ -5808,7 +6017,7 @@ ALTER TABLE `pivot_program_kegiatan_renstras`
 -- AUTO_INCREMENT untuk tabel `pivot_sasaran_indikator_program_rpjmds`
 --
 ALTER TABLE `pivot_sasaran_indikator_program_rpjmds`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT untuk tabel `programs`
@@ -5826,13 +6035,19 @@ ALTER TABLE `program_indikator_kinerjas`
 -- AUTO_INCREMENT untuk tabel `program_rpjmds`
 --
 ALTER TABLE `program_rpjmds`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT untuk tabel `program_target_satuan_rp_realisasis`
 --
 ALTER TABLE `program_target_satuan_rp_realisasis`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT untuk tabel `program_tw_realisasis`
+--
+ALTER TABLE `program_tw_realisasis`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `provinsis`
@@ -5892,7 +6107,19 @@ ALTER TABLE `sub_kegiatans`
 -- AUTO_INCREMENT untuk tabel `sub_kegiatan_indikator_kinerjas`
 --
 ALTER TABLE `sub_kegiatan_indikator_kinerjas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT untuk tabel `sub_kegiatan_target_satuan_rp_realisasis`
+--
+ALTER TABLE `sub_kegiatan_target_satuan_rp_realisasis`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT untuk tabel `sub_kegiatan_tw_realisasis`
+--
+ALTER TABLE `sub_kegiatan_tw_realisasis`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `tahun_periodes`
