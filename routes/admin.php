@@ -240,6 +240,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/tujuan/destroy/{id}','Admin\TujuanController@destroy');
     Route::post('/admin/tujuan/destroy/impor', 'Admin\TujuanController@impor')->name('admin.tujuan.impor');
     Route::post('/admin/tujuan/indikator-kinerja/tambah', 'Admin\TujuanController@indikator_kinerja_tambah')->name('admin.tujuan.indikator-kinerja.tambah');
+    Route::get('/admin/tujuan/indikator-kinerja/edit/{id}', 'Admin\TujuanController@indikator_kinerja_edit');
+    Route::post('/admin/tujuan/indikator-kinerja/update', 'Admin\TujuanController@indikator_kinerja_update')->name('admin.tujuan.indikator-kinerja.update');
     Route::post('/admin/tujuan/indikator-kinerja/hapus', 'Admin\TujuanController@indikator_kinerja_hapus')->name('admin.tujuan.indikator-kinerja.hapus');
     Route::post('/admin/tujuan/indikator-kinerja/target-satuan-rp-realisasi', 'Admin\TujuanController@store_tujuan_target_satuan_rp_realisasi')->name('admin.tujuan.indikator.target-satuan-rp-realisasi');
     Route::post('/admin/tujuan/indikator-kinerja/target-satuan-rp-realisasi/update', 'Admin\TujuanController@update_tujuan_target_satuan_rp_realisasi')->name('admin.tujuan.indikator.target-satuan-rp-realisasi_update');
@@ -264,6 +266,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/sasaran/destroy/{id}','Admin\SasaranController@destroy');
     Route::post('/admin/sasaran/destroy/impor', 'Admin\SasaranController@impor')->name('admin.sasaran.impor');
     Route::post('/admin/sasaran/indikator-kinerja/tambah', 'Admin\SasaranController@indikator_kinerja_tambah')->name('admin.sasaran.indikator-kinerja.tambah');
+    Route::get('/admin/sasaran/indikator-kinerja/edit/{id}', 'Admin\SasaranController@indikator_kinerja_edit');
+    Route::post('/admin/sasaran/indikator-kinerja/update', 'Admin\SasaranController@indikator_kinerja_update')->name('admin.sasaran.indikator-kinerja.update');
     Route::post('/admin/sasaran/indikator-kinerja/hapus', 'Admin\SasaranController@indikator_kinerja_hapus')->name('admin.sasaran.indikator-kinerja.hapus');
     Route::post('/admin/sasaran/indikator-kinerja/target-satuan-rp-realisasi', 'Admin\SasaranController@store_sasaran_target_satuan_rp_realisasi')->name('admin.sasaran.indikator.target-satuan-rp-realisasi');
     Route::post('/admin/sasaran/indikator-kinerja/target-satuan-rp-realisasi/update', 'Admin\SasaranController@update_sasaran_target_satuan_rp_realisasi')->name('admin.sasaran.indikator.target-satuan-rp-realisasi_update');

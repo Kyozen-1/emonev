@@ -548,15 +548,57 @@ class SasaranController extends Controller
 
     public function indikator_kinerja_tambah(Request $request)
     {
-        $deskripsis = json_decode($request->indikator_kinerja_sasaran_deskripsi, true);
-        foreach ($deskripsis as $deskripsi) {
-            $indikator_kinerja = new SasaranIndikatorKinerja;
-            $indikator_kinerja->sasaran_id = $request->indikator_kinerja_sasaran_sasaran_id;
-            $indikator_kinerja->deskripsi = $deskripsi['value'];
-            $indikator_kinerja->save();
+        $errors = Validator::make($request->all(), [
+            'indikator_kinerja_sasaran_sasaran_id' => 'required',
+            'indikator_kinerja_sasaran_deskripsi' => 'required',
+            'indikator_kinerja_sasaran_satuan' => 'required',
+            'indikator_kinerja_sasaran_kondisi_target_kinerja_awal' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return back()->with('errors', $errors->message()->all())->withInput();
         }
 
+        $indikator_kinerja = new SasaranIndikatorKinerja;
+        $indikator_kinerja->sasaran_id = $request->indikator_kinerja_sasaran_sasaran_id;
+        $indikator_kinerja->deskripsi = $request->indikator_kinerja_sasaran_deskripsi;
+        $indikator_kinerja->satuan = $request->indikator_kinerja_sasaran_satuan;
+        $indikator_kinerja->kondisi_target_kinerja_awal = $request->indikator_kinerja_sasaran_kondisi_target_kinerja_awal;
+        $indikator_kinerja->save();
+
         Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk Sasaran');
+        return redirect()->route('admin.perencanaan.index');
+    }
+
+    public function indikator_kinerja_edit($id)
+    {
+        $data = SasaranIndikatorKinerja::find($id);
+
+        return response()->json(['result' => $data]);
+    }
+
+    public function indikator_kinerja_update(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'edit_indikator_kinerja_sasaran_id' => 'required',
+            'edit_indikator_kinerja_sasaran_deskripsi' => 'required',
+            'edit_indikator_kinerja_sasaran_satuan' => 'required',
+            'edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return back()->with('errors', $errors->message()->all())->withInput();
+        }
+
+        $indikator_kinerja = SasaranIndikatorKinerja::find($request->edit_indikator_kinerja_sasaran_id);
+        $indikator_kinerja->deskripsi = $request->edit_indikator_kinerja_sasaran_deskripsi;
+        $indikator_kinerja->satuan = $request->edit_indikator_kinerja_sasaran_satuan;
+        $indikator_kinerja->kondisi_target_kinerja_awal = $request->edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal;
+        $indikator_kinerja->save();
+
+        Alert::success('Berhasil', 'Berhasil Merubah Indikator Kinerja untuk Sasaran');
         return redirect()->route('admin.perencanaan.index');
     }
 
@@ -576,9 +618,7 @@ class SasaranController extends Controller
         $errors = Validator::make($request->all(), [
             'tahun' => 'required',
             'sasaran_indikator_kinerja_id' => 'required',
-            'target' => 'required',
-            'satuan' => 'required',
-            'realisasi' => 'required'
+            'target' => 'required'
         ]);
 
         if($errors -> fails())
@@ -589,8 +629,6 @@ class SasaranController extends Controller
         $sasaran_target_satuan_rp_realisasi = new SasaranTargetSatuanRpRealisasi;
         $sasaran_target_satuan_rp_realisasi->sasaran_indikator_kinerja_id = $request->sasaran_indikator_kinerja_id;
         $sasaran_target_satuan_rp_realisasi->target = $request->target;
-        $sasaran_target_satuan_rp_realisasi->satuan = $request->satuan;
-        $sasaran_target_satuan_rp_realisasi->realisasi = $request->realisasi;
         $sasaran_target_satuan_rp_realisasi->tahun = $request->tahun;
         $sasaran_target_satuan_rp_realisasi->save();
 
@@ -601,9 +639,7 @@ class SasaranController extends Controller
     {
         $errors = Validator::make($request->all(), [
             'sasaran_target_satuan_rp_realisasi' => 'required',
-            'sasaran_edit_target' => 'required',
-            'sasaran_edit_satuan' => 'required',
-            'sasaran_edit_realisasi' => 'required'
+            'sasaran_edit_target' => 'required'
         ]);
 
         if($errors -> fails())
@@ -613,8 +649,6 @@ class SasaranController extends Controller
 
         $sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::find($request->sasaran_target_satuan_rp_realisasi);
         $sasaran_target_satuan_rp_realisasi->target = $request->sasaran_edit_target;
-        $sasaran_target_satuan_rp_realisasi->satuan = $request->sasaran_edit_satuan;
-        $sasaran_target_satuan_rp_realisasi->realisasi = $request->sasaran_edit_realisasi;
         $sasaran_target_satuan_rp_realisasi->save();
 
         Alert::success('Berhasil', 'Berhasil Merubahan Target Sasaran');

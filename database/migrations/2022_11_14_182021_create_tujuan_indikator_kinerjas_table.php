@@ -17,6 +17,8 @@ class CreateTujuanIndikatorKinerjasTable extends Migration
             $table->id();
             $table->foreignId('tujuan_id')->nullable();
             $table->string('deskripsi')->nullable();
+            $table->string('satuan')->nullable();
+            $table->integer('kondisi_target_kinerja_awal')->nullable();
             $table->timestamps();
         });
     }

@@ -1593,7 +1593,15 @@
                         <input type="hidden" name="indikator_kinerja_tujuan_tujuan_id" id="indikator_kinerja_tujuan_tujuan_id">
                         <div class="mb-3 position-relative form-group">
                             <label class="d-block form-label">Tambah Indikator Kinerja</label>
-                            <input id="indikator_kinerja_tujuan_deskripsi" name="indikator_kinerja_tujuan_deskripsi"/>
+                            <textarea name="indikator_kinerja_tujuan_deskripsi" id="indikator_kinerja_tujuan_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_tujuan_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_tujuan_satuan" name="indikator_kinerja_tujuan_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="number" class="form-control" id="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" name="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
@@ -1619,13 +1627,37 @@
                             <label for="tujuan_edit_target" class="form-label">Target</label>
                             <input type="text" class="form-control" id="tujuan_edit_target" name="tujuan_edit_target" required>
                         </div>
-                        <div class="form-group position-relative">
-                            <label for="tujuan_edit_satuan" class="form-label">Satuan</label>
-                            <input type="text" class="form-control" id="tujuan_edit_satuan" name="tujuan_edit_satuan" required>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
                         </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="tujuan_edit_realisasi" class="form-label">Realisasi</label>
-                            <input type="text" class="form-control" id="tujuan_edit_realisasi" name="tujuan_edit_realisasi" required>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editIndikatorKinerjaTujuanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editIndikatorKinerjaTujuanModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Indikator Kinerja Tujuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.tujuan.indikator-kinerja.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_indikator_kinerja_tujuan_id" id="edit_indikator_kinerja_tujuan_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Indikator Kinerja</label>
+                            <textarea name="edit_indikator_kinerja_tujuan_deskripsi" id="edit_indikator_kinerja_tujuan_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_tujuan_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="edit_indikator_kinerja_tujuan_satuan" name="edit_indikator_kinerja_tujuan_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="number" class="form-control" id="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" name="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
@@ -1768,7 +1800,15 @@
                         <input type="hidden" name="indikator_kinerja_sasaran_sasaran_id" id="indikator_kinerja_sasaran_sasaran_id">
                         <div class="mb-3 position-relative form-group">
                             <label class="d-block form-label">Tambah Indikator Kinerja</label>
-                            <input id="indikator_kinerja_sasaran_deskripsi" name="indikator_kinerja_sasaran_deskripsi"/>
+                            <textarea name="indikator_kinerja_sasaran_deskripsi" id="indikator_kinerja_sasaran_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_sasaran_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_sasaran_satuan" name="indikator_kinerja_sasaran_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_sasaran_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="number" name="indikator_kinerja_sasaran_kondisi_target_kinerja_awal" id="indikator_kinerja_sasaran_kondisi_target_kinerja_awal" class="form-control" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
@@ -1794,16 +1834,40 @@
                             <label for="sasaran_edit_target" class="form-label">Target</label>
                             <input type="text" class="form-control" id="sasaran_edit_target" name="sasaran_edit_target" required>
                         </div>
-                        <div class="form-group position-relative">
-                            <label for="sasaran_edit_satuan" class="form-label">Satuan</label>
-                            <input type="text" class="form-control" id="sasaran_edit_satuan" name="sasaran_edit_satuan" required>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="sasaran_edit_realisasi" class="form-label">Realisasi</label>
-                            <input type="text" class="form-control" id="sasaran_edit_realisasi" name="sasaran_edit_realisasi" required>
-                        </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editIndikatorKinerjaSasaranModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editIndikatorKinerjaSasaranModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Indikator Kinerja Sasaran</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.sasaran.indikator-kinerja.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_indikator_kinerja_sasaran_id" id="edit_indikator_kinerja_sasaran_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Indikator Kinerja</label>
+                            <textarea name="edit_indikator_kinerja_sasaran_deskripsi" id="edit_indikator_kinerja_sasaran_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_sasaran_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="edit_indikator_kinerja_sasaran_satuan" name="edit_indikator_kinerja_sasaran_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="number" name="edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal" id="edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal" class="form-control" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -2306,8 +2370,8 @@
                 });
             @endforeach
 
-            new Tagify(document.querySelector('#indikator_kinerja_tujuan_deskripsi'));
-            new Tagify(document.querySelector('#indikator_kinerja_sasaran_deskripsi'));
+            // new Tagify(document.querySelector('#indikator_kinerja_tujuan_deskripsi'));
+            // new Tagify(document.querySelector('#indikator_kinerja_sasaran_deskripsi'));
             $.ajax({
                 url: "{{ route('admin.perencanaan.renstra.get-tujuan') }}",
                 dataType: "json",
@@ -2771,6 +2835,22 @@
             $('#indikatorKinerjaTujuanModal').modal('show');
         });
 
+        $(document).on('click', '.btn-edit-tujuan-indikator-kinerja', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{{ url('/admin/tujuan/indikator-kinerja/edit') }}" + '/' + id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#edit_indikator_kinerja_tujuan_id').val(id);
+                    $('#edit_indikator_kinerja_tujuan_deskripsi').val(data.result.deskripsi);
+                    $('#edit_indikator_kinerja_tujuan_satuan').val(data.result.satuan);
+                    $('#edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal').val(data.result.kondisi_target_kinerja_awal);
+                    $('#editIndikatorKinerjaTujuanModal').modal('show');
+                }
+            });
+        })
+
         $(document).on('click', '.btn-hapus-tujuan-indikator-kinerja', function(){
             var tujuan_indikator_kinerja_id = $(this).attr('data-tujuan-indikator-kinerja-id');
             var tujuan_id = $(this).attr('data-tujuan-id');
@@ -2823,8 +2903,6 @@
             var tahun = $(this).attr('data-tahun');
 
             var target = $('.tujuan-add-target.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).val();
-            var satuan = $('.tujuan-add-satuan.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).val();
-            var realisasi = $('.tujuan-add-realisasi.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).val();
 
             return new swal({
                 title: "Apakah Anda Yakin?",
@@ -2843,8 +2921,6 @@
                             tahun:tahun,
                             tujuan_indikator_kinerja_id:tujuan_indikator_kinerja_id,
                             target:target,
-                            satuan:satuan,
-                            realisasi:realisasi
                         },
                         dataType: "json",
                         success: function(data)
@@ -2879,13 +2955,9 @@
             var tahun = $(this).attr('data-tahun');
             var tujuan_target_satuan_rp_realisasi = $(this).attr('data-tujuan-target-satuan-rp-realisasi');
             var target = $('.tujuan-span-target.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).text();
-            var satuan = $('.tujuan-span-satuan.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).text();
-            var realisasi = $('.tujuan-span-realisasi.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).text();
 
             $('#tujuan_target_satuan_rp_realisasi').val(tujuan_target_satuan_rp_realisasi);
             $('#tujuan_edit_target').val(target);
-            $('#tujuan_edit_satuan').val(satuan);
-            $('#tujuan_edit_realisasi').val(realisasi);
 
             $('#editTargetTujuanModal').modal('show');
         });
@@ -3062,6 +3134,22 @@
             $('#indikatorKinerjaSasaranModal').modal('show');
         });
 
+        $(document).on('click', '.btn-edit-sasaran-indikator-kinerja', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{{ url('/admin/sasaran/indikator-kinerja/edit') }}" + '/' + id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#edit_indikator_kinerja_sasaran_id').val(id);
+                    $('#edit_indikator_kinerja_sasaran_deskripsi').val(data.result.deskripsi);
+                    $('#edit_indikator_kinerja_sasaran_satuan').val(data.result.satuan);
+                    $('#edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal').val(data.result.kondisi_target_kinerja_awal);
+                    $('#editIndikatorKinerjaSasaranModal').modal('show');
+                }
+            });
+        });
+
         $(document).on('click', '.btn-hapus-sasaran-indikator-kinerja', function(){
             var sasaran_indikator_kinerja_id = $(this).attr('data-sasaran-indikator-kinerja-id');
             var sasaran_id = $(this).attr('data-sasaran-id');
@@ -3114,8 +3202,6 @@
             var tahun = $(this).attr('data-tahun');
 
             var target = $('.sasaran-add-target.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).val();
-            var satuan = $('.sasaran-add-satuan.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).val();
-            var realisasi = $('.sasaran-add-realisasi.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).val();
 
             return new swal({
                 title: "Apakah Anda Yakin?",
@@ -3134,8 +3220,6 @@
                             tahun:tahun,
                             sasaran_indikator_kinerja_id:sasaran_indikator_kinerja_id,
                             target:target,
-                            satuan:satuan,
-                            realisasi:realisasi
                         },
                         dataType: "json",
                         success: function(data)
@@ -3170,13 +3254,9 @@
             var tahun = $(this).attr('data-tahun');
             var sasaran_target_satuan_rp_realisasi = $(this).attr('data-sasaran-target-satuan-rp-realisasi');
             var target = $('.sasaran-span-target.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).text();
-            var satuan = $('.sasaran-span-satuan.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).text();
-            var realisasi = $('.sasaran-span-realisasi.'+tahun+'.data-sasaran-indikator-kinerja-'+sasaran_indikator_kinerja_id).text();
 
             $('#sasaran_target_satuan_rp_realisasi').val(sasaran_target_satuan_rp_realisasi);
             $('#sasaran_edit_target').val(target);
-            $('#sasaran_edit_satuan').val(satuan);
-            $('#sasaran_edit_realisasi').val(realisasi);
 
             $('#editTargetSasaranModal').modal('show');
         });

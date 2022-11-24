@@ -17,8 +17,6 @@ class CreateSasaranTargetSatuanRpRealisasisTable extends Migration
             $table->id();
             $table->foreignId('sasaran_indikator_kinerja_id')->nullable();
             $table->string('target')->nullable();
-            $table->string('satuan')->nullable();
-            $table->string('realisasi')->nullable();
             $table->string('tahun')->nullable();
             $table->timestamps();
         });
