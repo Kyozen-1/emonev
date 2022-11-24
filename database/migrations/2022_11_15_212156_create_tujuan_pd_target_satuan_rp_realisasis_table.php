@@ -17,8 +17,6 @@ class CreateTujuanPdTargetSatuanRpRealisasisTable extends Migration
             $table->id();
             $table->foreignId('tujuan_pd_indikator_kinerja_id')->nullable();
             $table->string('target')->nullable();
-            $table->string('satuan')->nullable();
-            $table->string('realisasi')->nullable();
             $table->string('tahun')->nullable();
             $table->timestamps();
         });

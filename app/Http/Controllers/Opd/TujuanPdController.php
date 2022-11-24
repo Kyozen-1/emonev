@@ -156,23 +156,51 @@ class TujuanPdController extends Controller
         $errors = Validator::make($request->all(), [
             'indikator_kinerja_tujuan_pd_tujuan_pd_id' => 'required',
             'indikator_kinerja_tujuan_pd_deskripsi' => 'required',
+            'indikator_kinerja_tujuan_pd_satuan' => 'required',
+            'indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal' => 'required',
+            'indikator_kinerja_status_indikator' => 'required'
         ]);
 
         if($errors -> fails())
         {
-            Alert::error('Gagal', $errors->errors()->all());
-            return redirect()->route('opd.renstra.index');
+            return back()->with('errors', $errors->message()->all())->withInput();
         }
 
-        $deskripsis = json_decode($request->indikator_kinerja_tujuan_pd_deskripsi, true);
-        foreach ($deskripsis as $deskripsi) {
-            $tujuan_pd_indikator_kinerja = new TujuanPdIndikatorKinerja;
-            $tujuan_pd_indikator_kinerja->tujuan_pd_id = $request->indikator_kinerja_tujuan_pd_tujuan_pd_id;
-            $tujuan_pd_indikator_kinerja->deskripsi = $deskripsi['value'];
-            $tujuan_pd_indikator_kinerja->save();
-        }
+        $tujuan_pd_indikator_kinerja = new TujuanPdIndikatorKinerja;
+        $tujuan_pd_indikator_kinerja->tujuan_pd_id = $request->indikator_kinerja_tujuan_pd_tujuan_pd_id;
+        $tujuan_pd_indikator_kinerja->deskripsi = $request->indikator_kinerja_tujuan_pd_deskripsi;
+        $tujuan_pd_indikator_kinerja->satuan = $request->indikator_kinerja_tujuan_pd_satuan;
+        $tujuan_pd_indikator_kinerja->kondisi_target_kinerja_awal = $request->indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal;
+        $tujuan_pd_indikator_kinerja->status_indikator = $request->indikator_kinerja_tujuan_pd_status_indikator;
+        $tujuan_pd_indikator_kinerja->save();
 
         Alert::success('Berhasil', 'Berhasil menambahkan Indikator Kinerja Tujuan PD');
+        return redirect()->route('opd.renstra.index');
+    }
+
+    public function indikator_kinerja_update(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'indikator_kinerja_tujuan_pd_id' => 'required',
+            'edit_indikator_kinerja_tujuan_pd_deskripsi' => 'required',
+            'edit_indikator_kinerja_tujuan_pd_satuan' => 'required',
+            'edit_indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal' => 'required',
+            'edit_indikator_kinerja_tujuan_pd_status_indikator' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return back()->with('errors', $errors->message()->all())->withInput();
+        }
+
+        $tujuan_pd_indikator_kinerja = TujuanPdIndikatorKinerja::find($request->indikator_kinerja_tujuan_pd_id);
+        $tujuan_pd_indikator_kinerja->deskripsi = $request->edit_indikator_kinerja_tujuan_pd_deskripsi;
+        $tujuan_pd_indikator_kinerja->satuan = $request->edit_indikator_kinerja_tujuan_pd_satuan;
+        $tujuan_pd_indikator_kinerja->kondisi_target_kinerja_awal = $request->edit_indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal;
+        $tujuan_pd_indikator_kinerja->status_indikator = $request->edit_indikator_kinerja_tujuan_pd_status_indikator;
+        $tujuan_pd_indikator_kinerja->save();
+
+        Alert::success('Berhasil', 'Berhasil Merubah Indikator Kinerja Tujuan PD');
         return redirect()->route('opd.renstra.index');
     }
 
@@ -193,9 +221,7 @@ class TujuanPdController extends Controller
         $errors = Validator::make($request->all(), [
             'tahun' => 'required',
             'tujuan_pd_indikator_kinerja_id' => 'required',
-            'target' => 'required',
-            'satuan' => 'required',
-            'realisasi' => 'required'
+            'target' => 'required'
         ]);
 
         if($errors -> fails())
@@ -206,8 +232,6 @@ class TujuanPdController extends Controller
         $tujuan_pd_target_satuan_rp_realisasi = new TujuanPdTargetSatuanRpRealisasi;
         $tujuan_pd_target_satuan_rp_realisasi->tujuan_pd_indikator_kinerja_id = $request->tujuan_pd_indikator_kinerja_id;
         $tujuan_pd_target_satuan_rp_realisasi->target = $request->target;
-        $tujuan_pd_target_satuan_rp_realisasi->satuan = $request->satuan;
-        $tujuan_pd_target_satuan_rp_realisasi->realisasi = $request->realisasi;
         $tujuan_pd_target_satuan_rp_realisasi->tahun = $request->tahun;
         $tujuan_pd_target_satuan_rp_realisasi->save();
 
@@ -219,8 +243,6 @@ class TujuanPdController extends Controller
         $errors = Validator::make($request->all(), [
             'tujuan_pd_target_satuan_rp_realisasi' => 'required',
             'tujuan_pd_edit_target' => 'required',
-            'tujuan_pd_edit_satuan' => 'required',
-            'tujuan_pd_edit_realisasi' => 'required'
         ]);
 
         if($errors -> fails())
@@ -230,8 +252,6 @@ class TujuanPdController extends Controller
 
         $tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::find($request->tujuan_pd_target_satuan_rp_realisasi);
         $tujuan_pd_target_satuan_rp_realisasi->target = $request->tujuan_pd_edit_target;
-        $tujuan_pd_target_satuan_rp_realisasi->satuan = $request->tujuan_pd_edit_satuan;
-        $tujuan_pd_target_satuan_rp_realisasi->realisasi = $request->tujuan_pd_edit_realisasi;
         $tujuan_pd_target_satuan_rp_realisasi->save();
 
         Alert::success('Berhasil', 'Berhasil Merubah Target Tujuan PD');

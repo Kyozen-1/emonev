@@ -13,4 +13,9 @@ class TujuanPdTargetSatuanRpRealisasi extends Model
     {
         return $this->belongsTo('App\Models\TujuanPdIndikatorKinerja', 'tujuan_pd_indikator_kinerja_id');
     }
+
+    public function tujuan_pd_realisasi_renja()
+    {
+        return $this->hasOne('App\Models\TujuanPdRealisasiRenja', 'tujuan_pd_target_satuan_rp_realisasi_id');
+    }
 }

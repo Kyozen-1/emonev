@@ -28,4 +28,9 @@ class SasaranPd extends Model
     {
         return $this->belongsTo('App\Models\MasterOpd', 'opd_id');
     }
+
+    public function sasaran_pd_program_rpjmd()
+    {
+        return $this->hasMany('App\Models\SasaranPdProgramRpjmd', 'sasaran_pd_id');
+    }
 }

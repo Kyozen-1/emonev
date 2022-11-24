@@ -1313,7 +1313,7 @@ class PerencanaanController extends Controller
     public function get_sasaran_tahun($tahun)
     {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $tahun_awal = $get_periode->tahun_awal-1;
+        $tahun_awal = $get_periode->tahun_awal;
         $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
         $tahuns = [];
         for ($i=0; $i < $jarak_tahun + 1; $i++) {

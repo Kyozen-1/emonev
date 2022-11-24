@@ -493,10 +493,68 @@
                         <input type="hidden" name="indikator_kinerja_tujuan_pd_tujuan_pd_id" id="indikator_kinerja_tujuan_pd_tujuan_pd_id">
                         <div class="mb-3 position-relative form-group">
                             <label class="d-block form-label">Tambah Indikator Kinerja</label>
-                            <input id="indikator_kinerja_tujuan_pd_deskripsi" name="indikator_kinerja_tujuan_pd_deskripsi"/>
+                            <textarea name="indikator_kinerja_tujuan_pd_deskripsi" id="indikator_kinerja_tujuan_pd_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_tujuan_pd_status_indikator" class="form-label">Status Indikator</label>
+                            <select name="indikator_kinerja_tujuan_pd_status_indikator" id="indikator_kinerja_tujuan_pd_status_indikator" class="form-control" required>
+                                <option value=""> --- Pilih Status Indikator ---</option>
+                                <option value="Target NSPK">Target NSPK</option>
+                                <option value="Target IKK">Target IKK</option>
+                                <option value="Target Indikator Lainnya">Target Indikator Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_tujuan_pd_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_tujuan_pd_satuan" name="indikator_kinerja_tujuan_pd_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal" name="indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editIndikatorKinerjaTujuanPdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editIndikatorKinerjaTujuanPdModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Indikator Kinerja Tujuan PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.tujuan-pd.indikator-kinerja.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_tujuan_pd_id" id="indikator_kinerja_tujuan_pd_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Indikator Kinerja</label>
+                            <input id="edit_indikator_kinerja_tujuan_pd_deskripsi" name="edit_indikator_kinerja_tujuan_pd_deskripsi" class="form-control" required/>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_tujuan_pd_status_indikator" class="form-label">Status Indikator</label>
+                            <select name="edit_indikator_kinerja_tujuan_pd_status_indikator" id="edit_indikator_kinerja_tujuan_pd_status_indikator" class="form-control" required>
+                                <option value=""> --- Pilih Status Indikator ---</option>
+                                <option value="Target NSPK">Target NSPK</option>
+                                <option value="Target IKK">Target IKK</option>
+                                <option value="Target Indikator Lainnya">Target Indikator Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_tujuan_pd_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="edit_indikator_kinerja_tujuan_pd_satuan" name="edit_indikator_kinerja_tujuan_pd_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="text" class="form-control" id="edit_indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal" name="edit_indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -518,14 +576,6 @@
                         <div class="form-group position-relative">
                             <label for="tujuan_pd_edit_target" class="form-label">Target</label>
                             <input type="text" class="form-control" id="tujuan_pd_edit_target" name="tujuan_pd_edit_target" required>
-                        </div>
-                        <div class="form-group position-relative">
-                            <label for="tujuan_pd_edit_satuan" class="form-label">Satuan</label>
-                            <input type="text" class="form-control" id="tujuan_pd_edit_satuan" name="tujuan_pd_edit_satuan" required>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="tujuan_pd_edit_realisasi" class="form-label">Realisasi</label>
-                            <input type="text" class="form-control" id="tujuan_pd_edit_realisasi" name="tujuan_pd_edit_realisasi" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
@@ -616,7 +666,24 @@
                         <input type="hidden" name="indikator_kinerja_sasaran_pd_sasaran_pd_id" id="indikator_kinerja_sasaran_pd_sasaran_pd_id">
                         <div class="mb-3 position-relative form-group">
                             <label class="d-block form-label">Tambah Indikator Kinerja</label>
-                            <input id="indikator_kinerja_sasaran_pd_deskripsi" name="indikator_kinerja_sasaran_pd_deskripsi"/>
+                            <textarea name="indikator_kinerja_sasaran_pd_deskripsi" id="indikator_kinerja_sasaran_pd_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_sasaran_pd_status_indikator" class="form-label">Status Indikator</label>
+                            <select name="indikator_kinerja_sasaran_pd_status_indikator" id="indikator_kinerja_sasaran_pd_status_indikator" class="form-control" required>
+                                <option value="">--- Pilih Status Indikator ---</option>
+                                <option value="Target NSPK">Target NSPK</option>
+                                <option value="Target IKK">Target IKK</option>
+                                <option value="Target Indikator Lainnya">Target Indikator Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_sasaran_pd_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_sasaran_pd_satuan" name="indikator_kinerja_sasaran_pd_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_sasaran_pd_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="number" class="form-control" id="indikator_kinerja_sasaran_pd_kondisi_target_kinerja_awal" name="indikator_kinerja_sasaran_pd_kondisi_target_kinerja_awal" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
@@ -626,6 +693,48 @@
             </div>
         </div>
     </div>
+
+    <div id="editIndikatorKinerjaSasaranPdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editIndikatorKinerjaSasaranPdModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Indikator Kinerja Sasaran PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.sasaran-pd.indikator-kinerja.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_sasaran_pd_id" id="indikator_kinerja_sasaran_pd_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Indikator Kinerja</label>
+                            <textarea name="edit_indikator_kinerja_sasaran_pd_deskripsi" id="edit_indikator_kinerja_sasaran_pd_deskripsi" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_sasaran_pd_status_indikator" class="form-label">Status Indikator</label>
+                            <select name="edit_indikator_kinerja_sasaran_pd_status_indikator" id="edit_indikator_kinerja_sasaran_pd_status_indikator" class="form-control" required>
+                                <option value="">--- Pilih Status Indikator ---</option>
+                                <option value="Target NSPK">Target NSPK</option>
+                                <option value="Target IKK">Target IKK</option>
+                                <option value="Target Indikator Lainnya">Target Indikator Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_sasaran_pd_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="edit_indikator_kinerja_sasaran_pd_satuan" name="edit_indikator_kinerja_sasaran_pd_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_sasaran_pd_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="number" class="form-control" id="edit_indikator_kinerja_sasaran_pd_kondisi_target_kinerja_awal" name="edit_indikator_kinerja_sasaran_pd_kondisi_target_kinerja_awal" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="editTargetSasaranPdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetSasaranPdModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered ">
             <div class="modal-content">
@@ -641,13 +750,29 @@
                             <label for="sasaran_pd_edit_target" class="form-label">Target</label>
                             <input type="text" class="form-control" id="sasaran_pd_edit_target" name="sasaran_pd_edit_target" required>
                         </div>
-                        <div class="form-group position-relative">
-                            <label for="sasaran_pd_edit_satuan" class="form-label">Satuan</label>
-                            <input type="text" class="form-control" id="sasaran_pd_edit_satuan" name="sasaran_pd_edit_satuan" required>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
                         </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tambahSasaranPdProgramRpjmdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tambahSasaranPdProgramRpjmdModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Atur Kelompok Program Terhadap Sasaran PD</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.sasaran-pd.sasaran-pd-program-rpjmd.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sasaran_pd_program_rpjmd_sasaran_pd_id" id="sasaran_pd_program_rpjmd_sasaran_pd_id">
                         <div class="form-group position-relative mb-3">
-                            <label for="sasaran_pd_edit_realisasi" class="form-label">Realisasi</label>
-                            <input type="text" class="form-control" id="sasaran_pd_edit_realisasi" name="sasaran_pd_edit_realisasi" required>
+                            <label for="sasaran_pd_program_rpjmd_program_rpjmd_id" class="form-label">Program RPJMD</label>
+                            <select name="sasaran_pd_program_rpjmd_program_rpjmd_id[]" id="sasaran_pd_program_rpjmd_program_rpjmd_id" class="form-control" multiple required></select>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
@@ -795,6 +920,10 @@
 
             $('#renstra_kegiatan_kegiatan_id').select2();
 
+            $('#sasaran_pd_program_rpjmd_program_rpjmd_id').select2({
+                dropdownParent: $("#tambahSasaranPdProgramRpjmdModal")
+            });
+
             $.ajax({
                 url: "{{ route('opd.renstra.get-misi') }}",
                 dataType: "json",
@@ -804,8 +933,8 @@
                 }
             });
 
-            new Tagify(document.querySelector('#indikator_kinerja_tujuan_pd_deskripsi'));
-            new Tagify(document.querySelector('#indikator_kinerja_sasaran_pd_deskripsi'));
+            // new Tagify(document.querySelector('#indikator_kinerja_tujuan_pd_deskripsi'));
+            // new Tagify(document.querySelector('#indikator_kinerja_sasaran_pd_deskripsi'));
             new Tagify(document.querySelector('#indikator_kinerja_kegiatan_deskripsi'));
         });
 
@@ -925,6 +1054,23 @@
             $('#indikatorKinerjaTujuanPdModal').modal('show');
         });
 
+        $(document).on('click', '.btn-edit-tujuan-indikator-kinerja', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{{ url('/opd/renstra/tujuan-pd/indikator-kinerja/edit') }}" + '/' + id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#indikator_kinerja_tujuan_pd_id').val(id);
+                    $('#edit_indikator_kinerja_tujuan_pd_deskripsi').val(data.result.deskripsi);
+                    $('#edit_indikator_kinerja_tujuan_pd_satuan').val(data.result.satuan);
+                    $('#edit_indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal').val(data.result.kondisi_target_kinerja_awal);
+                    $("[name='edit_indikator_kinerja_tujuan_pd_status_indikator']").val(data.result.status_indikator).trigger('change');
+                    $('#editIndikatorKinerjaTujuanPdModal').modal('show');
+                }
+            });
+        });
+
         $(document).on('click', '.btn-hapus-tujuan-indikator-kinerja', function(){
             var tujuan_pd_indikator_kinerja_id = $(this).attr('data-tujuan-pd-indikator-kinerja-id');
 
@@ -975,8 +1121,6 @@
             var tahun = $(this).attr('data-tahun');
 
             var target = $('.tujuan-pd-add-target.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).val();
-            var satuan = $('.tujuan-pd-add-satuan.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).val();
-            var realisasi = $('.tujuan-pd-add-realisasi.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).val();
 
             return new swal({
                 title: "Apakah Anda Yakin?",
@@ -994,9 +1138,7 @@
                             "_token": "{{ csrf_token() }}",
                             tahun:tahun,
                             tujuan_pd_indikator_kinerja_id:tujuan_pd_indikator_kinerja_id,
-                            target:target,
-                            satuan:satuan,
-                            realisasi:realisasi
+                            target:target
                         },
                         dataType: "json",
                         success: function(data)
@@ -1031,13 +1173,9 @@
             var tahun = $(this).attr('data-tahun');
             var tujuan_pd_target_satuan_rp_realisasi = $(this).attr('data-tujuan-pd-target-satuan-rp-realisasi');
             var target = $('.tujuan-pd-span-target.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).text();
-            var satuan = $('.tujuan-pd-span-satuan.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).text();
-            var realisasi = $('.tujuan-pd-span-realisasi.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id).text();
 
             $('#tujuan_pd_target_satuan_rp_realisasi').val(tujuan_pd_target_satuan_rp_realisasi);
             $('#tujuan_pd_edit_target').val(target);
-            $('#tujuan_pd_edit_satuan').val(satuan);
-            $('#tujuan_pd_edit_realisasi').val(realisasi);
 
             $('#editTargetTujuanPdModal').modal('show');
         });
@@ -1138,6 +1276,23 @@
             $('#indikatorKinerjaSasaranPdModal').modal('show');
         });
 
+        $(document).on('click', '.btn-edit-sasaran-indikator-kinerja', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{{ url('/opd/renstra/sasaran-pd/indikator-kinerja/edit') }}" + '/' + id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#indikator_kinerja_sasaran_pd_id').val(id);
+                    $('#edit_indikator_kinerja_sasaran_pd_deskripsi').val(data.result.deskripsi);
+                    $('#edit_indikator_kinerja_sasaran_pd_satuan').val(data.result.satuan);
+                    $('#edit_indikator_kinerja_sasaran_pd_kondisi_target_kinerja_awal').val(data.result.kondisi_target_kinerja_awal);
+                    $("[name='edit_indikator_kinerja_sasaran_pd_status_indikator']").val(data.result.status_indikator).trigger('change');
+                    $('#editIndikatorKinerjaSasaranPdModal').modal('show');
+                }
+            });
+        });
+
         $(document).on('click', '.btn-hapus-sasaran-indikator-kinerja', function(){
             var sasaran_pd_indikator_kinerja_id = $(this).attr('data-sasaran-pd-indikator-kinerja-id');
 
@@ -1188,8 +1343,6 @@
             var tahun = $(this).attr('data-tahun');
 
             var target = $('.sasaran-pd-add-target.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).val();
-            var satuan = $('.sasaran-pd-add-satuan.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).val();
-            var realisasi = $('.sasaran-pd-add-realisasi.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).val();
 
             return new swal({
                 title: "Apakah Anda Yakin?",
@@ -1207,9 +1360,7 @@
                             "_token": "{{ csrf_token() }}",
                             tahun:tahun,
                             sasaran_pd_indikator_kinerja_id:sasaran_pd_indikator_kinerja_id,
-                            target:target,
-                            satuan:satuan,
-                            realisasi:realisasi
+                            target:target
                         },
                         dataType: "json",
                         success: function(data)
@@ -1244,15 +1395,34 @@
             var tahun = $(this).attr('data-tahun');
             var sasaran_pd_target_satuan_rp_realisasi = $(this).attr('data-sasaran-pd-target-satuan-rp-realisasi');
             var target = $('.sasaran-pd-span-target.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).text();
-            var satuan = $('.sasaran-pd-span-satuan.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).text();
-            var realisasi = $('.sasaran-pd-span-realisasi.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id).text();
 
             $('#sasaran_pd_target_satuan_rp_realisasi').val(sasaran_pd_target_satuan_rp_realisasi);
             $('#sasaran_pd_edit_target').val(target);
-            $('#sasaran_pd_edit_satuan').val(satuan);
-            $('#sasaran_pd_edit_realisasi').val(realisasi);
 
             $('#editTargetSasaranPdModal').modal('show');
+        });
+
+        $(document).on('click', '.tambah-sasaran-pd-program-rpjmd', function(){
+            var sasaran_pd_id = $(this).attr('data-sasaran-pd-id');
+            var sasaran_id = $(this).attr('data-sasaran-id');
+            $('#sasaran_pd_program_rpjmd_sasaran_pd_id').val(sasaran_pd_id);
+            $.ajax({
+                url: "{{ route('opd.renstra.sasaran-pd.sasaran-pd-program-rpjmd.get-program-rpjmd') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    sasaran_pd_id : sasaran_pd_id,
+                    sasaran_id : sasaran_id
+                },
+                success: function(data)
+                {
+                    $('#sasaran_pd_program_rpjmd_program_rpjmd_id').empty();
+                    $.each(data, function(key, value){
+                        $('#sasaran_pd_program_rpjmd_program_rpjmd_id').append(new Option(value.deskripsi, value.id));
+                    });
+                }
+            });
+            $('#tambahSasaranPdProgramRpjmdModal').modal('show');
         });
         // Sasaran End
 

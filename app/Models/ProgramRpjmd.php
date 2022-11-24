@@ -18,4 +18,9 @@ class ProgramRpjmd extends Model
     {
         return $this->hasMany('App\Models\PivotSasaranIndikatorProgramRpjmd', 'program_rpjmd_id');
     }
+
+    public function sasaran_pd_program_rpjmd()
+    {
+        return $this->hasMany('App\Models\SasaranPdProgramRpjmd', 'program_rpjmd_id');
+    }
 }

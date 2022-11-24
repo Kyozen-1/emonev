@@ -13,4 +13,9 @@ class SasaranPdTargetSatuanRpRealisasi extends Model
     {
         return $this->belongsTo('App\Models\SasaranPdIndikatorKinerja', 'sasaran_pd_indikator_kinerja_id');
     }
+
+    public function sasaran_pd_realisasi_renja()
+    {
+        return $this->hasOne('App\Models\SasaranPdRealisasiRenja', 'sasaran_pd_target_satuan_rp_realisasi_id');
+    }
 }

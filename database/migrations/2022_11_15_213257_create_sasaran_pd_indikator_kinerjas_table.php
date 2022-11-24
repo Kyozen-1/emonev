@@ -17,6 +17,9 @@ class CreateSasaranPdIndikatorKinerjasTable extends Migration
             $table->id();
             $table->foreignId('sasaran_pd_id')->nullable();
             $table->string('deskripsi')->nullable();
+            $table->string('satuan')->nullable();
+            $table->integer('kondisi_target_kinerja_awal')->nullable();
+            $table->enum('status_indikator', ['Target NSPK', 'Target IKK', 'Target Indikator Lainnya'])->nullable();
             $table->timestamps();
         });
     }
