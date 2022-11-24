@@ -1861,8 +1861,8 @@ class RenstraController extends Controller
                                                                                                                                                         </td>';
                                                                                                                                                     $html .= '</tr>
                                                                                                                                                     <tr>
-                                                                                                                                                        <td colspan="4" class="hiddenRow">
-                                                                                                                                                            <div class="collapse" id="sasaran_sasaran_pd_indikator_kinerja'.$sasaran_pd['id'].'">
+                                                                                                                                                        <td colspan="5" class="hiddenRow">
+                                                                                                                                                            <div class="collapse accordion-body" id="sasaran_sasaran_pd_indikator_kinerja'.$sasaran_pd['id'].'">
                                                                                                                                                                 <table class="table table-striped table-condesed">
                                                                                                                                                                     <thead>
                                                                                                                                                                         <tr>
@@ -2392,8 +2392,8 @@ class RenstraController extends Controller
                                                                                                                                                         </td>';
                                                                                                                                                     $html .= '</tr>
                                                                                                                                                     <tr>
-                                                                                                                                                        <td colspan="4" class="hiddenRow">
-                                                                                                                                                            <div class="collapse" id="sasaran_sasaran_pd_indikator_kinerja'.$sasaran_pd['id'].'">
+                                                                                                                                                        <td colspan="5" class="hiddenRow">
+                                                                                                                                                            <div class="collapse accordion-body" id="sasaran_sasaran_pd_indikator_kinerja'.$sasaran_pd['id'].'">
                                                                                                                                                                 <table class="table table-striped table-condesed">
                                                                                                                                                                     <thead>
                                                                                                                                                                         <tr>
