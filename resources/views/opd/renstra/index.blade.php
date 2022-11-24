@@ -1424,6 +1424,50 @@
             });
             $('#tambahSasaranPdProgramRpjmdModal').modal('show');
         });
+
+        $(document).on('click', '.btn-hapus-sasaran-pd-program-rpjmd', function(){
+            var sasaran_pd_program_rpjmd_id = $(this).attr('data-sasaran-pd-program-rpjmd-id');
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renstra.sasaran-pd.sasaran-pd-program-rpjmd.hapus') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            sasaran_pd_program_rpjmd_id:sasaran_pd_program_rpjmd_id
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renstra.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
         // Sasaran End
 
         // Program Start

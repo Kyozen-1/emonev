@@ -330,4 +330,11 @@ class SasaranPdController extends Controller
         Alert::success('Berhasil', 'Berhasil mengelompokan Program di Sasaran PD');
         return redirect()->route('opd.renstra.index');
     }
+
+    public function sasaran_pd_program_rpjmd_hapus(Request $request)
+    {
+        SasaranPdProgramRpjmd::find($request->sasaran_pd_program_rpjmd_id)->delete();
+
+        return response()->json(['success' => 'Berhasil menghapus program dari kelompok sasaran pd']);
+    }
 }

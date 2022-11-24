@@ -68,6 +68,7 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renstra/sasaran-pd/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\SasaranPdController@target_satuan_realisasi_ubah')->name('opd.renstra.sasaran-pd.indikator-kinerja.target-satuan-realisasi.ubah');
     Route::post('/opd/renstra/sasaran-pd/sasaran-pd-program-rpjmd/get-program-rpjmd', 'Opd\SasaranPdController@sasaran_pd_program_rpjmd_get_program_rpjmd')->name('opd.renstra.sasaran-pd.sasaran-pd-program-rpjmd.get-program-rpjmd');
     Route::post('/opd/renstra/sasaran-pd/sasaran-pd-program-rpjmd/tambah', 'Opd\SasaranPdController@sasaran_pd_program_rpjmd_tambah')->name('opd.renstra.sasaran-pd.sasaran-pd-program-rpjmd.tambah');
+    Route::post('/opd/renstra/sasaran-pd/sasaran-pd-program-rpjmd/hapus', 'Opd\SasaranPdController@sasaran_pd_program_rpjmd_hapus')->name('opd.renstra.sasaran-pd.sasaran-pd-program-rpjmd.hapus');
 
     Route::post('/opd/program/indikator/target-satuan-rp-realisasi/update', 'Opd\ProgramIndikatorController@update_program_target_satuan_rp_realisasi')->name('opd.program.indikator.target-satuan-rp-realisasi.update');
 
