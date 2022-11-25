@@ -946,6 +946,7 @@ class RenstraController extends Controller
                                                                                                                                 $html .= '<tr>';
                                                                                                                                     $html .= '<td></td>';
                                                                                                                                     $html .= '<td></td>';
+                                                                                                                                    $html .= '<td></td>';
                                                                                                                                     $html .= '<td><span class="tujuan-pd-span-target '.$tahun.' data-tujuan-pd-indikator-kinerja-'.$tujuan_pd_indikator_kinerja->id.'">'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'</span></td>';
                                                                                                                                     $html .= '<td>'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
                                                                                                                                     $cek_tujuan_pd_realisasi_renja = TujuanPdRealisasiRenja::where('tujuan_pd_target_satuan_rp_realisasi_id', $cek_tujuan_pd_target_satuan_rp_realisasi->id)->first();

@@ -178,6 +178,12 @@ class TujuanPdController extends Controller
         return redirect()->route('opd.renstra.index');
     }
 
+    public function indikator_kinerja_edit($id)
+    {
+        $data = TujuanPdIndikatorKinerja::find($id);
+        return response()->json(['result' => $data]);
+    }
+
     public function indikator_kinerja_update(Request $request)
     {
         $errors = Validator::make($request->all(), [

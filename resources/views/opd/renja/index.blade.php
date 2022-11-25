@@ -70,7 +70,13 @@
             <div class="card-header border-0 pb-0">
                 <ul class="nav nav-pills responsive-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="renja_program_tab_button" data-bs-toggle="tab" data-bs-target="#renja_program" role="tab" aria-selected="false" type="button">Program</button>
+                        <button class="nav-link active" id="renja_tujuan_tab_button" data-bs-toggle="tab" data-bs-target="#renja_tujuan" role="tab" aria-selected="false" type="button">Tujuan</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="renja_sasaran_tab_button" data-bs-toggle="tab" data-bs-target="#renja_sasaran" role="tab" aria-selected="false" type="button">Sasaran</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="renja_program_tab_button" data-bs-toggle="tab" data-bs-target="#renja_program" role="tab" aria-selected="false" type="button">Program</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="renja_kegiatan_tab_button" data-bs-toggle="tab" data-bs-target="#renja_kegiatan" role="tab" aria-selected="false" type="button">Kegiatan</button>
@@ -82,8 +88,18 @@
             </div>
             <div class="card-body">
                 <div class="tab-content">
+                    {{-- Tujuan Start --}}
+                    <div class="tab-pane fade show active" id="renja_tujuan" role="tabpanel">
+                        <div id="renjaTujuanNavDiv"></div>
+                    </div>
+                    {{-- Tujuan End --}}
+                    {{-- Sasaran Start --}}
+                    <div class="tab-pane fade" id="renja_sasaran" role="tabpanel">
+                        <div id="renjaSasaranNavDiv"></div>
+                    </div>
+                    {{-- Sasaran End --}}
                     {{-- Program Start --}}
-                    <div class="tab-pane fade show active" id="renja_program" role="tabpanel">
+                    <div class="tab-pane fade" id="renja_program" role="tabpanel">
                         <div id="renjaProgramNavDiv"></div>
                     </div>
                     {{-- Program End --}}
@@ -101,6 +117,32 @@
             </div>
         </div>
     </div>
+    {{-- Modal Tujuan Start --}}
+    <div id="editTujuanPdRealisasiModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTujuanPdRealisasiModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Realisasi Tujuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renja.tujuan.realisasi.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="tujuan_pd_realisasi_renja_id" id="tujuan_pd_realisasi_renja_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="tujuan_pd_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="tujuan_pd_edit_realisasi" name="tujuan_pd_edit_realisasi" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Modal Tujuan End --}}
+
     {{-- Modal Program Start --}}
     <div id="editTargetProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetProgramModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered ">
@@ -269,16 +311,107 @@
     <script>
         $(document).ready(function(){
             $.ajax({
-                url: "{{ route('opd.renja.get_program') }}",
+                url: "{{ route('opd.renja.get_tujuan') }}",
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#renjaProgramNavDiv').html(data.html);
+                    $('#renjaTujuanNavDiv').html(data.html);
                 }
             });
 
             new Tagify(document.querySelector('#indikator_kinerja_sub_kegiatan_deskripsi'));
         });
+
+        // Renja Tujuan Start
+        $('#renja_tujuan_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('opd.renja.get_tujuan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaTujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('click', '.button-tujuan-pd-realisasi-renja', function(){
+            var tujuan_pd_indikator_kinerja_id = $(this).attr('data-tujuan-pd-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var tujuan_pd_target_satuan_rp_realisasi_id = $(this).attr('data-tujuan-pd-target-satuan-rp-realisasi-id');
+
+            var realisasi = $('.tujuan-pd-add-realisasi.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id+'.data-tujuan-pd-target-satuan-rp-realisasi-'+tujuan_pd_target_satuan_rp_realisasi_id).val();
+
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renja.tujuan.realisasi.tambah') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tujuan_pd_target_satuan_rp_realisasi_id:tujuan_pd_target_satuan_rp_realisasi_id,
+                            realisasi:realisasi
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renja.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-tujuan-pd-edit-realisasi-renja', function(){
+            var tujuan_pd_indikator_kinerja_id = $(this).attr('data-tujuan-pd-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var tujuan_pd_target_satuan_rp_realisasi_pd_id = $(this).attr('data-tujuan-pd-target-satuan-rp-realisasi-id');
+            var tujuan_pd_realisasi_renja_id = $(this).attr('data-tujuan-pd-realisasi-renja-id');
+
+            var realisasi = $('.tujuan-pd-span-realisasi.'+tahun+'.data-tujuan-pd-indikator-kinerja-'+tujuan_pd_indikator_kinerja_id+'.data-tujuan-pd-target-satuan-rp-realisasi-'+tujuan_pd_target_satuan_rp_realisasi_pd_id+'.data-tujuan-pd-realisasi-renja-'+tujuan_pd_realisasi_renja_id).text();
+
+            $('#tujuan_pd_realisasi_renja_id').val(tujuan_pd_realisasi_renja_id);
+            $('#tujuan_pd_edit_realisasi').val(realisasi);
+            $('#editTujuanPdRealisasiModal').modal('show');
+        });
+        // Renja Tujuan End
+
+        // Renja Sasaran Start
+        $('#renja_sasaran_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('opd.renja.get_sasaran') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaSasaranNavDiv').html(data.html);
+                }
+            });
+        });
+        // Renja Sasaran End
 
         // Renja Program Start
         $('#renja_program_tab_button').click(function(){

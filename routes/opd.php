@@ -27,9 +27,17 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renstra/reset/get-kegiatan', 'Opd\RenstraController@get_kegiatan')->name('opd.renstra.reset.get-kegiatan');
 
     Route::get('/opd/renja', 'Opd\RenjaController@index')->name('opd.renja.index');
+    Route::get('/opd/renja/get-tujuan', 'Opd\RenjaController@get_tujuan')->name('opd.renja.get_tujuan');
+    Route::get('/opd/renja/get-sasaran', 'Opd\RenjaController@get_sasaran')->name('opd.renja.get_sasaran');
     Route::get('/opd/renja/get-program', 'Opd\RenjaController@get_program')->name('opd.renja.get_program');
     Route::get('/opd/renja/get-kegiatan', 'Opd\RenjaController@get_kegiatan')->name('opd.renja.get_kegiatan');
     Route::get('/opd/renja/get-sub-kegiatan', 'Opd\RenjaController@get_sub_kegiatan')->name('opd.renja.get-sub-kegiatan');
+
+    // Renja Tujuan
+    Route::post('/opd/renja/tujuan/realisasi/tambah', 'Opd\Renja\TujuanController@realisasi_tambah')->name('opd.renja.tujuan.realisasi.tambah');
+    Route::post('/opd/renja/tujuan/realisasi/update', 'Opd\Renja\TujuanController@realisasi_update')->name('opd.renja.tujuan.realisasi.update');
+
+
     // Renja Sub Kegiatan
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tambah', 'Opd\Renja\SubKegiatanController@indikator_kinerja_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tambah');
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/hapus', 'Opd\Renja\SubKegiatanController@indikator_kinerja_hapus')->name('opd.renja.sub-kegiatan.indikator-kinerja.hapus');
