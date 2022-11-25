@@ -444,6 +444,9 @@ class ProgramController extends Controller
         $indikator_kinerja = new ProgramIndikatorKinerja;
         $indikator_kinerja->program_id = $request->indikator_kinerja_program_program_id;
         $indikator_kinerja->deskripsi = $request->indikator_kinerja_program_deskripsi;
+        $indikator_kinerja->satuan = $request->indikator_kinerja_program_satuan;
+        $indikator_kinerja->kondisi_target_kinerja_awal = $request->indikator_kinerja_program_kondisi_target_kinerja_awal;
+        $indikator_kinerja->kondisi_target_anggaran_awal = $request->indikator_kinerja_program_kondisi_target_anggaran_awal;
         $indikator_kinerja->save();
 
         $opd_id = $request->indikator_kinerja_program_opd_id;
@@ -490,6 +493,9 @@ class ProgramController extends Controller
         $errors = Validator::make($request->all(), [
             'edit_program_indikator_kinerja_id' => 'required',
             'edit_program_indikator_kinerja_deskripsi' => 'required',
+            'edit_program_indikator_kinerja_satuan' => 'required',
+            'edit_program_indikator_kinerja_kondisi_target_kinerja_awal' => 'required',
+            'edit_program_indikator_kinerja_kondisi_target_anggaran_awal' => 'required',
         ]);
 
         if($errors -> fails())
@@ -500,6 +506,9 @@ class ProgramController extends Controller
 
         $program_indikator_kinerja = ProgramIndikatorKinerja::find($request->edit_program_indikator_kinerja_id);
         $program_indikator_kinerja->deskripsi = $request->edit_program_indikator_kinerja_deskripsi;
+        $program_indikator_kinerja->satuan = $request->edit_program_indikator_kinerja_satuan;
+        $program_indikator_kinerja->kondisi_target_kinerja_awal = $request->edit_program_indikator_kinerja_kondisi_target_kinerja_awal;
+        $program_indikator_kinerja->kondisi_target_anggaran_awal = $request->edit_program_indikator_kinerja_kondisi_target_anggaran_awal;
         $program_indikator_kinerja->save();
 
         Alert::success('Berhasil', 'Berhasil Menambahkan Indikator Kinerja untuk Program');

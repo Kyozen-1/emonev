@@ -19,8 +19,6 @@ class CreateProgramTargetSatuanRpRealisasisTable extends Migration
             $table->string('target')->nullable();
             $table->string('satuan')->nullable();
             $table->string('target_rp')->nullable();
-            $table->string('realisasi')->nullable();
-            $table->string('realisasi_rp')->nullable();
             $table->string('tahun')->nullable();
             $table->timestamps();
         });

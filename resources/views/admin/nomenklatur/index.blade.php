@@ -865,6 +865,18 @@
                             <input type="text" class="form-control" id="indikator_kinerja_program_deskripsi" name="indikator_kinerja_program_deskripsi" required>
                         </div>
                         <div class="form-group mb-3 position-relative">
+                            <label for="indikator_kinerja_program_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" name="indikator_kinerja_program_satuan" id="indikator_kinerja_program_satuan" required>
+                        </div>
+                        <div class="form-group mb-3 position-relative">
+                            <label for="indikator_kinerja_program_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="text" class="form-control" name="indikator_kinerja_program_kondisi_target_kinerja_awal" id="indikator_kinerja_program_kondisi_target_kinerja_awal" required>
+                        </div>
+                        <div class="form-group mb-3 position-relative">
+                            <label for="indikator_kinerja_program_kondisi_target_anggaran_awal" class="form-label">Kondisi Target Anggaran Awal</label>
+                            <input type="text" class="form-control" name="indikator_kinerja_program_kondisi_target_anggaran_awal" id="indikator_kinerja_program_kondisi_target_anggaran_awal" required>
+                        </div>
+                        <div class="form-group mb-3 position-relative">
                             <label class="form-label">OPD</label>
                             <select name="indikator_kinerja_program_opd_id[]" id="indikator_kinerja_program_opd_id" class="form-control" multiple required>
                                 @foreach ($opd as $id => $nama)
@@ -896,12 +908,8 @@
                             <label for="program_edit_target" class="form-label">Target</label>
                             <input type="text" class="form-control" id="program_edit_target" name="program_edit_target" required>
                         </div>
-                        <div class="form-group position-relative">
-                            <label for="program_edit_satuan" class="form-label">Satuan</label>
-                            <input type="text" class="form-control" id="program_edit_satuan" name="program_edit_satuan" required>
-                        </div>
                         <div class="form-group position-relative mb-3">
-                            <label for="program_edit_target_rp" class="form-label">RP</label>
+                            <label for="program_edit_target_rp" class="form-label">Target RP</label>
                             <input type="text" class="form-control" id="program_edit_target_rp" name="program_edit_target_rp" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
@@ -928,6 +936,18 @@
                             <label for="edit_program_indikator_kinerja_deskripsi" class="form-label">Deskripsi</label>
                             <input type="text" class="form-control" id="edit_program_indikator_kinerja_deskripsi" name="edit_program_indikator_kinerja_deskripsi" required>
                         </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_program_indikator_kinerja_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="edit_program_indikator_kinerja_satuan" name="edit_program_indikator_kinerja_satuan" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_program_indikator_kinerja_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
+                            <input type="text" class="form-control" id="edit_program_indikator_kinerja_kondisi_target_kinerja_awal" name="edit_program_indikator_kinerja_kondisi_target_kinerja_awal" required>
+                        </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_program_indikator_kinerja_kondisi_target_anggaran_awal" class="form-label">Kondisi Target Anggaran Awal</label>
+                            <input type="text" class="form-control" id="edit_program_indikator_kinerja_kondisi_target_anggaran_awal" name="edit_program_indikator_kinerja_kondisi_target_anggaran_awal" required>
+                        </div>
                         <div class="form-group position-relative" style="text-align: right">
                             <button class="btn btn-primary waves-effect waves-light">Simpan</button>
                         </div>
@@ -936,6 +956,7 @@
             </div>
         </div>
     </div>
+
     <div id="editOpdIndikatorProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editOpdIndikatorProgramModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered ">
             <div class="modal-content">
@@ -1759,7 +1780,6 @@
         var tahun = $(this).attr('data-tahun');
 
         var target = $('.program-add-target.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).val();
-        var satuan = $('.program-add-satuan.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).val();
         var target_rp = $('.program-add-target-rp.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).val();
 
         return new swal({
@@ -1779,7 +1799,6 @@
                         tahun:tahun,
                         opd_program_indikator_kinerja_id:opd_program_indikator_kinerja_id,
                         target:target,
-                        satuan:satuan,
                         target_rp:target_rp
                     },
                     dataType: "json",
@@ -1815,12 +1834,10 @@
         var tahun = $(this).attr('data-tahun');
         var program_target_satuan_rp_realisasi = $(this).attr('data-program-target-satuan-rp-realisasi');
         var target = $('.program-span-target.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).text();
-        var satuan = $('.program-span-satuan.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).text();
         var target_rp = $('.program-span-target-rp.'+tahun+'.data-opd-program-indikator-kinerja-'+opd_program_indikator_kinerja_id).attr('data-target-rp');
 
         $('#program_target_satuan_rp_realisasi').val(program_target_satuan_rp_realisasi);
         $('#program_edit_target').val(target);
-        $('#program_edit_satuan').val(satuan);
         $('#program_edit_target_rp').val(target_rp);
 
         $('#editTargetProgramModal').modal('show');
@@ -1835,6 +1852,9 @@
             {
                 $('#edit_program_indikator_kinerja_id').val(id);
                 $('#edit_program_indikator_kinerja_deskripsi').val(data.result.deskripsi);
+                $('#edit_program_indikator_kinerja_satuan').val(data.result.satuan);
+                $('#edit_program_indikator_kinerja_kondisi_target_kinerja_awal').val(data.result.kondisi_target_kinerja_awal);
+                $('#edit_program_indikator_kinerja_kondisi_target_anggaran_awal').val(data.result.kondisi_target_anggaran_awal);
                 $('#editIndikatorProgramModal').modal('show');
             }
         });
