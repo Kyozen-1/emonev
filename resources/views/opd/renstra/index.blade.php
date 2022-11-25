@@ -436,7 +436,12 @@
                         </div>
                         <div class="form-group position-relative mb-3">
                             <label for="tambah_tujuan_pd_tahun_perubahan" class="form-label">Tahun</label>
-                            <input type="number" class="form-control" id="tambah_tujuan_pd_tahun_perubahan" name="tambah_tujuan_pd_tahun_perubahan" required>
+                            <select name="tambah_tujuan_pd_tahun_perubahan" id="tambah_tujuan_pd_tahun_perubahan" class="form-control" required>
+                                <option value="">--- Pilih Tahun ---</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group position-relative" style="text-align: right">
                             <button class="btn btn-primary waves-effect waves-light">Simpan</button>
@@ -469,7 +474,12 @@
                         </div>
                         <div class="form-group position-relative mb-3">
                             <label for="edit_tujuan_pd_tahun_perubahan" class="form-label">Tahun</label>
-                            <input type="number" class="form-control" id="edit_tujuan_pd_tahun_perubahan" name="edit_tujuan_pd_tahun_perubahan" required>
+                            <select name="edit_tujuan_pd_tahun_perubahan" id="edit_tujuan_pd_tahun_perubahan" class="form-control" required>
+                                <option value="">--- Pilih Tahun ---</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group position-relative" style="text-align: right">
                             <button class="btn btn-primary waves-effect waves-light">Simpan</button>
@@ -609,7 +619,12 @@
                         </div>
                         <div class="form-group position-relative mb-3">
                             <label for="tambah_sasaran_pd_tahun_perubahan" class="form-label">Tahun</label>
-                            <input type="number" class="form-control" id="tambah_sasaran_pd_tahun_perubahan" name="tambah_sasaran_pd_tahun_perubahan" required>
+                            <select name="tambah_sasaran_pd_tahun_perubahan" id="tambah_sasaran_pd_tahun_perubahan" class="form-control" required>
+                                <option value="">--- Pilih Tahun ---</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group position-relative" style="text-align: right">
                             <button class="btn btn-primary waves-effect waves-light">Simpan</button>
@@ -642,7 +657,12 @@
                         </div>
                         <div class="form-group position-relative mb-3">
                             <label for="edit_sasaran_pd_tahun_perubahan" class="form-label">Tahun</label>
-                            <input type="number" class="form-control" id="edit_sasaran_pd_tahun_perubahan" name="edit_sasaran_pd_tahun_perubahan" required>
+                            <select name="edit_sasaran_pd_tahun_perubahan" id="edit_sasaran_pd_tahun_perubahan" class="form-control" required>
+                                <option value="">--- Pilih Tahun ---</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group position-relative" style="text-align: right">
                             <button class="btn btn-primary waves-effect waves-light">Simpan</button>
@@ -1060,7 +1080,7 @@
                     $('#edit_tujuan_pd_tujuan_id').val(tujuan_id);
                     $('#edit_tujuan_pd_kode').val(data.result.kode);
                     $('#edit_tujuan_pd_deskripsi').val(data.result.deskripsi);
-                    $('#edit_tujuan_pd_tahun_perubahan').val(data.result.tahun_perubahan);
+                    $("[name='edit_tujuan_pd_tahun_perubahan']").val(data.result.tahun_perubahan).trigger('change');
                     $('#editTujuanPDModal').modal('show');
                 }
             });
@@ -1282,7 +1302,7 @@
                     $('#edit_sasaran_pd_sasaran_id').val(sasaran_id);
                     $('#edit_sasaran_pd_kode').val(data.result.kode);
                     $('#edit_sasaran_pd_deskripsi').val(data.result.deskripsi);
-                    $('#edit_sasaran_pd_tahun_perubahan').val(data.result.tahun_perubahan);
+                    $("[name='edit_sasaran_pd_tahun_perubahan']").val(data.result.tahun_perubahan).trigger('change');
                     $('#editSasaranPDModal').modal('show');
                 }
             });

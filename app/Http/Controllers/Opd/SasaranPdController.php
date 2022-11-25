@@ -167,7 +167,8 @@ class SasaranPdController extends Controller
 
         if($errors -> fails())
         {
-            return back()->with('errors', $errors->message()->all())->withInput();
+            Alert::error('Berhasil', $errors->errors()->all());
+            return redirect()->route('opd.renstra.index');
         }
 
         $sasaran_pd_indikator_kinerja = new SasaranPdIndikatorKinerja;
@@ -201,7 +202,8 @@ class SasaranPdController extends Controller
 
         if($errors -> fails())
         {
-            return back()->with('errors', $errors->message()->all())->withInput();
+            Alert::error('Berhasil', $errors->errors()->all());
+            return redirect()->route('opd.renstra.index');
         }
 
         $sasaran_pd_indikator_kinerja = SasaranPdIndikatorKinerja::find($request->indikator_kinerja_sasaran_pd_id);

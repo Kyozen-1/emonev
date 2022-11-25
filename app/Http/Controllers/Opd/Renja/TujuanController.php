@@ -72,8 +72,8 @@ class TujuanController extends Controller
 
         if($errors -> fails())
         {
-            // return back()->with('errors', $errors->message()->all())->withInput();
-            return response()->json(['errors' => $errors->message()->all()]);
+            // return back()->with('errors', $errors->errors()->all())->withInput();
+            return response()->json(['errors' => $errors->errors()->all()]);
         }
 
         $tujuan_pd_realisasi_renja = new TujuanPdRealisasiRenja;
@@ -93,7 +93,8 @@ class TujuanController extends Controller
 
         if($errors -> fails())
         {
-            return back()->with('errors', $errors->message()->all())->withInput();
+            Alert::error('Gagal', $errors->errors()->all());
+            return redirect()->route('opd.renja.index');
         }
 
         $tujuan_pd_realisasi_renja = TujuanPdRealisasiRenja::find($request->tujuan_pd_realisasi_renja_id);

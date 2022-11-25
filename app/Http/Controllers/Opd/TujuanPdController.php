@@ -158,12 +158,13 @@ class TujuanPdController extends Controller
             'indikator_kinerja_tujuan_pd_deskripsi' => 'required',
             'indikator_kinerja_tujuan_pd_satuan' => 'required',
             'indikator_kinerja_tujuan_pd_kondisi_target_kinerja_awal' => 'required',
-            'indikator_kinerja_status_indikator' => 'required'
+            'indikator_kinerja_tujuan_pd_status_indikator' => 'required'
         ]);
 
         if($errors -> fails())
         {
-            return back()->with('errors', $errors->message()->all())->withInput();
+            Alert::error('Berhasil', $errors->errors()->all());
+            return redirect()->route('opd.renstra.index');
         }
 
         $tujuan_pd_indikator_kinerja = new TujuanPdIndikatorKinerja;
@@ -196,7 +197,8 @@ class TujuanPdController extends Controller
 
         if($errors -> fails())
         {
-            return back()->with('errors', $errors->message()->all())->withInput();
+            Alert::error('Berhasil', $errors->errors()->all());
+            return redirect()->route('opd.renstra.index');
         }
 
         $tujuan_pd_indikator_kinerja = TujuanPdIndikatorKinerja::find($request->indikator_kinerja_tujuan_pd_id);
