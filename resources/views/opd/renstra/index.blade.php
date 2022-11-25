@@ -828,10 +828,76 @@
                         <input type="hidden" name="indikator_kinerja_kegiatan_kegiatan_id" id="indikator_kinerja_kegiatan_kegiatan_id">
                         <div class="mb-3 position-relative form-group">
                             <label class="d-block form-label">Tambah Indikator Kinerja</label>
-                            <input id="indikator_kinerja_kegiatan_deskripsi" name="indikator_kinerja_kegiatan_deskripsi"/>
+                            <textarea name="indikator_kinerja_kegiatan_deskripsi" id="indikator_kinerja_kegiatan_deskripsi" rows="5" class="form-control"></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_kegiatan_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_kegiatan_satuan" name="indikator_kinerja_kegiatan_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_kegiatan_kondisi_target_kinerja_awal" class="form-label">Target Kinerja Awal</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_kegiatan_kondisi_target_kinerja_awal" name="indikator_kinerja_kegiatan_kondisi_target_kinerja_awal" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_kegiatan_kondisi_target_anggaran_awal" class="form-label">Target Anggaran Awal</label>
+                            <input type="text" class="form-control" id="indikator_kinerja_kegiatan_kondisi_target_anggaran_awal" name="indikator_kinerja_kegiatan_kondisi_target_anggaran_awal" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="indikator_kinerja_kegiatan_status_indikator" class="control-label">Status Indikator</label>
+                            <select name="indikator_kinerja_kegiatan_status_indikator" id="indikator_kinerja_kegiatan_status_indikator" class="form-control" required>
+                                <option value="">--- Pilih Status Indikator ---</option>
+                                <option value="Target NSPK">Target NSPK</option>
+                                <option value="Target IKK">Target IKK</option>
+                                <option value="Target Indikator Lainnya">Target Indikator Lainnya</option>
+                            </select>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editIndikatorKinerjaKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editIndikatorKinerjaKegiatanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Indikator Kinerja Kegiatan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renstra.kegiatan.indikator-kinerja.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="indikator_kinerja_kegiatan_id" id="indikator_kinerja_kegiatan_id">
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Indikator Kinerja</label>
+                            <textarea name="edit_indikator_kinerja_kegiatan_deskripsi" id="edit_indikator_kinerja_kegiatan_deskripsi" rows="5" class="form-control"></textarea>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_kegiatan_satuan" class="form-label">Satuan</label>
+                            <input type="text" class="form-control" id="edit_indikator_kinerja_kegiatan_satuan" name="edit_indikator_kinerja_kegiatan_satuan" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_kegiatan_kondisi_target_kinerja_awal" class="form-label">Target Kinerja Awal</label>
+                            <input type="text" class="form-control" id="edit_indikator_kinerja_kegiatan_kondisi_target_kinerja_awal" name="edit_indikator_kinerja_kegiatan_kondisi_target_kinerja_awal" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_kegiatan_kondisi_target_anggaran_awal" class="form-label">Target Anggaran Awal</label>
+                            <input type="text" class="form-control" id="edit_indikator_kinerja_kegiatan_kondisi_target_anggaran_awal" name="edit_indikator_kinerja_kegiatan_kondisi_target_anggaran_awal" required>
+                        </div>
+                        <div class="mb-3 position-relative form-group">
+                            <label for="edit_indikator_kinerja_kegiatan_status_indikator" class="control-label">Status Indikator</label>
+                            <select name="edit_indikator_kinerja_kegiatan_status_indikator" id="edit_indikator_kinerja_kegiatan_status_indikator" class="form-control" required>
+                                <option value="">--- Pilih Status Indikator ---</option>
+                                <option value="Target NSPK">Target NSPK</option>
+                                <option value="Target IKK">Target IKK</option>
+                                <option value="Target Indikator Lainnya">Target Indikator Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -853,10 +919,6 @@
                         <div class="form-group position-relative">
                             <label for="kegiatan_edit_target" class="form-label">Target</label>
                             <input type="text" class="form-control" id="kegiatan_edit_target" name="kegiatan_edit_target" required>
-                        </div>
-                        <div class="form-group position-relative">
-                            <label for="kegiatan_edit_satuan" class="form-label">Satuan</label>
-                            <input type="text" class="form-control" id="kegiatan_edit_satuan" name="kegiatan_edit_satuan" required>
                         </div>
                         <div class="form-group position-relative">
                             <label for="kegiatan_edit_target_rp" class="form-label">Target RP</label>
@@ -935,7 +997,7 @@
 
             // new Tagify(document.querySelector('#indikator_kinerja_tujuan_pd_deskripsi'));
             // new Tagify(document.querySelector('#indikator_kinerja_sasaran_pd_deskripsi'));
-            new Tagify(document.querySelector('#indikator_kinerja_kegiatan_deskripsi'));
+            // new Tagify(document.querySelector('#indikator_kinerja_kegiatan_deskripsi'));
         });
 
         // Misi Start
@@ -1514,6 +1576,24 @@
             $('#indikatorKinerjaKegiatanModal').modal('show');
         });
 
+        $(document).on('click', '.btn-edit-kegiatan-indikator-kinerja', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{{ url('/opd/renstra/kegiatan/indikator-kinerja/edit') }}" + '/' + id,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#indikator_kinerja_kegiatan_id').val(id);
+                    $('#edit_indikator_kinerja_kegiatan_deskripsi').val(data.result.deskripsi);
+                    $('#edit_indikator_kinerja_kegiatan_satuan').val(data.result.satuan);
+                    $('#edit_indikator_kinerja_kegiatan_kondisi_target_kinerja_awal').val(data.result.kondisi_target_kinerja_awal);
+                    $('#edit_indikator_kinerja_kegiatan_kondisi_target_anggaran_awal').val(data.result.kondisi_target_anggaran_awal);
+                    $("[name='edit_indikator_kinerja_kegiatan_status_indikator']").val(data.result.status_indikator).trigger('change');
+                    $('#editIndikatorKinerjaKegiatanModal').modal('show');
+                }
+            });
+        });
+
         $(document).on('click', '.btn-hapus-kegiatan-indikator-kinerja', function(){
             var kegiatan_indikator_kinerja_id = $(this).attr('data-kegiatan-indikator-kinerja-id');
 
@@ -1564,7 +1644,6 @@
             var tahun = $(this).attr('data-tahun');
 
             var target = $('.kegiatan-add-target.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
-            var satuan = $('.kegiatan-add-satuan.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
             var target_rp = $('.kegiatan-add-target-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val();
 
             return new swal({
@@ -1584,7 +1663,6 @@
                             tahun:tahun,
                             kegiatan_indikator_kinerja_id:kegiatan_indikator_kinerja_id,
                             target:target,
-                            satuan:satuan,
                             target_rp:target_rp
                         },
                         dataType: "json",
@@ -1621,12 +1699,10 @@
             var tahun = $(this).attr('data-tahun');
             var kegiatan_target_satuan_rp_realisasi = $(this).attr('data-kegiatan-target-satuan-rp-realisasi');
             var target = $('.kegiatan-span-target.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
-            var satuan = $('.kegiatan-span-satuan.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).text();
             var target_rp = $('.kegiatan-span-target-rp.'+tahun+'.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id+'.data-sasaran-id-'+sasaran_id).attr('data-target-rp');
 
             $('#kegiatan_target_satuan_rp_realisasi').val(kegiatan_target_satuan_rp_realisasi);
             $('#kegiatan_edit_target').val(target);
-            $('#kegiatan_edit_satuan').val(satuan);
             $('#kegiatan_edit_target_rp').val(target_rp);
 
             $('#editTargetKegiatanModal').modal('show');

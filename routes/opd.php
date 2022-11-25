@@ -73,6 +73,8 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/program/indikator/target-satuan-rp-realisasi/update', 'Opd\ProgramIndikatorController@update_program_target_satuan_rp_realisasi')->name('opd.program.indikator.target-satuan-rp-realisasi.update');
 
     Route::post('/opd/renstra/kegiatan/indikator-kinerja/tambah', 'Opd\KegiatanController@indikator_kinerja_tambah')->name('opd.renstra.kegiatan.indikator-kinerja.tambah');
+    Route::get('/opd/renstra/kegiatan/indikator-kinerja/edit/{id}', 'Opd\KegiatanController@indikator_kinerja_edit');
+    Route::post('/opd/renstra/kegiatan/indikator-kinerja/update', 'Opd\KegiatanController@indikator_kinerja_update')->name('opd.renstra.kegiatan.indikator-kinerja.update');
     Route::post('/opd/renstra/kegiatan/indikator-kinerja/hapus', 'Opd\KegiatanController@indikator_kinerja_hapus')->name('opd.renstra.kegiatan.indikator-kinerja.hapus');
     Route::post('/opd/renstra/kegiatan/indikator-kinerja/target-satuan-realisasi/tambah', 'Opd\KegiatanController@target_satuan_realisasi_tambah')->name('opd.renstra.kegiatan.indikator-kinerja.target-satuan-realisasi.tambah');
     Route::post('/opd/renstra/kegiatan/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\KegiatanController@target_satuan_realisasi_ubah')->name('opd.renstra.kegiatan.indikator-kinerja.target-satuan-realisasi.ubah');
