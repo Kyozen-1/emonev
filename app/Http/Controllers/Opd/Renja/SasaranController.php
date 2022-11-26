@@ -57,15 +57,17 @@ use App\Models\MasterTw;
 use App\Models\ProgramTwRealisasi;
 use App\Models\KegiatanTwRealisasi;
 use App\Models\SubKegiatanTwRealisasi;
+use App\Models\TujuanPdRealisasiRenja;
+use App\Models\SasaranPdRealisasiRenja;
+use App\Models\SasaranPdProgramRpjmd;
 
-class ProgramTwController extends Controller
+class SasaranController extends Controller
 {
-    public function tambah(Request $request)
+    public function realisasi_tambah(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'program_target_satuan_rp_realisasi_id' => 'required',
-            'tw_id' => 'required',
-            'realisasi' => 'required',
+            'sasaran_pd_target_satuan_rp_realisasi_id' => 'required',
+            'realisasi' => 'required'
         ]);
 
         if($errors -> fails())
@@ -73,32 +75,32 @@ class ProgramTwController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $program_tw_realisasi = new ProgramTwRealisasi;
-        $program_tw_realisasi->program_target_satuan_rp_realisasi_id = $request->program_target_satuan_rp_realisasi_id;
-        $program_tw_realisasi->tw_id = $request->tw_id;
-        $program_tw_realisasi->realisasi = $request->realisasi;
-        $program_tw_realisasi->save();
+        $sasaran_pd_realisasi_renja = new SasaranPdRealisasiRenja;
+        $sasaran_pd_realisasi_renja->sasaran_pd_target_satuan_rp_realisasi_id = $request->sasaran_pd_target_satuan_rp_realisasi_id;
+        $sasaran_pd_realisasi_renja->realisasi = $request->realisasi;
+        $sasaran_pd_realisasi_renja->save();
 
-        return response()->json(['success' => 'Berhasil menambahkan data']);
+        return response()->json(['success' => 'Berhasil menambah realisasi']);
     }
 
-    public function ubah(Request $request)
+    public function realisasi_update(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'program_tw_realisasi_id' => 'required',
-            'program_edit_realisasi' => 'required'
+            'sasaran_pd_realisasi_renja_id' => 'required',
+            'sasaran_pd_edit_realisasi' => 'required'
         ]);
 
         if($errors -> fails())
         {
-            return response()->json(['errors' => $errors->errors()->all()]);
+            Alert::error('Gagal', $errors->errors()->all());
+            return redirect()->route('opd.renja.index');
         }
 
-        $program_tw_realisasi = ProgramTwRealisasi::find($request->program_tw_realisasi_id);
-        $program_tw_realisasi->realisasi = $request->program_edit_realisasi;
-        $program_tw_realisasi->save();
+        $sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::find($request->sasaran_pd_realisasi_renja_id);
+        $sasaran_pd_realisasi_renja->realisasi = $request->sasaran_pd_edit_realisasi;
+        $sasaran_pd_realisasi_renja->save();
 
-        Alert::success('Berhasil', 'Berhasil Merubah Realisasi Program');
+        Alert::success('Berhasil', 'Berhasil merubah realisasi Sasaran PD');
         return redirect()->route('opd.renja.index');
     }
 }

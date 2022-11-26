@@ -18,7 +18,6 @@ class CreateProgramTwRealisasisTable extends Migration
             $table->foreignId('program_target_satuan_rp_realisasi_id')->nullable();
             $table->foreignId('tw_id')->nullable();
             $table->string('realisasi')->nullable();
-            $table->string('realisasi_rp')->nullable();
             $table->timestamps();
         });
     }

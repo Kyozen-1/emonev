@@ -143,6 +143,32 @@
     </div>
     {{-- Modal Tujuan End --}}
 
+    {{-- Modal Sasaran Start --}}
+    <div id="editSasaranPdRealisasiModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editSasaranPdRealisasiModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Realisasi Sasaran</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renja.sasaran.realisasi.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sasaran_pd_realisasi_renja_id" id="sasaran_pd_realisasi_renja_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="sasaran_pd_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="sasaran_pd_edit_realisasi" name="sasaran_pd_edit_realisasi" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Modal Sasaran End --}}
+
     {{-- Modal Program Start --}}
     <div id="editTargetProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetProgramModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered ">
@@ -155,13 +181,9 @@
                     <form action="{{ route('opd.renja.program.tw.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="program_tw_realisasi_id" id="program_tw_realisasi_id">
-                        <div class="form-group position-relative">
+                        <div class="form-group position-relative mb-3">
                             <label for="program_edit_realisasi" class="form-label">Realisasi</label>
                             <input type="text" class="form-control" id="program_edit_realisasi" name="program_edit_realisasi" required>
-                        </div>
-                        <div class="form-group position-relative mb-3">
-                            <label for="program_edit_realisasi_rp" class="form-label">Realisasi RP</label>
-                            <input type="text" class="form-control" id="program_edit_realisasi_rp" name="program_edit_realisasi_rp" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
@@ -411,26 +433,13 @@
                 }
             });
         });
-        // Renja Sasaran End
 
-        // Renja Program Start
-        $('#renja_program_tab_button').click(function(){
-            $.ajax({
-                url: "{{ route('opd.renja.get_program') }}",
-                dataType: "json",
-                success: function(data)
-                {
-                    $('#renjaProgramNavDiv').html(data.html);
-                }
-            });
-        });
+        $(document).on('click', '.button-sasaran-pd-realisasi-renja', function(){
+            var sasaran_pd_indikator_kinerja_id = $(this).attr('data-sasaran-pd-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var sasaran_pd_target_satuan_rp_realisasi_id = $(this).attr('data-sasaran-pd-target-satuan-rp-realisasi-id');
 
-        $(document).on('click', '.button-program-tw-realisasi', function(){
-            var program_target_satuan_rp_realisasi_id = $(this).attr('data-program-target-satuan-rp-realisasi-id');
-            var tw_id = $(this).attr('data-tw-id');
-
-            var realisasi = $('.program-add-realisasi.'+tw_id+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).val();
-            var realisasi_rp = $('.program-add-realisasi-rp.'+tw_id+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).val();
+            var realisasi = $('.sasaran-pd-add-realisasi.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id+'.data-sasaran-pd-target-satuan-rp-realisasi-'+sasaran_pd_target_satuan_rp_realisasi_id).val();
 
             return new swal({
                 title: "Apakah Anda Yakin?",
@@ -442,14 +451,12 @@
                 if(result.value)
                 {
                     $.ajax({
-                        url: "{{ route('opd.renja.program.tw.tambah') }}",
+                        url: "{{ route('opd.renja.sasaran.realisasi.tambah') }}",
                         method: 'POST',
                         data: {
                             "_token": "{{ csrf_token() }}",
-                            program_target_satuan_rp_realisasi_id:program_target_satuan_rp_realisasi_id,
-                            tw_id:tw_id,
-                            realisasi:realisasi,
-                            realisasi_rp:realisasi_rp
+                            sasaran_pd_target_satuan_rp_realisasi_id:sasaran_pd_target_satuan_rp_realisasi_id,
+                            realisasi:realisasi
                         },
                         dataType: "json",
                         success: function(data)
@@ -479,15 +486,108 @@
             });
         });
 
-        $(document).on('click', '.button-program-edit-tw-realisasi', function(){
-            var program_tw_realisasi_id = $(this).attr('data-program-tw-realisasi-id');
+        $(document).on('click', '.button-sasaran-pd-edit-realisasi-renja', function(){
+            var sasaran_pd_indikator_kinerja_id = $(this).attr('data-sasaran-pd-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var sasaran_pd_target_satuan_rp_realisasi_pd_id = $(this).attr('data-sasaran-pd-target-satuan-rp-realisasi-id');
+            var sasaran_pd_realisasi_renja_id = $(this).attr('data-sasaran-pd-realisasi-renja-id');
+
+            var realisasi = $('.sasaran-pd-span-realisasi.'+tahun+'.data-sasaran-pd-indikator-kinerja-'+sasaran_pd_indikator_kinerja_id+'.data-sasaran-pd-target-satuan-rp-realisasi-'+sasaran_pd_target_satuan_rp_realisasi_pd_id+'.data-sasaran-pd-realisasi-renja-'+sasaran_pd_realisasi_renja_id).text();
+
+            $('#sasaran_pd_realisasi_renja_id').val(sasaran_pd_realisasi_renja_id);
+            $('#sasaran_pd_edit_realisasi').val(realisasi);
+            $('#editSasaranPdRealisasiModal').modal('show');
+        });
+        // Renja Sasaran End
+
+        // Renja Program Start
+        $('#renja_program_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('opd.renja.get_program') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaProgramNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $(document).on('click', '.btn-open-tw-realisasi', function(){
+            var value = $(this).val();
+            var tahun = $(this).attr('data-tahun');
+            var program_target_satuan_rp_realisasi_id = $(this).attr('data-program-target-satuan-rp-realisasi-id');
+            $('.btn-open-tw-realisasi.'+tahun+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).empty();
+            if(value == 'close')
+            {
+                $('.btn-open-tw-realisasi.'+tahun+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).val('open');
+                $('.btn-open-tw-realisasi.'+tahun+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).html('<i class="fas fa-chevron-down"></i>');
+            }
+            if(value == 'open')
+            {
+                $('.btn-open-tw-realisasi.'+tahun+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).val('close');
+                $('.btn-open-tw-realisasi.'+tahun+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).html('<i class="fas fa-chevron-right"></i>');
+            }
+        });
+
+        $(document).on('click', '.button-add-program-target-satuan-rp-realisasi', function(){
+            var tw_id = $(this).attr('data-tw-id');
+            var program_target_satuan_rp_realisasi_id = $(this).attr('data-program-target-satuan-rp-realisasi-id');
+
+            var realisasi = $('.input-program-tw-realisasi-renja-realisasi.'+tw_id+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).val();
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('opd.renja.program.tw.tambah') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            program_target_satuan_rp_realisasi_id:program_target_satuan_rp_realisasi_id,
+                            tw_id:tw_id,
+                            realisasi:realisasi,
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('opd.renja.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-edit-program-target-satuan-rp-realisasi', function(){
+            var program_tw_realisasi_id = $(this).attr('data-program-tw-realisasi-renja-id');
+            var program_target_satuan_rp_realisasi = $(this).attr('data-program-target-satuan-rp-realisasi-id');
             var tw_id = $(this).attr('data-tw-id');
 
-            var realisasi = $('.program-span-realisasi.'+tw_id+'.data-program-tw-realisasi-'+program_tw_realisasi_id).text();
-            var realisasi_rp = $('.program-span-realisasi-rp.'+tw_id+'.data-program-tw-realisasi-'+program_tw_realisasi_id).text();
+            var realisasi = $('.span-program-tw-realisasi-renja.'+tw_id+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi+'.data-program-tw-realisasi-renja-'+program_tw_realisasi_id).text();
             $('#program_tw_realisasi_id').val(program_tw_realisasi_id);
             $('#program_edit_realisasi').val(realisasi);
-            $('#program_edit_realisasi_rp').val(realisasi_rp);
             $('#editTargetProgramModal').modal('show');
         });
         // Renja Program End

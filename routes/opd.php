@@ -37,6 +37,10 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renja/tujuan/realisasi/tambah', 'Opd\Renja\TujuanController@realisasi_tambah')->name('opd.renja.tujuan.realisasi.tambah');
     Route::post('/opd/renja/tujuan/realisasi/update', 'Opd\Renja\TujuanController@realisasi_update')->name('opd.renja.tujuan.realisasi.update');
 
+    // Renja Sasaran
+    Route::post('/opd/renja/sasaran/realisasi/tambah', 'Opd\Renja\SasaranController@realisasi_tambah')->name('opd.renja.sasaran.realisasi.tambah');
+    Route::post('/opd/renja/sasaran/realisasi/update', 'Opd\Renja\SasaranController@realisasi_update')->name('opd.renja.sasaran.realisasi.update');
+
 
     // Renja Sub Kegiatan
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tambah', 'Opd\Renja\SubKegiatanController@indikator_kinerja_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tambah');
