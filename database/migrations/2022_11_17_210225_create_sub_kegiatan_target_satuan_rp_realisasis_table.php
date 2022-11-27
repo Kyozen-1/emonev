@@ -17,8 +17,8 @@ class CreateSubKegiatanTargetSatuanRpRealisasisTable extends Migration
             $table->id();
             $table->foreignId('opd_sub_kegiatan_indikator_kinerja_id')->nullable();
             $table->string('target')->nullable();
-            $table->string('satuan')->nullable();
-            $table->string('target_rp')->nullable();
+            $table->string('target_anggaran_renja_awal')->nullable();
+            $table->string('target_anggaran_renja_perubahan')->nullable();
             $table->string('tahun')->nullable();
             $table->timestamps();
         });

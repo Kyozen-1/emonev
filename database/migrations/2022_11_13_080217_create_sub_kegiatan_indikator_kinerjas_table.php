@@ -17,6 +17,7 @@ class CreateSubKegiatanIndikatorKinerjasTable extends Migration
             $table->id();
             $table->foreignId('sub_kegiatan_id')->nulable();
             $table->string('deskripsi')->nullable();
+            $table->string('satuan')->nullable();
             $table->timestamps();
         });
     }

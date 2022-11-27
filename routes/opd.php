@@ -45,8 +45,8 @@ Route::group(['middleware' => 'auth:opd'], function(){
     // Renja Sub Kegiatan
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tambah', 'Opd\Renja\SubKegiatanController@indikator_kinerja_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tambah');
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/hapus', 'Opd\Renja\SubKegiatanController@indikator_kinerja_hapus')->name('opd.renja.sub-kegiatan.indikator-kinerja.hapus');
-    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/target-satuan-realisasi/tambah', 'Opd\Renja\SubKegiatanController@target_satuan_realisasi_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.target-satuan-realisasi.tambah');
-    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\Renja\SubKegiatanController@target_satuan_realisasi_ubah')->name('opd.renja.sub-kegiatan.indikator-kinerja.target-satuan-realisasi.ubah');
+    Route::get('/opd/renja/sub-kegiatan/indikator-kinerja/edit/{id}', 'Opd\Renja\SubKegiatanController@indikator_kinerja_edit');
+    Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/update', 'Opd\Renja\SubKegiatanController@indikator_kinerja_update')->name('opd.renja.sub-kegiatan.indikator-kinerja.update');
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/target-satuan-realisasi/tambah', 'Opd\Renja\SubKegiatanController@target_satuan_realisasi_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.target-satuan-realisasi.tambah');
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\Renja\SubKegiatanController@target_satuan_realisasi_ubah')->name('opd.renja.sub-kegiatan.indikator-kinerja.target-satuan-realisasi.ubah');
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tw/tambah', 'Opd\Renja\SubKegiatanController@tw_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tw.tambah');

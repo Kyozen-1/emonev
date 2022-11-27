@@ -71,28 +71,57 @@ class SubKegiatanController extends Controller
         $errors = Validator::make($request->all(), [
             'indikator_kinerja_sub_kegiatan_sub_kegiatan_id' => 'required',
             'indikator_kinerja_sub_kegiatan_deskripsi' => 'required',
+            'indikator_kinerja_sub_kegiatan_satuan' => 'required'
         ]);
 
         if($errors -> fails())
         {
             Alert::error('Gagal', $errors->errors()->all());
-            return redirect()->route('opd.renstra.index');
+            return redirect()->route('opd.renja.index');
         }
 
-        $deskripsis = json_decode($request->indikator_kinerja_sub_kegiatan_deskripsi, true);
-        foreach ($deskripsis as $deskripsi) {
-            $sub_kegiatan_indikator_kinerja = new SubKegiatanIndikatorKinerja;
-            $sub_kegiatan_indikator_kinerja->sub_kegiatan_id = $request->indikator_kinerja_sub_kegiatan_sub_kegiatan_id;
-            $sub_kegiatan_indikator_kinerja->deskripsi = $deskripsi['value'];
-            $sub_kegiatan_indikator_kinerja->save();
+        $sub_kegiatan_indikator_kinerja = new SubKegiatanIndikatorKinerja;
+        $sub_kegiatan_indikator_kinerja->sub_kegiatan_id = $request->indikator_kinerja_sub_kegiatan_sub_kegiatan_id;
+        $sub_kegiatan_indikator_kinerja->deskripsi = $request->indikator_kinerja_sub_kegiatan_deskripsi;
+        $sub_kegiatan_indikator_kinerja->satuan = $request->indikator_kinerja_sub_kegiatan_satuan;
+        $sub_kegiatan_indikator_kinerja->save();
 
-            $opd_sub_kegiatan_indikator_kinerja = new OpdSubKegiatanIndikatorKinerja;
-            $opd_sub_kegiatan_indikator_kinerja->sub_kegiatan_indikator_kinerja_id = $sub_kegiatan_indikator_kinerja->id;
-            $opd_sub_kegiatan_indikator_kinerja->opd_id = Auth::user()->opd->opd_id;
-            $opd_sub_kegiatan_indikator_kinerja->save();
-        }
+        $opd_sub_kegiatan_indikator_kinerja = new OpdSubKegiatanIndikatorKinerja;
+        $opd_sub_kegiatan_indikator_kinerja->sub_kegiatan_indikator_kinerja_id = $sub_kegiatan_indikator_kinerja->id;
+        $opd_sub_kegiatan_indikator_kinerja->opd_id = Auth::user()->opd->opd_id;
+        $opd_sub_kegiatan_indikator_kinerja->save();
 
         Alert::success('Berhasil', 'Berhasil menambahkan Indikator Kinerja Indikator');
+        return redirect()->route('opd.renja.index');
+    }
+
+    public function indikator_kinerja_edit($id)
+    {
+        $data = SubKegiatanIndikatorKinerja::find($id);
+
+        return response()->json(['result' => $data]);
+    }
+
+    public function indikator_kinerja_update(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'indikator_kinerja_sub_kegiatan_id' => 'required',
+            'edit_indikator_kinerja_sub_kegiatan_deskripsi' => 'required',
+            'edit_indikator_kinerja_sub_kegiatan_satuan' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            Alert::error('Gagal', $errors->errors()->all());
+            return redirect()->route('opd.renja.index');
+        }
+
+        $sub_kegiatan_indikator_kinerja = SubKegiatanIndikatorKinerja::find($request->indikator_kinerja_sub_kegiatan_id);
+        $sub_kegiatan_indikator_kinerja->deskripsi = $request->edit_indikator_kinerja_sub_kegiatan_deskripsi;
+        $sub_kegiatan_indikator_kinerja->satuan = $request->edit_indikator_kinerja_sub_kegiatan_satuan;
+        $sub_kegiatan_indikator_kinerja->save();
+
+        Alert::success('Sukses', 'Berhasil menyimpan perubahan');
         return redirect()->route('opd.renja.index');
     }
 
@@ -119,21 +148,21 @@ class SubKegiatanController extends Controller
     {
         $errors = Validator::make($request->all(), [
             'tahun' => 'required',
-            'opd_sub_kegiatan_indikator_kinerja_id' => 'required',
+            'sub_kegiatan_indikator_kinerja_id' => 'required',
             'target' => 'required',
-            'satuan' => 'required',
-            'target_rp' => 'required',
+            'target_anggaran_renja_awal' => 'required'
         ]);
 
         if($errors -> fails())
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
+        $get_opd = OpdSubKegiatanIndikatorKinerja::where('sub_kegiatan_indikator_kinerja_id', $request->sub_kegiatan_indikator_kinerja_id)
+                    ->where('opd_id', Auth::user()->opd->opd_id)->first();
         $sub_kegiatan_target_satuan_rp_realisasi = new SubKegiatanTargetSatuanRpRealisasi;
-        $sub_kegiatan_target_satuan_rp_realisasi->opd_sub_kegiatan_indikator_kinerja_id = $request->opd_sub_kegiatan_indikator_kinerja_id;
+        $sub_kegiatan_target_satuan_rp_realisasi->opd_sub_kegiatan_indikator_kinerja_id = $get_opd->id;
         $sub_kegiatan_target_satuan_rp_realisasi->target = $request->target;
-        $sub_kegiatan_target_satuan_rp_realisasi->satuan = $request->satuan;
-        $sub_kegiatan_target_satuan_rp_realisasi->target_rp = $request->target_rp;
+        $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal = $request->target_anggaran_renja_awal;
         $sub_kegiatan_target_satuan_rp_realisasi->tahun = $request->tahun;
         $sub_kegiatan_target_satuan_rp_realisasi->save();
 
@@ -143,10 +172,9 @@ class SubKegiatanController extends Controller
     public function target_satuan_realisasi_ubah(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'sub_kegiatan_target_satuan_rp_realisasi' => 'required',
+            'sub_kegiatan_target_satuan_rp_realisasi_id' => 'required',
             'sub_kegiatan_edit_target' => 'required',
-            'sub_kegiatan_edit_satuan' => 'required',
-            'sub_kegiatan_edit_target_rp' => 'required',
+            'sub_kegiatan_edit_target_anggaran_awal' => 'required',
         ]);
 
         if($errors -> fails())
@@ -154,10 +182,10 @@ class SubKegiatanController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::find($request->sub_kegiatan_target_satuan_rp_realisasi);
+        $sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::find($request->sub_kegiatan_target_satuan_rp_realisasi_id);
         $sub_kegiatan_target_satuan_rp_realisasi->target = $request->sub_kegiatan_edit_target;
-        $sub_kegiatan_target_satuan_rp_realisasi->satuan = $request->sub_kegiatan_edit_satuan;
-        $sub_kegiatan_target_satuan_rp_realisasi->target_rp = $request->sub_kegiatan_edit_target_rp;
+        $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal = $request->sub_kegiatan_edit_target_anggaran_awal;
+        $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan = $request->sub_kegiatan_edit_target_anggaran_perubahan;
         $sub_kegiatan_target_satuan_rp_realisasi->save();
 
         Alert::success('Berhasil', 'Berhasil Merubah Target Sub Kegiatan');

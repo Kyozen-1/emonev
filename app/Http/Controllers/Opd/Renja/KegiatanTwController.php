@@ -66,8 +66,7 @@ class KegiatanTwController extends Controller
         $errors = Validator::make($request->all(), [
             'kegiatan_target_satuan_rp_realisasi_id' => 'required',
             'tw_id' => 'required',
-            'realisasi' => 'required',
-            'realisasi_rp' => 'required'
+            'realisasi' => 'required'
         ]);
 
         if($errors -> fails())
@@ -79,7 +78,6 @@ class KegiatanTwController extends Controller
         $kegiatan_tw_realisasi->kegiatan_target_satuan_rp_realisasi_id = $request->kegiatan_target_satuan_rp_realisasi_id;
         $kegiatan_tw_realisasi->tw_id = $request->tw_id;
         $kegiatan_tw_realisasi->realisasi = $request->realisasi;
-        $kegiatan_tw_realisasi->realisasi_rp = $request->realisasi_rp;
         $kegiatan_tw_realisasi->save();
 
         return response()->json(['success' => 'Berhasil menambahkan data']);
@@ -90,20 +88,19 @@ class KegiatanTwController extends Controller
         $errors = Validator::make($request->all(), [
             'kegiatan_tw_realisasi_id' => 'required',
             'kegiatan_edit_realisasi' => 'required',
-            'kegiatan_edit_realisasi_rp' => 'required'
         ]);
 
         if($errors -> fails())
         {
-            return response()->json(['errors' => $errors->errors()->all()]);
+            Alert::error('Gagal', $errors->errors()->all());
+            return redirect()->route('opd.renja.index');
         }
 
         $kegiatan_tw_realisasi = KegiatanTwRealisasi::find($request->kegiatan_tw_realisasi_id);
         $kegiatan_tw_realisasi->realisasi = $request->kegiatan_edit_realisasi;
-        $kegiatan_tw_realisasi->realisasi_rp = $request->kegiatan_edit_realisasi_rp;
         $kegiatan_tw_realisasi->save();
 
-        Alert::success('Berhasil', 'Berhasil Merubah Target Tujuan PD');
+        Alert::success('Berhasil', 'Berhasil Merubah Realisasi Kegiatan');
         return redirect()->route('opd.renja.index');
     }
 }
