@@ -2339,7 +2339,7 @@ class PerencanaanController extends Controller
     public function filter_get_program(Request $request)
     {
         $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($request){
-            $q->whereHas('pivot_sasaran_indikator', function($q) use ($request) {
+            $q->whereHas('sasaran_indikator_kinerja', function($q) use ($request) {
                 $q->where('sasaran_id', $request->id);
             });
         })->get();

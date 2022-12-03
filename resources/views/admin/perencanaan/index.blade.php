@@ -1181,130 +1181,370 @@
                     {{-- RKPD End --}}
                     {{-- Renja Start --}}
                     <div class="tab-pane fade" id="renjaTab" role="tabpanel">
-                        {{-- <div class="row g-2 mb-5">
-                            <div class="col">
-                                <div class="card sh-11 hover-scale-up cursor-pointer">
-                                    <div class="h-100 row g-0 card-body align-items-center py-3">
-                                        <div class="col-auto pe-3">
-                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
-                                                <i data-acorn-icon="wallet" class="text-white"></i>
+                        <div class="border-0 pb-0">
+                            <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="renja_tujuan_tab_button" data-bs-toggle="tab" data-bs-target="#renja_tujuan_pd" role="tab" aria-selected="true" type="button">Tujuan PD</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="renja_sasaran_tab_button" data-bs-toggle="tab" data-bs-target="#renja_sasaran_pd" role="tab" aria-selected="false" type="button">Sasaran PD</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="renja_program_tab_button" data-bs-toggle="tab" data-bs-target="#renja_program" role="tab" aria-selected="false" type="button">Program</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="renja_kegiatan_tab_button" data-bs-toggle="tab" data-bs-target="#renja_kegiatan" role="tab" aria-selected="false" type="button">Kegiatan</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="renja_sub_kegiatan_tab_button" data-bs-toggle="tab" data-bs-target="#renja_sub_kegiatan" role="tab" aria-selected="false" type="button">Sub Kegiatan</button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="tab-pane fade active show" id="renja_tujuan_pd" role="tabpanel">
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select id="renja_tujuan_filter_visi" class="form-control renja_tujuan_filter_visi">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Batasan Pagu</div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="cta-2 text-primary">Rp. 0</div>
-                                                </div>
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select id="renja_tujuan_filter_misi" class="form-control renja_tujuan_filter_misi" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
                                             </div>
                                         </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select id="renja_tujuan_filter_tujuan" class="form-control renja_tujuan_filter_tujuan" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="" class="form-label">Aksi Filter</label>
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1 renja_tujuan_btn_filter" type="button">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light renja_tujuan_btn_reset" type="button">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenjaTujuan" checked>
+                                                <label class="form-check-label" for="onOffTaggingRenjaTujuan">On / Off Tagging</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div id="renjaTujuanNavDiv">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div class="card sh-11 hover-scale-up cursor-pointer">
-                                    <div class="h-100 row g-0 card-body align-items-center py-3">
-                                        <div class="col-auto pe-3">
-                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
-                                                <i class="fas fa-shopping-cart text-white"></i>
+                                <div class="tab-pane fade" id="renja_sasaran_pd" role="tabpanel">
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select id="renja_sasaran_filter_visi" class="form-control renja_sasaran_filter_visi">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Pagu Validasi</div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="cta-2 text-primary">Rp. 0</div>
-                                                </div>
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select id="renja_sasaran_filter_misi" class="form-control renja_sasaran_filter_misi" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select id="renja_sasaran_filter_tujuan" class="form-control renja_sasaran_filter_tujuan" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select id="renja_sasaran_filter_sasaran" class="form-control renja_sasaran_filter_sasaran" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="" class="form-label">Aksi Filter</label>
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1 renja_sasaran_btn_filter" type="button">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light renja_sasaran_btn_reset" type="button">Reset</button>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenjaSasaran" checked>
+                                                <label class="form-check-label" for="onOffTaggingRenjaSasaran">On / Off Tagging</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div id="renjaSasaranNavDiv"></div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div class="card sh-11 hover-scale-up cursor-pointer">
-                                    <div class="h-100 row g-0 card-body align-items-center py-3">
-                                        <div class="col-auto pe-3">
-                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
-                                                <i class="fas fa-suitcase text-white"></i>
+                                <div class="tab-pane fade" id="renja_program" role="tabpanel">
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select id="renja_program_filter_visi" class="form-control renja_program_filter_visi">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Rincian</div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="cta-2 text-primary">Rp. 0</div>
-                                                </div>
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select id="renja_program_filter_misi" class="form-control renja_program_filter_misi" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select id="renja_program_filter_tujuan" class="form-control renja_program_filter_tujuan" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select id="renja_program_filter_sasaran" class="form-control renja_program_filter_sasaran" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Program</label>
+                                                <select id="renja_program_filter_program" class="form-control renja_program_filter_program" disabled>
+                                                    <option value="">--- Pilih Program ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="" class="form-label">Aksi Filter</label>
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
+                                                <button class="btn btn-primary waves-effect waves-light mr-1 renja_program_btn_filter" type="button">Filter Data</button>
+                                                <button class="btn btn-secondary waves-effect waves-light renja_program_btn_reset" type="button">Reset</button>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenjaProgram" checked>
+                                                <label class="form-check-label" for="onOffTaggingRenjaProgram">On / Off Tagging</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div id="renjaProgramNavDiv"></div>
+                                </div>
+                                <div class="tab-pane fade" id="renja_kegiatan" role="tabpanel">
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select id="renja_kegiatan_filter_visi" class="form-control renja_kegiatan_filter_visi">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select id="renja_kegiatan_filter_misi" class="form-control renja_kegiatan_filter_misi" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select id="renja_kegiatan_filter_tujuan" class="form-control renja_kegiatan_filter_tujuan" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select id="renja_kegiatan_filter_sasaran" class="form-control renja_kegiatan_filter_sasaran" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Program</label>
+                                                <select id="renja_kegiatan_filter_program" class="form-control renja_kegiatan_filter_program" disabled>
+                                                    <option value="">--- Pilih Program ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Kegiatan</label>
+                                                <select id="renja_kegiatan_filter_kegiatan_{{$tahun}}" class="form-control renja_kegiatan_filter_kegiatan" disabled>
+                                                    <option value="">--- Pilih Kegiatan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="" class="form-label">Aksi Filter</label>
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                <button class="btn btn-primary btn-icon waves-effect waves-light mr-1 renja_kegiatan_btn_filter" type="button"><i class="fas fa-filter"></i></button>
+                                                <button class="btn btn-secondary btn-icon waves-effect waves-light renja_kegiatan_btn_reset" type="button"><i class="fas fa-recycle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenjaKegiatan" checked>
+                                                <label class="form-check-label" for="onOffTaggingRenjaKegiatan">On / Off Tagging</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div id="renjaKegiatanNavDiv"></div>
+                                </div>
+                                <div class="tab-pane fade" id="renja_sub_kegiatan" role="tabpanel">
+                                    <div class="row mb-2">
+                                        <div class="col-12">
+                                            <h2 class="small-title">Filter Data</h2>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Visi</label>
+                                                <select id="renja_sub_kegiatan_filter_visi" class="form-control renja_sub_kegiatan_filter_visi">
+                                                    <option value="">--- Pilih Visi ---</option>
+                                                    <option value="aman">Aman</option>
+                                                    <option value="mandiri">Mandiri</option>
+                                                    <option value="sejahtera">Sejahtera</option>
+                                                    <option value="berahlak">Berahlak</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Misi</label>
+                                                <select id="renja_sub_kegiatan_filter_misi" class="form-control renja_sub_kegiatan_filter_misi" disabled>
+                                                    <option value="">--- Pilih Misi ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Tujuan</label>
+                                                <select id="renja_sub_kegiatan_filter_tujuan" class="form-control renja_sub_kegiatan_filter_tujuan" disabled>
+                                                    <option value="">--- Pilih Tujuan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sasaran</label>
+                                                <select id="renja_sub_kegiatan_filter_sasaran" class="form-control renja_sub_kegiatan_filter_sasaran" disabled>
+                                                    <option value="">--- Pilih Sasaran ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Program</label>
+                                                <select id="renja_sub_kegiatan_filter_program" class="form-control renja_sub_kegiatan_filter_program" disabled>
+                                                    <option value="">--- Pilih Program ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Kegiatan</label>
+                                                <select id="renja_sub_kegiatan_filter_kegiatan" class="form-control renja_sub_kegiatan_filter_kegiatan" disabled>
+                                                    <option value="">--- Pilih Kegiatan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group position-relative mb-3">
+                                                <label for="" class="form-label">Sub Kegiatan</label>
+                                                <select id="renja_sub_kegiatan_filter_kegiatan" class="form-control renja_sub_kegiatan_filter_kegiatan" disabled>
+                                                    <option value="">--- Pilih Sub Kegiatan ---</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label for="" class="form-label">Aksi Filter</label>
+                                            <div class="form-group position-relative mb-3 justify-content-center align-self-center">
+                                                <button class="btn btn-primary btn-icon waves-effect waves-light mr-1 renja_sub_kegiatan_btn_filter" type="button"><i class="fas fa-filter"></i></button>
+                                                <button class="btn btn-secondary btn-icon waves-effect waves-light renja_sub_kegiatan_btn_reset" type="button"><i class="fas fa-recycle"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="onOffTaggingRenjaSubKegiatan" checked>
+                                                <label class="form-check-label" for="onOffTaggingRenjaSubKegiatan">On / Off Tagging</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div id="renjaSubKegiatanNavDiv"></div>
                                 </div>
                             </div>
                         </div>
-
-
-                        <div class="row">
-                            <div class="col-12">
-                                <h2 class="small-title">Filter Data</h2>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group position-relative row mb-3">
-                                    <label for="renja_filter_opd" class="form-label col-4">OPD</label>
-                                    <div class="col-8">
-                                        <select name="renja_filter_opd" id="renja_filter_opd" class="form-control" required>
-                                            <option value="">--- Pilih OPD ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group position-relative row mb-3">
-                                    <label for="renja_filter_program" class="form-label col-4">Program</label>
-                                    <div class="col-8">
-                                        <select name="renja_filter_program" id="renja_filter_program" class="form-control" required>
-                                            <option value="">--- Pilih Program ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group position-relative row mb-3">
-                                    <label for="renja_filter_kegiatan" class="form-label col-4">Kegiatan</label>
-                                    <div class="col-8">
-                                        <select name="renja_filter_kegiatan" id="renja_filter_kegiatan" class="form-control" required>
-                                            <option value="">--- Pilih Kegiatan ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group position-relative row mb-3">
-                                    <label for="renja_filter_sub_kegiatan" class="form-label col-4">Sub Kegiatan</label>
-                                    <div class="col-8">
-                                        <select name="renja_filter_sub_kegiatan" id="renja_filter_sub_kegiatan" class="form-control" required>
-                                            <option value="">--- Pilih Sub Kegiatan ---</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-
-                        <div class="data-table-rows slim">
-                            <!-- Table Start -->
-                            <div class="data-table-responsive-wrapper">
-                                <table id="renja_table" class="data-table w-100">
-                                    <thead>
-                                        <tr>
-                                            <th>Kode</th>
-                                            <th>Deskripsi</th>
-                                            <th>Pagu Indikatif</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                            <!-- Table End -->
-                        </div> --}}
                     </div>
                     {{-- Renja End --}}
                 </div>
@@ -2378,6 +2618,15 @@
                 success: function(data)
                 {
                     $('#renstraTujuanNavDiv2019').html(data.html);
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-tujuan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaTujuanNavDiv').html(data.html);
                 }
             });
 
@@ -4133,6 +4382,22 @@
             });
         });
 
+        $(document).on('click', '.btn-open-tujuan-pd', function(){
+            var value = $(this).val();
+            var tujuan_pd_id = $(this).attr('data-tujuan-pd-id');
+            $('.btn-open-tujuan-pd.data-tujuan-pd-'+tujuan_pd_id).empty();
+            if(value == 'close')
+            {
+                $('.btn-open-tujuan-pd.data-tujuan-pd-'+tujuan_pd_id).val('open');
+                $('.btn-open-tujuan-pd.data-tujuan-pd-'+tujuan_pd_id).html('<i class="fas fa-chevron-down"></i>');
+            }
+            if(value == 'open')
+            {
+                $('.btn-open-tujuan-pd.data-tujuan-pd-'+tujuan_pd_id).val('close');
+                $('.btn-open-tujuan-pd.data-tujuan-pd-'+tujuan_pd_id).html('<i class="fas fa-chevron-right"></i>');
+            }
+        });
+
         $('.navRenstraTujuan').click(function(){
             var tahun = $(this).attr('data-tahun');
             $.ajax({
@@ -4263,6 +4528,22 @@
                     $('#renstraSasaranNavDiv'+tahun_awal).html(data.html);
                 }
             });
+        });
+
+        $(document).on('click', '.btn-open-sasaran-pd', function(){
+            var value = $(this).val();
+            var sasaran_pd_id = $(this).attr('data-sasaran-pd-id');
+            $('.btn-open-sasaran-pd.data-sasaran-pd-'+sasaran_pd_id).empty();
+            if(value == 'close')
+            {
+                $('.btn-open-sasaran-pd.data-sasaran-pd-'+sasaran_pd_id).val('open');
+                $('.btn-open-sasaran-pd.data-sasaran-pd-'+sasaran_pd_id).html('<i class="fas fa-chevron-down"></i>');
+            }
+            if(value == 'open')
+            {
+                $('.btn-open-sasaran-pd.data-sasaran-pd-'+sasaran_pd_id).val('close');
+                $('.btn-open-sasaran-pd.data-sasaran-pd-'+sasaran_pd_id).html('<i class="fas fa-chevron-right"></i>');
+            }
         });
 
         $('.navRenstraSasaran').click(function(){
@@ -4431,6 +4712,22 @@
                     $('#renstraProgramNavDiv'+tahun_awal).html(data.html);
                 }
             });
+        });
+
+        $(document).on('click', '.btn-open-program-indikator-kinerja', function(){
+            var value = $(this).val();
+            var prograrm_indikator_kinerja_id = $(this).attr('data-program-indikator-kinerja-id');
+            $('.btn-open-program-indikator-kinerja.data-program-indikator-kinerja-'+prograrm_indikator_kinerja_id).empty();
+            if(value == 'close')
+            {
+                $('.btn-open-program-indikator-kinerja.data-program-indikator-kinerja-'+prograrm_indikator_kinerja_id).val('open');
+                $('.btn-open-program-indikator-kinerja.data-program-indikator-kinerja-'+prograrm_indikator_kinerja_id).html('<i class="fas fa-chevron-down"></i>');
+            }
+            if(value == 'open')
+            {
+                $('.btn-open-program-indikator-kinerja.data-program-indikator-kinerja-'+prograrm_indikator_kinerja_id).val('close');
+                $('.btn-open-program-indikator-kinerja.data-program-indikator-kinerja-'+prograrm_indikator_kinerja_id).html('<i class="fas fa-chevron-right"></i>');
+            }
         });
 
         $('.navRenstraProgram').click(function(){
@@ -4639,6 +4936,23 @@
                 }
             });
         });
+
+        $(document).on('click', '.btn-open-kegiatan-indikator-kinerja', function(){
+            var value = $(this).val();
+            var kegiatan_indikator_kinerja_id = $(this).attr('data-kegiatan-indikator-kinerja-id');
+            $('.btn-open-kegiatan-indikator-kinerja.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).empty();
+            if(value == 'close')
+            {
+                $('.btn-open-kegiatan-indikator-kinerja.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val('open');
+                $('.btn-open-kegiatan-indikator-kinerja.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).html('<i class="fas fa-chevron-down"></i>');
+            }
+            if(value == 'open')
+            {
+                $('.btn-open-kegiatan-indikator-kinerja.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).val('close');
+                $('.btn-open-kegiatan-indikator-kinerja.data-kegiatan-indikator-kinerja-'+kegiatan_indikator_kinerja_id).html('<i class="fas fa-chevron-right"></i>');
+            }
+        });
+
         $('.navRenstraKegiatan').click(function(){
             var tahun = $(this).attr('data-tahun');
             $.ajax({
@@ -5090,6 +5404,678 @@
                     $('#programNavDiv'+tahun).html(data.html);
                 }
             });
+        });
+
+        // Renja Tujuan Pd
+        $('#renja_tujuan_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-tujuan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaTujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Filter Renja Data Tujuan
+        $('.renja_tujuan_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_tujuan_filter_misi').empty();
+                        $('#renja_tujuan_filter_misi').prop('disabled', false);
+                        $('#renja_tujuan_filter_tujuan').prop('disabled', true);
+                        $('#renja_tujuan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_tujuan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_tujuan_filter_misi_').prop('disabled', true);
+                $('#renja_tujuan_filter_tujuan_').prop('disabled', true);
+            }
+        });
+
+        $('.renja_tujuan_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_tujuan_filter_tujuan').empty();
+                        $('#renja_tujuan_filter_tujuan').prop('disabled', false);
+                        $('#renja_tujuan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_tujuan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_tujuan_filter_tujuan').prop('disabled', true);
+            }
+        });
+
+        $('.renja_tujuan_btn_filter').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            var visi = $('#renja_tujuan_filter_visi').val();
+            var misi = $('#renja_tujuan_filter_misi').val();
+            var tujuan = $('#renja_tujuan_filter_tujuan').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-tujuan.filter') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    tahun:tahun
+                },
+                success: function(data)
+                {
+                    $('#renjaTujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('.renja_tujuan_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#renja_tujuan_filter_misi').prop('disabled', true);
+            $('#renja_tujuan_filter_tujuan').prop('disabled', true);
+            $('#renja_tujuan_filter_visi').val('').trigger('change');
+            $('#renja_tujuan_filter_misi').val('').trigger('change');
+            $('#renja_tujuan_filter_tujuan').val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-tujuan.reset') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renjaTujuanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renja Sasaran PD
+        $('#renja_sasaran_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-sasaran') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaSasaranNavDiv').html(data.html)
+                }
+            });
+        });
+
+        $('.renja_sasaran_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_sasaran_filter_misi').empty();
+                        $('#renja_sasaran_filter_misi').prop('disabled', false);
+                        $('#renja_sasaran_filter_tujuan').prop('disabled', true);
+                        $('#renja_sasaran_filter_sasaran').prop('disabled', true);
+                        $('#renja_sasaran_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_sasaran_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_sasaran_filter_misi').prop('disabled', true);
+                $('#renja_sasaran_filter_tujuan').prop('disabled', true);
+                $('#renja_sasaran_filter_sasaran').prop('disabled', true);
+                $('#renja_sasaran_filter_misi').val('').trigger('change');
+                $('#renja_sasaran_filter_tujuan').val('').trigger('change');
+                $('#renja_sasaran_filter_sasaran').val('').trigger('change');
+            }
+        });
+
+        $('.renja_sasaran_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_sasaran_filter_tujuan').empty();
+                        $('#renja_sasaran_filter_tujuan').prop('disabled', false);
+                        $('#renja_sasaran_filter_sasaran').prop('disabled', true);
+                        $('#renja_sasaran_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_sasaran_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_sasaran_filter_tujuan').prop('disabled', true);
+                $('#renja_sasaran_filter_tujuan').val('').trigger('change');
+                $('#renja_sasaran_filter_sasaran').prop('disabled', true);
+                $('#renja_sasaran_filter_sasaran').val('').trigger('change');
+            }
+        });
+
+        $('.renja_sasaran_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_sasaran_filter_sasaran').empty();
+                        $('#renja_sasaran_filter_sasaran').prop('disabled', false);
+                        $('#renja_sasaran_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_sasaran_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_sasaran_filter_sasaran').prop('disabled', true);
+                $('#renja_sasaran_filter_sasaran').val('').trigger('change');
+            }
+        });
+
+        $('.renja_sasaran_btn_filter').click(function(){
+            var visi = $('#renja_sasaran_filter_visi').val();
+            var misi = $('#renja_sasaran_filter_misi').val();
+            var tujuan = $('#renja_sasaran_filter_tujuan').val();
+            var sasaran = $('#renja_sasaran_filter_sasaran').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-sasaran.filter') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran
+                },
+                success: function(data)
+                {
+                    $('#renjaSasaranNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('.renja_sasaran_btn_reset').click(function(){
+            var tahun = $(this).attr('data-tahun');
+            $('#renja_sasaran_filter_misi').prop('disabled', true);
+            $('#renja_sasaran_filter_tujuan').prop('disabled', true);
+            $('#renja_sasaran_filter_sasaran').prop('disabled', true);
+            $('#renja_sasaran_filter_visi').val('').trigger('change');
+            $('#renja_sasaran_filter_misi').val('').trigger('change');
+            $('#renja_sasaran_filter_tujuan').val('').trigger('change');
+            $('#renja_sasaran_filter_sasaran').val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-sasaran.reset') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renjaSasaranNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renja Program
+        $('#renja_program_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-program') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaProgramNavDiv').html(data.html)
+                }
+            });
+        });
+
+        $('.renja_program_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_program_filter_misi').empty();
+                        $('#renja_program_filter_misi').prop('disabled', false);
+                        $('#renja_program_filter_tujuan').prop('disabled', true);
+                        $('#renja_program_filter_sasaran').prop('disabled', true);
+                        $('#renja_program_filter_program').prop('disabled', true);
+                        $('#renja_program_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_program_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_program_filter_misi').prop('disabled', true);
+                $('#renja_program_filter_tujuan').prop('disabled', true);
+                $('#renja_program_filter_sasaran').prop('disabled', true);
+                $('#renja_program_filter_program').prop('disabled', true);
+                $('#renja_program_filter_misi').val('').trigger('change');
+                $('#renja_program_filter_tujuan').val('').trigger('change');
+                $('#renja_program_filter_sasaran').val('').trigger('change');
+                $('#renja_program_filter_program').val('').trigger('change');
+            }
+        });
+
+        $('.renja_program_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_program_filter_tujuan').empty();
+                        $('#renja_program_filter_tujuan').prop('disabled', false);
+                        $('#renja_program_filter_sasaran').prop('disabled', true);
+                        $('#renja_program_filter_program').prop('disabled', true);
+                        $('#renja_program_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_program_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_program_filter_tujuan').prop('disabled', true);
+                $('#renja_program_filter_tujuan').val('').trigger('change');
+                $('#renja_program_filter_sasaran').prop('disabled', true);
+                $('#renja_program_filter_sasaran').val('').trigger('change');
+                $('#renja_program_filter_program').prop('disabled', true);
+                $('#renja_program_filter_program').val('').trigger('change');
+            }
+        });
+
+        $('.renja_program_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_program_filter_sasaran').empty();
+                        $('#renja_program_filter_sasaran').prop('disabled', false);
+                        $('#renja_program_filter_program').prop('disabled', true);
+                        $('#renja_program_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_program_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_program_filter_sasaran').prop('disabled', true);
+                $('#renja_program_filter_sasaran').val('').trigger('change');
+                $('#renja_program_filter_program').prop('disabled', true);
+                $('#renja_program_filter_program').val('').trigger('change');
+            }
+        });
+
+        $('.renja_program_filter_sasaran').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-program') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_program_filter_program').empty();
+                        $('#renja_program_filter_program').prop('disabled', false);
+                        $('#renja_program_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_program_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_program_filter_program').prop('disabled', true);
+                $('#renja_program_filter_program').val('').trigger('change');
+            }
+        });
+
+        $('.renja_program_btn_filter').click(function(){
+            var visi = $('#renja_program_filter_visi').val();
+            var misi = $('#renja_program_filter_misi').val();
+            var tujuan = $('#renja_program_filter_tujuan').val();
+            var sasaran = $('#renja_program_filter_sasaran').val();
+            var program = $('#renja_program_filter_program').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-program.filter') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran,
+                    program: program
+                },
+                success: function(data)
+                {
+                    $('#renjaProgramNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('.renja_program_btn_reset').click(function(){
+            $('#renja_program_filter_misi').prop('disabled', true);
+            $('#renja_program_filter_tujuan').prop('disabled', true);
+            $('#renja_program_filter_sasaran').prop('disabled', true);
+            $('#renja_program_filter_program').prop('disabled', true);
+            $('#renja_program_filter_visi').val('').trigger('change');
+            $('#renja_program_filter_misi').val('').trigger('change');
+            $('#renja_program_filter_tujuan').val('').trigger('change');
+            $('#renja_program_filter_sasaran').val('').trigger('change');
+            $('#renja_program_filter_program').val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-program.reset') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renjaProgramNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renja Kegiatan
+        $('#renja_kegiatan_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-kegiatan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaKegiatanNavDiv').html(data.html)
+                }
+            });
+        });
+
+        $('.renja_kegiatan_filter_visi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-misi') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_kegiatan_filter_misi').empty();
+                        $('#renja_kegiatan_filter_misi').prop('disabled', false);
+                        $('#renja_kegiatan_filter_tujuan').prop('disabled', true);
+                        $('#renja_kegiatan_filter_sasaran').prop('disabled', true);
+                        $('#renja_kegiatan_filter_program').prop('disabled', true);
+                        $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renja_kegiatan_filter_misi').append('<option value="">--- Pilih Misi ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_kegiatan_filter_misi').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_kegiatan_filter_misi').prop('disabled', true);
+                $('#renja_kegiatan_filter_tujuan').prop('disabled', true);
+                $('#renja_kegiatan_filter_sasaran').prop('disabled', true);
+                $('#renja_kegiatan_filter_program').prop('disabled', true);
+                $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                $('#renja_kegiatan_filter_misi').val('').trigger('change');
+                $('#renja_kegiatan_filter_tujuan').val('').trigger('change');
+                $('#renja_kegiatan_filter_sasaran').val('').trigger('change');
+                $('#renja_kegiatan_filter_program').val('').trigger('change');
+                $('#renja_kegiatan_filter_kegiatan').val('').trigger('change');
+            }
+        });
+
+        $('.renja_kegiatan_filter_misi').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-tujuan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_kegiatan_filter_tujuan').empty();
+                        $('#renja_kegiatan_filter_tujuan').prop('disabled', false);
+                        $('#renja_kegiatan_filter_sasaran').prop('disabled', true);
+                        $('#renja_kegiatan_filter_program').prop('disabled', true);
+                        $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renja_kegiatan_filter_tujuan').append('<option value="">--- Pilih Tujuan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_kegiatan_filter_tujuan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_kegiatan_filter_tujuan').prop('disabled', true);
+                $('#renja_kegiatan_filter_tujuan').val('').trigger('change');
+                $('#renja_kegiatan_filter_sasaran').prop('disabled', true);
+                $('#renja_kegiatan_filter_sasaran').val('').trigger('change');
+                $('#renja_kegiatan_filter_program').prop('disabled', true);
+                $('#renja_kegiatan_filter_program').val('').trigger('change');
+                $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                $('#renja_kegiatan_filter_kegiatan').val('').trigger('change');
+            }
+        });
+
+        $('.renja_kegiatan_filter_tujuan').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-sasaran') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_kegiatan_filter_sasaran').empty();
+                        $('#renja_kegiatan_filter_sasaran').prop('disabled', false);
+                        $('#renja_kegiatan_filter_program').prop('disabled', true);
+                        $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renja_kegiatan_filter_sasaran').append('<option value="">--- Pilih Sasaran ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_kegiatan_filter_sasaran').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_kegiatan_filter_sasaran').prop('disabled', true);
+                $('#renja_kegiatan_filter_sasaran').val('').trigger('change');
+                $('#renja_kegiatan_filter_program').prop('disabled', true);
+                $('#renja_kegiatan_filter_program').val('').trigger('change');
+                $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                $('#renja_kegiatan_filter_kegiatan').val('').trigger('change');
+            }
+        });
+
+        $('.renja_kegiatan_filter_sasaran').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-program') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_kegiatan_filter_program').empty();
+                        $('#renja_kegiatan_filter_program').prop('disabled', false);
+                        $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                        $('#renja_kegiatan_filter_program').append('<option value="">--- Pilih Program ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_kegiatan_filter_program').append(new Option(value.kode +'. '+value.deskripsi, value.program_rpjmd_id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_kegiatan_filter_program').prop('disabled', true);
+                $('#renja_kegiatan_filter_program').val('').trigger('change');
+                $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                $('#renja_kegiatan_filter_kegiatan').val('').trigger('change');
+            }
+        });
+
+        $('.renja_kegiatan_filter_program').on('change', function(){
+            if($(this).val() != '')
+            {
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.filter.get-kegiatan') }}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        id:$(this).val()
+                    },
+                    success: function(response){
+                        $('#renja_kegiatan_filter_kegiatan').empty();
+                        $('#renja_kegiatan_filter_kegiatan').prop('disabled', false);
+                        $('#renja_kegiatan_filter_kegiatan').append('<option value="">--- Pilih Kegiatan ---</option>');
+                        $.each(response, function(key, value){
+                            $('#renja_kegiatan_filter_kegiatan').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                        });
+                    }
+                });
+            } else {
+                $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+                $('#renja_kegiatan_filter_kegiatan').val('').trigger('change');
+            }
+        });
+
+        $('.renja_kegiatan_btn_filter').click(function(){
+            var visi = $('#renja_kegiatan_filter_visi').val();
+            var misi = $('#renja_kegiatan_filter_misi').val();
+            var tujuan = $('#renja_kegiatan_filter_tujuan').val();
+            var sasaran = $('#renja_kegiatan_filter_sasaran').val();
+            var program = $('#renja_kegiatan_filter_program').val();
+            var kegiatan = $('#renja_kegiatan_filter_kegiatan').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-kegiatan.filter') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    visi: visi,
+                    misi: misi,
+                    tujuan: tujuan,
+                    sasaran: sasaran,
+                    program: program,
+                    kegiatan: kegiatan
+                },
+                success: function(data)
+                {
+                    $('#renjaKegiatanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        $('.renja_kegiatan_btn_reset').click(function(){
+            $('#renja_kegiatan_filter_misi').prop('disabled', true);
+            $('#renja_kegiatan_filter_tujuan').prop('disabled', true);
+            $('#renja_kegiatan_filter_sasaran').prop('disabled', true);
+            $('#renja_kegiatan_filter_program').prop('disabled', true);
+            $('#renja_kegiatan_filter_kegiatan').prop('disabled', true);
+            $('#renja_kegiatan_filter_visi').val('').trigger('change');
+            $('#renja_kegiatan_filter_misi').val('').trigger('change');
+            $('#renja_kegiatan_filter_tujuan').val('').trigger('change');
+            $('#renja_kegiatan_filter_sasaran').val('').trigger('change');
+            $('#renja_kegiatan_filter_program').val('').trigger('change');
+            $('#renja_kegiatan_filter_kegiatan').val('').trigger('change');
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-kegiatan.reset') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data)
+                {
+                    $('#renjaKegiatanNavDiv').html(data.html);
+                }
+            });
+        });
+
+        // Renja Sub Kegiatan
+        $('#renja_sub_kegiatan_tab_button').click(function(){
+            $.ajax({
+                url: "{{ route('admin.perencanaan.renja.get-sub-kegiatan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#renjaSubKegiatanNavDiv').html(data.html)
+                }
+            });
+        });
+
+        $(document).on('click', '.btn-open-sub-kegiatan-indikator-kinerja', function(){
+            var value = $(this).val();
+            var sub_kegiatan_indikator_kinerja_id = $(this).attr('data-sub-kegiatan-indikator-kinerja-id');
+            $('.btn-open-sub-kegiatan-indikator-kinerja.data-sub-kegiatan-indikator-kinerja-'+sub_kegiatan_indikator_kinerja_id).empty();
+            if(value == 'close')
+            {
+                $('.btn-open-sub-kegiatan-indikator-kinerja.data-sub-kegiatan-indikator-kinerja-'+sub_kegiatan_indikator_kinerja_id).val('open');
+                $('.btn-open-sub-kegiatan-indikator-kinerja.data-sub-kegiatan-indikator-kinerja-'+sub_kegiatan_indikator_kinerja_id).html('<i class="fas fa-chevron-down"></i>');
+            }
+            if(value == 'open')
+            {
+                $('.btn-open-sub-kegiatan-indikator-kinerja.data-sub-kegiatan-indikator-kinerja-'+sub_kegiatan_indikator_kinerja_id).val('close');
+                $('.btn-open-sub-kegiatan-indikator-kinerja.data-sub-kegiatan-indikator-kinerja-'+sub_kegiatan_indikator_kinerja_id).html('<i class="fas fa-chevron-right"></i>');
+            }
         });
     </script>
 @endsection

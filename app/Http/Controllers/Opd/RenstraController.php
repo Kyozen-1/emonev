@@ -867,18 +867,18 @@ class RenstraController extends Controller
                                                                                                     <tbody>';
                                                                                                     foreach ($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja) {
                                                                                                         $html .= '<tr>';
-                                                                                                            $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi;
+                                                                                                            $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.' (';
                                                                                                                 if($tujuan_pd_indikator_kinerja->status_indikator == 'Target NSPK')
                                                                                                                 {
-                                                                                                                    $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK">';
+                                                                                                                    $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK"></i>'.')';
                                                                                                                 }
                                                                                                                 if($tujuan_pd_indikator_kinerja->status_indikator == 'Target IKK')
                                                                                                                 {
-                                                                                                                    $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK">';
+                                                                                                                    $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK"></i>'.')';
                                                                                                                 }
                                                                                                                 if($tujuan_pd_indikator_kinerja->status_indikator == 'Target Indikator Lainnya')
                                                                                                                 {
-                                                                                                                    $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya">';
+                                                                                                                    $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya"></i>'.')';
                                                                                                                 }
                                                                                                             $html .= '</td>';
                                                                                                             $html .= '<td>'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
@@ -897,16 +897,16 @@ class RenstraController extends Controller
                                                                                             $html .= '</tr>
                                                                                             <tr>
                                                                                                 <td colspan="4" class="hiddenRow">
-                                                                                                    <div class="collapse" id="tujuan_tujuan_pd_indikator_kinerja'.$tujuan_pd['id'].'">
+                                                                                                    <div class="collapse accordion-body" id="tujuan_tujuan_pd_indikator_kinerja'.$tujuan_pd['id'].'">
                                                                                                         <table class="table table-striped table-condesed">
                                                                                                             <thead>
                                                                                                                 <tr>
                                                                                                                     <th width="5%">No</th>
-                                                                                                                    <th width="30%">Indikator</th>
+                                                                                                                    <th width="30%">Indikator Kinerja</th>
                                                                                                                     <th width="20%">Target Kinerja Awal</th>
-                                                                                                                    <th width="10%">Target</th>
+                                                                                                                    <th width="10%">Target Kinerja</th>
                                                                                                                     <th width="10%">Satuan</th>
-                                                                                                                    <th width="10%">Realisasi</th>
+                                                                                                                    <th width="10%">Realisasi Kinerja</th>
                                                                                                                     <th width="10%">Tahun</th>
                                                                                                                     <th width="5%">Aksi</th>
                                                                                                                 </tr>
@@ -1309,18 +1309,18 @@ class RenstraController extends Controller
                                                                                                     <tbody>';
                                                                                                     foreach ($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja) {
                                                                                                         $html .= '<tr>';
-                                                                                                            $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi;
+                                                                                                            $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.' (';
                                                                                                                 if($tujuan_pd_indikator_kinerja->status_indikator == 'Target NSPK')
                                                                                                                 {
-                                                                                                                    $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK">';
+                                                                                                                    $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK"></i>'.')';
                                                                                                                 }
                                                                                                                 if($tujuan_pd_indikator_kinerja->status_indikator == 'Target IKK')
                                                                                                                 {
-                                                                                                                    $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK">';
+                                                                                                                    $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK"></i>'.')';
                                                                                                                 }
                                                                                                                 if($tujuan_pd_indikator_kinerja->status_indikator == 'Target Indikator Lainnya')
                                                                                                                 {
-                                                                                                                    $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya">';
+                                                                                                                    $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya"></i>'.')';
                                                                                                                 }
                                                                                                             $html .= '</td>';
                                                                                                             $html .= '<td>'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
@@ -1339,16 +1339,16 @@ class RenstraController extends Controller
                                                                                             $html .= '</tr>
                                                                                             <tr>
                                                                                                 <td colspan="4" class="hiddenRow">
-                                                                                                    <div class="collapse" id="tujuan_tujuan_pd_indikator_kinerja'.$tujuan_pd['id'].'">
+                                                                                                    <div class="collapse accordion-body" id="tujuan_tujuan_pd_indikator_kinerja'.$tujuan_pd['id'].'">
                                                                                                         <table class="table table-striped table-condesed">
                                                                                                             <thead>
                                                                                                                 <tr>
                                                                                                                     <th width="5%">No</th>
-                                                                                                                    <th width="30%">Indikator</th>
+                                                                                                                    <th width="30%">Indikator Kinerja</th>
                                                                                                                     <th width="20%">Target Kinerja Awal</th>
-                                                                                                                    <th width="10%">Target</th>
+                                                                                                                    <th width="10%">Target Kinerja</th>
                                                                                                                     <th width="10%">Satuan</th>
-                                                                                                                    <th width="10%">Realisasi</th>
+                                                                                                                    <th width="10%">Realisasi Kinerja</th>
                                                                                                                     <th width="10%">Tahun</th>
                                                                                                                     <th width="5%">Aksi</th>
                                                                                                                 </tr>
@@ -1386,6 +1386,7 @@ class RenstraController extends Controller
                                                                                                                                 $html .='</tr>';
                                                                                                                             } else {
                                                                                                                                 $html .= '<tr>';
+                                                                                                                                    $html .= '<td></td>';
                                                                                                                                     $html .= '<td></td>';
                                                                                                                                     $html .= '<td></td>';
                                                                                                                                     $html .= '<td><span class="tujuan-pd-span-target '.$tahun.' data-tujuan-pd-indikator-kinerja-'.$tujuan_pd_indikator_kinerja->id.'">'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'</span></td>';
@@ -1830,18 +1831,18 @@ class RenstraController extends Controller
                                                                                                                                                             <tbody>';
                                                                                                                                                             foreach ($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja) {
                                                                                                                                                                 $html .= '<tr>';
-                                                                                                                                                                    $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi;
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi .' (';
                                                                                                                                                                         if($sasaran_pd_indikator_kinerja->status_indikator == 'Target NSPK')
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK">';
+                                                                                                                                                                            $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK"></i>)';
                                                                                                                                                                         }
                                                                                                                                                                         if($sasaran_pd_indikator_kinerja->status_indikator == 'Target IKK')
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK">';
+                                                                                                                                                                            $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK"></i>)';
                                                                                                                                                                         }
                                                                                                                                                                         if($sasaran_pd_indikator_kinerja->status_indikator == 'Target Indikator Lainnya')
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya">';
+                                                                                                                                                                            $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya"></i>)';
                                                                                                                                                                         }
                                                                                                                                                                     $html .= '</td>';
                                                                                                                                                                     $html .= '<td>'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
@@ -1870,9 +1871,9 @@ class RenstraController extends Controller
                                                                                                                                                                             <th width="5%">No</th>
                                                                                                                                                                             <th width="30%">Indikator</th>
                                                                                                                                                                             <th width="20%">Target Kinerja Awal</th>
-                                                                                                                                                                            <th width="10%">Target</th>
+                                                                                                                                                                            <th width="10%">Target Kinerja</th>
                                                                                                                                                                             <th width="10%">Satuan</th>
-                                                                                                                                                                            <th width="10%">Realisasi</th>
+                                                                                                                                                                            <th width="10%">Realisasi Kinerja</th>
                                                                                                                                                                             <th width="10%">Tahun</th>
                                                                                                                                                                             <th width="5%">Aksi</th>
                                                                                                                                                                         </tr>
@@ -2361,18 +2362,18 @@ class RenstraController extends Controller
                                                                                                                                                             <tbody>';
                                                                                                                                                             foreach ($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja) {
                                                                                                                                                                 $html .= '<tr>';
-                                                                                                                                                                    $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi;
+                                                                                                                                                                    $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi .' (';
                                                                                                                                                                         if($sasaran_pd_indikator_kinerja->status_indikator == 'Target NSPK')
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK">';
+                                                                                                                                                                            $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK"></i>)';
                                                                                                                                                                         }
                                                                                                                                                                         if($sasaran_pd_indikator_kinerja->status_indikator == 'Target IKK')
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK">';
+                                                                                                                                                                            $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK"></i>)';
                                                                                                                                                                         }
                                                                                                                                                                         if($sasaran_pd_indikator_kinerja->status_indikator == 'Target Indikator Lainnya')
                                                                                                                                                                         {
-                                                                                                                                                                            $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya">';
+                                                                                                                                                                            $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya"></i>)';
                                                                                                                                                                         }
                                                                                                                                                                     $html .= '</td>';
                                                                                                                                                                     $html .= '<td>'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
@@ -2401,9 +2402,9 @@ class RenstraController extends Controller
                                                                                                                                                                             <th width="5%">No</th>
                                                                                                                                                                             <th width="30%">Indikator</th>
                                                                                                                                                                             <th width="20%">Target Kinerja Awal</th>
-                                                                                                                                                                            <th width="10%">Target</th>
+                                                                                                                                                                            <th width="10%">Target Kinerja</th>
                                                                                                                                                                             <th width="10%">Satuan</th>
-                                                                                                                                                                            <th width="10%">Realisasi</th>
+                                                                                                                                                                            <th width="10%">Realisasi Kinerja</th>
                                                                                                                                                                             <th width="10%">Tahun</th>
                                                                                                                                                                             <th width="5%">Aksi</th>
                                                                                                                                                                         </tr>
@@ -2922,11 +2923,11 @@ class RenstraController extends Controller
                                                                                                                                                                             <th>Indikator</th>
                                                                                                                                                                             <th>Target Kinerja Awal</th>
                                                                                                                                                                             <th>OPD</th>
-                                                                                                                                                                            <th>Target</th>
+                                                                                                                                                                            <th>Target Kinerja</th>
                                                                                                                                                                             <th>Satuan</th>
-                                                                                                                                                                            <th>Target RP</th>
-                                                                                                                                                                            <th>Realisasi</th>
-                                                                                                                                                                            <th>Realisasi RP</th>
+                                                                                                                                                                            <th>Target Anggaran</th>
+                                                                                                                                                                            <th>Realisasi Kinerja</th>
+                                                                                                                                                                            <th>Realisasi Anggaran</th>
                                                                                                                                                                             <th>Tahun</th>
                                                                                                                                                                         </tr>
                                                                                                                                                                     </thead>
@@ -3540,11 +3541,11 @@ class RenstraController extends Controller
                                                                                                                                                                             <th>Indikator</th>
                                                                                                                                                                             <th>Target Kinerja Awal</th>
                                                                                                                                                                             <th>OPD</th>
-                                                                                                                                                                            <th>Target</th>
+                                                                                                                                                                            <th>Target Kinerja</th>
                                                                                                                                                                             <th>Satuan</th>
-                                                                                                                                                                            <th>Target RP</th>
-                                                                                                                                                                            <th>Realisasi</th>
-                                                                                                                                                                            <th>Realisasi RP</th>
+                                                                                                                                                                            <th>Target Anggaran</th>
+                                                                                                                                                                            <th>Realisasi Kinerja</th>
+                                                                                                                                                                            <th>Realisasi Anggaran</th>
                                                                                                                                                                             <th>Tahun</th>
                                                                                                                                                                         </tr>
                                                                                                                                                                     </thead>
@@ -4176,18 +4177,18 @@ class RenstraController extends Controller
                                                                                                                                                                                 <tbody>';
                                                                                                                                                                                     foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
                                                                                                                                                                                         $html .= '<tr>';
-                                                                                                                                                                                            $html .= '<td width="75%">'.$kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                            $html .= '<td width="75%">'.$kegiatan_indikator_kinerja->deskripsi . ' (';
                                                                                                                                                                                             if($kegiatan_indikator_kinerja->status_indikator == 'Target NSPK')
                                                                                                                                                                                             {
-                                                                                                                                                                                                $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK">';
+                                                                                                                                                                                                $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK"></i>)';
                                                                                                                                                                                             }
                                                                                                                                                                                             if($kegiatan_indikator_kinerja->status_indikator == 'Target IKK')
                                                                                                                                                                                             {
-                                                                                                                                                                                                $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK">';
+                                                                                                                                                                                                $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK"></i>)';
                                                                                                                                                                                             }
                                                                                                                                                                                             if($kegiatan_indikator_kinerja->status_indikator == 'Target Indikator Lainnya')
                                                                                                                                                                                             {
-                                                                                                                                                                                                $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya">';
+                                                                                                                                                                                                $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya"></i>)';
                                                                                                                                                                                             }
                                                                                                                                                                                             $html .= '</td>';
                                                                                                                                                                                             $html .= '<td width="25%">
@@ -4211,11 +4212,12 @@ class RenstraController extends Controller
                                                                                                                                                                                                 <th>No</th>
                                                                                                                                                                                                 <th>Indikator</th>
                                                                                                                                                                                                 <th>Target Kinerja Awal</th>
-                                                                                                                                                                                                <th>Target</th>
+                                                                                                                                                                                                <th>Target Anggaran Awal</th>
+                                                                                                                                                                                                <th>Target Kinerja</th>
                                                                                                                                                                                                 <th>Satuan</th>
-                                                                                                                                                                                                <th>Target RP</th>
-                                                                                                                                                                                                <th>Realisasi</th>
-                                                                                                                                                                                                <th>Realisasi RP</th>
+                                                                                                                                                                                                <th>Target Anggaran</th>
+                                                                                                                                                                                                <th>Realisasi Kinerja</th>
+                                                                                                                                                                                                <th>Realisasi Anggaran</th>
                                                                                                                                                                                                 <th>Tahun</th>
                                                                                                                                                                                                 <th>Aksi</th>
                                                                                                                                                                                             </tr>
@@ -4228,6 +4230,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                 $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
                                                                                                                                                                                                 $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
                                                                                                                                                                                                 $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                                                                                                                                                                                $html .= '<td> Rp. '.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
                                                                                                                                                                                                 $a = 1;
                                                                                                                                                                                                 foreach ($tahuns as $tahun) {
                                                                                                                                                                                                     $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
@@ -4251,6 +4254,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                             $html .='</tr>';
                                                                                                                                                                                                         } else {
                                                                                                                                                                                                             $html .= '<tr>';
+                                                                                                                                                                                                                $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
@@ -4283,6 +4287,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                             $html .='</tr>';
                                                                                                                                                                                                         } else {
                                                                                                                                                                                                             $html .= '<tr>';
+                                                                                                                                                                                                                $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
@@ -4822,18 +4827,18 @@ class RenstraController extends Controller
                                                                                                                                                                                 <tbody>';
                                                                                                                                                                                     foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
                                                                                                                                                                                         $html .= '<tr>';
-                                                                                                                                                                                            $html .= '<td width="75%">'.$kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                            $html .= '<td width="75%">'.$kegiatan_indikator_kinerja->deskripsi . ' (';
                                                                                                                                                                                             if($kegiatan_indikator_kinerja->status_indikator == 'Target NSPK')
                                                                                                                                                                                             {
-                                                                                                                                                                                                $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK">';
+                                                                                                                                                                                                $html .= '<i class="fas fa-n text-primary ml-1" title="Target NSPK"></i>)';
                                                                                                                                                                                             }
                                                                                                                                                                                             if($kegiatan_indikator_kinerja->status_indikator == 'Target IKK')
                                                                                                                                                                                             {
-                                                                                                                                                                                                $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK">';
+                                                                                                                                                                                                $html .= '<i class="fas fa-i text-primary ml-1" title="Target IKK"></i>)';
                                                                                                                                                                                             }
                                                                                                                                                                                             if($kegiatan_indikator_kinerja->status_indikator == 'Target Indikator Lainnya')
                                                                                                                                                                                             {
-                                                                                                                                                                                                $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya">';
+                                                                                                                                                                                                $html .= '<i class="fas fa-t text-primary ml-1" title="Target Indikator Lainnya"></i>)';
                                                                                                                                                                                             }
                                                                                                                                                                                             $html .= '</td>';
                                                                                                                                                                                             $html .= '<td width="25%">
@@ -4857,11 +4862,12 @@ class RenstraController extends Controller
                                                                                                                                                                                                 <th>No</th>
                                                                                                                                                                                                 <th>Indikator</th>
                                                                                                                                                                                                 <th>Target Kinerja Awal</th>
-                                                                                                                                                                                                <th>Target</th>
+                                                                                                                                                                                                <th>Target Anggaran Awal</th>
+                                                                                                                                                                                                <th>Target Kinerja</th>
                                                                                                                                                                                                 <th>Satuan</th>
-                                                                                                                                                                                                <th>Target RP</th>
-                                                                                                                                                                                                <th>Realisasi</th>
-                                                                                                                                                                                                <th>Realisasi RP</th>
+                                                                                                                                                                                                <th>Target Anggaran</th>
+                                                                                                                                                                                                <th>Realisasi Kinerja</th>
+                                                                                                                                                                                                <th>Realisasi Anggaran</th>
                                                                                                                                                                                                 <th>Tahun</th>
                                                                                                                                                                                                 <th>Aksi</th>
                                                                                                                                                                                             </tr>
@@ -4874,6 +4880,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                 $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
                                                                                                                                                                                                 $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
                                                                                                                                                                                                 $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                                                                                                                                                                                $html .= '<td> Rp. '.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
                                                                                                                                                                                                 $a = 1;
                                                                                                                                                                                                 foreach ($tahuns as $tahun) {
                                                                                                                                                                                                     $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
@@ -4897,6 +4904,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                             $html .='</tr>';
                                                                                                                                                                                                         } else {
                                                                                                                                                                                                             $html .= '<tr>';
+                                                                                                                                                                                                                $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
@@ -4929,6 +4937,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                             $html .='</tr>';
                                                                                                                                                                                                         } else {
                                                                                                                                                                                                             $html .= '<tr>';
+                                                                                                                                                                                                                $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                 $html .= '<td></td>';

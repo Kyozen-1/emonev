@@ -14,7 +14,8 @@
             <th rowspan="3">Kode</th>
             <th rowspan="3">Proram dan Kegiatan</th>
             <th rowspan="3">Indikator Kinerja Tujuan, Sasaran, Program (outcome) dan Kegiatan (output)</th>
-            <th colspan="14">Target Kinerja Program dan Kerangka Pendanaan</th>
+            <th rowspan="3">Data Capaian pada Tahun Awal Perencanaan</th>
+            <th colspan="12">Target Kinerja Program dan Kerangka Pendanaan</th>
             <th rowspan="3">Unit Kerja Perangkat Daerah Penanggung-jawab </th>
             <th rowspan="3">Lokasi</th>
         </tr>
@@ -24,12 +25,9 @@
             <th colspan="2">Tahun - 3</th>
             <th colspan="2">Tahun - 4</th>
             <th colspan="2">Tahun - 5</th>
-            <th colspan="2">Tahun - 1</th>
             <th colspan="2">Kondisi Kinerja pada akhir periode Renstra Perangkat Daerah</th>
         </tr>
         <tr>
-            <th>Target</th>
-            <th>Rp</th>
             <th>Target</th>
             <th>Rp</th>
             <th>Target</th>
@@ -64,7 +62,6 @@
             <th>(18)</th>
             <th>(19)</th>
             <th>(20)</th>
-            <th>(21)</th>
         </tr>
     </thead>
     <tbody id="tbodyTc17">

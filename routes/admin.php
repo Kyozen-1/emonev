@@ -110,6 +110,21 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/perencanaan/renstra/reset/kegiatan', 'Admin\Perencanaan\RenstraController@renstra_get_kegiatan')->name('admin.perencanaan.renstra.reset.kegiatan');
     Route::get('/admin/perencanaan/get-rkpd', 'Admin\PerencanaanController@get_rkpd')->name('admin.perencanaan.get-rkpd');
     Route::post('/admin/perencanaan/rpjmd/filter/program/status', 'Admin\PerencanaanController@rpjmd_filter_program_status')->name('admin.perencanaan.rpjmd.filter.program.status');
+    Route::get('/admin/perencanaan/renja/get-tujuan', 'Admin\Perencanaan\RenjaController@renja_get_tujuan')->name('admin.perencanaan.renja.get-tujuan');
+    Route::post('/admin/perencanaan/renja/get-tujuan/filter', 'Admin\Perencanaan\RenjaController@renja_get_tujuan_filter')->name('admin.perencanaan.renja.get-tujuan.filter');
+    Route::post('/admin/perencanaan/renja/get-tujuan/reset', 'Admin\Perencanaan\RenjaController@renja_get_tujuan')->name('admin.perencanaan.renja.get-tujuan.reset');
+    Route::get('/admin/perencanaan/renja/get-sasaran', 'Admin\Perencanaan\RenjaController@renja_get_sasaran')->name('admin.perencanaan.renja.get-sasaran');
+    Route::post('/admin/perencanaan/renja/get-sasaran/filter', 'Admin\Perencanaan\RenjaController@renja_get_sasaran_filter')->name('admin.perencanaan.renja.get-sasaran.filter');
+    Route::post('/admin/perencanaan/renja/get-sasaran/reset', 'Admin\Perencanaan\RenjaController@renja_get_sasaran')->name('admin.perencanaan.renja.get-sasaran.reset');
+    Route::get('/admin/perencanaan/renja/get-program', 'Admin\Perencanaan\RenjaController@renja_get_program')->name('admin.perencanaan.renja.get-program');
+    Route::post('/admin/perencanaan/renja/get-program/filter', 'Admin\Perencanaan\RenjaController@renja_get_program_filter')->name('admin.perencanaan.renja.get-program.filter');
+    Route::post('/admin/perencanaan/renja/get-program/reset', 'Admin\Perencanaan\RenjaController@renja_get_program')->name('admin.perencanaan.renja.get-program.reset');
+    Route::get('/admin/perencanaan/renja/get-kegiatan', 'Admin\Perencanaan\RenjaController@renja_get_kegiatan')->name('admin.perencanaan.renja.get-kegiatan');
+    Route::post('/admin/perencanaan/renja/get-kegiatan/filter', 'Admin\Perencanaan\RenjaController@renja_get_kegiatan_filter')->name('admin.perencanaan.renja.get-kegiatan.filter');
+    Route::post('/admin/perencanaan/renja/get-kegiatan/reset', 'Admin\Perencanaan\RenjaController@renja_get_kegiatan')->name('admin.perencanaan.renja.get-kegiatan.reset');
+    Route::get('/admin/perencanaan/renja/get-sub-kegiatan', 'Admin\Perencanaan\RenjaController@renja_get_sub_kegiatan')->name('admin.perencanaan.renja.get-sub-kegiatan');
+    Route::post('/admin/perencanaan/renja/get-sub-kegiatan/filter', 'Admin\Perencanaan\RenjaController@renja_get_sub_kegiatan_filter')->name('admin.perencanaan.renja.get-sub-kegiatan.filter');
+    Route::post('/admin/perencanaan/renja/get-sub-kegiatan/reset', 'Admin\Perencanaan\RenjaController@renja_get_sub_kegiatan')->name('admin.perencanaan.renja.get-sub-kegiatan.reset');
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');
