@@ -23,4 +23,9 @@ class SubKegiatan extends Model
     {
         return $this->hasMany('App\Models\SubKegiatanIndikatorKinerja', 'sub_kegiatan_id');
     }
+
+    public function rkpd_tahun_pembangunan_sub_kegiatan()
+    {
+        return $this->hasMany('App\Models\RkpdTahunPembangunanSubKegiatan', 'sub_kegiatan_id');
+    }
 }

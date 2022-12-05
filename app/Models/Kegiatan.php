@@ -28,4 +28,9 @@ class Kegiatan extends Model
     {
         return $this->hasMany('App\Models\KegiatanIndikatorKinerja', 'kegiatan_id');
     }
+
+    public function rkpd_tahun_pembangunan_kegiatan()
+    {
+        return $this->hasMany('App\Models\RkpdTahunPembangunanKegiatan', 'kegiatan_id');
+    }
 }

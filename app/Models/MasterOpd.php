@@ -38,4 +38,9 @@ class MasterOpd extends Model
     {
         return $this->hasMany('App\Models\OpdKegiatanIndikatorKinerja', 'opd_id');
     }
+
+    public function rkpd_opd_tahun_pembangunan()
+    {
+        return $this->hasMany('App\Models\RkpdOpdTahunPembangunan', 'opd_id');
+    }
 }

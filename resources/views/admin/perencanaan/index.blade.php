@@ -1080,103 +1080,7 @@
                     {{-- Renstra End --}}
                     {{-- RKPD Start --}}
                     <div class="tab-pane fade" id="rkpdTab" role="tabpanel">
-                        <div class="row g-2 mb-5">
-                            <div class="col">
-                                <div class="card sh-11 hover-scale-up cursor-pointer">
-                                    <div class="h-100 row g-0 card-body align-items-center py-3">
-                                        <div class="col-auto pe-3">
-                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
-                                                <i data-acorn-icon="wallet" class="text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Pagu Renstra</div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="cta-2 text-primary">Rp. 0</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card sh-11 hover-scale-up cursor-pointer">
-                                    <div class="h-100 row g-0 card-body align-items-center py-3">
-                                        <div class="col-auto pe-3">
-                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
-                                                <i class="fas fa-shopping-cart text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Pagu Renja</div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="cta-2 text-primary">Rp. 0</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card sh-11 hover-scale-up cursor-pointer">
-                                    <div class="h-100 row g-0 card-body align-items-center py-3">
-                                        <div class="col-auto pe-3">
-                                            <div class="bg-gradient-light sh-5 sw-5 rounded-xl d-flex justify-content-center align-items-center">
-                                                <i class="fas fa-suitcase text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="d-flex align-items-center lh-1-25">Sisa</div>
-                                                </div>
-                                                <div class="col-12">
-                                                    <div class="cta-2 text-primary">Rp. 0</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-5">
-                                <div class="row">
-                                    <div class="col"><div class="box" style="background: #ffffff;"></div> <span>: Urusan</span></div>
-                                    <div class="col"><div class="box" style="background: #e2e2e2;"></div> <span>: Program</span></div>
-                                    <div class="col"><div class="box" style="background: #cfcfcf;"></div> <span>: Kegiatan</span></div>
-                                    <div class="col"><div class="box" style="background: #bbbbbb;"></div> <span>: Sub Kegiatan</span></div>
-                                </div>
-                            </div>
-                            <div class="col"></div>
-                        </div>
-                        <div class="data-table-rows slim">
-                            <!-- Table Start -->
-                            <div class="data-table-responsive-wrapper">
-                                <table class="table table-condensed table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th width="5%">Kode</th>
-                                            <th width="45%">Urusan/Program/Kegiatan/Sub Kegiatan</th>
-                                            <th width="10%">Pagu RPJMD</th>
-                                            <th width="10%">Pagu Renstra</th>
-                                            <th width="10%">Pagu Renja</th>
-                                            <th width="15%">OPD</th>
-                                            <th width="5%">PIC</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rkpd_table" style="text-align: left;">
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- Table End -->
-                        </div>
+                        @include('admin.perencanaan.rkpd.index')
                     </div>
                     {{-- RKPD End --}}
                     {{-- Renja Start --}}
@@ -2520,6 +2424,7 @@
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    @stack('script_rkpd')
     <script>
         var tahun_awal = "{{$tahun_awal}}";
         // Visi Start
@@ -2538,6 +2443,7 @@
             $('#renja_filter_program').select2();
             $('#renja_filter_kegiatan').select2();
             $('#renja_filter_sub_kegiatan').select2();
+            $('#rkpd_opd_tahun_pembangunan_opd_id').select2();
 
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');
@@ -2583,6 +2489,8 @@
                 // $('#renstra_kegiatan_filter_program_'+tahun).select2();
                 // $('#renstra_kegiatan_filter_kegiatan_'+tahun).select2();
 
+                // $('#rkpd_filter_opd_'+tahun).select2();
+
                 var dataTables = $('#visi_table_'+tahun).DataTable({
                     processing: true,
                     serverSide: true,
@@ -2627,6 +2535,41 @@
                 success: function(data)
                 {
                     $('#renjaTujuanNavDiv').html(data.html);
+                }
+            });
+
+            var dataTables = $('#rkpd_tahun_pembangunan_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan') }}",
+                },
+                columns:[
+                    {
+                        data: 'DT_RowIndex'
+                    },
+                    {
+                        data: 'deskripsi',
+                        name: 'deskripsi'
+                    },
+                    {
+                        data: 'tahun',
+                        name: 'tahun'
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        orderable: false
+                    },
+                ]
+            });
+
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd') }}" + '/' + tahun_awal,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#rkpdNavDiv'+tahun_awal).html(data.html);
                 }
             });
 
@@ -5372,18 +5315,6 @@
                 success: function(data)
                 {
                     $('#renstraKegiatanNavDiv'+tahun).html(data.html);
-                }
-            });
-        });
-
-        // RKPD
-        $('#buttonRkpdTab').click(function(){
-            $.ajax({
-                url: "{{ route('admin.perencanaan.get-rkpd') }}",
-                dataType: "json",
-                success: function(data)
-                {
-                    $('#rkpd_table').html(data.html);
                 }
             });
         });

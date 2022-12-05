@@ -108,7 +108,6 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/perencanaan/renstra/get-kegiatan/{tahun}', 'Admin\Perencanaan\RenstraController@renstra_get_kegiatan_tahun');
     Route::post('/admin/perencanaan/renstra/filter/kegiatan', 'Admin\Perencanaan\RenstraController@renstra_filter_kegiatan')->name('admin.perencanaan.renstra.filter.kegiatan');
     Route::post('/admin/perencanaan/renstra/reset/kegiatan', 'Admin\Perencanaan\RenstraController@renstra_get_kegiatan')->name('admin.perencanaan.renstra.reset.kegiatan');
-    Route::get('/admin/perencanaan/get-rkpd', 'Admin\PerencanaanController@get_rkpd')->name('admin.perencanaan.get-rkpd');
     Route::post('/admin/perencanaan/rpjmd/filter/program/status', 'Admin\PerencanaanController@rpjmd_filter_program_status')->name('admin.perencanaan.rpjmd.filter.program.status');
     Route::get('/admin/perencanaan/renja/get-tujuan', 'Admin\Perencanaan\RenjaController@renja_get_tujuan')->name('admin.perencanaan.renja.get-tujuan');
     Route::post('/admin/perencanaan/renja/get-tujuan/filter', 'Admin\Perencanaan\RenjaController@renja_get_tujuan_filter')->name('admin.perencanaan.renja.get-tujuan.filter');
@@ -125,6 +124,18 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/perencanaan/renja/get-sub-kegiatan', 'Admin\Perencanaan\RenjaController@renja_get_sub_kegiatan')->name('admin.perencanaan.renja.get-sub-kegiatan');
     Route::post('/admin/perencanaan/renja/get-sub-kegiatan/filter', 'Admin\Perencanaan\RenjaController@renja_get_sub_kegiatan_filter')->name('admin.perencanaan.renja.get-sub-kegiatan.filter');
     Route::post('/admin/perencanaan/renja/get-sub-kegiatan/reset', 'Admin\Perencanaan\RenjaController@renja_get_sub_kegiatan')->name('admin.perencanaan.renja.get-sub-kegiatan.reset');
+    Route::get('/admin/perencanaan/rkpd/get-tahun-pembangunan', 'Admin\Perencanaan\RkpdController@renja_tahun_pembangunan')->name('admin.perencanaan.rkpd.get-tahun-pembangunan');
+    Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/store','Admin\Perencanaan\RkpdController@renja_tahun_pembangunan_store')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.store');
+    Route::get('/admin/perencanaan/rkpd/get-tahun-pembangunan/detail/{id}','Admin\Perencanaan\RkpdController@renja_tahun_pembangunan_detail');
+    Route::get('/admin/perencanaan/rkpd/get-tahun-pembangunan/edit/{id}','Admin\Perencanaan\RkpdController@renja_tahun_pembangunan_edit');
+    Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/update','Admin\Perencanaan\RkpdController@renja_tahun_pembangunan_update')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.update');
+    Route::get('/admin/perencanaan/rkpd/get-tahun-pembangunan/destroy/{id}','Admin\Perencanaan\RkpdController@renja_tahun_pembangunan_destroy');
+    Route::get('/admin/perencanaan/rkpd/get-tahun-pembangunan/destroy/{id}','Admin\Perencanaan\RkpdController@renja_tahun_pembangunan_destroy');
+    Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/opd/store','Admin\Perencanaan\RkpdController@renja_opd_tahun_pembangunan_store')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.opd.store');
+    Route::get('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/{tahun}', 'Admin\Perencanaan\RkpdController@data_per_opd');
+    Route::get('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/atur/{opd_id}/{tahun}', 'Admin\Perencanaan\RkpdController@data_per_opd_atur')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur');
+    Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/atur/urusan/store', 'Admin\Perencanaan\RkpdController@data_per_opd_atur_urusan_store')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.urusan.store');
+
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');

@@ -33,4 +33,9 @@ class Program extends Model
     {
         return $this->hasMany('App\Models\ProgramIndikatorKinerja', 'program_id');
     }
+
+    public function rkpd_tahun_pembangunan_program()
+    {
+        return $this->hasMany('App\Models\RkpdTahunPembangunanProgram', 'program_id');
+    }
 }

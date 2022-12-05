@@ -18,4 +18,9 @@ class Urusan extends Model
     {
         return $this->hasMany('App\Models\Program', 'urusan_id');
     }
+
+    public function rkpd_tahun_pembangunan_urusan()
+    {
+        return $this->hasMany('App\Models\RkpdTahunPembangunanUrusan', 'urusan_id');
+    }
 }

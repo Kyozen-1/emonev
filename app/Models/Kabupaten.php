@@ -28,4 +28,9 @@ class Kabupaten extends Model
     {
         return $this->hasMany('App\User', 'kabupaten_id');
     }
+
+    public function rkpd_tahun_pembangunan()
+    {
+        return $this->hasMany('App\Models\RkpdTahunPembangunan', 'kabupaten_id');
+    }
 }
