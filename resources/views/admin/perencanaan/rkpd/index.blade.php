@@ -117,9 +117,6 @@
                                 <label for="" class="form-label">OPD</label>
                                 <select id="rkpd_filter_opd_{{$tahun}}" class="form-control rkpd_filter_opd" data-tahun="{{$tahun}}">
                                     <option value="">--- Semua ---</option>
-                                    @foreach ($opds as $id => $nama)
-                                        <option value="{{$id}}">{{$nama}}</option>
-                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -363,12 +360,106 @@
                         $('#rkpdNavDiv'+tahun).html(data.html);
                     }
                 });
+
+                $.ajax({
+                    url: "{{ url('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/get-opd') }}" + '/' + tahun,
+                    dataType: "json",
+                    success: function(data)
+                    {
+                        $('#rkpd_filter_opd_'+tahun).empty();
+                        $('#rkpd_filter_opd_'+tahun).append('<option value="">--- Pilih OPD ---</option>');
+                        $.each(data, function(key, value){
+                            $('#rkpd_filter_opd_'+tahun).append(new Option(value.nama, value.id));
+                        });
+                    }
+                });
             });
 
             $('.rkpd_btn_tambah_opd').click(function(){
                 var tahun = $(this).attr('data-tahun');
                 $('#rkpd_opd_tahun_pembangunan_tahun').val(tahun);
                 $('#addOpdTahunPembangunanModal').modal('show');
+            });
+
+            $('.rkpd_btn_filter').click(function(){
+                var tahun = $(this).attr('data-tahun');
+                var opd_id = $('#rkpd_filter_opd_'+tahun).val();
+                $.ajax({
+                    url: "{{route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.filter')}}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        tahun: tahun,
+                        opd_id: opd_id
+                    },
+                    success: function(data)
+                    {
+                        $('#rkpdNavDiv'+tahun).html(data.html);
+                    }
+                });
+            });
+
+            $('.rkpd_btn_reset').click(function(){
+                var tahun = $(this).attr('data-tahun');
+                $('#rkpd_filter_opd_'+tahun).val('').trigger('change');
+                $.ajax({
+                    url: "{{route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.reset')}}",
+                    method: 'POST',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        tahun: tahun
+                    },
+                    success: function(data)
+                    {
+                        $('#rkpdNavDiv'+tahun).html(data.html);
+                    }
+                });
+            });
+
+            $(document).on('click', '.btn-hapus-rkpd-opd-tahun-pembangunan', function(){
+                var opd_id = $(this).attr('data-opd-id');
+                var tahun = $(this).attr('data-tahun');
+                return new swal({
+                    title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#1976D2",
+                    confirmButtonText: "Ya"
+                }).then((result)=>{
+                    if(result.value)
+                    {
+                        $.ajax({
+                            url: "{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.destroy') }}",
+                            method: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                opd_id:opd_id,
+                                tahun: tahun
+                            },
+                            success: function(data)
+                            {
+                                if(data.errors)
+                                {
+                                    Swal.fire({
+                                        icon: 'errors',
+                                        title: data.errors,
+                                        showConfirmButton: true
+                                    });
+                                }
+                                if(data.success)
+                                {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: data.success,
+                                        showConfirmButton: true
+                                    }).then(function() {
+                                        window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
             });
         </script>
     @endpush

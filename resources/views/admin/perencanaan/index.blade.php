@@ -2573,6 +2573,19 @@
                 }
             });
 
+            $.ajax({
+                url: "{{ url('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/get-opd') }}" + '/' + tahun_awal,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#rkpd_filter_opd_'+tahun_awal).empty();
+                    $('#rkpd_filter_opd_'+tahun_awal).append('<option value="">--- Pilih OPD ---</option>');
+                    $.each(data, function(key, value){
+                        $('#rkpd_filter_opd_'+tahun_awal).append(new Option(value.nama, value.id));
+                    });
+                }
+            });
+
         });
         $(document).on('click', '.visi_detail', function(){
             var id = $(this).attr('id');
