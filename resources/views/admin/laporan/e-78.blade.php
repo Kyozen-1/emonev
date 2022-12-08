@@ -15,9 +15,9 @@
             <th rowspan="2">Indikator Kinerja</th>
             <th rowspan="2">Data Capaian Pada Awal Tahun Perencanaan</th>
             <th rowspan="2" colspan="2">Target Pada Akhir Tahun Perencanaan</th>
-            <th colspan="10">Target RPJMD Kabupaten/Kota Pada RKPD Kabupaten/Kota Tahun {{$tahun}}</th>
-            <th colspan="10">Capaian Target RPJMD Kabupaten/Kota Melalui Pelaksanaan RKPD Tahun {{$tahun}}</th>
-            <th colspan="10">Tingkat Capaian Target RPJMD Kabupaten/Kota Hasil Pelaksanaan RKPD Kabupaten/Kota Tahun {{$tahun}}(%)</th>
+            <th colspan="10">Target RPJMD Kabupaten/Kota Pada RKPD Kabupaten/Kota Tahun</th>
+            <th colspan="10">Capaian Target RPJMD Kabupaten/Kota Melalui Pelaksanaan RKPD Tahun</th>
+            <th colspan="10">Tingkat Capaian Target RPJMD Kabupaten/Kota Hasil Pelaksanaan RKPD Kabupaten/Kota Tahun(%)</th>
             <th colspan="2" rowspan="2">Capaian Pada Akhir Tahun Perencanaan</th>
             <th colspan="2" rowspan="2">Rasio Capaian Akhir</th>
         </tr>
