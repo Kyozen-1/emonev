@@ -4,6 +4,15 @@ namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+use RealRashid\SweetAlert\Facades\Alert;
+use DB;
+use Validator;
+use DataTables;
+use Excel;
+use PDF;
 use Carbon\Carbon;
 use App\Models\TahunPeriode;
 use App\Models\Visi;
@@ -49,6 +58,9 @@ use App\Models\ProgramTargetSatuanRpRealisasi;
 use App\Models\KegiatanIndikatorKinerja;
 use App\Models\KegiatanTargetSatuanRpRealisasi;
 use App\Models\OpdKegiatanIndikatorKinerja;
+use App\Models\ProgramTwRealisasi;
+use App\Models\KegiatanTwRealisasi;
+use App\Models\SubKegiatanTwRealisasi;
 
 class Tc14Ekspor implements FromView
 {
@@ -181,6 +193,32 @@ class Tc14Ekspor implements FromView
                             if($a == 1)
                             {
                                     $tc_14 .= '<td style="text-align:left">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                    $tc_14 .= '<td style="text-align:left">'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                    $indikator_b = 0;
+                                    $len_b = count($tahuns);
+                                    foreach ($tahuns as $tahun) {
+                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                        if($cek_tujuan_target_satuan_rp_realisasi)
+                                        {
+                                            $tc_14 .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'/'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                            $tc_14 .= '<td></td>';
+                                            if($indikator_b == $len_b -1 )
+                                            {
+                                                $tc_14 .= '<td></td>';
+                                                $tc_14 .= '<td></td>';
+                                            }
+                                        } else {
+                                            $tc_14 .= '<td></td>';
+                                            $tc_14 .= '<td></td>';
+                                            if($indikator_b == $len_b -1 )
+                                            {
+                                                $tc_14 .= '<td></td>';
+                                                $tc_14 .= '<td></td>';
+                                            }
+                                        }
+                                        $indikator_b++;
+                                    }
+                                    $tc_14 .= '<td></td>';
                                 $tc_14 .='</tr>';
                             } else {
                                 $tc_14 .= '<tr>';
@@ -189,6 +227,32 @@ class Tc14Ekspor implements FromView
                                     $tc_14 .= '<td></td>';
                                     $tc_14 .= '<td></td>';
                                     $tc_14 .= '<td style="text-align:left">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                    $tc_14 .= '<td style="text-align:left">'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                    $indikator_b = 0;
+                                    $len_b = count($tahuns);
+                                    foreach ($tahuns as $tahun) {
+                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                        if($cek_tujuan_target_satuan_rp_realisasi)
+                                        {
+                                            $tc_14 .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'/'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                            $tc_14 .= '<td></td>';
+                                            if($indikator_b == $len_b -1 )
+                                            {
+                                                $tc_14 .= '<td></td>';
+                                                $tc_14 .= '<td></td>';
+                                            }
+                                        } else {
+                                            $tc_14 .= '<td></td>';
+                                            $tc_14 .= '<td></td>';
+                                            if($indikator_b == $len_b -1 )
+                                            {
+                                                $tc_14 .= '<td></td>';
+                                                $tc_14 .= '<td></td>';
+                                            }
+                                        }
+                                        $indikator_b++;
+                                    }
+                                    $tc_14 .= '<td></td>';
                                 $tc_14 .='</tr>';
                             }
                             $a++;
@@ -229,8 +293,33 @@ class Tc14Ekspor implements FromView
                                 if($b == 1)
                                 {
                                         $tc_14 .= '<td style="text-align:left">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                        $tc_14 .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                        $indikator_c = 0;
+                                        $len_c = count($tahuns);
+                                        foreach ($tahuns as $tahun) {
+                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja)->where('tahun', $tahun)->first();
+                                            if($cek_sasaran_target_satuan_rp_realisasi)
+                                            {
+                                                $tc_14 .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'/'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                $tc_14 .= '<td></td>';
+                                                if($indikator_c == $len_c - 1)
+                                                {
+                                                    $tc_14 .= '<td></td>';
+                                                    $tc_14 .= '<td></td>';
+                                                }
+                                            } else {
+                                                $tc_14 .= '<td></td>';
+                                                $tc_14 .= '<td></td>';
+                                                if($indikator_c == $len_c - 1)
+                                                {
+                                                    $tc_14 .= '<td></td>';
+                                                    $tc_14 .= '<td></td>';
+                                                }
+                                            }
+                                            $indikator_c++;
+                                        }
+                                        $tc_14 .= '<td></td>';
                                     $tc_14 .='</tr>';
-                                    // Permulaan Permasalahan
                                     $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)->get();
                                     foreach ($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd) {
                                         $tc_14 .= '<tr>';
@@ -244,20 +333,13 @@ class Tc14Ekspor implements FromView
                                                 if($c == 1)
                                                 {
                                                     $tc_14 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                                    $tc_14 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
                                                     $d = 1;
                                                     // Lokasi 2 source
                                                     foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
                                                         if($d == 1)
                                                         {
-                                                                $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
-                                                                                        ->where('tahun', $new_tahun_awal)->first();
-                                                                if($kondisi_kinerja_awal)
-                                                                {
-                                                                    $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
-                                                                } else {
-                                                                    $tc_14 .= '<td></td>';
-                                                                }
                                                                 $data_target = [];
                                                                 $data_satuan = '';
                                                                 $data_target_rp = [];
@@ -267,9 +349,9 @@ class Tc14Ekspor implements FromView
                                                                     if($program_target_satuan_rp_realisasi)
                                                                     {
                                                                         $data_target[] =  $program_target_satuan_rp_realisasi->target;
-                                                                        $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                        $data_satuan = $program_indikator_kinerja->satuan;
                                                                         $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
-                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_indikator_kinerja->satuan.'</td>';
                                                                         $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
                                                                     } else {
                                                                         $tc_14 .= '<td></td>';
@@ -295,14 +377,6 @@ class Tc14Ekspor implements FromView
                                                                 $tc_14 .= '<td></td>';
                                                                 $tc_14 .= '<td></td>';
                                                                 $tc_14 .= '<td></td>';
-                                                                $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
-                                                                                        ->where('tahun', $new_tahun_awal)->first();
-                                                                if($kondisi_kinerja_awal)
-                                                                {
-                                                                    $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
-                                                                } else {
-                                                                    $tc_14 .= '<td></td>';
-                                                                }
                                                                 $data_target = [];
                                                                 $data_satuan = '';
                                                                 $data_target_rp = [];
@@ -312,9 +386,9 @@ class Tc14Ekspor implements FromView
                                                                     if($program_target_satuan_rp_realisasi)
                                                                     {
                                                                         $data_target[] =  $program_target_satuan_rp_realisasi->target;
-                                                                        $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                        $data_satuan = $program_indikator_kinerja->satuan;
                                                                         $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
-                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_indikator_kinerja->satuan.'</td>';
                                                                         $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
                                                                     } else {
                                                                         $tc_14 .= '<td></td>';
@@ -343,20 +417,13 @@ class Tc14Ekspor implements FromView
                                                         $tc_14 .= '<td></td>';
                                                         $tc_14 .= '<td></td>';
                                                         $tc_14 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                                        $tc_14 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                         $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
                                                         $d = 1;
                                                         // Lokasi 2 Destinasi
                                                         foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
                                                             if($d == 1)
                                                             {
-                                                                    $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
-                                                                                            ->where('tahun', $new_tahun_awal)->first();
-                                                                    if($kondisi_kinerja_awal)
-                                                                    {
-                                                                        $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
-                                                                    } else {
-                                                                        $tc_14 .= '<td></td>';
-                                                                    }
                                                                     $data_target = [];
                                                                     $data_satuan = '';
                                                                     $data_target_rp = [];
@@ -366,9 +433,9 @@ class Tc14Ekspor implements FromView
                                                                         if($program_target_satuan_rp_realisasi)
                                                                         {
                                                                             $data_target[] =  $program_target_satuan_rp_realisasi->target;
-                                                                            $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                            $data_satuan = $program_indikator_kinerja->satuan;
                                                                             $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
-                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_indikator_kinerja->satuan.'</td>';
                                                                             $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
                                                                         } else {
                                                                             $tc_14 .= '<td></td>';
@@ -394,14 +461,6 @@ class Tc14Ekspor implements FromView
                                                                     $tc_14 .= '<td></td>';
                                                                     $tc_14 .= '<td></td>';
                                                                     $tc_14 .= '<td></td>';
-                                                                    $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
-                                                                                            ->where('tahun', $new_tahun_awal)->first();
-                                                                    if($kondisi_kinerja_awal)
-                                                                    {
-                                                                        $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
-                                                                    } else {
-                                                                        $tc_14 .= '<td></td>';
-                                                                    }
                                                                     $data_target = [];
                                                                     $data_satuan = '';
                                                                     $data_target_rp = [];
@@ -411,9 +470,9 @@ class Tc14Ekspor implements FromView
                                                                         if($program_target_satuan_rp_realisasi)
                                                                         {
                                                                             $data_target[] =  $program_target_satuan_rp_realisasi->target;
-                                                                            $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                            $data_satuan = $program_indikator_kinerja->satuan;
                                                                             $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
-                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_indikator_kinerja->satuan.'</td>';
                                                                             $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
                                                                         } else {
                                                                             $tc_14 .= '<td></td>';
@@ -446,8 +505,33 @@ class Tc14Ekspor implements FromView
                                         $tc_14 .= '<td></td>';
                                         $tc_14 .= '<td></td>';
                                         $tc_14 .= '<td style="text-align:left">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                        $tc_14 .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                        $indikator_c = 0;
+                                        $len_c = count($tahuns);
+                                        foreach ($tahuns as $tahun) {
+                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja)->where('tahun', $tahun)->first();
+                                            if($cek_sasaran_target_satuan_rp_realisasi)
+                                            {
+                                                $tc_14 .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'/'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                $tc_14 .= '<td></td>';
+                                                if($indikator_c == $len_c - 1)
+                                                {
+                                                    $tc_14 .= '<td></td>';
+                                                    $tc_14 .= '<td></td>';
+                                                }
+                                            } else {
+                                                $tc_14 .= '<td></td>';
+                                                $tc_14 .= '<td></td>';
+                                                if($indikator_c == $len_c - 1)
+                                                {
+                                                    $tc_14 .= '<td></td>';
+                                                    $tc_14 .= '<td></td>';
+                                                }
+                                            }
+                                            $indikator_c++;
+                                        }
+                                        $tc_14 .= '<td></td>';
                                     $tc_14 .='</tr>';
-                                    // Belum di konfigurasi
                                     $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)->get();
                                     foreach ($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd) {
                                         $tc_14 .= '<tr>';
@@ -461,21 +545,13 @@ class Tc14Ekspor implements FromView
                                                 if($c == 1)
                                                 {
                                                     $tc_14 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                                    $tc_14 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
                                                     $d = 1;
                                                     // Lokasi 2 source
                                                     foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
                                                         if($d == 1)
                                                         {
-                                                                $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
-                                                                                        ->where('tahun', $new_tahun_awal)->first();
-                                                                if($kondisi_kinerja_awal)
-                                                                {
-                                                                    $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
-                                                                } else {
-                                                                    $tc_14 .= '<td></td>';
-                                                                }
-
                                                                 $data_target = [];
                                                                 $data_satuan = '';
                                                                 $data_target_rp = [];
@@ -485,9 +561,9 @@ class Tc14Ekspor implements FromView
                                                                     if($program_target_satuan_rp_realisasi)
                                                                     {
                                                                         $data_target[] =  $program_target_satuan_rp_realisasi->target;
-                                                                        $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                        $data_satuan = $program_indikator_kinerja->satuan;
                                                                         $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
-                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_indikator_kinerja->satuan.'</td>';
                                                                         $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
                                                                     } else {
                                                                         $tc_14 .= '<td></td>';
@@ -513,14 +589,6 @@ class Tc14Ekspor implements FromView
                                                                 $tc_14 .= '<td></td>';
                                                                 $tc_14 .= '<td></td>';
                                                                 $tc_14 .= '<td></td>';
-                                                                $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
-                                                                                        ->where('tahun', $new_tahun_awal)->first();
-                                                                if($kondisi_kinerja_awal)
-                                                                {
-                                                                    $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
-                                                                } else {
-                                                                    $tc_14 .= '<td></td>';
-                                                                }
                                                                 $data_target = [];
                                                                 $data_satuan = '';
                                                                 $data_target_rp = [];
@@ -530,9 +598,9 @@ class Tc14Ekspor implements FromView
                                                                     if($program_target_satuan_rp_realisasi)
                                                                     {
                                                                         $data_target[] =  $program_target_satuan_rp_realisasi->target;
-                                                                        $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                        $data_satuan = $program_indikator_kinerja->satuan;
                                                                         $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
-                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                        $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_indikator_kinerja->satuan.'</td>';
                                                                         $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
                                                                     } else {
                                                                         $tc_14 .= '<td></td>';
@@ -561,20 +629,13 @@ class Tc14Ekspor implements FromView
                                                         $tc_14 .= '<td></td>';
                                                         $tc_14 .= '<td></td>';
                                                         $tc_14 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                                        $tc_14 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                         $get_opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
                                                         $d = 1;
                                                         // Lokasi 2 source
                                                         foreach ($get_opd_program_indikator_kinerjas as $get_opd_program_indikator_kinerja) {
                                                             if($d == 1)
                                                             {
-                                                                    $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
-                                                                                            ->where('tahun', $new_tahun_awal)->first();
-                                                                    if($kondisi_kinerja_awal)
-                                                                    {
-                                                                        $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
-                                                                    } else {
-                                                                        $tc_14 .= '<td></td>';
-                                                                    }
                                                                     $data_target = [];
                                                                     $data_satuan = '';
                                                                     $data_target_rp = [];
@@ -584,9 +645,9 @@ class Tc14Ekspor implements FromView
                                                                         if($program_target_satuan_rp_realisasi)
                                                                         {
                                                                             $data_target[] =  $program_target_satuan_rp_realisasi->target;
-                                                                            $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                            $data_satuan = $program_indikator_kinerja->satuan;
                                                                             $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
-                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_indikator_kinerja->satuan.'</td>';
                                                                             $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
                                                                         } else {
                                                                             $tc_14 .= '<td></td>';
@@ -612,14 +673,6 @@ class Tc14Ekspor implements FromView
                                                                     $tc_14 .= '<td></td>';
                                                                     $tc_14 .= '<td></td>';
                                                                     $tc_14 .= '<td></td>';
-                                                                    $kondisi_kinerja_awal = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $get_opd_program_indikator_kinerja->id)
-                                                                                            ->where('tahun', $new_tahun_awal)->first();
-                                                                    if($kondisi_kinerja_awal)
-                                                                    {
-                                                                        $tc_14 .= '<td>'.$kondisi_kinerja_awal->target.'</td>';
-                                                                    } else {
-                                                                        $tc_14 .= '<td></td>';
-                                                                    }
                                                                     $data_target = [];
                                                                     $data_satuan = '';
                                                                     $data_target_rp = [];
@@ -629,9 +682,9 @@ class Tc14Ekspor implements FromView
                                                                         if($program_target_satuan_rp_realisasi)
                                                                         {
                                                                             $data_target[] =  $program_target_satuan_rp_realisasi->target;
-                                                                            $data_satuan = $program_target_satuan_rp_realisasi->satuan;
+                                                                            $data_satuan = $program_indikator_kinerja->satuan;
                                                                             $data_target_rp[] = $program_target_satuan_rp_realisasi->target_rp;
-                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                                            $tc_14 .= '<td style="text-align:left">'.$program_target_satuan_rp_realisasi->target.' / '.$program_indikator_kinerja->satuan.'</td>';
                                                                             $tc_14 .= '<td style="text-align:left">Rp. '.number_format($program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
                                                                         } else {
                                                                             $tc_14 .= '<td></td>';

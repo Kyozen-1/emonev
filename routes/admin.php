@@ -148,21 +148,27 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');
-    Route::post('/admin/laporan/tc-19', 'Admin\LaporanController@laporan_tc_19')->name('admin.laporan.tc-19');
-    Route::post('/admin/laporan/e-79', 'Admin\LaporanController@laporan_e_79')->name('admin.laporan.e-79');
-    Route::post('/admin/laporan/e-78', 'Admin\LaporanController@laporan_e_78')->name('admin.laporan.e-78');
+
+    Route::get('/admin/laporan/tc-14', 'Admin\Laporan\Tc14Controller@tc_14')->name('admin.laporan.tc-14');
+    Route::get('/admin/laporan/tc-14/ekspor/pdf', 'Admin\Laporan\Tc14Controller@tc_14_ekspor_pdf')->name('admin.laporan.tc-14.ekspor.pdf');
+    Route::get('/admin/laporan/tc-14/ekspor/excel', 'Admin\Laporan\Tc14Controller@tc_14_ekspor_excel')->name('admin.laporan.tc-14.ekspor.excel');
+
+    Route::get('/admin/laporan/tc-19/get-data', 'Admin\Laporan\Tc19Controller@tc_19')->name('admin.laporan.tc-19.get-data');
+    Route::post('/admin/laporan/tc-19', 'Admin\Laporan\Tc19Controller@laporan_tc_19')->name('admin.laporan.tc-19');
+    Route::get('/admin/laporan/tc-19/ekspor/pdf/{tahun}', 'Admin\Laporan\Tc19Controller@tc_19_ekspor_pdf')->name('admin.laporan.tc-19.ekspor.pdf');
+    Route::get('/admin/laporan/tc-19/ekspor/excel/{tahun}', 'Admin\Laporan\Tc19Controller@tc_19_ekspor_excel')->name('admin.laporan.tc-19.ekspor.excel');
+
+    Route::get('/admin/laporan/e-79/get-data', 'Admin\Laporan\E79Controller@e_79')->name('admin.laporan.e-79.get-data');
+    Route::post('/admin/laporan/e-79', 'Admin\Laporan\E79Controller@laporan_e_79')->name('admin.laporan.e-79');
+    Route::get('/admin/laporan/e-79/ekspor/pdf/{tahun}', 'Admin\Laporan\E79Controller@e_79_ekspor_pdf')->name('admin.laporan.e-79.ekspor.pdf');
+    Route::get('/admin/laporan/e-79/ekspor/excel/{tahun}', 'Admin\Laporan\E79Controller@e_79_ekspor_excel')->name('admin.laporan.e-79.ekspor.excel');
+
+    Route::get('/admin/laporan/e-78', 'Admin\Laporan\E78Controller@e_78')->name('admin.laporan.e-78');
+    Route::get('/admin/laporan/e-78/ekspor/excel', 'Admin\Laporan\E78Controller@e_78_ekspor_excel')->name('admin.laporan.e-78.ekspor.excel');
+    Route::get('/admin/laporan/e-78/ekspor/pdf', 'Admin\Laporan\E78Controller@e_78_ekspor_pdf')->name('admin.laporan.e-78.ekspor.pdf');
+
     Route::post('/admin/laporan/e-80', 'Admin\LaporanController@laporan_e_80')->name('admin.laporan.e-80');
     Route::post('/admin/laporan/e-81', 'Admin\LaporanController@laporan_e_81')->name('admin.laporan.e-81');
-    Route::get('/admin/laporan/tc-14/ekspor/pdf', 'Admin\LaporanController@tc_14_ekspor_pdf')->name('admin.laporan.tc-14.ekspor.pdf');
-    Route::get('/admin/laporan/tc-14/ekspor/excel', 'Admin\LaporanController@tc_14_ekspor_excel')->name('admin.laporan.tc-14.ekspor.excel');
-    Route::get('/admin/laporan/tc-19/ekspor/pdf/{tahun}', 'Admin\LaporanController@tc_19_ekspor_pdf')->name('admin.laporan.tc-19.ekspor.pdf');
-    Route::get('/admin/laporan/tc-19/ekspor/excel/{tahun}', 'Admin\LaporanController@tc_19_ekspor_excel')->name('admin.laporan.tc-19.ekspor.excel');
-    Route::get('/admin/laporan/e-79/ekspor/pdf/{tahun}', 'Admin\LaporanController@e_79_ekspor_pdf')->name('admin.laporan.e-79.ekspor.pdf');
-    Route::get('/admin/laporan/e-79/ekspor/excel/{tahun}', 'Admin\LaporanController@e_79_ekspor_excel')->name('admin.laporan.e-79.ekspor.excel');
-    Route::get('/admin/laporan/e-78/ekspor/pdf/{tahun}', 'Admin\LaporanController@e_78_ekspor_pdf')->name('admin.laporan.e-78.ekspor.pdf');
-    Route::get('/admin/laporan/e-78/ekspor/excel/{tahun}', 'Admin\LaporanController@e_78_ekspor_excel')->name('admin.laporan.e-78.ekspor.excel');
-    Route::get('/admin/laporan/e-78/ekspor/pdf/{tahun}', 'Admin\LaporanController@e_78_ekspor_pdf')->name('admin.laporan.e-78.ekspor.pdf');
-    Route::get('/admin/laporan/e-78/ekspor/excel/{tahun}', 'Admin\LaporanController@e_78_ekspor_excel')->name('admin.laporan.e-78.ekspor.excel');
     Route::get('/admin/laporan/e-80/ekspor/pdf/{tahun}', 'Admin\LaporanController@e_80_ekspor_pdf')->name('admin.laporan.e-80.ekspor.pdf');
     Route::get('/admin/laporan/e-80/ekspor/excel/{tahun}', 'Admin\LaporanController@e_80_ekspor_excel')->name('admin.laporan.e-80.ekspor.excel');
     Route::get('/admin/laporan/e-81/ekspor/pdf/{tahun}', 'Admin\LaporanController@e_81_ekspor_pdf')->name('admin.laporan.e-81.ekspor.pdf');
@@ -346,15 +352,6 @@ Route::group(['middleware' => 'auth:admin'], function(){
 
     //RKPD
     Route::get('/admin/rpkd', 'Admin\RkpdController@index')->name('admin.rkpd.index');
-
-    //Laporan
-    Route::get('/admin/laporan/tc-14', 'Admin\Laporan\Tc14Controller@index')->name('admin.laporan.tc-14.index');
-    Route::get('/admin/laporan/tc-19', 'Admin\Laporan\Tc19Controller@index')->name('admin.laporan.tc-19.index');
-    Route::get('/admin/laporan/tc-19/{tahun}', 'Admin\Laporan\Tc19Controller@detail');
-    Route::get('/admin/laporan/e-79', 'Admin\Laporan\E79Controller@index')->name('admin.laporan.e-79.index');
-    Route::get('/admin/laporan/e-79/{tahun}', 'Admin\Laporan\E79Controller@detail');
-    Route::get('/admin/laporan/e-78', 'Admin\Laporan\E78Controller@index')->name('admin.laporan.e-78.index');
-    Route::get('/admin/laporan/e-78/{tahun}', 'Admin\Laporan\E78Controller@detail');
 
     //Renstra
     Route::post('/admin/renstra/get-kegiatan', 'Admin\RenstraKegiatanController@get_kegiatan')->name('admin.renstra.get-kegiatan');

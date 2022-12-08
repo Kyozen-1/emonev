@@ -71,7 +71,7 @@
 
         <ul class="nav nav-tabs nav-tabs-title nav-tabs-line-title responsive-tabs" id="lineTitleTabsContainer" role="tablist">
             <li class="nav-item" role="presentation">
-                <a class="nav-link active" data-bs-toggle="tab" href="#tc_14" role="tab" aria-selected="true">TC. 14</a>
+                <a class="nav-link active" data-bs-toggle="tab" id="nav_tc_14" href="#tc_14" role="tab" aria-selected="true">TC. 14</a>
             </li>
             <li class="nav-item" role="presentation">
                 <a class="nav-link" data-bs-toggle="tab" href="#tc_19" role="tab" aria-selected="false">TC. 19</a>
@@ -185,9 +185,7 @@
                                         <th>(17)</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {!!$tc_14!!}
-                                </tbody>
+                                <tbody id="tbody14"></tbody>
                             </table>
                         </div>
                     </div>
@@ -282,9 +280,7 @@
                                                         <th>Rp</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody class="tbodyTc19" style="text-align: left">
-                                                    {!!$tc_19!!}
-                                                </tbody>
+                                                <tbody id="tbodyTc19{{$tahun}}" style="text-align: left"></tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -400,9 +396,7 @@
                                                         <th></th>
                                                     </tr>
                                                 </thead>
-                                                <tbody class="tbodyE79" style="text-align: left">
-                                                    {!!$e_79!!}
-                                                </tbody>
+                                                <tbody id="tbodyE79{{$tahun}}" style="text-align: left"></tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -414,149 +408,127 @@
 
                     {{-- E 78 Start --}}
                     <div class="tab-pane fade" id="e_78" role="tabpanel">
-                        <div class="border-0 pb-0">
-                            <ul class="nav nav-pills responsive-tabs" role="tablist">
-                                @foreach ($tahuns as $tahun)
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link {{$loop->first ? 'active' : ''}} navE78" data-bs-toggle="tab" data-bs-target="#e_78_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
-                                            {{$tahun}}
-                                        </button>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        <div class="card-body">
-                            <div class="tab-content">
-                                @foreach ($tahuns as $tahun)
-                                    <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_78_{{$tahun}}" role="tabpanel">
-                                        <div class="d-flex justify-content-between">
-                                            <div></div>
-                                            <button
-                                                class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
-                                                type="button"
-                                                data-bs-toggle="dropdown"
-                                                aria-expanded="false"
-                                                aria-haspopup="true"
-                                            >
-                                                <i data-acorn-icon="download" data-acorn-size="15"></i>
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
-                                                <a class="dropdown-item" href="{{ route('admin.laporan.e-78.ekspor.pdf', ['tahun' => $tahun]) }}">PDF</a>
-                                                <a class="dropdown-item" href="{{ route('admin.laporan.e-78.ekspor.excel', ['tahun' => $tahun]) }}">Excel</a>
-                                            </div>
-                                        </div>
-                                        {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
-                                        <div class="table-responsive">
-                                            <div class="text-center">
-                                                <h1>Tabel E.78</h1>
-                                                <h3>Evaluasi Terhadap Hasil RPJMD</h3>
-                                                <h3>{{ Auth::user()->kabupaten->nama }}</h3>
-                                                <h3>Tahun {{ $tahun }}</h3>
-                                            </div>
-                                            <table class="table table-striped table-bordered text-center">
-                                                <thead>
-                                                    <tr>
-                                                        <th rowspan="2">No</th>
-                                                        <th rowspan="2">Sasaran</th>
-                                                        <th rowspan="2">Program Prioritas</th>
-                                                        <th rowspan="2">Indikator Kinerja</th>
-                                                        <th rowspan="2">Data Capaian Pada Awal Tahun Perencanaan</th>
-                                                        <th rowspan="2" colspan="2">Target Pada Akhir Tahun Perencanaan</th>
-                                                        <th colspan="10">Target RPJMD Kabupaten/Kota Pada RKPD Kabupaten/Kota Tahun {{$tahun}}</th>
-                                                        <th colspan="10">Capaian Target RPJMD Kabupaten/Kota Melalui Pelaksanaan RKPD Tahun {{$tahun}}</th>
-                                                        <th colspan="10">Tingkat Capaian Target RPJMD Kabupaten/Kota Hasil Pelaksanaan RKPD Kabupaten/Kota Tahun {{$tahun}}(%)</th>
-                                                        <th colspan="2" rowspan="2">Capaian Pada Akhir Tahun Perencanaan</th>
-                                                        <th colspan="2" rowspan="2">Rasio Capaian Akhir</th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th colspan="2">1</th>
-                                                        <th colspan="2">2</th>
-                                                        <th colspan="2">3</th>
-                                                        <th colspan="2">4</th>
-                                                        <th colspan="2">5</th>
-                                                        <th colspan="2">1</th>
-                                                        <th colspan="2">2</th>
-                                                        <th colspan="2">3</th>
-                                                        <th colspan="2">4</th>
-                                                        <th colspan="2">5</th>
-                                                        <th colspan="2">1</th>
-                                                        <th colspan="2">2</th>
-                                                        <th colspan="2">3</th>
-                                                        <th colspan="2">4</th>
-                                                        <th colspan="2">5</th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th rowspan="2">(1)</th>
-                                                        <th rowspan="2">(2)</th>
-                                                        <th rowspan="2">(3)</th>
-                                                        <th rowspan="2">(4)</th>
-                                                        <th rowspan="2">(5)</th>
-                                                        <th colspan="2">(6)</th>
-                                                        <th colspan="2">(7)</th>
-                                                        <th colspan="2">(8)</th>
-                                                        <th colspan="2">(9)</th>
-                                                        <th colspan="2">(10)</th>
-                                                        <th colspan="2">(11)</th>
-                                                        <th colspan="2">(12)</th>
-                                                        <th colspan="2">(13)</th>
-                                                        <th colspan="2">(14)</th>
-                                                        <th colspan="2">(15)</th>
-                                                        <th colspan="2">(16)</th>
-                                                        <th colspan="2">(17)</th>
-                                                        <th colspan="2">(18)</th>
-                                                        <th colspan="2">(19)</th>
-                                                        <th colspan="2">(20)</th>
-                                                        <th colspan="2">(21)</th>
-                                                        <th colspan="2">(22)</th>
-                                                        <th colspan="2">(23)</th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                        <th>K</th>
-                                                        <th>Rp</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="tbodyE78" style="text-align: left">
-                                                    {!!$e_78!!}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                @endforeach
+                        <div class="d-flex justify-content-between">
+                            <div></div>
+                            <button
+                                class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                            >
+                                <i data-acorn-icon="download" data-acorn-size="15"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                <a class="dropdown-item" href="{{ route('admin.laporan.e-78.ekspor.pdf') }}">PDF</a>
+                                <a class="dropdown-item" href="{{ route('admin.laporan.e-78.ekspor.excel') }}">Excel</a>
                             </div>
+                        </div>
+                        {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
+                        <div class="table-responsive">
+                            <div class="text-center">
+                                <h1>Tabel E.78</h1>
+                                <h3>Evaluasi Terhadap Hasil RPJMD</h3>
+                                <h3>{{ Auth::user()->kabupaten->nama }}</h3>
+                            </div>
+                            <table class="table table-striped table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">No</th>
+                                        <th rowspan="2">Sasaran</th>
+                                        <th rowspan="2">Program Prioritas</th>
+                                        <th rowspan="2">Indikator Kinerja</th>
+                                        <th rowspan="2">Data Capaian Pada Awal Tahun Perencanaan</th>
+                                        <th rowspan="2" colspan="2">Target Pada Akhir Tahun Perencanaan</th>
+                                        <th colspan="10">Target RPJMD Kabupaten/Kota Pada RKPD Kabupaten/Kota Tahun </th>
+                                        <th colspan="10">Capaian Target RPJMD Kabupaten/Kota Melalui Pelaksanaan RKPD Tahun </th>
+                                        <th colspan="10">Tingkat Capaian Target RPJMD Kabupaten/Kota Hasil Pelaksanaan RKPD Kabupaten/Kota Tahun (%)</th>
+                                        <th colspan="2" rowspan="2">Capaian Pada Akhir Tahun Perencanaan</th>
+                                        <th colspan="2" rowspan="2">Rasio Capaian Akhir</th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2">1</th>
+                                        <th colspan="2">2</th>
+                                        <th colspan="2">3</th>
+                                        <th colspan="2">4</th>
+                                        <th colspan="2">5</th>
+                                        <th colspan="2">1</th>
+                                        <th colspan="2">2</th>
+                                        <th colspan="2">3</th>
+                                        <th colspan="2">4</th>
+                                        <th colspan="2">5</th>
+                                        <th colspan="2">1</th>
+                                        <th colspan="2">2</th>
+                                        <th colspan="2">3</th>
+                                        <th colspan="2">4</th>
+                                        <th colspan="2">5</th>
+                                    </tr>
+                                    <tr>
+                                        <th rowspan="2">(1)</th>
+                                        <th rowspan="2">(2)</th>
+                                        <th rowspan="2">(3)</th>
+                                        <th rowspan="2">(4)</th>
+                                        <th rowspan="2">(5)</th>
+                                        <th colspan="2">(6)</th>
+                                        <th colspan="2">(7)</th>
+                                        <th colspan="2">(8)</th>
+                                        <th colspan="2">(9)</th>
+                                        <th colspan="2">(10)</th>
+                                        <th colspan="2">(11)</th>
+                                        <th colspan="2">(12)</th>
+                                        <th colspan="2">(13)</th>
+                                        <th colspan="2">(14)</th>
+                                        <th colspan="2">(15)</th>
+                                        <th colspan="2">(16)</th>
+                                        <th colspan="2">(17)</th>
+                                        <th colspan="2">(18)</th>
+                                        <th colspan="2">(19)</th>
+                                        <th colspan="2">(20)</th>
+                                        <th colspan="2">(21)</th>
+                                        <th colspan="2">(22)</th>
+                                        <th colspan="2">(23)</th>
+                                    </tr>
+                                    <tr>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                        <th>K</th>
+                                        <th>Rp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyE78" style="text-align: left"></tbody>
+                            </table>
                         </div>
                     </div>
                     {{-- E 78 End --}}
@@ -1085,6 +1057,56 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js" integrity="sha512-j3gF1rYV2kvAKJ0Jo5CdgLgSYS7QYmBVVUjduXdoeBkc4NFV4aSRTi+Rodkiy9ht7ZYEwF+s09S43Z1Y+ujUkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+    var tahun_awal = "{{ $tahun_awal }}";
+    $(document).ready(function(){
+        $.ajax({
+            url: "{{ route('admin.laporan.tc-14') }}",
+            dataType:"json",
+            success: function(data)
+            {
+                $('#tbody14').html(data.tc_14);
+            }
+        });
+
+        $.ajax({
+            url: "{{ route('admin.laporan.tc-19.get-data') }}",
+            dataType:"json",
+            success: function(data)
+            {
+                $('#tbodyTc19'+tahun_awal).html(data.tc_19);
+            }
+        });
+
+        $.ajax({
+            url: "{{ route('admin.laporan.e-79.get-data') }}",
+            dataType: "json",
+            success: function(data)
+            {
+                $('#tbodyE79'+tahun_awal).html(data.e_79);
+            }
+        });
+
+        $.ajax({
+            url: "{{ route('admin.laporan.e-78') }}",
+            dataType: "json",
+            success: function(data)
+            {
+                $('#tbodyE78').html(data.e_78);
+            }
+        });
+    });
+
+    $('#nav_tc_14').click(function(){
+        $.ajax({
+            url: "{{ route('admin.laporan.tc-14') }}",
+            dataType:"json",
+            success: function(data)
+            {
+                $('#tbody14').html(data.tc_14);
+            }
+        });
+    });
+
     $('.navTc19').click(function(){
         var tahun = $(this).attr('data-tahun');
         $.ajax({
@@ -1095,7 +1117,7 @@
                 tahun:tahun
             },
             success: function(data){
-                $('.tbodyTc19').html(data.tc_19);
+                $('#tbodyTc19'+tahun).html(data.tc_19);
             }
         });
     });
@@ -1110,22 +1132,7 @@
                 tahun:tahun
             },
             success: function(data){
-                $('.tbodyE79').html(data.e_79);
-            }
-        });
-    });
-
-    $('.navE78').click(function(){
-        var tahun = $(this).attr('data-tahun');
-        $.ajax({
-            url: "{{ route('admin.laporan.e-78') }}",
-            method: 'POST',
-            data: {
-                "_token": "{{ csrf_token() }}",
-                tahun:tahun
-            },
-            success: function(data){
-                $('.tbodyE78').html(data.e_78);
+                $('#tbodyE79'+tahun).html(data.e_79);
             }
         });
     });
