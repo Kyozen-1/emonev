@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 17 Nov 2022 pada 18.00
+-- Waktu pembuatan: 09 Des 2022 pada 10.33
 -- Versi server: 5.7.33
 -- Versi PHP: 8.0.2
 
@@ -895,6 +895,10 @@ CREATE TABLE `kegiatan_indikator_kinerjas` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `kegiatan_id` bigint(20) UNSIGNED DEFAULT NULL,
   `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kondisi_target_kinerja_awal` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kondisi_target_anggaran_awal` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_indikator` enum('Target NSPK','Target IKK','Target Indikator Lainnya') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -903,9 +907,11 @@ CREATE TABLE `kegiatan_indikator_kinerjas` (
 -- Dumping data untuk tabel `kegiatan_indikator_kinerjas`
 --
 
-INSERT INTO `kegiatan_indikator_kinerjas` (`id`, `kegiatan_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(1128, 172, 'Baru 2', '2022-11-13 02:39:16', '2022-11-13 02:39:16'),
-(1129, 10, 'test test test', '2022-11-16 10:28:09', '2022-11-16 10:28:09');
+INSERT INTO `kegiatan_indikator_kinerjas` (`id`, `kegiatan_id`, `deskripsi`, `satuan`, `kondisi_target_kinerja_awal`, `kondisi_target_anggaran_awal`, `status_indikator`, `created_at`, `updated_at`) VALUES
+(1128, 172, 'Baru 2', NULL, NULL, NULL, NULL, '2022-11-13 02:39:16', '2022-11-13 02:39:16'),
+(1129, 10, 'test test test', 'buku', '100', '100000', 'Target Indikator Lainnya', '2022-11-16 10:28:09', '2022-11-27 00:07:38'),
+(1131, 1, 'test1', 'buku', '100', '100000', 'Target NSPK', '2022-11-20 08:40:23', '2022-11-25 11:21:58'),
+(1132, 1, 'test 2', 'kertas', '100', '50000', 'Target Indikator Lainnya', '2022-11-25 09:14:23', '2022-11-29 06:26:01');
 
 -- --------------------------------------------------------
 
@@ -932,7 +938,10 @@ CREATE TABLE `kegiatan_target_satuan_rp_realisasis` (
 
 INSERT INTO `kegiatan_target_satuan_rp_realisasis` (`id`, `opd_kegiatan_indikator_kinerja_id`, `target`, `satuan`, `target_rp`, `realisasi`, `realisasi_rp`, `tahun`, `created_at`, `updated_at`) VALUES
 (1, 1, '10', 'buku', '100000', '5', '50000', '2018', '2022-11-16 10:52:55', '2022-11-16 11:05:29'),
-(2, 1, '11', 'karung', '1000000', '11', '1000000', '2019', '2022-11-16 11:05:48', '2022-11-16 11:10:14');
+(2, 1, '11', 'karung', '1000000', '11', '1000000', '2019', '2022-11-16 11:05:48', '2022-11-16 11:10:14'),
+(3, 3, '90', NULL, '90000', NULL, NULL, '2019', '2022-11-25 09:29:56', '2022-11-25 09:37:36'),
+(4, 3, '100', NULL, '100000', NULL, NULL, '2020', '2022-11-25 09:30:07', '2022-11-25 09:30:07'),
+(5, 3, '0', NULL, '0', NULL, NULL, '2021', '2022-11-25 09:35:09', '2022-11-28 12:26:12');
 
 -- --------------------------------------------------------
 
@@ -945,7 +954,6 @@ CREATE TABLE `kegiatan_tw_realisasis` (
   `kegiatan_target_satuan_rp_realisasi_id` bigint(20) UNSIGNED DEFAULT NULL,
   `tw_id` bigint(20) UNSIGNED DEFAULT NULL,
   `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `realisasi_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -954,8 +962,10 @@ CREATE TABLE `kegiatan_tw_realisasis` (
 -- Dumping data untuk tabel `kegiatan_tw_realisasis`
 --
 
-INSERT INTO `kegiatan_tw_realisasis` (`id`, `kegiatan_target_satuan_rp_realisasi_id`, `tw_id`, `realisasi`, `realisasi_rp`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, '112', '100001', '2022-11-17 14:20:45', '2022-11-17 14:21:09');
+INSERT INTO `kegiatan_tw_realisasis` (`id`, `kegiatan_target_satuan_rp_realisasi_id`, `tw_id`, `realisasi`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '112', '2022-11-17 14:20:45', '2022-11-17 14:21:09'),
+(2, 3, 1, '15', '2022-11-27 01:57:57', '2022-11-27 01:59:31'),
+(3, 3, 2, '12', '2022-11-27 01:59:52', '2022-11-27 01:59:52');
 
 -- --------------------------------------------------------
 
@@ -1349,7 +1359,16 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (84, '2022_11_17_174413_create_kegiatan_tw_realisasis_table', 20),
 (87, '2022_11_17_205820_create_opd_sub_kegiatan_indikator_kinerjas_table', 21),
 (88, '2022_11_17_210225_create_sub_kegiatan_target_satuan_rp_realisasis_table', 21),
-(89, '2022_11_17_210602_create_sub_kegiatan_tw_realisasis_table', 21);
+(89, '2022_11_17_210602_create_sub_kegiatan_tw_realisasis_table', 21),
+(90, '2022_11_24_182002_create_tujuan_pd_realisasi_renjas_table', 22),
+(91, '2022_11_24_204428_create_sasaran_pd_realisasi_renjas_table', 23),
+(92, '2022_11_24_210638_create_sasaran_pd_program_rpjmds_table', 24),
+(94, '2022_12_04_132252_create_rkpd_opd_tahun_pembangunans_table', 25),
+(95, '2022_12_04_164614_create_rkpd_tahun_pembangunan_urusans_table', 25),
+(96, '2022_12_04_165025_create_rkpd_tahun_pembangunan_programs_table', 25),
+(97, '2022_12_04_165500_create_rkpd_tahun_pembangunan_kegiatans_table', 25),
+(98, '2022_12_04_165928_create_rkpd_tahun_pembangunan_sub_kegiatans_table', 25),
+(99, '2022_12_04_215110_create_rkpd_tahun_pembangunans_table', 26);
 
 -- --------------------------------------------------------
 
@@ -1426,7 +1445,7 @@ CREATE TABLE `opds` (
 --
 
 INSERT INTO `opds` (`id`, `nama`, `no_hp`, `alamat`, `negara_id`, `provinsi_id`, `kabupaten_id`, `kecamatan_id`, `kelurahan_id`, `foto`, `opd_id`, `created_at`, `updated_at`) VALUES
-(1, 'Dinas Kebudayaan, Pariwisata, Pemuda, Dan Olahraga Kota Madiun', '123456789012', 'Jl. Udowo, Kartoharjo, Kec. Kartoharjo, Kota Madiun, Jawa Timur 63117', 62, 5, 62, NULL, NULL, '635a28685adf2-221027.jpg', 16, '2022-10-27 06:42:48', '2022-10-27 06:42:48'),
+(1, 'Dinas Kebudayaan, Pariwisata, Pemuda, Dan Olahraga Kabupaten Madiun', '123456789012', 'Jl. Udowo, Kartoharjo, Kec. Kartoharjo, Kota Madiun, Jawa Timur 63117', 62, 5, 62, NULL, NULL, '635a28685adf2-221027.jpg', 16, '2022-10-27 06:42:48', '2022-10-27 06:42:48'),
 (2, 'Biro Administrasi Pimpinan Madiun', '123456789012', 'Jl. Pahlawan No. 110 Surabaya Jawa Timur', 62, 5, 62, NULL, NULL, '635c5a20198ea-221029.jpg', 2, '2022-10-28 22:39:28', '2022-10-28 22:39:28');
 
 -- --------------------------------------------------------
@@ -1448,7 +1467,9 @@ CREATE TABLE `opd_kegiatan_indikator_kinerjas` (
 --
 
 INSERT INTO `opd_kegiatan_indikator_kinerjas` (`id`, `kegiatan_indikator_kinerja_id`, `opd_id`, `created_at`, `updated_at`) VALUES
-(1, 1129, 16, '2022-11-16 10:28:09', '2022-11-16 10:28:09');
+(1, 1129, 16, '2022-11-16 10:28:09', '2022-11-16 10:28:09'),
+(3, 1131, 16, '2022-11-20 08:40:23', '2022-11-20 08:40:23'),
+(4, 1132, 16, '2022-11-25 09:14:23', '2022-11-25 09:14:23');
 
 -- --------------------------------------------------------
 
@@ -1492,7 +1513,8 @@ CREATE TABLE `opd_sub_kegiatan_indikator_kinerjas` (
 --
 
 INSERT INTO `opd_sub_kegiatan_indikator_kinerjas` (`id`, `sub_kegiatan_indikator_kinerja_id`, `opd_id`, `created_at`, `updated_at`) VALUES
-(2, 2, 16, '2022-11-17 15:55:02', '2022-11-17 15:55:02');
+(2, 2, 16, '2022-11-17 15:55:02', '2022-11-17 15:55:02'),
+(3, 3, 16, '2022-11-27 13:14:04', '2022-11-27 13:14:04');
 
 -- --------------------------------------------------------
 
@@ -3714,6 +3736,9 @@ CREATE TABLE `program_indikator_kinerjas` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `program_id` bigint(20) UNSIGNED DEFAULT NULL,
   `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kondisi_target_kinerja_awal` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kondisi_target_anggaran_awal` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3722,844 +3747,845 @@ CREATE TABLE `program_indikator_kinerjas` (
 -- Dumping data untuk tabel `program_indikator_kinerjas`
 --
 
-INSERT INTO `program_indikator_kinerjas` (`id`, `program_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(93, 371, 'Persentase personil Tagana yang dibina', '2022-11-13 02:22:08', '2022-11-13 02:22:08'),
-(144, 398, 'Persentase masyarakat yang memahami program Bangga kencana (Pembangunan Keluarga, Kependudukan dan Keluarga Berencana)', '2022-11-13 02:22:08', '2022-11-13 02:22:08'),
-(220, 246, 'Jumlah Rumusan Kebijakan Pengelolaan Barang dan Jasa yang ditindaklanjuti', '2022-11-13 02:22:08', '2022-11-13 02:22:08'),
-(305, 484, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(387, 10, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(415, 354, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(418, 43, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(432, 58, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(441, 64, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(447, 367, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(452, 82, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(453, 83, 'Persentase PSKS yang berpartisipasi aktif dalam penyelenggaraan kesejahteraan sosial', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(460, 88, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(469, 104, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(478, 111, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(490, 120, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(497, 128, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(506, 396, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(509, 398, 'Persentase masyarakat yang memahami program Banggakencana (Pembangunan Keluarga, Kependudukan dan Keluarga Berencana)', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(512, 134, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(513, 135, 'persentase sarana prasarana dan perlengkapan jalan yang berfungsi baik', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(517, 141, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(521, 147, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(525, 403, 'Persentase Koperasi yang telah mengikuti Pendidikan dan Pelatihan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(531, 161, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(538, 167, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(547, 415, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(559, 179, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(578, 440, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(612, 453, 'Program Pengelolaan Pendapatan Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(645, 522, 'Persentase PD Pengampu pelayanan masyarakat yang sesuai dengan mutu pelayanan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(672, 268, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(741, 1, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(742, 1, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(743, 2, 'Angka partisipasi pendidikan kesetaraan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(744, 2, 'Persentase lembaga pendidikan kesetaraan yang terakreditasi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(745, 2, 'APS SD', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(746, 2, 'Persentase lembaga SD terakreditasi A', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(747, 2, 'APS SMP', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(748, 2, 'Persentase lembaga SMP terakreditasi A', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(749, 2, 'APS PAUD', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(750, 2, 'Persentase lembaga pendidikan PAUD yang terakreditasi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(751, 348, 'Prosentase dokumen kurikulum SD yang dilaksanakan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(752, 348, 'Prosentase dokumen kurikulum PAUD yang dilaksanakan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(753, 349, 'Persentase tenaga pendidik yang tersertifikasi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(754, 349, 'Persentase guru yang memenuhi kualifikasi S1/DIV', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(755, 10, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(756, 10, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(757, 11, 'Angka Kematian Ibu', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(758, 11, 'Angka Kematian Bayi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(759, 11, 'Prevalensi Balita Stunting', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(760, 11, 'Persentase pemenuhan sarana, prasarana, dan peralatan puskesmas', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(761, 11, 'Persentase pemenuhan sarana, prasarana, dan peralatan rumah sakit', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(762, 11, 'Persentase masyarakat yang mendapat pelayanan kesehatan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(763, 26, 'Persentase sumber daya manusia kesehatan yang memenuhi standar kompetensi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(764, 26, 'Persentase peningkatan kompetensi sumber daya manusia kesehatan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(765, 350, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(766, 12, 'Persentase Desa Siaga Aktif Purnama Mandiri', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(767, 351, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(768, 351, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(769, 351, 'Persentase capaian indikator SPM bidang keuangan sesuai dengan standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(770, 351, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(771, 351, 'Persentase capaian indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(772, 351, 'Persentase capaian indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(773, 352, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(774, 352, 'Persentase capaian indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(775, 352, 'Persentase capaian indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(776, 353, 'Persentase sumber daya manusia kesehatan yang memenuhi standar kompetensi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(777, 332, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(778, 332, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(779, 332, 'Persentase capaian indikator SPM bidang keuangan sesuai dengan standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(780, 332, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(781, 332, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(782, 332, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(783, 354, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(786, 355, 'Persentase sumber daya manusia kesehatan yang memenuhi standar kompetensi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(787, 43, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(788, 43, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(789, 44, 'Persentase luas baku sawah yang terlayani air irigasi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(790, 356, 'Persentase perluasan akses pelayanan air bersih (SR)', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(791, 357, 'Persentase sarana limbah domestik setempat yang terbangun', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(792, 45, 'Persentase saluran drainase kondisi baik', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(793, 45, 'Persentase trotoar kondisi baik', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(794, 358, 'Persentase panjang jalan lingkungan kondisi baik', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(795, 341, 'Persentase penyelenggaraan bangunan gedung pemerintah yang terpenuhi', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(796, 359, 'Persentase bangunan dan lingkungan yang ditata', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(797, 360, 'Persentase panjang jalan kabupaten kondisi mantap', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(798, 360, 'Persentase jumlah jembatan kondisi baik', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(799, 361, 'Persentase peningkatan jumlah SDM jasa konstruksi yang bersertifikat', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(800, 362, 'Persentase dokumen rencana umum tata ruang dan rencana rinci tata ruang yang tersusun', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(801, 58, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(802, 58, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(803, 59, 'Persentase rumah tidak layak huni yang tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(804, 59, 'Prosentase rumah layak huni yang terbangun bagi korban bencana', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(805, 59, 'Persentase rumah layak huni yang terbangun bagi masyarakat yang terkena relokasi program Pemerintah Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(806, 363, 'Cakupan kawasan kumuh yang tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(807, 364, 'Prosentase kawasan kumuh baru yang tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(808, 365, 'Cakupan perumahan yang telah ditingkatkan prasarana, sarana, dan utilitas umumnya', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(809, 60, 'Persentase Orang/Badan Hukum yang Melaksanakan Perancangan dan Perencanaan Rumah serta Perencanaan PSU Tingkat Kemampuan Kecil', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(810, 64, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(811, 64, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(812, 65, 'Persentase kasus ketenteraman dan ketertiban umum yang diselesaikan sesuai ketentuan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(813, 65, 'Persentase kasus Pelanggaran Perda dan Perkada yang diselesaikan sesuai ketentuan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(814, 366, 'Persentase kasus kebakaran yang tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(815, 366, 'Persentase kasus non kebakaran yang tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(816, 367, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(817, 367, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(818, 368, 'Persentase desa/kelurahan tangguh bencana terbentuk', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(819, 368, 'Persentase korban terdampak bencana yang ditangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(820, 368, 'Persentase pemulihan pasca bencana yang direalisasikan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(821, 82, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(822, 82, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(823, 83, 'Persentase PSKS yang berpartisipasi aktif dalam penyelenggaraan kesejahteraansosial', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(824, 83, 'Persentase desa / kelurahan yang diberdayakan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(825, 369, 'Persentase PPKS yang tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(826, 370, 'Persentase kepesertaan jaminan perlindungan sosial untuk masyarakat miskin dan rentan miskin', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(827, 371, 'Persentase Korban Bencana Alam yang menerima bantuan dan bantuan khusus pasca Bencana', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(828, 371, 'Persentase personil Tanaga yang dibina', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(829, 88, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(830, 88, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(831, 372, 'Persentase lulusan pelatihan kerja yang bekerja', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(832, 373, 'Persentase pencari kerja yang ditempatkan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(833, 374, 'Angka sengketa Perusahaan Pekerja Per tahun', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(834, 98, 'Persentase lembaga penyedia layanan pemberdayaan perempuan yang aktif', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(835, 375, 'Rasio kekerasan terhadap perempuan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(836, 376, 'Persentase lembaga penyedia layanan peningkatan kualitas hidup anak yang aktif', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(837, 104, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(838, 377, 'Tingkat Capaian Angka Kecukupan Energi dan protein', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(839, 378, 'Persentase Daerah Rawan Pangan yang Tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(840, 379, 'Persentase pangan segar asal tanaman (PSAT) yang aman', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(841, 380, 'Jumlah Ganti Kerugian dan Santunan Tanah untuk Kepentingan Umum yang Terselesaikan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(842, 381, 'Jumlah dokumen pengelolaan tanah kosong', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(843, 382, 'Persentase Sengketa Tanah Yang Tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(844, 383, 'Jumlah dokumen penatagunaan tanah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(845, 384, 'Persentase Penyelenggaraan Perizinan membuka tanah yang dikelola', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(846, 104, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(847, 111, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(848, 111, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(849, 112, 'Tersusunnya dan terlaksananya dokumen perencanaan lingkungan hidup', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(850, 385, 'Persentase layanan pelaku usaha dan kegiatan yang menerapkan dokumen lingkungan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(851, 386, 'Cakupan penghijauan wilayah potensi longsor dan sumber mata air', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(852, 386, 'Luas Ruang Terbuka Hijau (RTH) yang dikelola', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(853, 387, 'Persentase industri yang menerapkan sistem pengolahan limbah B3', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(854, 520, 'Rasio kekerasan terhadap anak', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(855, 113, 'Persentase izin lingkungan dan izin perlindungan dan pengelolaan lingkungan hidup yang diterbitkan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(856, 388, 'Cakupan masyarakat yang mendapatkan pendidikan, pelatihan, dan penyuluhan lingkungan hidup', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(857, 389, 'Jumlah penerima penghargaan lingkungan hidup', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(858, 390, 'Persentase pengaduan lingkungan hidup yang tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(859, 391, 'Persentase sampah yang tertangani', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(860, 120, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(861, 120, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(862, 121, 'Persentase penduduk yang sudah menerima dokumen kependudukan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(863, 121, 'Persentase penduduk yang sudah memiliki dokumen kependudukan', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(864, 122, 'Persentase penduduk yang memiliki dokumen pencatatan sipil', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(865, 392, 'Persentase database kependudukan yang valid', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(866, 392, 'Persentase penyajian data kependudukan skala Kabupaten dalam satu tahun', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(867, 128, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(868, 128, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(869, 129, 'Persentase Fasilitasi Penyelenggaraan Penataan Desa', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(870, 393, 'Jumlah kerja sama Desa yang terbentuk', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(871, 394, 'Persentase desa dengan tata kelola pemerintahan desa yang baik', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(872, 394, 'Persentase Desa dengan dokumen perencanaan pembangunan yang baik', '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
-(873, 395, 'Persentase Lembaga Kemasyarakatan Desa/Kelurahan yang aktif', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(874, 395, 'Persentase BUMDesa yang aktif', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(875, 395, 'Persentase Lembaga Ekonomi yang aktif', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(876, 396, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(877, 396, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(878, 397, 'Persentase dokumen data informasi kependudukan yang tersusun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(879, 398, 'Persentase pasangan usia subur yang tidak ber KB karena Unmeet Need', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(880, 398, '\"Persentase masyarakat yang memahami program Banggakencana (Pembangunan Keluarga, Kependudukan dan Keluarga Berencana) \"', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(881, 399, 'Persentase perkawinan dengan usia istri dibawah 20 Tahun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(882, 134, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(883, 134, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(884, 135, 'Persentase sarana prasarana dan perlengkapan jalan yang berkeselamatan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(885, 135, 'Persentase kendaraan laik jalan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(886, 135, 'Persentase angka tertib lalu lintas', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(887, 141, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(888, 141, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(889, 142, 'Presentase Desiminasi layanan informasi publik yang dilaksanakan sesuai dengan strategi komunikasi (STRAKOM) dan SOP yang ditetapkan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(890, 400, 'Persentase Perangkat Daerah yang menerapkan aplikasi layanan SPBE', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(891, 147, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(892, 147, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(893, 401, 'Persentase koperasi yang berkualitas', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(894, 402, 'Persentase koperasi yang sehat', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(895, 403, 'Persentase Koperasi yang telah mengikuti Pendidikan dan Pelatihan.', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(896, 149, 'Persentase koperasi yang telah diberdayakan dan dilindungi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(897, 404, 'Persentase peningkatan Pemberdayaan Usaha Mikro, Kecil, dan Menengah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(898, 405, 'Persentase Peningkatan pengembangan UMKM', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(899, 148, 'Persentase Perijinan Koperasi yang diterbitkan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(900, 161, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(901, 161, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(902, 406, 'Minat Investasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(903, 407, 'Rata-rata waktu penyelesaian perijinan dan Non Perijinan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(904, 408, 'Persentase perusahaan yang tertib menyampaikan LKPM', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(905, 162, 'Persentase investor yang difasilitasi dalam kegiatan penanaman modal', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(906, 163, 'Persentase peningkatan jumlah masyarakat yang memanfaatkan layanan perizinan dan non perizinan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(907, 167, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(908, 167, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(909, 409, 'Persentase atlet yang berprestasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(910, 168, 'Persentase pemuda yang berprestasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(911, 410, 'Persentase data statistik sektoral yang tersedia dan valid', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(912, 411, 'Persentase pengamanan informasi pemerintah daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(913, 412, 'Persentase budaya lokal yang dilestarikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(914, 413, 'Cakupan pembinaan sejarah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(915, 414, 'Persentase cagar budaya yang ditetapkan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(916, 415, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(917, 415, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(918, 416, 'Persentase Perpustakaan Terakreditasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(919, 417, 'Indeks Ketersediaan Arsip', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(920, 418, 'Indeks Keberadaan dan Keutuhan Arsip', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(921, 419, 'Persentase Peningkatan Produksi Perikanan Budidaya', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(922, 420, 'Persentase peningkatan hasil Produk Olahan Asal Ikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(923, 421, 'Persentase Peningkatan Produksi Perikanan Tangkap', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(924, 422, 'Persentase pengembangan daya tarik yang dilaksanakan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(925, 423, 'Persentase pemasaran pariwisata yang dilaksanakan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(926, 424, 'Persentase peningkatan pelaku industri pariwisata', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(927, 424, 'Persentase peningkatan pelaku ekonomi kreatif', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(928, 179, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(929, 179, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(930, 425, 'Persentase kelompok tani yang mendapatkan sarana pertanian', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(931, 426, 'Persentase kasus kesehatan hewan yang tertangani', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(932, 427, 'Persentase lahan pertanian yang bebas dari bencana pertanian', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(935, 428, 'Persentase peningkatan jumlah sarana prasarana pertanian dalam kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(936, 428, 'Persentase terpeliharanya prasarana peternakan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(937, 429, 'Persentase peningkatan kelas kelompok tani', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(938, 429, 'Presentase peningkatan kualitas peternak dan pelaku usaha ternak', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(939, 430, 'Persentase peningkatan rekomendasi perizinan yang diterbitkan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(940, 431, 'Persentase peningkatan sarana distribusi perdagangan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(941, 432, 'Persentase Ketersediaan Barang Kebutuhan Pokok dan Barang Penting Lainnya', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(942, 433, 'Persentase peningkatan fasilitasi Produk Ekspor Unggulan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(943, 434, 'Persentase peningkatan pelaksanaan metrologi legal', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(944, 435, 'Persentase peningkatan penjualan produk dalam negeri', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(945, 436, 'Jumlah rencana pembangunan industri', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(946, 437, 'Persentase IKM yang mendapatkan ijin usaha', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(947, 438, 'Persentase IKM yang memanfaatkan SIINas', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(948, 439, 'Persentase transmigran umum yang berhasil', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(949, 440, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(950, 440, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(951, 440, 'Persentase Kegiatan Kepala Daerah dan Wakil Kepala Daerah yang di Fasilitasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(952, 441, 'Jumlah Tanah, serta Ganti Kerugian Program Tanah Kelebihan Maksimum dan Tanah Absentee yang Teredistribusi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(953, 442, 'Persentase Rumusan Kebijakan KetataLaksanaan Organisasi yang ditetapkan sesuai kebutuhan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(954, 443, 'Persentase Kegiatan Keprotokolan dan Komunikasi Pimpinan Daerah dan Sekretaris Daerah yang di fasilitasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(955, 444, 'Jumlah Rumusan Kebijakan Penyelenggaraan Bidang hukum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(956, 524, 'Persentase Rumusan Kebijakan Bidang Kesejahteraan Rakyat yang ditetapkan sesuai kebutuhan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(957, 446, 'Persentase Rumusan Kebijakan Bidang Pemerintahan yang ditetapkan sesuai kebutuhan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(958, 246, 'Persentase Rumusan Kebijakan Pembangunan daerah yang ditetapkan sesuai kebutuhan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(959, 447, 'Jumlah Rumusan Kebijakan Pengelolaan Barang dan Jasa yang ditindaklanjuti', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(960, 448, 'Persentase Rumusan Kebijakan Bidang Perekonomian yang ditetapkan sesuai kebutuhan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(961, 525, 'Persentase PD Pengampu pelayanan masyarakat yang sesuai dengan mutu pelayanan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(962, 248, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(963, 248, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(964, 248, 'Persentase penyelenggaraan administrasi DPRD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(965, 248, 'Persentase layanan keuangan DPRD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(966, 248, 'Persentase layanan kesejahteraan DPRD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(967, 249, 'Persentase fasilitasi pembahasan Peraturan Daerah APBD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(968, 249, 'Persentase fasilitasi pembahasan Peraturan Daerah Non APBD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(969, 249, 'Persentase fasilitasi penganggaran dan pengawasan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(970, 249, 'Persentase fasilitasi tugas dan fungsi DPRD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(971, 191, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(972, 191, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(973, 192, 'Persentase perencanaan, pengendalian, dan evaluasi pembangunan daerah yang sesuai dengan ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(974, 449, 'Persentase PD Bidang PPM dengan capaian hasil outcome minimal 75%', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(975, 449, 'Persentase PD Bidang Ekonomi dan SDA dengan capaian hasil outcome minimal 75%', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(976, 449, 'Persentase PD Bidang IPW dengan capaian hasil outcome minimal 75%', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(977, 450, 'Persentase Perangkat Daerahyang difasilitasi dalam penerapan Inovasi Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(978, 450, 'Persentase pemanfaatan hasil kelitbangan yang ditindaklanjuti /diterbitkan /dipublikasikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(979, 199, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(980, 199, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(981, 200, 'Persentase OPD yang tertib penyusunan laporan keuangan daerah yang sesuai SAP', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(982, 451, 'Persentase OPD yang tertib tata kelola barang milik daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(983, 452, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(984, 452, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(985, 453, 'Persentase peningkatan PAD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(986, 211, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(987, 211, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(988, 212, 'Persentase penetapan kebutuhan ASN', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(989, 212, 'Persentase mutasi jabatan sesuai kualifikasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(990, 212, 'Persentase kedisiplinan ASN', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(991, 212, 'Persentase Penilaian Kinerja ASN', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(992, 212, 'Persentase ASN yang mengikuti pengembangan kompetensi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(993, 217, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(994, 217, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(995, 454, 'Persentase OPD yang mendapatkan Nilai hasil Evaluasi SAKIP Memuaskan (A)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(996, 455, 'Level kapabilitas APIP atau jumlah rumusan kebijakan teknis pengawasan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(997, 455, 'Persentase pendampingan, asistensi, dan verifikasi kepada OPD yang sesuai peraturan berlaku', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(998, 456, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(999, 456, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1000, 457, 'Persentase Penyelenggaraan penguatan ideologi Pancasila dan Karakter Kebangsaan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1001, 458, 'Persentase Penyelenggaraan penguatan ideologi Pancasila dan Karakter Kebangsaan (indikator sama?)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1002, 459, 'Persentase Organisasi Kemasyarakatan yang dibina', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1003, 460, 'Indeks Keamanan Manusia', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1004, 461, 'Persentase penyelenggaraan pembinaan dan pengembangan ketahanan ekonomi, sosial dan budaya', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1005, 255, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1006, 255, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1007, 256, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1008, 462, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1009, 463, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1010, 464, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1011, 257, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1012, 259, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1013, 259, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1014, 465, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1015, 466, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1016, 467, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1017, 468, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1018, 469, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1019, 261, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1020, 262, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1021, 261, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1022, 470, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1023, 471, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1024, 472, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1025, 473, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1026, 474, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1027, 474, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1028, 475, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1029, 476, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1030, 477, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1031, 478, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1032, 479, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1033, 264, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1034, 264, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1035, 265, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1036, 480, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1037, 481, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1038, 482, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1039, 483, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1040, 267, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1041, 267, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1042, 268, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1043, 269, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1044, 484, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1045, 485, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1046, 486, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1047, 270, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1048, 270, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1049, 271, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1050, 487, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1051, 488, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1052, 489, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1053, 490, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1054, 273, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1055, 273, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1056, 274, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1057, 491, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1058, 492, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1059, 493, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1060, 494, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1061, 276, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1062, 276, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1063, 277, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1064, 495, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1065, 496, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1066, 497, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1067, 498, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1068, 279, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1069, 279, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1070, 280, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1071, 499, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1072, 500, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1073, 501, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1074, 502, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1075, 282, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1076, 282, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1077, 283, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1078, 284, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1079, 503, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1080, 504, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1081, 505, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1082, 288, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1083, 288, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1084, 289, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1085, 290, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1086, 506, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1087, 507, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1088, 508, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1089, 285, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1090, 285, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1091, 286, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1092, 509, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1093, 510, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1094, 511, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1095, 512, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1096, 291, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1097, 291, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1098, 292, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1099, 513, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1100, 514, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1101, 515, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1102, 516, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1103, 294, 'Nilai SAKIP Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1104, 294, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1105, 295, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1106, 517, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1107, 518, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1108, 519, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1109, 296, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1110, 521, 'Persentase rekomendasi hasil pemeriksaan BPK dan Inspektorat yang ditindaklanjuti', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1111, 523, 'Persentase ternak bunting dari pemeriksaan kebuntingan (PKb)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1121, 7, 'Persentase lembaga SD yang terakreditasi A', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1126, 9, 'Persentase kesenian daerah yang dilestarikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1127, 9, 'Persentase Benda, situs dan kawasan Cagar Budaya yang dilestarikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1136, 16, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1137, 17, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1141, 20, 'Prevalensi HIV', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1142, 20, 'Persentase ODGJ berat yang mendapatkanpelayanan kesehatan jiwa sesuai standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1143, 21, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1147, 25, 'Persentase kebutuhan sarana dan prasarana aparatur yang tersedia dengan kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1159, 32, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1160, 32, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1161, 33, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1162, 33, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1163, 34, 'Prosentase SPM Bidang Tata Usaha yang dicapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1164, 35, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1165, 36, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1166, 37, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1167, 38, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1168, 39, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1169, 40, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1170, 41, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1171, 42, 'Prosentase bangunan rumah sakit yang dibangun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1174, 45, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1176, 47, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1179, 49, 'Cakupan luas sawah yang terairi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1186, 56, 'Persentase Panjang Jalan Kondisi Sedang', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1187, 57, 'Jumlah sarana prasarana wisata yang terbangun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1189, 59, 'Prosentase Sarana dan prasarana dalam kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1190, 60, 'Jumlah Laporan Capaian Kinerja yang terselesaikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1191, 61, 'Prosentase Rumah Tidak Layak Huni yang tertangani', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1192, 62, 'Prosentase Pemberdayaan Perumahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1193, 63, 'Prosentase Tanah yang bersertifikat', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1194, 64, 'Persentase administrasi perkantoran yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1195, 65, 'Prosentase Sarana dan prasarana dalam kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1196, 66, 'Persentase peningkatan kompetensi sumber daya aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1197, 67, 'Presentase Penanganan Gangguan Ketertiban Umum dan Keterntraman Masyarakat', '2022-11-13 02:22:10', '2022-11-13 02:22:10');
-INSERT INTO `program_indikator_kinerjas` (`id`, `program_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(1198, 68, 'Presentase Penurunan Pelanggaran Peraturan Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1199, 69, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1200, 70, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1201, 71, 'Persentase Kejadian Bencana yang Tertangani', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1202, 72, 'Persentase pemulihan rumah yang rusak akibat bencana alam', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1203, 73, 'Jumlah Desa tangguh bencana yang terbentuk tingkat pratama', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1204, 74, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1205, 75, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1206, 76, 'Persentase Laporan Kinerja SKPD yang tercapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1207, 77, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1208, 445, 'Persentase Kegiatan Keagamaan Yang Difasilitasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1209, 78, 'Prosentase Peran Serta Pemilih Dalam Pengembangan Etika Dan Budaya Politik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1210, 79, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1211, 80, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1212, 81, 'Prosentase Kelembagaan Yang Melaksakan 4 Pilar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1213, 78, 'Prosentase Peran Ormas / LSM', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1214, 82, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1215, 83, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1216, 84, 'Persentase PMKS yang terpenuhi kebutuhan dasarnya', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1217, 85, 'Persentase PMKS yang tertangani', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1218, 86, 'Persentase PSKS yang berpartisipasi aktif dalam penyelenggaraan kesejahteraan sosial', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1219, 86, 'Persentase penerima jaminan dan perlindungan sosial', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1220, 87, 'Jumlah PMKS yang memperoleh bantuan sosial', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1221, 88, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1222, 89, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1223, 90, 'Persentase Laporan Kinerja SKPD yang tercapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1224, 91, 'Persentase lulusan pelatihan yang telah bekerja', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1225, 92, 'Persentase pencari kerja yang ditempatkan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1226, 92, 'Persentase pencari kerja yang dilatih kewirausahaan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1227, 93, 'Angka Sengketa perusahaan-pekerja per tahun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1228, 94, 'Jumlah peserta pelatihan yang terseleksi sesuai ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1229, 95, 'Jumlah peserta pelatihan yang terseleksi sesuai ketentuan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1230, 96, 'Jumlah transmigran umum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1231, 97, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1232, 98, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1233, 99, 'Persentase lembaga perempuan yang aktif', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1234, 100, 'Rasio kekerasan terhadap perempuan dan anak', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1235, 101, 'Persentase perkawinan dengan usia istri dibawah 20 tahun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1236, 102, 'Persentase pasangan usia subur yang tidak ber KB karena Unmeet Need', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1237, 103, 'Persentase penggunaan kontrasepsi jangka panjang (MKJP)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1238, 104, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1239, 105, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1240, 106, 'Persentase Laporan Kinerja SKPD yang tercapai (%)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1241, 107, 'Jumlah Ketersediaan Pangan Utama (Beras)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1242, 108, 'Skor Pola Pangan Harapan (PPH) Konsumsi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1243, 109, 'Produk unggulan olahan pangan lokal', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1244, 110, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1245, 111, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1246, 112, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1247, 113, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1248, 114, 'Persentase pelaku usaha dan kegiatan yang menerapkan dokumen lingkungan hidup', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1249, 115, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1250, 116, 'Luas Ruang Terbuka Hijau (RTH) yang dikelola', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1251, 117, 'Persentase pelayanan persampahan di perkotaan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1252, 118, 'Cakupan penghijauan wilayah longsor dan sumber mata air', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1253, 119, 'Persentase ketersediaan sarana prasarana persampahan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1254, 120, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1255, 121, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1256, 122, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1257, 123, 'Persentase Laporan Kinerja SKPD yang tercapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1258, 124, 'Cakupan Penerbitan Kartu Tanda Penduduk', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1259, 124, 'Cakupan Penerbitan KIA', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1260, 124, 'Cakupan Penerbitan Kartu Keluarga', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1261, 125, 'Cakupan Penerbitan Akte Kelahiran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1262, 125, 'Cakupan Penerbitan Akte Kelahiran Anak usia 0 -18 Tahun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1263, 125, 'Cakupan Penerbitan Akte Kematian', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1264, 126, 'Persentase database kependudukan yang valid dan update', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1265, 127, 'Persentase data kependudukan yg dimanfaatkan oleh lembaga pengguna', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1266, 128, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1267, 129, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1268, 130, 'Persentase BUMDes yang tumbuh', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1269, 131, 'Persentase Lembaga Kemasyarakatan Desa yang aktif', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1270, 132, 'Persentase Desa yang memiliki kapasitas Pemerintah Desa yang baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1271, 133, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1272, 134, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1273, 135, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1274, 136, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1275, 137, 'Persentase kesadaran tertib lalu lintas', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1276, 138, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1277, 139, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1278, 140, 'Persentase penyelenggaraan PJU yang berkeselamatan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1279, 140, 'Persentase rambu Kondisi baik:', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1280, 140, 'Persentase warning light Kondisi baik:', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1281, 140, 'Persentase marka Kondisi baik:', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1282, 140, 'Persentase guard rail Kondisi baik:', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1283, 141, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1284, 142, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1285, 143, 'Persentase aplikasi yang terintegrasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1286, 144, 'Persentase Akses Masyarakat Terhadap Informasi (KIM)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1287, 145, 'Persentase informasi OPD yang telah diklasifikasikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1288, 146, 'Persentase Data Statistik Sektoral yang tersedia', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1289, 147, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1290, 148, 'Persentase sarana dan prasarana kerja yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1291, 149, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1292, 150, 'Persentase Peningkatan IKM', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1293, 151, 'Jumlah sarana perdagangan yang memadai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1294, 152, 'Jumlah PKL/Asongan yang dibina', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1295, 153, 'Jumlah IKM yang dibina', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1296, 154, 'Jumlah UM', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1297, 155, 'Jumlah Koperasi Aktif', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1298, 156, 'Jumlah pasar berkriteria SNI', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1299, 157, 'Persentase barang kena cukai ilegal', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1300, 158, 'Jumlah pedagang formal', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1301, 159, 'Persentase subsidi harga', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1302, 160, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1303, 161, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1304, 162, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1305, 163, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1306, 164, 'Jumlah investor skala besar yang berinvestasi di Kab. Madiun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1307, 165, 'Persentase masyarakat yang puas terhadap kualitas pelayanan perizinan dan non perizinan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1308, 166, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1309, 167, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1310, 168, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1311, 169, 'Persentase Laporan Kinerja SKPD yang tercapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1312, 170, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1313, 171, 'Jumlah destinasi wisata yang dikembangkan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1314, 172, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1315, 173, 'Jumlah even pariwisata yang dilaksanakan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1316, 173, 'Prosentase kelembagaan pariwisata yang dikembangkan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1317, 174, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1318, 175, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1319, 176, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1320, 177, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1321, 178, 'Persentase SDM pariwisata dan ekonomi kreatif yang dibina dengan dana cukai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1322, 179, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1323, 180, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1324, 181, 'Produksi tembakau', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1325, 182, 'Populasi Sapi potong', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1326, 1, 'Persentase administrasi perkantoran yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1327, 182, 'Populasi Sapi Perah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1328, 182, 'Populasi Kambing', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1329, 182, 'Populasi Domba', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1330, 2, 'Persentase sarana prasarana perkantoran yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1331, 182, 'Populasi Ayam Buras', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1332, 182, 'Populasi Ayam Petelur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1333, 182, 'Populasi Ayam Pedaging', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1334, 182, 'Populasi Itik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1335, 323, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1336, 183, 'Prosentase bina kelompok tani', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1337, 183, 'Prosentase bina kelompok ternak', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1338, 183, 'Prosentase bina kelompok ikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1339, 184, 'Produksi padi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1340, 184, 'Produksi jagung', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1341, 184, 'Produksi kedelai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1342, 184, 'Produktivitas Padi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1343, 184, 'Produktivitas Jagung', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1344, 184, 'Produktivitas Kedelai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1345, 3, 'APS PAUD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1346, 185, 'Produksi daging', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1347, 185, 'Produksi telur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1348, 185, 'Produksi susu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1349, 4, 'Angka kelulusan paket A/B/C', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1350, 186, 'Jumlah kelompok tani, Gapoktan, P3A, GP3A', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1351, 187, 'Produksi mangga', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1352, 187, 'Produksi durian', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1353, 187, 'Produksi jambu air', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1354, 187, 'Produksi cabe', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1355, 187, 'Produksi bawang merah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1356, 5, 'Persentase guru yang memenuhi kualifikasi S1/DIV', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1357, 188, 'Produksi tebu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1358, 188, 'Produksi kakao (biji kering)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1359, 188, 'Produksi cengkeh (bunga kering)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1360, 189, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1361, 324, 'Persentase Operasional sekolah yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1362, 190, 'Persentase kelompok ternak yang dibina', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1363, 7, 'APS SD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1364, 7, 'Angka Kelulusan SD/MI', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1365, 7, 'Angka Melanjutkan SD/MI ke SMP/MTs', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1366, 7, 'Persentase lembaga SD yang terakreditasi A (%)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1367, 8, 'APS SMP', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1368, 8, 'Angka Kelulusan SMP', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1369, 8, 'Angka Melanjutkan SMP/MTs ke SMA/SMK/MA', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1370, 8, 'Persentase lembaga SMP yang terakreditasi minimal A', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1371, 191, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1372, 192, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1373, 193, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1374, 6, 'Nilai IKM Dinas Pendidikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1375, 194, 'Persentase Perangkat Daerah yang difasilitasi dalam penerapan Inovasi Daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1376, 194, 'Persentase pemanfaatan hasil kelitbangan yang ditindaklanjuti / diterbitkan / dipublikasikan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1377, 195, 'Persentase kesesuaian Program dalam dokumen perencanaan pembangunan daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1378, 196, 'Persentase kesesuaian Program dalam dokumen perencanaan pembangunan bidang Infrastruktur dan pengembangan wilayah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1379, 197, 'Persentase kesesuaian program dalam dokumen perencanaan pembangunan bidang ekonomi dan SDA', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1380, 10, 'Persentase kebutuhan pelayanan administrasi perkantoran yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1381, 11, 'Persentase kebutuhan sarana dan prasarana aparatur yang tersedia dengan kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1382, 12, 'Persentase peningkatan kompetensi sumber daya aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1383, 13, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1384, 325, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1385, 14, 'Angka Kematian Ibu (AKI)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1386, 14, 'Angka Kematian Bayi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1387, 14, 'Prevalensi Balita Stunting', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1388, 326, 'Prevalensi HIV', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1389, 326, 'Persentase ODGJ berat yang mendapatkanpelayanan kesehatan jiwa sesuai standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1390, 15, 'Persentase sarana dan prasarana pelayanan kesehatan dasar memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1391, 19, 'Persentase tenaga kesehatan yang memiliki ijin', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1392, 19, 'Persentase puskesmas dengan alat kesehatan memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1393, 19, 'Persentase ketersediaan obat', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1394, 18, 'Persentase kepesertaan JKN', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1395, 22, 'Persentase kegiatan bantuan operasional kesehatan pada puskesmas (DAK Non fisik) beerjalan lancar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1396, 327, 'Cakupan masyarakat yang mendapat pelayanan kesehatan di puskesmas BLUD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1397, 23, 'Persentase puskesmas memberikan pelayanan JKN sesuai standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1398, 24, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1399, 25, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1400, 26, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1401, 27, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1402, 328, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1403, 329, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1404, 28, 'Persentase Capaian indikator SPM bidang keuangan sesuai dengan standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1405, 28, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1406, 28, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1407, 28, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1408, 29, 'Persentase Capaian indikator SPM bidang keuangan sesuai dengan standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1409, 30, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1410, 30, 'Persentase elemen penilaian akreditasi rumah sakit yang memenuhi standar akreditasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1411, 31, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1412, 31, 'Persentase elemen penilaian akreditasi rumah sakit yang memenuhi standar akreditasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1413, 330, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1414, 330, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1415, 331, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1416, 331, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1417, 332, 'Prosentase SPM Bidang Tata Usaha yang dicapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1418, 333, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1419, 334, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1420, 335, 'Prosentase indikator SPM bidang Keuangan sesuai standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1421, 336, 'Prosentase SPM Bidang Pelayanan yang dicapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1422, 336, 'Prosentase elemen penilaian akreditasi rumah sakit yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1423, 337, 'Prosentase SPM Bidang Penunjang yang dicapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1424, 337, 'Prosentase elemen penilaian akreditasi rumah sakit yang memenuhi standar', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1425, 338, 'Prosentase bangunan rumah sakit yang dibangun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1426, 339, 'Prosentase bangunan rumah sakit yang dibangun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1427, 340, 'Jumlah lahan yang dibebaskan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1428, 198, 'Persentase kesesuaian program dalam dokumen perencanaan pembangunan bidang sosial budaya dan pembangunan manusia', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1429, 199, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1430, 200, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1431, 201, 'Persentase Laporan Kinerja SKPD yang tercapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1432, 202, 'Persentase penyusunan Raperda APBD dan Raperda P.APBD tepat waktu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1433, 203, 'Persentase penyusunan Raperda APBD dan Raperda P.APBD tepat waktu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1434, 204, 'Persentase pelayanan perbendaharaan dan kas daerah tepat waktu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1435, 205, 'Persentase pelayanan perbendaharaan dan kas daerah tepat waktu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1436, 206, 'Persentase realisasi pencairan belanja tidak langsung non gaji', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1437, 207, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1438, 208, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1439, 209, 'Peningkatan Target PAD (Milyar)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1440, 210, 'Pencapaian Target PAD setiap Tahunnya', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1441, 211, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1442, 212, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1443, 213, 'Persentase Laporan Kinerja SKPD yang tercapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1444, 214, 'Jumlah ASN yang lulus uji Kompetensi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1445, 214, 'Prosentase ASN yang lulus Pendidikan dan Pelatihan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1446, 215, 'Prosentase Mutasi Jabatan sesuai Kompetensi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1447, 216, 'Prosentase ASN yang tidak melanggar aturan disiplin', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1448, 216, 'Prosentase ASN yang mempunyai Nilai SKP â‰¥ 75', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1449, 217, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1450, 218, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1451, 219, 'Persentase peningkatan kompetensi sumber daya aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1452, 220, 'Persentase Laporan Kinerja SKPD yang tercapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1453, 221, 'Persentase kasus pengaduan yang selesai ditindaklanjuti', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1454, 221, 'Persentase penyelesaian tindaklanjuti temuan hasil pemeriksaan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1455, 221, 'Level maturitas SPIP', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1456, 221, 'Prosentase nilai evaluasi SAKIP OPD minimal BB', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1457, 221, 'Opini BPK terhadap LKPD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1458, 222, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1459, 223, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1460, 224, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1461, 225, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1462, 226, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1463, 227, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1464, 228, 'Persentase kasus yang tertangani', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1465, 228, 'Persentase pelaksanaan penyuluhan hukum terpadu', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1466, 228, 'Persentase pembinaan desa sadar hukum', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1467, 228, 'Persentase pelaksanaan sosialisasi produk hukum yang berkaitan dengan HAM', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1468, 228, 'Jumlah produk hukum daerah (Perda dan Perbup) yang diterbitkan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1469, 228, 'Prosentase produk hukum daerah yang dipublikasikan melalui JDIH', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1470, 229, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1471, 230, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1472, 231, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1473, 232, 'Persentase evaluasi tusi perangkat daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1474, 232, 'Prosentase Terwujudnya penentuan nama jabatan dan persyaratan jabatan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1475, 232, 'Persentase terwujudnya insrumen persyaratan jabatan struktural', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1476, 232, 'Prosentase Terwujudnya tertib pemakaian atribut PNS', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1477, 232, 'Ditetapkan ISO pada perangkat daerah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1478, 232, 'Persentase SOP OPD yang dievaluasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1479, 232, 'Nilai rata-rata survey kepuasan masyarakat OPD', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1480, 233, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1481, 43, 'Persentase administrasi perkantoran yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1482, 44, 'Persentase sarana prasarana perkantoran yang terpenuhi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1483, 341, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1484, 46, 'Persentase panjang saluran drainase kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1485, 48, 'Presentase alat-alat penunjang infrastruktur yang tersedia kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1486, 342, 'Persentase Panjang Jalan Kondisi Sedang', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1487, 49, 'Panjang jaringan irigasi kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1488, 343, 'Presentases kapasitas daya tampung air embung yang terbangun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1489, 51, 'Presentase sarana prasana gedung pemerintah kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1490, 52, 'Jumlah SDM Jasa Konstruksi yang memenuhi kualifikasi', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1491, 50, 'Panjang saluran pembuangan kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1492, 53, 'Panjang daerah irigasi kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1493, 54, 'Persentase panjang jalan lingkungan dan jaringan air bersih kondisi baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1494, 55, 'Persentase Panjang Jalan Kondisi Baik', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1495, 344, 'Jumlah sarana prasarana wisata yang terbangun', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1496, 345, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1497, 346, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1498, 347, 'Jumlah dokumen tata ruang dan rencana detail tata ruang', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1499, 234, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1500, 235, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1501, 236, 'Persentase Laporan Kinerja SKPD yang tercapai', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1502, 237, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1503, 238, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1504, 239, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1505, 240, 'x', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1506, 241, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1507, 241, 'Persentase peserta yang mengikuti kegiatan keagamaan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1508, 241, 'Persentase peserta yang mengikuti peringatan hari besar agama', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1509, 241, 'Persentase dukungan terhadap anggota / lembaga keagamaan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1510, 241, 'Persentase masyarakat yang melaksanakan ibadah haji (Reguler melalui Kemenag Kabupaten Madiun)', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1511, 241, 'Persentase bantuan peralatan dan perengkapan tempat ibadah', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1512, 241, 'Persentase koordinasi bidang transmigrasi, pengendalian penduduk dan KB, kesehatan, sosial tenaga kerja dan penanggulangan bencana', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1513, 241, 'Persentase koordinasi bidang pemberdayaan perempuan dan perlindungan anak, pemuda dan olahraga, pemberdayaan masyarakat desa, pendidikan dan kebudayaan', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1514, 242, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
-(1515, 243, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1516, 244, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1517, 245, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1518, 246, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1519, 247, 'Penegasan Batas Administrasi Wilayah (Kecamatan dan Desa)', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1520, 247, 'Meningkatnya Peringkat LPPD Nasional', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1521, 247, 'Meningkatnya Pelayanan Publik kepada masyarakat di kecamatan', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1522, 247, 'Terselenggaranya peringatan hari jadi Provinsi', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1523, 248, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1524, 249, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1525, 250, 'Persentase ASN yang berseragam sesuai standar', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1526, 251, 'Persentase rekomendasi DPRD yang ditindaklanjuti', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1527, 252, 'Presentase rancangan Peraturan Daerah yang disahkan', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1528, 253, 'Persentase jumlah aduan masyarakat yang ditindaklanjuti', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1529, 254, 'Persentase dokumen perencanaan dan pelaporan sekretariat DPRD yang tersusun', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1530, 255, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1532, 257, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1533, 258, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1534, 259, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1535, 256, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1536, 260, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1537, 261, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1538, 262, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1539, 263, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1540, 264, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1541, 265, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1542, 266, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1543, 267, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1544, 268, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1545, 269, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1546, 270, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1547, 271, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1548, 272, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1549, 273, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1550, 274, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1551, 275, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1552, 276, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1553, 277, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1554, 278, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1555, 279, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1556, 280, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1557, 281, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1558, 282, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1559, 283, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1560, 284, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1561, 285, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1562, 286, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1563, 287, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1564, 288, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1565, 289, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1566, 290, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1567, 291, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1568, 292, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1569, 293, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1570, 294, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1571, 295, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1572, 296, 'Nilai Survey Kepuasan Masyarakat', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1573, 297, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1574, 298, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1575, 299, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1576, 300, 'Persentase pelayanan masyarakat yang terpenuhi', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1577, 301, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1578, 302, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1579, 303, 'Persentase pelayanan masyarakat yang terpenuhi', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1580, 304, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1581, 305, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1582, 306, 'Persentase pelayanan masyarakat yang terpenuhi', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1583, 307, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1584, 308, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1585, 309, 'Persentase pelayanan masyarakat yang terpenuhi', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1586, 310, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1587, 311, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1588, 312, 'Persentase pelayanan masyarakat yang terpenuhi', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1589, 313, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1590, 314, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1591, 315, 'Persentase pelayanan masyarakat yang terpenuhi', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1592, 316, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1593, 317, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1594, 318, 'x', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1595, 319, 'Persentase pelayanan masayarakat yang terpenuhi', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1596, 320, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1597, 321, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1598, 322, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
-(1599, 58, 'Persentase administrasi perkantoran yang terpenuhi', '2022-11-13 02:22:11', '2022-11-13 02:22:11');
+INSERT INTO `program_indikator_kinerjas` (`id`, `program_id`, `deskripsi`, `satuan`, `kondisi_target_kinerja_awal`, `kondisi_target_anggaran_awal`, `created_at`, `updated_at`) VALUES
+(93, 371, 'Persentase personil Tagana yang dibina', NULL, NULL, NULL, '2022-11-13 02:22:08', '2022-11-13 02:22:08'),
+(144, 398, 'Persentase masyarakat yang memahami program Bangga kencana (Pembangunan Keluarga, Kependudukan dan Keluarga Berencana)', NULL, NULL, NULL, '2022-11-13 02:22:08', '2022-11-13 02:22:08'),
+(220, 246, 'Jumlah Rumusan Kebijakan Pengelolaan Barang dan Jasa yang ditindaklanjuti', NULL, NULL, NULL, '2022-11-13 02:22:08', '2022-11-13 02:22:08'),
+(305, 484, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(387, 10, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(415, 354, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(418, 43, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(432, 58, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(441, 64, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(447, 367, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(452, 82, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(453, 83, 'Persentase PSKS yang berpartisipasi aktif dalam penyelenggaraan kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(460, 88, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(469, 104, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(478, 111, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(490, 120, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(497, 128, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(506, 396, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(509, 398, 'Persentase masyarakat yang memahami program Banggakencana (Pembangunan Keluarga, Kependudukan dan Keluarga Berencana)', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(512, 134, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(513, 135, 'persentase sarana prasarana dan perlengkapan jalan yang berfungsi baik', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(517, 141, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(521, 147, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(525, 403, 'Persentase Koperasi yang telah mengikuti Pendidikan dan Pelatihan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(531, 161, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(538, 167, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(547, 415, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(559, 179, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(578, 440, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(612, 453, 'Program Pengelolaan Pendapatan Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(645, 522, 'Persentase PD Pengampu pelayanan masyarakat yang sesuai dengan mutu pelayanan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(672, 268, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(741, 1, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(742, 1, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(743, 2, 'Angka partisipasi pendidikan kesetaraan', 'buku', '100', '100000', '2022-11-13 02:22:09', '2022-11-25 07:44:12'),
+(744, 2, 'Persentase lembaga pendidikan kesetaraan yang terakreditasi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(745, 2, 'APS SD', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(746, 2, 'Persentase lembaga SD terakreditasi A', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(747, 2, 'APS SMP', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(748, 2, 'Persentase lembaga SMP terakreditasi A', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(749, 2, 'APS PAUD', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(750, 2, 'Persentase lembaga pendidikan PAUD yang terakreditasi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(751, 348, 'Prosentase dokumen kurikulum SD yang dilaksanakan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(752, 348, 'Prosentase dokumen kurikulum PAUD yang dilaksanakan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(753, 349, 'Persentase tenaga pendidik yang tersertifikasi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(754, 349, 'Persentase guru yang memenuhi kualifikasi S1/DIV', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(755, 10, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(756, 10, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(757, 11, 'Angka Kematian Ibu', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(758, 11, 'Angka Kematian Bayi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(759, 11, 'Prevalensi Balita Stunting', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(760, 11, 'Persentase pemenuhan sarana, prasarana, dan peralatan puskesmas', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(761, 11, 'Persentase pemenuhan sarana, prasarana, dan peralatan rumah sakit', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(762, 11, 'Persentase masyarakat yang mendapat pelayanan kesehatan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(763, 26, 'Persentase sumber daya manusia kesehatan yang memenuhi standar kompetensi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(764, 26, 'Persentase peningkatan kompetensi sumber daya manusia kesehatan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(765, 350, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(766, 12, 'Persentase Desa Siaga Aktif Purnama Mandiri', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(767, 351, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(768, 351, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(769, 351, 'Persentase capaian indikator SPM bidang keuangan sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(770, 351, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(771, 351, 'Persentase capaian indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(772, 351, 'Persentase capaian indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(773, 352, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(774, 352, 'Persentase capaian indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(775, 352, 'Persentase capaian indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(776, 353, 'Persentase sumber daya manusia kesehatan yang memenuhi standar kompetensi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(777, 332, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(778, 332, 'Kepuasan ASN terhadap pelayanan sekretariat perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(779, 332, 'Persentase capaian indikator SPM bidang keuangan sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(780, 332, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(781, 332, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(782, 332, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(783, 354, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(786, 355, 'Persentase sumber daya manusia kesehatan yang memenuhi standar kompetensi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(787, 43, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(788, 43, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(789, 44, 'Persentase luas baku sawah yang terlayani air irigasi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(790, 356, 'Persentase perluasan akses pelayanan air bersih (SR)', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(791, 357, 'Persentase sarana limbah domestik setempat yang terbangun', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(792, 45, 'Persentase saluran drainase kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(793, 45, 'Persentase trotoar kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(794, 358, 'Persentase panjang jalan lingkungan kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(795, 341, 'Persentase penyelenggaraan bangunan gedung pemerintah yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(796, 359, 'Persentase bangunan dan lingkungan yang ditata', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(797, 360, 'Persentase panjang jalan kabupaten kondisi mantap', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(798, 360, 'Persentase jumlah jembatan kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(799, 361, 'Persentase peningkatan jumlah SDM jasa konstruksi yang bersertifikat', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(800, 362, 'Persentase dokumen rencana umum tata ruang dan rencana rinci tata ruang yang tersusun', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(801, 58, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(802, 58, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(803, 59, 'Persentase rumah tidak layak huni yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(804, 59, 'Prosentase rumah layak huni yang terbangun bagi korban bencana', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(805, 59, 'Persentase rumah layak huni yang terbangun bagi masyarakat yang terkena relokasi program Pemerintah Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(806, 363, 'Cakupan kawasan kumuh yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(807, 364, 'Prosentase kawasan kumuh baru yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(808, 365, 'Cakupan perumahan yang telah ditingkatkan prasarana, sarana, dan utilitas umumnya', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(809, 60, 'Persentase Orang/Badan Hukum yang Melaksanakan Perancangan dan Perencanaan Rumah serta Perencanaan PSU Tingkat Kemampuan Kecil', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(810, 64, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(811, 64, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(812, 65, 'Persentase kasus ketenteraman dan ketertiban umum yang diselesaikan sesuai ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(813, 65, 'Persentase kasus Pelanggaran Perda dan Perkada yang diselesaikan sesuai ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(814, 366, 'Persentase kasus kebakaran yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(815, 366, 'Persentase kasus non kebakaran yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(816, 367, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(817, 367, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(818, 368, 'Persentase desa/kelurahan tangguh bencana terbentuk', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(819, 368, 'Persentase korban terdampak bencana yang ditangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(820, 368, 'Persentase pemulihan pasca bencana yang direalisasikan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(821, 82, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(822, 82, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(823, 83, 'Persentase PSKS yang berpartisipasi aktif dalam penyelenggaraan kesejahteraansosial', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(824, 83, 'Persentase desa / kelurahan yang diberdayakan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(825, 369, 'Persentase PPKS yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(826, 370, 'Persentase kepesertaan jaminan perlindungan sosial untuk masyarakat miskin dan rentan miskin', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(827, 371, 'Persentase Korban Bencana Alam yang menerima bantuan dan bantuan khusus pasca Bencana', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(828, 371, 'Persentase personil Tanaga yang dibina', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(829, 88, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(830, 88, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(831, 372, 'Persentase lulusan pelatihan kerja yang bekerja', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(832, 373, 'Persentase pencari kerja yang ditempatkan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(833, 374, 'Angka sengketa Perusahaan Pekerja Per tahun', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(834, 98, 'Persentase lembaga penyedia layanan pemberdayaan perempuan yang aktif', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(835, 375, 'Rasio kekerasan terhadap perempuan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(836, 376, 'Persentase lembaga penyedia layanan peningkatan kualitas hidup anak yang aktif', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(837, 104, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(838, 377, 'Tingkat Capaian Angka Kecukupan Energi dan protein', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(839, 378, 'Persentase Daerah Rawan Pangan yang Tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(840, 379, 'Persentase pangan segar asal tanaman (PSAT) yang aman', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(841, 380, 'Jumlah Ganti Kerugian dan Santunan Tanah untuk Kepentingan Umum yang Terselesaikan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(842, 381, 'Jumlah dokumen pengelolaan tanah kosong', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(843, 382, 'Persentase Sengketa Tanah Yang Tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(844, 383, 'Jumlah dokumen penatagunaan tanah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(845, 384, 'Persentase Penyelenggaraan Perizinan membuka tanah yang dikelola', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(846, 104, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(847, 111, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(848, 111, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(849, 112, 'Tersusunnya dan terlaksananya dokumen perencanaan lingkungan hidup', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(850, 385, 'Persentase layanan pelaku usaha dan kegiatan yang menerapkan dokumen lingkungan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(851, 386, 'Cakupan penghijauan wilayah potensi longsor dan sumber mata air', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(852, 386, 'Luas Ruang Terbuka Hijau (RTH) yang dikelola', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(853, 387, 'Persentase industri yang menerapkan sistem pengolahan limbah B3', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(854, 520, 'Rasio kekerasan terhadap anak', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(855, 113, 'Persentase izin lingkungan dan izin perlindungan dan pengelolaan lingkungan hidup yang diterbitkan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(856, 388, 'Cakupan masyarakat yang mendapatkan pendidikan, pelatihan, dan penyuluhan lingkungan hidup', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(857, 389, 'Jumlah penerima penghargaan lingkungan hidup', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(858, 390, 'Persentase pengaduan lingkungan hidup yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(859, 391, 'Persentase sampah yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(860, 120, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(861, 120, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(862, 121, 'Persentase penduduk yang sudah menerima dokumen kependudukan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(863, 121, 'Persentase penduduk yang sudah memiliki dokumen kependudukan', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(864, 122, 'Persentase penduduk yang memiliki dokumen pencatatan sipil', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(865, 392, 'Persentase database kependudukan yang valid', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(866, 392, 'Persentase penyajian data kependudukan skala Kabupaten dalam satu tahun', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(867, 128, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(868, 128, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(869, 129, 'Persentase Fasilitasi Penyelenggaraan Penataan Desa', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(870, 393, 'Jumlah kerja sama Desa yang terbentuk', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(871, 394, 'Persentase desa dengan tata kelola pemerintahan desa yang baik', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(872, 394, 'Persentase Desa dengan dokumen perencanaan pembangunan yang baik', NULL, NULL, NULL, '2022-11-13 02:22:09', '2022-11-13 02:22:09'),
+(873, 395, 'Persentase Lembaga Kemasyarakatan Desa/Kelurahan yang aktif', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(874, 395, 'Persentase BUMDesa yang aktif', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(875, 395, 'Persentase Lembaga Ekonomi yang aktif', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(876, 396, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(877, 396, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(878, 397, 'Persentase dokumen data informasi kependudukan yang tersusun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(879, 398, 'Persentase pasangan usia subur yang tidak ber KB karena Unmeet Need', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(880, 398, '\"Persentase masyarakat yang memahami program Banggakencana (Pembangunan Keluarga, Kependudukan dan Keluarga Berencana) \"', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(881, 399, 'Persentase perkawinan dengan usia istri dibawah 20 Tahun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(882, 134, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(883, 134, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(884, 135, 'Persentase sarana prasarana dan perlengkapan jalan yang berkeselamatan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(885, 135, 'Persentase kendaraan laik jalan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(886, 135, 'Persentase angka tertib lalu lintas', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(887, 141, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(888, 141, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(889, 142, 'Presentase Desiminasi layanan informasi publik yang dilaksanakan sesuai dengan strategi komunikasi (STRAKOM) dan SOP yang ditetapkan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(890, 400, 'Persentase Perangkat Daerah yang menerapkan aplikasi layanan SPBE', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(891, 147, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(892, 147, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(893, 401, 'Persentase koperasi yang berkualitas', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(894, 402, 'Persentase koperasi yang sehat', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(895, 403, 'Persentase Koperasi yang telah mengikuti Pendidikan dan Pelatihan.', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(896, 149, 'Persentase koperasi yang telah diberdayakan dan dilindungi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(897, 404, 'Persentase peningkatan Pemberdayaan Usaha Mikro, Kecil, dan Menengah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(898, 405, 'Persentase Peningkatan pengembangan UMKM', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(899, 148, 'Persentase Perijinan Koperasi yang diterbitkan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(900, 161, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(901, 161, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(902, 406, 'Minat Investasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(903, 407, 'Rata-rata waktu penyelesaian perijinan dan Non Perijinan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(904, 408, 'Persentase perusahaan yang tertib menyampaikan LKPM', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(905, 162, 'Persentase investor yang difasilitasi dalam kegiatan penanaman modal', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(906, 163, 'Persentase peningkatan jumlah masyarakat yang memanfaatkan layanan perizinan dan non perizinan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(907, 167, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(908, 167, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(909, 409, 'Persentase atlet yang berprestasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(910, 168, 'Persentase pemuda yang berprestasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(911, 410, 'Persentase data statistik sektoral yang tersedia dan valid', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(912, 411, 'Persentase pengamanan informasi pemerintah daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(913, 412, 'Persentase budaya lokal yang dilestarikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(914, 413, 'Cakupan pembinaan sejarah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(915, 414, 'Persentase cagar budaya yang ditetapkan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(916, 415, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(917, 415, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(918, 416, 'Persentase Perpustakaan Terakreditasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(919, 417, 'Indeks Ketersediaan Arsip', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(920, 418, 'Indeks Keberadaan dan Keutuhan Arsip', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(921, 419, 'Persentase Peningkatan Produksi Perikanan Budidaya', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(922, 420, 'Persentase peningkatan hasil Produk Olahan Asal Ikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(923, 421, 'Persentase Peningkatan Produksi Perikanan Tangkap', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(924, 422, 'Persentase pengembangan daya tarik yang dilaksanakan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(925, 423, 'Persentase pemasaran pariwisata yang dilaksanakan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(926, 424, 'Persentase peningkatan pelaku industri pariwisata', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(927, 424, 'Persentase peningkatan pelaku ekonomi kreatif', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(928, 179, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(929, 179, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(930, 425, 'Persentase kelompok tani yang mendapatkan sarana pertanian', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(931, 426, 'Persentase kasus kesehatan hewan yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(932, 427, 'Persentase lahan pertanian yang bebas dari bencana pertanian', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(935, 428, 'Persentase peningkatan jumlah sarana prasarana pertanian dalam kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(936, 428, 'Persentase terpeliharanya prasarana peternakan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(937, 429, 'Persentase peningkatan kelas kelompok tani', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(938, 429, 'Presentase peningkatan kualitas peternak dan pelaku usaha ternak', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(939, 430, 'Persentase peningkatan rekomendasi perizinan yang diterbitkan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(940, 431, 'Persentase peningkatan sarana distribusi perdagangan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(941, 432, 'Persentase Ketersediaan Barang Kebutuhan Pokok dan Barang Penting Lainnya', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(942, 433, 'Persentase peningkatan fasilitasi Produk Ekspor Unggulan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(943, 434, 'Persentase peningkatan pelaksanaan metrologi legal', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(944, 435, 'Persentase peningkatan penjualan produk dalam negeri', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(945, 436, 'Jumlah rencana pembangunan industri', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(946, 437, 'Persentase IKM yang mendapatkan ijin usaha', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(947, 438, 'Persentase IKM yang memanfaatkan SIINas', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(948, 439, 'Persentase transmigran umum yang berhasil', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(949, 440, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(950, 440, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(951, 440, 'Persentase Kegiatan Kepala Daerah dan Wakil Kepala Daerah yang di Fasilitasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(952, 441, 'Jumlah Tanah, serta Ganti Kerugian Program Tanah Kelebihan Maksimum dan Tanah Absentee yang Teredistribusi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(953, 442, 'Persentase Rumusan Kebijakan KetataLaksanaan Organisasi yang ditetapkan sesuai kebutuhan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(954, 443, 'Persentase Kegiatan Keprotokolan dan Komunikasi Pimpinan Daerah dan Sekretaris Daerah yang di fasilitasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(955, 444, 'Jumlah Rumusan Kebijakan Penyelenggaraan Bidang hukum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(956, 524, 'Persentase Rumusan Kebijakan Bidang Kesejahteraan Rakyat yang ditetapkan sesuai kebutuhan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(957, 446, 'Persentase Rumusan Kebijakan Bidang Pemerintahan yang ditetapkan sesuai kebutuhan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(958, 246, 'Persentase Rumusan Kebijakan Pembangunan daerah yang ditetapkan sesuai kebutuhan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(959, 447, 'Jumlah Rumusan Kebijakan Pengelolaan Barang dan Jasa yang ditindaklanjuti', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(960, 448, 'Persentase Rumusan Kebijakan Bidang Perekonomian yang ditetapkan sesuai kebutuhan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(961, 525, 'Persentase PD Pengampu pelayanan masyarakat yang sesuai dengan mutu pelayanan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(962, 248, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(963, 248, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(964, 248, 'Persentase penyelenggaraan administrasi DPRD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(965, 248, 'Persentase layanan keuangan DPRD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(966, 248, 'Persentase layanan kesejahteraan DPRD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(967, 249, 'Persentase fasilitasi pembahasan Peraturan Daerah APBD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(968, 249, 'Persentase fasilitasi pembahasan Peraturan Daerah Non APBD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(969, 249, 'Persentase fasilitasi penganggaran dan pengawasan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(970, 249, 'Persentase fasilitasi tugas dan fungsi DPRD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(971, 191, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(972, 191, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(973, 192, 'Persentase perencanaan, pengendalian, dan evaluasi pembangunan daerah yang sesuai dengan ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(974, 449, 'Persentase PD Bidang PPM dengan capaian hasil outcome minimal 75%', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(975, 449, 'Persentase PD Bidang Ekonomi dan SDA dengan capaian hasil outcome minimal 75%', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(976, 449, 'Persentase PD Bidang IPW dengan capaian hasil outcome minimal 75%', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(977, 450, 'Persentase Perangkat Daerahyang difasilitasi dalam penerapan Inovasi Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(978, 450, 'Persentase pemanfaatan hasil kelitbangan yang ditindaklanjuti /diterbitkan /dipublikasikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(979, 199, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(980, 199, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(981, 200, 'Persentase OPD yang tertib penyusunan laporan keuangan daerah yang sesuai SAP', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(982, 451, 'Persentase OPD yang tertib tata kelola barang milik daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(983, 452, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(984, 452, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(985, 453, 'Persentase peningkatan PAD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(986, 211, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(987, 211, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(988, 212, 'Persentase penetapan kebutuhan ASN', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(989, 212, 'Persentase mutasi jabatan sesuai kualifikasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(990, 212, 'Persentase kedisiplinan ASN', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(991, 212, 'Persentase Penilaian Kinerja ASN', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(992, 212, 'Persentase ASN yang mengikuti pengembangan kompetensi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(993, 217, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(994, 217, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(995, 454, 'Persentase OPD yang mendapatkan Nilai hasil Evaluasi SAKIP Memuaskan (A)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(996, 455, 'Level kapabilitas APIP atau jumlah rumusan kebijakan teknis pengawasan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(997, 455, 'Persentase pendampingan, asistensi, dan verifikasi kepada OPD yang sesuai peraturan berlaku', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(998, 456, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(999, 456, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1000, 457, 'Persentase Penyelenggaraan penguatan ideologi Pancasila dan Karakter Kebangsaan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1001, 458, 'Persentase Penyelenggaraan penguatan ideologi Pancasila dan Karakter Kebangsaan (indikator sama?)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1002, 459, 'Persentase Organisasi Kemasyarakatan yang dibina', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1003, 460, 'Indeks Keamanan Manusia', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1004, 461, 'Persentase penyelenggaraan pembinaan dan pengembangan ketahanan ekonomi, sosial dan budaya', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1005, 255, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1006, 255, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1007, 256, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1008, 462, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1009, 463, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1010, 464, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1011, 257, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1012, 259, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1013, 259, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1014, 465, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1015, 466, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1016, 467, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1017, 468, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1018, 469, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1019, 261, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1020, 262, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1021, 261, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1022, 470, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1023, 471, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1024, 472, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1025, 473, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1026, 474, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1027, 474, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1028, 475, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1029, 476, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1030, 477, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1031, 478, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1032, 479, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1033, 264, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1034, 264, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1035, 265, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1036, 480, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1037, 481, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1038, 482, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1039, 483, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1040, 267, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1041, 267, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1042, 268, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1043, 269, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1044, 484, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1045, 485, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1046, 486, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1047, 270, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1048, 270, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1049, 271, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1050, 487, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1051, 488, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1052, 489, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1053, 490, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1054, 273, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1055, 273, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1056, 274, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1057, 491, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1058, 492, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1059, 493, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1060, 494, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1061, 276, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1062, 276, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1063, 277, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1064, 495, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1065, 496, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1066, 497, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1067, 498, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1068, 279, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1069, 279, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1070, 280, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1071, 499, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1072, 500, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1073, 501, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1074, 502, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1075, 282, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1076, 282, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1077, 283, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1078, 284, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1079, 503, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1080, 504, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1081, 505, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1082, 288, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1083, 288, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10');
+INSERT INTO `program_indikator_kinerjas` (`id`, `program_id`, `deskripsi`, `satuan`, `kondisi_target_kinerja_awal`, `kondisi_target_anggaran_awal`, `created_at`, `updated_at`) VALUES
+(1084, 289, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1085, 290, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1086, 506, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1087, 507, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1088, 508, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1089, 285, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1090, 285, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1091, 286, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1092, 509, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1093, 510, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1094, 511, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1095, 512, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1096, 291, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1097, 291, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1098, 292, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1099, 513, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1100, 514, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1101, 515, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1102, 516, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1103, 294, 'Nilai SAKIP Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1104, 294, 'Kepuasan ASN terhadap pelayanan kesekretariatan Perangkat Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1105, 295, 'Persentase Layanan Penyelenggaraan Pemerintahan Dan Pelayanan Publik Sesuai Ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1106, 517, 'Persentase Layanan Pemberdayaan Masyarakat Desa Dan Kelurahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1107, 518, 'Persentase Layanan Ketenteraman dan Ketertiban Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1108, 519, 'Persentase Layanan Penyelenggaraan Urusan Pemerintahan Umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1109, 296, 'Persentase Layanan Pembinaan Dan Pengawasan Pemerintahan Desa', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1110, 521, 'Persentase rekomendasi hasil pemeriksaan BPK dan Inspektorat yang ditindaklanjuti', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1111, 523, 'Persentase ternak bunting dari pemeriksaan kebuntingan (PKb)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1121, 7, 'Persentase lembaga SD yang terakreditasi A', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1126, 9, 'Persentase kesenian daerah yang dilestarikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1127, 9, 'Persentase Benda, situs dan kawasan Cagar Budaya yang dilestarikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1136, 16, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1137, 17, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1141, 20, 'Prevalensi HIV', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1142, 20, 'Persentase ODGJ berat yang mendapatkanpelayanan kesehatan jiwa sesuai standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1143, 21, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1147, 25, 'Persentase kebutuhan sarana dan prasarana aparatur yang tersedia dengan kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1159, 32, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1160, 32, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1161, 33, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1162, 33, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1163, 34, 'Prosentase SPM Bidang Tata Usaha yang dicapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1164, 35, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1165, 36, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1166, 37, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1167, 38, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1168, 39, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1169, 40, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1170, 41, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1171, 42, 'Prosentase bangunan rumah sakit yang dibangun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1174, 45, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1176, 47, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1179, 49, 'Cakupan luas sawah yang terairi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1186, 56, 'Persentase Panjang Jalan Kondisi Sedang', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1187, 57, 'Jumlah sarana prasarana wisata yang terbangun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1189, 59, 'Prosentase Sarana dan prasarana dalam kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1190, 60, 'Jumlah Laporan Capaian Kinerja yang terselesaikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1191, 61, 'Prosentase Rumah Tidak Layak Huni yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1192, 62, 'Prosentase Pemberdayaan Perumahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1193, 63, 'Prosentase Tanah yang bersertifikat', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1194, 64, 'Persentase administrasi perkantoran yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1195, 65, 'Prosentase Sarana dan prasarana dalam kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1196, 66, 'Persentase peningkatan kompetensi sumber daya aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1197, 67, 'Presentase Penanganan Gangguan Ketertiban Umum dan Keterntraman Masyarakat', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1198, 68, 'Presentase Penurunan Pelanggaran Peraturan Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1199, 69, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1200, 70, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1201, 71, 'Persentase Kejadian Bencana yang Tertangani', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1202, 72, 'Persentase pemulihan rumah yang rusak akibat bencana alam', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1203, 73, 'Jumlah Desa tangguh bencana yang terbentuk tingkat pratama', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1204, 74, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1205, 75, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1206, 76, 'Persentase Laporan Kinerja SKPD yang tercapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1207, 77, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1208, 445, 'Persentase Kegiatan Keagamaan Yang Difasilitasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1209, 78, 'Prosentase Peran Serta Pemilih Dalam Pengembangan Etika Dan Budaya Politik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1210, 79, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1211, 80, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1212, 81, 'Prosentase Kelembagaan Yang Melaksakan 4 Pilar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1213, 78, 'Prosentase Peran Ormas / LSM', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1214, 82, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1215, 83, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1216, 84, 'Persentase PMKS yang terpenuhi kebutuhan dasarnya', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1217, 85, 'Persentase PMKS yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1218, 86, 'Persentase PSKS yang berpartisipasi aktif dalam penyelenggaraan kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1219, 86, 'Persentase penerima jaminan dan perlindungan sosial', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1220, 87, 'Jumlah PMKS yang memperoleh bantuan sosial', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1221, 88, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1222, 89, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1223, 90, 'Persentase Laporan Kinerja SKPD yang tercapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1224, 91, 'Persentase lulusan pelatihan yang telah bekerja', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1225, 92, 'Persentase pencari kerja yang ditempatkan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1226, 92, 'Persentase pencari kerja yang dilatih kewirausahaan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1227, 93, 'Angka Sengketa perusahaan-pekerja per tahun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1228, 94, 'Jumlah peserta pelatihan yang terseleksi sesuai ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1229, 95, 'Jumlah peserta pelatihan yang terseleksi sesuai ketentuan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1230, 96, 'Jumlah transmigran umum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1231, 97, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1232, 98, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1233, 99, 'Persentase lembaga perempuan yang aktif', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1234, 100, 'Rasio kekerasan terhadap perempuan dan anak', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1235, 101, 'Persentase perkawinan dengan usia istri dibawah 20 tahun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1236, 102, 'Persentase pasangan usia subur yang tidak ber KB karena Unmeet Need', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1237, 103, 'Persentase penggunaan kontrasepsi jangka panjang (MKJP)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1238, 104, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1239, 105, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1240, 106, 'Persentase Laporan Kinerja SKPD yang tercapai (%)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1241, 107, 'Jumlah Ketersediaan Pangan Utama (Beras)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1242, 108, 'Skor Pola Pangan Harapan (PPH) Konsumsi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1243, 109, 'Produk unggulan olahan pangan lokal', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1244, 110, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1245, 111, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1246, 112, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1247, 113, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1248, 114, 'Persentase pelaku usaha dan kegiatan yang menerapkan dokumen lingkungan hidup', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1249, 115, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1250, 116, 'Luas Ruang Terbuka Hijau (RTH) yang dikelola', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1251, 117, 'Persentase pelayanan persampahan di perkotaan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1252, 118, 'Cakupan penghijauan wilayah longsor dan sumber mata air', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1253, 119, 'Persentase ketersediaan sarana prasarana persampahan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1254, 120, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1255, 121, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1256, 122, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1257, 123, 'Persentase Laporan Kinerja SKPD yang tercapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1258, 124, 'Cakupan Penerbitan Kartu Tanda Penduduk', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1259, 124, 'Cakupan Penerbitan KIA', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1260, 124, 'Cakupan Penerbitan Kartu Keluarga', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1261, 125, 'Cakupan Penerbitan Akte Kelahiran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1262, 125, 'Cakupan Penerbitan Akte Kelahiran Anak usia 0 -18 Tahun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1263, 125, 'Cakupan Penerbitan Akte Kematian', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1264, 126, 'Persentase database kependudukan yang valid dan update', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1265, 127, 'Persentase data kependudukan yg dimanfaatkan oleh lembaga pengguna', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1266, 128, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1267, 129, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1268, 130, 'Persentase BUMDes yang tumbuh', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1269, 131, 'Persentase Lembaga Kemasyarakatan Desa yang aktif', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1270, 132, 'Persentase Desa yang memiliki kapasitas Pemerintah Desa yang baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1271, 133, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1272, 134, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1273, 135, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1274, 136, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1275, 137, 'Persentase kesadaran tertib lalu lintas', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1276, 138, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1277, 139, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1278, 140, 'Persentase penyelenggaraan PJU yang berkeselamatan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1279, 140, 'Persentase rambu Kondisi baik:', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1280, 140, 'Persentase warning light Kondisi baik:', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1281, 140, 'Persentase marka Kondisi baik:', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1282, 140, 'Persentase guard rail Kondisi baik:', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1283, 141, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1284, 142, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1285, 143, 'Persentase aplikasi yang terintegrasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1286, 144, 'Persentase Akses Masyarakat Terhadap Informasi (KIM)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1287, 145, 'Persentase informasi OPD yang telah diklasifikasikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1288, 146, 'Persentase Data Statistik Sektoral yang tersedia', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1289, 147, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1290, 148, 'Persentase sarana dan prasarana kerja yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1291, 149, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1292, 150, 'Persentase Peningkatan IKM', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1293, 151, 'Jumlah sarana perdagangan yang memadai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1294, 152, 'Jumlah PKL/Asongan yang dibina', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1295, 153, 'Jumlah IKM yang dibina', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1296, 154, 'Jumlah UM', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1297, 155, 'Jumlah Koperasi Aktif', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1298, 156, 'Jumlah pasar berkriteria SNI', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1299, 157, 'Persentase barang kena cukai ilegal', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1300, 158, 'Jumlah pedagang formal', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1301, 159, 'Persentase subsidi harga', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1302, 160, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1303, 161, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1304, 162, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1305, 163, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1306, 164, 'Jumlah investor skala besar yang berinvestasi di Kab. Madiun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1307, 165, 'Persentase masyarakat yang puas terhadap kualitas pelayanan perizinan dan non perizinan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1308, 166, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1309, 167, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1310, 168, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1311, 169, 'Persentase Laporan Kinerja SKPD yang tercapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1312, 170, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1313, 171, 'Jumlah destinasi wisata yang dikembangkan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1314, 172, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1315, 173, 'Jumlah even pariwisata yang dilaksanakan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1316, 173, 'Prosentase kelembagaan pariwisata yang dikembangkan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1317, 174, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1318, 175, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1319, 176, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1320, 177, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1321, 178, 'Persentase SDM pariwisata dan ekonomi kreatif yang dibina dengan dana cukai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1322, 179, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1323, 180, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1324, 181, 'Produksi tembakau', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1325, 182, 'Populasi Sapi potong', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1326, 1, 'Persentase administrasi perkantoran yang terpenuhi', 'buku', '100', '100000', '2022-11-13 02:22:10', '2022-11-25 07:42:36'),
+(1327, 182, 'Populasi Sapi Perah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1328, 182, 'Populasi Kambing', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1329, 182, 'Populasi Domba', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1330, 2, 'Persentase sarana prasarana perkantoran yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1331, 182, 'Populasi Ayam Buras', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1332, 182, 'Populasi Ayam Petelur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1333, 182, 'Populasi Ayam Pedaging', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1334, 182, 'Populasi Itik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1335, 323, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1336, 183, 'Prosentase bina kelompok tani', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1337, 183, 'Prosentase bina kelompok ternak', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1338, 183, 'Prosentase bina kelompok ikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1339, 184, 'Produksi padi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1340, 184, 'Produksi jagung', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1341, 184, 'Produksi kedelai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1342, 184, 'Produktivitas Padi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1343, 184, 'Produktivitas Jagung', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1344, 184, 'Produktivitas Kedelai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1345, 3, 'APS PAUD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1346, 185, 'Produksi daging', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1347, 185, 'Produksi telur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1348, 185, 'Produksi susu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1349, 4, 'Angka kelulusan paket A/B/C', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1350, 186, 'Jumlah kelompok tani, Gapoktan, P3A, GP3A', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1351, 187, 'Produksi mangga', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1352, 187, 'Produksi durian', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1353, 187, 'Produksi jambu air', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1354, 187, 'Produksi cabe', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1355, 187, 'Produksi bawang merah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1356, 5, 'Persentase guru yang memenuhi kualifikasi S1/DIV', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1357, 188, 'Produksi tebu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1358, 188, 'Produksi kakao (biji kering)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1359, 188, 'Produksi cengkeh (bunga kering)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1360, 189, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1361, 324, 'Persentase Operasional sekolah yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1362, 190, 'Persentase kelompok ternak yang dibina', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1363, 7, 'APS SD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1364, 7, 'Angka Kelulusan SD/MI', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1365, 7, 'Angka Melanjutkan SD/MI ke SMP/MTs', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1366, 7, 'Persentase lembaga SD yang terakreditasi A (%)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1367, 8, 'APS SMP', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1368, 8, 'Angka Kelulusan SMP', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1369, 8, 'Angka Melanjutkan SMP/MTs ke SMA/SMK/MA', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1370, 8, 'Persentase lembaga SMP yang terakreditasi minimal A', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1371, 191, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1372, 192, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1373, 193, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1374, 6, 'Nilai IKM Dinas Pendidikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1375, 194, 'Persentase Perangkat Daerah yang difasilitasi dalam penerapan Inovasi Daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1376, 194, 'Persentase pemanfaatan hasil kelitbangan yang ditindaklanjuti / diterbitkan / dipublikasikan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1377, 195, 'Persentase kesesuaian Program dalam dokumen perencanaan pembangunan daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1378, 196, 'Persentase kesesuaian Program dalam dokumen perencanaan pembangunan bidang Infrastruktur dan pengembangan wilayah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1379, 197, 'Persentase kesesuaian program dalam dokumen perencanaan pembangunan bidang ekonomi dan SDA', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1380, 10, 'Persentase kebutuhan pelayanan administrasi perkantoran yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1381, 11, 'Persentase kebutuhan sarana dan prasarana aparatur yang tersedia dengan kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1382, 12, 'Persentase peningkatan kompetensi sumber daya aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1383, 13, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1384, 325, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1385, 14, 'Angka Kematian Ibu (AKI)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1386, 14, 'Angka Kematian Bayi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1387, 14, 'Prevalensi Balita Stunting', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1388, 326, 'Prevalensi HIV', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1389, 326, 'Persentase ODGJ berat yang mendapatkanpelayanan kesehatan jiwa sesuai standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1390, 15, 'Persentase sarana dan prasarana pelayanan kesehatan dasar memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1391, 19, 'Persentase tenaga kesehatan yang memiliki ijin', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1392, 19, 'Persentase puskesmas dengan alat kesehatan memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1393, 19, 'Persentase ketersediaan obat', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1394, 18, 'Persentase kepesertaan JKN', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1395, 22, 'Persentase kegiatan bantuan operasional kesehatan pada puskesmas (DAK Non fisik) beerjalan lancar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1396, 327, 'Cakupan masyarakat yang mendapat pelayanan kesehatan di puskesmas BLUD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1397, 23, 'Persentase puskesmas memberikan pelayanan JKN sesuai standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1398, 24, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1399, 25, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1400, 26, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1401, 27, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1402, 328, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1403, 329, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1404, 28, 'Persentase Capaian indikator SPM bidang keuangan sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1405, 28, 'Persentase Capaian indikator SPM bidang tata usaha sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1406, 28, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1407, 28, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1408, 29, 'Persentase Capaian indikator SPM bidang keuangan sesuai dengan standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1409, 30, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1410, 30, 'Persentase elemen penilaian akreditasi rumah sakit yang memenuhi standar akreditasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1411, 31, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1412, 31, 'Persentase elemen penilaian akreditasi rumah sakit yang memenuhi standar akreditasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1413, 330, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1414, 330, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1415, 331, 'Persentase indikator SPM bidang penunjang yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1416, 331, 'Persentase indikator SPM bidang pelayanan yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1417, 332, 'Prosentase SPM Bidang Tata Usaha yang dicapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1418, 333, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1419, 334, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1420, 335, 'Prosentase indikator SPM bidang Keuangan sesuai standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1421, 336, 'Prosentase SPM Bidang Pelayanan yang dicapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1422, 336, 'Prosentase elemen penilaian akreditasi rumah sakit yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1423, 337, 'Prosentase SPM Bidang Penunjang yang dicapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1424, 337, 'Prosentase elemen penilaian akreditasi rumah sakit yang memenuhi standar', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1425, 338, 'Prosentase bangunan rumah sakit yang dibangun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1426, 339, 'Prosentase bangunan rumah sakit yang dibangun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1427, 340, 'Jumlah lahan yang dibebaskan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1428, 198, 'Persentase kesesuaian program dalam dokumen perencanaan pembangunan bidang sosial budaya dan pembangunan manusia', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1429, 199, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1430, 200, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1431, 201, 'Persentase Laporan Kinerja SKPD yang tercapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1432, 202, 'Persentase penyusunan Raperda APBD dan Raperda P.APBD tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1433, 203, 'Persentase penyusunan Raperda APBD dan Raperda P.APBD tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1434, 204, 'Persentase pelayanan perbendaharaan dan kas daerah tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1435, 205, 'Persentase pelayanan perbendaharaan dan kas daerah tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1436, 206, 'Persentase realisasi pencairan belanja tidak langsung non gaji', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1437, 207, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1438, 208, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1439, 209, 'Peningkatan Target PAD (Milyar)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1440, 210, 'Pencapaian Target PAD setiap Tahunnya', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1441, 211, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1442, 212, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1443, 213, 'Persentase Laporan Kinerja SKPD yang tercapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1444, 214, 'Jumlah ASN yang lulus uji Kompetensi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1445, 214, 'Prosentase ASN yang lulus Pendidikan dan Pelatihan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1446, 215, 'Prosentase Mutasi Jabatan sesuai Kompetensi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1447, 216, 'Prosentase ASN yang tidak melanggar aturan disiplin', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1448, 216, 'Prosentase ASN yang mempunyai Nilai SKP â‰¥ 75', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1449, 217, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1450, 218, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1451, 219, 'Persentase peningkatan kompetensi sumber daya aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1452, 220, 'Persentase Laporan Kinerja SKPD yang tercapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1453, 221, 'Persentase kasus pengaduan yang selesai ditindaklanjuti', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1454, 221, 'Persentase penyelesaian tindaklanjuti temuan hasil pemeriksaan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1455, 221, 'Level maturitas SPIP', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1456, 221, 'Prosentase nilai evaluasi SAKIP OPD minimal BB', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1457, 221, 'Opini BPK terhadap LKPD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1458, 222, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1459, 223, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1460, 224, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1461, 225, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1462, 226, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1463, 227, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1464, 228, 'Persentase kasus yang tertangani', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1465, 228, 'Persentase pelaksanaan penyuluhan hukum terpadu', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1466, 228, 'Persentase pembinaan desa sadar hukum', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1467, 228, 'Persentase pelaksanaan sosialisasi produk hukum yang berkaitan dengan HAM', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1468, 228, 'Jumlah produk hukum daerah (Perda dan Perbup) yang diterbitkan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1469, 228, 'Prosentase produk hukum daerah yang dipublikasikan melalui JDIH', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1470, 229, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1471, 230, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1472, 231, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1473, 232, 'Persentase evaluasi tusi perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1474, 232, 'Prosentase Terwujudnya penentuan nama jabatan dan persyaratan jabatan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1475, 232, 'Persentase terwujudnya insrumen persyaratan jabatan struktural', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1476, 232, 'Prosentase Terwujudnya tertib pemakaian atribut PNS', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1477, 232, 'Ditetapkan ISO pada perangkat daerah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1478, 232, 'Persentase SOP OPD yang dievaluasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1479, 232, 'Nilai rata-rata survey kepuasan masyarakat OPD', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1480, 233, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1481, 43, 'Persentase administrasi perkantoran yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1482, 44, 'Persentase sarana prasarana perkantoran yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1483, 341, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1484, 46, 'Persentase panjang saluran drainase kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1485, 48, 'Presentase alat-alat penunjang infrastruktur yang tersedia kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1486, 342, 'Persentase Panjang Jalan Kondisi Sedang', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1487, 49, 'Panjang jaringan irigasi kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1488, 343, 'Presentases kapasitas daya tampung air embung yang terbangun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1489, 51, 'Presentase sarana prasana gedung pemerintah kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1490, 52, 'Jumlah SDM Jasa Konstruksi yang memenuhi kualifikasi', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1491, 50, 'Panjang saluran pembuangan kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1492, 53, 'Panjang daerah irigasi kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1493, 54, 'Persentase panjang jalan lingkungan dan jaringan air bersih kondisi baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1494, 55, 'Persentase Panjang Jalan Kondisi Baik', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1495, 344, 'Jumlah sarana prasarana wisata yang terbangun', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1496, 345, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1497, 346, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1498, 347, 'Jumlah dokumen tata ruang dan rencana detail tata ruang', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1499, 234, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1500, 235, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1501, 236, 'Persentase Laporan Kinerja SKPD yang tercapai', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1502, 237, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1503, 238, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1504, 239, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1505, 240, 'x', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1506, 241, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1507, 241, 'Persentase peserta yang mengikuti kegiatan keagamaan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1508, 241, 'Persentase peserta yang mengikuti peringatan hari besar agama', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1509, 241, 'Persentase dukungan terhadap anggota / lembaga keagamaan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1510, 241, 'Persentase masyarakat yang melaksanakan ibadah haji (Reguler melalui Kemenag Kabupaten Madiun)', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1511, 241, 'Persentase bantuan peralatan dan perengkapan tempat ibadah', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1512, 241, 'Persentase koordinasi bidang transmigrasi, pengendalian penduduk dan KB, kesehatan, sosial tenaga kerja dan penanggulangan bencana', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1513, 241, 'Persentase koordinasi bidang pemberdayaan perempuan dan perlindungan anak, pemuda dan olahraga, pemberdayaan masyarakat desa, pendidikan dan kebudayaan', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1514, 242, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:10', '2022-11-13 02:22:10'),
+(1515, 243, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1516, 244, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1517, 245, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1518, 246, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1519, 247, 'Penegasan Batas Administrasi Wilayah (Kecamatan dan Desa)', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1520, 247, 'Meningkatnya Peringkat LPPD Nasional', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1521, 247, 'Meningkatnya Pelayanan Publik kepada masyarakat di kecamatan', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1522, 247, 'Terselenggaranya peringatan hari jadi Provinsi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1523, 248, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1524, 249, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1525, 250, 'Persentase ASN yang berseragam sesuai standar', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1526, 251, 'Persentase rekomendasi DPRD yang ditindaklanjuti', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1527, 252, 'Presentase rancangan Peraturan Daerah yang disahkan', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1528, 253, 'Persentase jumlah aduan masyarakat yang ditindaklanjuti', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1529, 254, 'Persentase dokumen perencanaan dan pelaporan sekretariat DPRD yang tersusun', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1530, 255, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1532, 257, 'Persentase kegiatan pelaporan capaian kinerja dan keuangan berjalan lancar dan tepat waktu', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11');
+INSERT INTO `program_indikator_kinerjas` (`id`, `program_id`, `deskripsi`, `satuan`, `kondisi_target_kinerja_awal`, `kondisi_target_anggaran_awal`, `created_at`, `updated_at`) VALUES
+(1533, 258, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1534, 259, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1535, 256, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1536, 260, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1537, 261, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1538, 262, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1539, 263, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1540, 264, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1541, 265, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1542, 266, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1543, 267, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1544, 268, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1545, 269, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1546, 270, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1547, 271, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1548, 272, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1549, 273, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1550, 274, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1551, 275, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1552, 276, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1553, 277, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1554, 278, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1555, 279, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1556, 280, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1557, 281, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1558, 282, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1559, 283, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1560, 284, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1561, 285, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1562, 286, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1563, 287, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1564, 288, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1565, 289, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1566, 290, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1567, 291, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1568, 292, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1569, 293, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1570, 294, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1571, 295, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1572, 296, 'Nilai Survey Kepuasan Masyarakat', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1573, 297, 'Presentase rekomendasi dan realisasi hasil pembinaan yang ditindaklanjuti dalam satu tahun bidang pemerintahan pemberdayaan dan pembangunan, ketentraman dan ketertiban umum serta kesejahteraan sosial', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1574, 298, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1575, 299, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1576, 300, 'Persentase pelayanan masyarakat yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1577, 301, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1578, 302, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1579, 303, 'Persentase pelayanan masyarakat yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1580, 304, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1581, 305, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1582, 306, 'Persentase pelayanan masyarakat yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1583, 307, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1584, 308, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1585, 309, 'Persentase pelayanan masyarakat yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1586, 310, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1587, 311, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1588, 312, 'Persentase pelayanan masyarakat yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1589, 313, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1590, 314, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1591, 315, 'Persentase pelayanan masyarakat yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1592, 316, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1593, 317, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1594, 318, 'x', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1595, 319, 'Persentase pelayanan masayarakat yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1596, 320, 'Persentase Terpenuhinya kebutuhan administrasi dan pendukung operasi perkantoran', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1597, 321, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1598, 322, 'Prosentase Pemenuhan Kebutuhan Sarana dan Prasarana Aparatur', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11'),
+(1599, 58, 'Persentase administrasi perkantoran yang terpenuhi', NULL, NULL, NULL, '2022-11-13 02:22:11', '2022-11-13 02:22:11');
 
 -- --------------------------------------------------------
 
@@ -4638,8 +4664,6 @@ CREATE TABLE `program_target_satuan_rp_realisasis` (
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `target_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `realisasi_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -4649,13 +4673,14 @@ CREATE TABLE `program_target_satuan_rp_realisasis` (
 -- Dumping data untuk tabel `program_target_satuan_rp_realisasis`
 --
 
-INSERT INTO `program_target_satuan_rp_realisasis` (`id`, `opd_program_indikator_kinerja_id`, `target`, `satuan`, `target_rp`, `realisasi`, `realisasi_rp`, `tahun`, `created_at`, `updated_at`) VALUES
-(1, 1, '100', 'buku', '1000000', '12', '50000', '2018', '2022-11-15 09:53:12', '2022-11-16 11:19:04'),
-(2, 1, '20', 'buku', '50000', '20', '500000', '2019', '2022-11-16 05:57:05', '2022-11-16 11:19:16'),
-(3, 1, '50', 'buku', '100000', '50', '100000', '2020', '2022-11-16 22:53:15', '2022-11-16 23:14:25'),
-(4, 1, '100', 'buku', '100000', NULL, NULL, '2021', '2022-11-16 23:12:59', '2022-11-16 23:12:59'),
-(5, 1, '90', 'buku', '100000', NULL, NULL, '2022', '2022-11-16 23:13:25', '2022-11-16 23:13:25'),
-(6, 1, '80', 'buku', '100000', NULL, NULL, '2023', '2022-11-16 23:13:53', '2022-11-16 23:13:53');
+INSERT INTO `program_target_satuan_rp_realisasis` (`id`, `opd_program_indikator_kinerja_id`, `target`, `satuan`, `target_rp`, `tahun`, `created_at`, `updated_at`) VALUES
+(1, 1, '100', 'buku', '1000000', '2018', '2022-11-15 09:53:12', '2022-11-16 11:19:04'),
+(2, 1, '20', 'buku', '50000', '2019', '2022-11-16 05:57:05', '2022-11-16 11:19:16'),
+(3, 1, '50', 'buku', '100000', '2020', '2022-11-16 22:53:15', '2022-11-16 23:14:25'),
+(4, 1, '100', 'buku', '100000', '2021', '2022-11-16 23:12:59', '2022-11-16 23:12:59'),
+(5, 1, '90', 'buku', '100000', '2022', '2022-11-16 23:13:25', '2022-11-16 23:13:25'),
+(6, 1, '80', 'buku', '100000', '2023', '2022-11-16 23:13:53', '2022-11-16 23:13:53'),
+(7, 5, '50', NULL, '1000', '2019', '2022-11-25 07:44:59', '2022-11-25 07:44:59');
 
 -- --------------------------------------------------------
 
@@ -4668,7 +4693,6 @@ CREATE TABLE `program_tw_realisasis` (
   `program_target_satuan_rp_realisasi_id` bigint(20) UNSIGNED DEFAULT NULL,
   `tw_id` bigint(20) UNSIGNED DEFAULT NULL,
   `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `realisasi_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -4677,8 +4701,11 @@ CREATE TABLE `program_tw_realisasis` (
 -- Dumping data untuk tabel `program_tw_realisasis`
 --
 
-INSERT INTO `program_tw_realisasis` (`id`, `program_target_satuan_rp_realisasi_id`, `tw_id`, `realisasi`, `realisasi_rp`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, '51', '200001', '2022-11-17 12:59:51', '2022-11-17 13:20:14');
+INSERT INTO `program_tw_realisasis` (`id`, `program_target_satuan_rp_realisasi_id`, `tw_id`, `realisasi`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '51', '2022-11-17 12:59:51', '2022-11-17 13:20:14'),
+(2, 7, 1, '21', '2022-11-26 12:17:16', '2022-11-26 12:25:17'),
+(3, 7, 2, '12', '2022-11-26 12:25:30', '2022-11-26 12:25:40'),
+(4, 7, 3, '5', '2022-11-28 12:31:26', '2022-11-28 12:31:26');
 
 -- --------------------------------------------------------
 
@@ -4714,6 +4741,142 @@ CREATE TABLE `renstra_kegiatans` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `rkpd_opd_tahun_pembangunans`
+--
+
+CREATE TABLE `rkpd_opd_tahun_pembangunans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `rkpd_tahun_pembangunan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `opd_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `rkpd_opd_tahun_pembangunans`
+--
+
+INSERT INTO `rkpd_opd_tahun_pembangunans` (`id`, `rkpd_tahun_pembangunan_id`, `opd_id`, `created_at`, `updated_at`) VALUES
+(2, 2, 16, '2022-12-05 12:29:10', '2022-12-05 12:29:10');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `rkpd_tahun_pembangunans`
+--
+
+CREATE TABLE `rkpd_tahun_pembangunans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kabupate_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `rkpd_tahun_pembangunans`
+--
+
+INSERT INTO `rkpd_tahun_pembangunans` (`id`, `deskripsi`, `tahun`, `kabupate_id`, `created_at`, `updated_at`) VALUES
+(2, 'Maju Tak Gentar', '2019', NULL, '2022-12-05 08:49:19', '2022-12-05 08:49:19'),
+(4, 'Indonesia Raya', '2020', NULL, '2022-12-05 08:50:45', '2022-12-05 08:50:45'),
+(5, 'Indonesia Pusaka', '2021', NULL, '2022-12-05 08:51:00', '2022-12-05 08:51:00'),
+(6, 'Pancasila', '2022', NULL, '2022-12-05 08:51:33', '2022-12-05 08:51:33'),
+(7, 'UUD 1945', '2023', NULL, '2022-12-05 08:54:11', '2022-12-05 08:54:11');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `rkpd_tahun_pembangunan_kegiatans`
+--
+
+CREATE TABLE `rkpd_tahun_pembangunan_kegiatans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `rkpd_tahun_pembangunan_program_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `kegiatan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `rkpd_tahun_pembangunan_kegiatans`
+--
+
+INSERT INTO `rkpd_tahun_pembangunan_kegiatans` (`id`, `rkpd_tahun_pembangunan_program_id`, `kegiatan_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 10, '2022-12-06 04:10:30', '2022-12-06 04:10:30'),
+(2, 3, 1, '2022-12-06 06:35:16', '2022-12-06 06:35:16');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `rkpd_tahun_pembangunan_programs`
+--
+
+CREATE TABLE `rkpd_tahun_pembangunan_programs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `rkpd_tahun_pembangunan_urusan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `program_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `rkpd_tahun_pembangunan_programs`
+--
+
+INSERT INTO `rkpd_tahun_pembangunan_programs` (`id`, `rkpd_tahun_pembangunan_urusan_id`, `program_id`, `created_at`, `updated_at`) VALUES
+(1, 3, 2, '2022-12-06 02:20:32', '2022-12-06 02:20:32'),
+(2, 3, 3, '2022-12-06 02:20:32', '2022-12-06 02:20:32'),
+(3, 3, 1, '2022-12-06 06:35:07', '2022-12-06 06:35:07');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `rkpd_tahun_pembangunan_sub_kegiatans`
+--
+
+CREATE TABLE `rkpd_tahun_pembangunan_sub_kegiatans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `rkpd_tahun_pembangunan_kegiatan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `sub_kegiatan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `rkpd_tahun_pembangunan_sub_kegiatans`
+--
+
+INSERT INTO `rkpd_tahun_pembangunan_sub_kegiatans` (`id`, `rkpd_tahun_pembangunan_kegiatan_id`, `sub_kegiatan_id`, `created_at`, `updated_at`) VALUES
+(1, 2, 1, '2022-12-06 09:04:00', '2022-12-06 09:04:00');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `rkpd_tahun_pembangunan_urusans`
+--
+
+CREATE TABLE `rkpd_tahun_pembangunan_urusans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `rkpd_opd_tahun_pembangunan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `urusan_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `rkpd_tahun_pembangunan_urusans`
+--
+
+INSERT INTO `rkpd_tahun_pembangunan_urusans` (`id`, `rkpd_opd_tahun_pembangunan_id`, `urusan_id`, `created_at`, `updated_at`) VALUES
+(1, 2, 20, '2022-12-05 13:21:58', '2022-12-05 13:21:58'),
+(2, 2, 42, '2022-12-05 13:21:58', '2022-12-05 13:21:58'),
+(3, 2, 39, '2022-12-06 02:00:53', '2022-12-06 02:00:53');
 
 -- --------------------------------------------------------
 
@@ -4775,6 +4938,8 @@ CREATE TABLE `sasaran_indikator_kinerjas` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `sasaran_id` bigint(20) UNSIGNED DEFAULT NULL,
   `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kondisi_target_kinerja_awal` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -4783,69 +4948,69 @@ CREATE TABLE `sasaran_indikator_kinerjas` (
 -- Dumping data untuk tabel `sasaran_indikator_kinerjas`
 --
 
-INSERT INTO `sasaran_indikator_kinerjas` (`id`, `sasaran_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(59, 16, 'Nilai SAKIP', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(60, 16, 'Opini atas Audit BPK', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(61, 16, 'Tingkat Maturitas SPIP', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(62, 17, 'Indeks Profesionalitas Aparatur', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(63, 18, 'Indeks SPBE', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(64, 18, 'Nilai Indeks Kepuasan Masyarakat (IKM)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(65, 19, 'Pertumbuhan PDRB Unggulan (Pertanian, Industri, Perdagangan)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(66, 19, 'Pengeluaran Wisatawan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(67, 19, 'Persentase Desa Mandiri', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(68, 20, 'Indeks Kepuasan Layanan Infrastruktur (IKLI)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(69, 21, 'Indeks Kualitas Lingkungan Hidup (IKLH)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(70, 22, 'Indeks Risiko Bencana', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(71, 23, 'Tingkat Pengangguran Terbuka (TPT)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(72, 24, 'Pengeluaran Perkapita makanan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(73, 1, 'Indeks Keamanan Manusia', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(74, 1, 'Indeks Ketertiban Umum', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(75, 1, 'Tingkat Maturitas Sistem Pengendalian Intern Pemerintahan (SPIP)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(76, 2, 'Nilai Sistem Akuntabilitas Kinerja Pemerintahan Daerah', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(78, 3, 'Indeks Profesionali ASN', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(79, 4, 'Kategori Indeks Kepuasan Masyarakat', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(80, 5, 'Nilai PDRB', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(81, 5, 'Jumlah nilai investasi (PMA/PMDN)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(82, 6, 'Persentase Jalan dan Jembatan Kondisi Mantap', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(83, 6, 'Persentase Jaringan Irigasi Kondisi Baik', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(84, 6, 'Persentase Jalan yang Berkeselamatan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(85, 7, 'Nilai Inflasi', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(86, 8, 'Indeks Kualitas Air', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(87, 8, 'Indeks Kualitas Udara', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(88, 8, 'Indeks Tutupan Lahan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(89, 9, 'Indeks Pendidikan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(91, 11, 'Persentase Penduduk Miskin', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(92, 11, 'Persentase Desa/Kelurahan Cepat Berkembang', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(93, 11, 'Tingkat Pengangguran Terbuka (TPT)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(94, 11, 'Laju Pertumbuhan Penduduk (LPP)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(95, 11, 'Indeks Pembangunan Gender (IPG)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(96, 25, 'Indeks Kesehatan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(97, 25, 'Indeks Pendidikan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(98, 25, 'Indeks Pembangunan Gender', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(99, 26, 'Persentase budaya daerah yang dilestarikan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(100, 27, 'Indeks Toleransi', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(101, 27, 'Indeks Solidaritas', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(102, 1, 'Indeks Stabilitas', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(103, 2, 'Nilai SAKIP', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(104, 2, 'Opini atas Audit BPK', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(105, 2, 'Tingkat Maturitas SPIP', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(106, 3, 'Indeks Profesionalitas Aparatur', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(107, 4, 'Indeks SPBE', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(108, 4, 'Nilai Indeks Kepuasan Masyarakat (IKM)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(109, 5, 'Pertumbuhan PDRB Unggulan (Pertanian, Industri, Perdagangan)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(110, 5, 'Pengeluaran Wisatawan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(111, 5, 'Persentase Desa Mandiri', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(112, 6, 'Indeks Kepuasan Layanan Infrastruktur', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(113, 7, 'Indeks Kualitas Lingkungan Hidup (IKLH)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(114, 12, 'Indeks Risiko Bencana', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(115, 13, 'Tingkat Pengangguran Terbuka (TPT)', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(116, 9, 'Pengeluaran Perkapita makanan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(117, 10, 'Indeks Kesehatan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(118, 10, 'Indeks Pendidikan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(119, 10, 'Indeks Pembangunan Gender', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(120, 14, 'Persentase budaya daerah yang dilestarikan', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(121, 15, 'Indeks Toleransi', '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
-(122, 15, 'Indeks Solidaritas', '2022-11-14 23:48:49', '2022-11-14 23:48:49');
+INSERT INTO `sasaran_indikator_kinerjas` (`id`, `sasaran_id`, `deskripsi`, `satuan`, `kondisi_target_kinerja_awal`, `created_at`, `updated_at`) VALUES
+(59, 16, 'Nilai SAKIP', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(60, 16, 'Opini atas Audit BPK', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(61, 16, 'Tingkat Maturitas SPIP', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(62, 17, 'Indeks Profesionalitas Aparatur', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(63, 18, 'Indeks SPBE', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(64, 18, 'Nilai Indeks Kepuasan Masyarakat (IKM)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(65, 19, 'Pertumbuhan PDRB Unggulan (Pertanian, Industri, Perdagangan)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(66, 19, 'Pengeluaran Wisatawan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(67, 19, 'Persentase Desa Mandiri', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(68, 20, 'Indeks Kepuasan Layanan Infrastruktur (IKLI)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(69, 21, 'Indeks Kualitas Lingkungan Hidup (IKLH)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(70, 22, 'Indeks Risiko Bencana', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(71, 23, 'Tingkat Pengangguran Terbuka (TPT)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(72, 24, 'Pengeluaran Perkapita makanan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(73, 1, 'Indeks Keamanan Manusia', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(74, 1, 'Indeks Ketertiban Umum', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(75, 1, 'Tingkat Maturitas Sistem Pengendalian Intern Pemerintahan (SPIP)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(76, 2, 'Nilai Sistem Akuntabilitas Kinerja Pemerintahan Daerah', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(78, 3, 'Indeks Profesionali ASN', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(79, 4, 'Kategori Indeks Kepuasan Masyarakat', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(80, 5, 'Nilai PDRB', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(81, 5, 'Jumlah nilai investasi (PMA/PMDN)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(82, 6, 'Persentase Jalan dan Jembatan Kondisi Mantap', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(83, 6, 'Persentase Jaringan Irigasi Kondisi Baik', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(84, 6, 'Persentase Jalan yang Berkeselamatan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(85, 7, 'Nilai Inflasi', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(86, 8, 'Indeks Kualitas Air', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(87, 8, 'Indeks Kualitas Udara', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(88, 8, 'Indeks Tutupan Lahan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(89, 9, 'Indeks Pendidikan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(91, 11, 'Persentase Penduduk Miskin', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(92, 11, 'Persentase Desa/Kelurahan Cepat Berkembang', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(93, 11, 'Tingkat Pengangguran Terbuka (TPT)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(94, 11, 'Laju Pertumbuhan Penduduk (LPP)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(95, 11, 'Indeks Pembangunan Gender (IPG)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(96, 25, 'Indeks Kesehatan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(97, 25, 'Indeks Pendidikan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(98, 25, 'Indeks Pembangunan Gender', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(99, 26, 'Persentase budaya daerah yang dilestarikan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(100, 27, 'Indeks Toleransi', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(101, 27, 'Indeks Solidaritas', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(102, 1, 'Indeks Stabilitas', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(103, 2, 'Nilai SAKIP', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(104, 2, 'Opini atas Audit BPK', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(105, 2, 'Tingkat Maturitas SPIP', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(106, 3, 'Indeks Profesionalitas Aparatur', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(107, 4, 'Indeks SPBE', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(108, 4, 'Nilai Indeks Kepuasan Masyarakat (IKM)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(109, 5, 'Pertumbuhan PDRB Unggulan (Pertanian, Industri, Perdagangan)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(110, 5, 'Pengeluaran Wisatawan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(111, 5, 'Persentase Desa Mandiri', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(112, 6, 'Indeks Kepuasan Layanan Infrastruktur', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(113, 7, 'Indeks Kualitas Lingkungan Hidup (IKLH)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(114, 12, 'Indeks Risiko Bencana', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(115, 13, 'Tingkat Pengangguran Terbuka (TPT)', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(116, 9, 'Pengeluaran Perkapita makanan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(117, 10, 'Indeks Kesehatan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(118, 10, 'Indeks Pendidikan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(119, 10, 'Indeks Pembangunan Gender', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(120, 14, 'Persentase budaya daerah yang dilestarikan', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(121, 15, 'Indeks Toleransi', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49'),
+(122, 15, 'Indeks Solidaritas', NULL, NULL, '2022-11-14 23:48:49', '2022-11-14 23:48:49');
 
 -- --------------------------------------------------------
 
@@ -4870,7 +5035,8 @@ CREATE TABLE `sasaran_pds` (
 
 INSERT INTO `sasaran_pds` (`id`, `sasaran_id`, `kode`, `deskripsi`, `opd_id`, `tahun_perubahan`, `created_at`, `updated_at`) VALUES
 (2, 1, '1', 'Sasaran test 1', 16, '2020', '2022-11-16 02:00:16', '2022-11-16 02:00:16'),
-(3, 2, '1', 'test', 16, '2021', '2022-11-16 08:44:14', '2022-11-16 08:44:14');
+(3, 2, '1', 'test', 16, '2021', '2022-11-16 08:44:14', '2022-11-16 08:44:14'),
+(4, 10, '12', 'asdf', 16, '2019', '2022-11-25 13:51:14', '2022-11-25 13:51:14');
 
 -- --------------------------------------------------------
 
@@ -4882,6 +5048,9 @@ CREATE TABLE `sasaran_pd_indikator_kinerjas` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `sasaran_pd_id` bigint(20) UNSIGNED DEFAULT NULL,
   `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kondisi_target_kinerja_awal` int(11) DEFAULT NULL,
+  `status_indikator` enum('Target NSPK','Target IKK','Target Indikator Lainnya') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -4890,9 +5059,53 @@ CREATE TABLE `sasaran_pd_indikator_kinerjas` (
 -- Dumping data untuk tabel `sasaran_pd_indikator_kinerjas`
 --
 
-INSERT INTO `sasaran_pd_indikator_kinerjas` (`id`, `sasaran_pd_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(2, 2, 'Kerja Kerja Kerja', '2022-11-16 02:05:23', '2022-11-16 02:05:23'),
-(3, 3, 'kerja kerja kerja', '2022-11-16 08:44:25', '2022-11-16 08:44:25');
+INSERT INTO `sasaran_pd_indikator_kinerjas` (`id`, `sasaran_pd_id`, `deskripsi`, `satuan`, `kondisi_target_kinerja_awal`, `status_indikator`, `created_at`, `updated_at`) VALUES
+(2, 2, 'Kerja Kerja Kerja', NULL, NULL, NULL, '2022-11-16 02:05:23', '2022-11-16 02:05:23'),
+(3, 3, 'kerja kerja kerja', 'buku', 100, 'Target IKK', '2022-11-16 08:44:25', '2022-11-24 13:37:39'),
+(4, 3, 'test 1', 'buku', 10000, 'Target NSPK', '2022-11-24 13:21:03', '2022-11-24 13:37:15'),
+(5, 4, 'test', 'buku', 1000, 'Target NSPK', '2022-11-25 13:51:34', '2022-11-25 13:51:34');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `sasaran_pd_program_rpjmds`
+--
+
+CREATE TABLE `sasaran_pd_program_rpjmds` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `sasaran_pd_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `program_rpjmd_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `sasaran_pd_program_rpjmds`
+--
+
+INSERT INTO `sasaran_pd_program_rpjmds` (`id`, `sasaran_pd_id`, `program_rpjmd_id`, `created_at`, `updated_at`) VALUES
+(1, 3, 28, '2022-11-24 15:11:06', '2022-11-24 15:11:06');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `sasaran_pd_realisasi_renjas`
+--
+
+CREATE TABLE `sasaran_pd_realisasi_renjas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `sasaran_pd_target_satuan_rp_realisasi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `sasaran_pd_realisasi_renjas`
+--
+
+INSERT INTO `sasaran_pd_realisasi_renjas` (`id`, `sasaran_pd_target_satuan_rp_realisasi_id`, `realisasi`, `created_at`, `updated_at`) VALUES
+(1, 1, '95', '2022-11-26 07:16:13', '2022-11-26 07:16:26');
 
 -- --------------------------------------------------------
 
@@ -4904,8 +5117,6 @@ CREATE TABLE `sasaran_pd_target_satuan_rp_realisasis` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `sasaran_pd_indikator_kinerja_id` bigint(20) UNSIGNED DEFAULT NULL,
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -4915,9 +5126,10 @@ CREATE TABLE `sasaran_pd_target_satuan_rp_realisasis` (
 -- Dumping data untuk tabel `sasaran_pd_target_satuan_rp_realisasis`
 --
 
-INSERT INTO `sasaran_pd_target_satuan_rp_realisasis` (`id`, `sasaran_pd_indikator_kinerja_id`, `target`, `satuan`, `realisasi`, `tahun`, `created_at`, `updated_at`) VALUES
-(1, 2, '1', 'buku', '1', '2018', '2022-11-16 02:11:24', '2022-11-16 02:11:51'),
-(2, 3, '1', 'buku', '1', '2018', '2022-11-16 14:33:27', '2022-11-16 14:33:27');
+INSERT INTO `sasaran_pd_target_satuan_rp_realisasis` (`id`, `sasaran_pd_indikator_kinerja_id`, `target`, `tahun`, `created_at`, `updated_at`) VALUES
+(1, 3, '100', '2019', '2022-11-24 13:57:13', '2022-11-24 13:57:30'),
+(2, 3, '100', '2020', '2022-11-24 13:57:38', '2022-11-24 13:57:38'),
+(3, 3, '50', '2021', '2022-11-28 12:21:17', '2022-11-28 12:21:17');
 
 -- --------------------------------------------------------
 
@@ -5041,6 +5253,7 @@ CREATE TABLE `sub_kegiatan_indikator_kinerjas` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `sub_kegiatan_id` bigint(20) UNSIGNED NOT NULL,
   `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5049,8 +5262,9 @@ CREATE TABLE `sub_kegiatan_indikator_kinerjas` (
 -- Dumping data untuk tabel `sub_kegiatan_indikator_kinerjas`
 --
 
-INSERT INTO `sub_kegiatan_indikator_kinerjas` (`id`, `sub_kegiatan_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(2, 1, 'testing1', '2022-11-17 15:55:02', '2022-11-17 15:55:02');
+INSERT INTO `sub_kegiatan_indikator_kinerjas` (`id`, `sub_kegiatan_id`, `deskripsi`, `satuan`, `created_at`, `updated_at`) VALUES
+(2, 1, 'testing1', 'buku', '2022-11-17 15:55:02', '2022-11-27 13:36:23'),
+(3, 1, 'testing 2', 'karung', '2022-11-27 13:14:04', '2022-11-27 13:14:04');
 
 -- --------------------------------------------------------
 
@@ -5062,8 +5276,8 @@ CREATE TABLE `sub_kegiatan_target_satuan_rp_realisasis` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `opd_sub_kegiatan_indikator_kinerja_id` bigint(20) UNSIGNED DEFAULT NULL,
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `target_rp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `target_anggaran_awal` int(11) DEFAULT NULL,
+  `target_anggaran_perubahan` int(11) DEFAULT NULL,
   `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -5073,10 +5287,12 @@ CREATE TABLE `sub_kegiatan_target_satuan_rp_realisasis` (
 -- Dumping data untuk tabel `sub_kegiatan_target_satuan_rp_realisasis`
 --
 
-INSERT INTO `sub_kegiatan_target_satuan_rp_realisasis` (`id`, `opd_sub_kegiatan_indikator_kinerja_id`, `target`, `satuan`, `target_rp`, `tahun`, `created_at`, `updated_at`) VALUES
-(1, 2, '1000', 'buku', '10000000', '2018', '2022-11-17 16:47:11', '2022-11-17 17:44:17'),
-(2, 2, '12', 'buku', '50000', '2019', '2022-11-17 16:53:28', '2022-11-17 17:59:10'),
-(3, 2, '1', 'celana', '100000', '2020', '2022-11-17 17:59:25', '2022-11-17 17:59:25');
+INSERT INTO `sub_kegiatan_target_satuan_rp_realisasis` (`id`, `opd_sub_kegiatan_indikator_kinerja_id`, `target`, `target_anggaran_awal`, `target_anggaran_perubahan`, `tahun`, `created_at`, `updated_at`) VALUES
+(1, 2, '1000', NULL, NULL, '2018', '2022-11-17 16:47:11', '2022-11-17 17:44:17'),
+(2, 2, '12', 100000, NULL, '2019', '2022-11-17 16:53:28', '2022-11-27 17:56:26'),
+(3, 2, '100', 1000000, 10000000, '2020', '2022-11-17 17:59:25', '2022-11-27 18:15:32'),
+(4, 2, '50', 100000, 900000, '2021', '2022-11-27 15:33:42', '2022-11-27 17:30:03'),
+(5, 2, '100', 1000000, NULL, '2022', '2022-11-28 12:35:56', '2022-11-28 12:35:56');
 
 -- --------------------------------------------------------
 
@@ -5099,7 +5315,9 @@ CREATE TABLE `sub_kegiatan_tw_realisasis` (
 --
 
 INSERT INTO `sub_kegiatan_tw_realisasis` (`id`, `sub_kegiatan_target_satuan_rp_realisasi_id`, `tw_id`, `realisasi`, `realisasi_rp`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, '100', '1000000', '2022-11-17 17:47:11', '2022-11-17 17:57:16');
+(1, 1, 1, '100', '1000000', '2022-11-17 17:47:11', '2022-11-17 17:57:16'),
+(2, 2, 1, '10', '90000', '2022-11-27 17:57:33', '2022-11-27 17:57:33'),
+(3, 2, 2, '21', '10000', '2022-11-27 18:01:52', '2022-11-27 18:13:59');
 
 -- --------------------------------------------------------
 
@@ -5202,6 +5420,8 @@ CREATE TABLE `tujuan_indikator_kinerjas` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `tujuan_id` bigint(20) UNSIGNED DEFAULT NULL,
   `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kondisi_target_kinerja_awal` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5210,22 +5430,22 @@ CREATE TABLE `tujuan_indikator_kinerjas` (
 -- Dumping data untuk tabel `tujuan_indikator_kinerjas`
 --
 
-INSERT INTO `tujuan_indikator_kinerjas` (`id`, `tujuan_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(2, 2, 'Indeks Reformasi Birokras', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(8, 7, 'Indeks Reformasi Birokrasi', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(9, 8, 'Angka Pertumbuhan Ekonomi', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(10, 8, 'Angka Kemiskinan', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(11, 9, 'Indeks Pembangunan Manusia (IPM)', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(12, 10, 'Indeks Kesalehan Sosial', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(13, 1, 'Indeks rasa aman', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(16, 4, 'Indeks Kualitas Lingkungan Hidup', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(17, 5, 'Indeks Pembangunan Manusia', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(19, 1, 'Indeks Kesalehan Sosial', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(20, 2, 'Indeks Reformasi Birokrasi', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(21, 3, 'Angka Pertumbuhan Ekonomi', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(22, 3, 'Angka Kemiskinan', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(23, 5, 'Indeks Pembangunan Manusia (IPM)', '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
-(24, 6, 'Indeks Kesalehan Sosial', '2022-11-15 02:27:38', '2022-11-15 02:27:38');
+INSERT INTO `tujuan_indikator_kinerjas` (`id`, `tujuan_id`, `deskripsi`, `satuan`, `kondisi_target_kinerja_awal`, `created_at`, `updated_at`) VALUES
+(2, 2, 'Indeks Reformasi Birokras', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(8, 7, 'Indeks Reformasi Birokrasi', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(9, 8, 'Angka Pertumbuhan Ekonomi', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(10, 8, 'Angka Kemiskinan', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(11, 9, 'Indeks Pembangunan Manusia (IPM)', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(12, 10, 'Indeks Kesalehan Sosial', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(13, 1, 'Indeks rasa aman', 'persen', 50, '2022-11-15 02:27:38', '2022-12-06 23:30:47'),
+(16, 4, 'Indeks Kualitas Lingkungan Hidup', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(17, 5, 'Indeks Pembangunan Manusia', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(19, 1, 'Indeks Kesalehan Sosial', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(20, 2, 'Indeks Reformasi Birokrasi', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(21, 3, 'Angka Pertumbuhan Ekonomi', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(22, 3, 'Angka Kemiskinan', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(23, 5, 'Indeks Pembangunan Manusia (IPM)', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38'),
+(24, 6, 'Indeks Kesalehan Sosial', NULL, NULL, '2022-11-15 02:27:38', '2022-11-15 02:27:38');
 
 -- --------------------------------------------------------
 
@@ -5250,7 +5470,8 @@ CREATE TABLE `tujuan_pds` (
 
 INSERT INTO `tujuan_pds` (`id`, `tujuan_id`, `kode`, `deskripsi`, `opd_id`, `tahun_perubahan`, `created_at`, `updated_at`) VALUES
 (2, 1, '1', 'Test 1', 16, '2019', '2022-11-15 23:18:04', '2022-11-15 23:18:04'),
-(3, 2, '1', 'tes', 16, '2021', '2022-11-16 08:43:43', '2022-11-16 08:43:43');
+(3, 2, '1', 'tes', 16, '2021', '2022-11-16 08:43:43', '2022-11-16 08:43:43'),
+(4, 5, '11', 'test 2', 16, '2019', '2022-11-25 13:38:10', '2022-11-25 13:47:31');
 
 -- --------------------------------------------------------
 
@@ -5262,6 +5483,9 @@ CREATE TABLE `tujuan_pd_indikator_kinerjas` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `tujuan_pd_id` bigint(20) UNSIGNED DEFAULT NULL,
   `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_indikator` enum('Target NSPK','Target IKK','Target Indikator Lainnya') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kondisi_target_kinerja_awal` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5270,8 +5494,35 @@ CREATE TABLE `tujuan_pd_indikator_kinerjas` (
 -- Dumping data untuk tabel `tujuan_pd_indikator_kinerjas`
 --
 
-INSERT INTO `tujuan_pd_indikator_kinerjas` (`id`, `tujuan_pd_id`, `deskripsi`, `created_at`, `updated_at`) VALUES
-(2, 2, 'kerja kerja kerja', '2022-11-15 23:31:28', '2022-11-15 23:31:28');
+INSERT INTO `tujuan_pd_indikator_kinerjas` (`id`, `tujuan_pd_id`, `deskripsi`, `status_indikator`, `satuan`, `kondisi_target_kinerja_awal`, `created_at`, `updated_at`) VALUES
+(1, 3, 'tes 1', 'Target IKK', 'buku', 500, '2022-11-24 10:49:53', '2022-11-25 13:25:08'),
+(2, 4, 'Test Indikator 1', 'Target NSPK', 'karung', 100, '2022-11-25 13:46:20', '2022-11-25 13:46:20');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tujuan_pd_realisasi_renjas`
+--
+
+CREATE TABLE `tujuan_pd_realisasi_renjas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tujuan_pd_target_satuan_rp_realisasi_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `tujuan_pd_realisasi_renjas`
+--
+
+INSERT INTO `tujuan_pd_realisasi_renjas` (`id`, `tujuan_pd_target_satuan_rp_realisasi_id`, `realisasi`, `created_at`, `updated_at`) VALUES
+(1, 1, '100', '2022-11-25 13:06:34', '2022-11-25 13:22:40'),
+(2, 2, '100', '2022-11-25 13:30:00', '2022-11-25 13:30:00'),
+(3, 3, '200', '2022-11-25 13:30:10', '2022-11-25 13:30:10'),
+(4, 4, '300', '2022-11-25 13:30:18', '2022-11-25 13:30:18'),
+(5, 5, '100', '2022-11-25 13:30:32', '2022-11-25 13:30:32'),
+(6, 6, '50', '2022-11-28 12:28:10', '2022-11-28 12:28:10');
 
 -- --------------------------------------------------------
 
@@ -5283,8 +5534,6 @@ CREATE TABLE `tujuan_pd_target_satuan_rp_realisasis` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `tujuan_pd_indikator_kinerja_id` bigint(20) UNSIGNED DEFAULT NULL,
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -5294,8 +5543,13 @@ CREATE TABLE `tujuan_pd_target_satuan_rp_realisasis` (
 -- Dumping data untuk tabel `tujuan_pd_target_satuan_rp_realisasis`
 --
 
-INSERT INTO `tujuan_pd_target_satuan_rp_realisasis` (`id`, `tujuan_pd_indikator_kinerja_id`, `target`, `satuan`, `realisasi`, `tahun`, `created_at`, `updated_at`) VALUES
-(1, 2, '11', 'buku', '11', '2018', '2022-11-15 23:46:36', '2022-11-15 23:50:57');
+INSERT INTO `tujuan_pd_target_satuan_rp_realisasis` (`id`, `tujuan_pd_indikator_kinerja_id`, `target`, `tahun`, `created_at`, `updated_at`) VALUES
+(1, 1, '200', '2019', '2022-11-24 11:38:06', '2022-11-25 13:25:26'),
+(2, 1, '100', '2020', '2022-11-25 13:25:34', '2022-11-25 13:25:34'),
+(3, 1, '150', '2021', '2022-11-25 13:27:47', '2022-11-25 13:27:47'),
+(4, 1, '200', '2022', '2022-11-25 13:27:55', '2022-11-25 13:27:55'),
+(5, 1, '100', '2023', '2022-11-25 13:28:03', '2022-11-25 13:28:03'),
+(6, 2, '50', '2019', '2022-11-28 12:27:47', '2022-11-28 12:27:47');
 
 -- --------------------------------------------------------
 
@@ -5307,8 +5561,6 @@ CREATE TABLE `tujuan_target_satuan_rp_realisasis` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `tujuan_indikator_kinerja_id` bigint(20) UNSIGNED DEFAULT NULL,
   `target` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `realisasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tahun` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -5318,13 +5570,14 @@ CREATE TABLE `tujuan_target_satuan_rp_realisasis` (
 -- Dumping data untuk tabel `tujuan_target_satuan_rp_realisasis`
 --
 
-INSERT INTO `tujuan_target_satuan_rp_realisasis` (`id`, `tujuan_indikator_kinerja_id`, `target`, `satuan`, `realisasi`, `tahun`, `created_at`, `updated_at`) VALUES
-(1, 13, '100', 'buku', '100', '2018', '2022-11-16 17:55:49', '2022-11-16 17:55:49'),
-(2, 13, '50', 'buku', '50', '2019', '2022-11-16 17:56:04', '2022-11-16 17:56:04'),
-(4, 19, '100', 'buku', '100', '2020', '2022-11-16 17:56:54', '2022-11-16 17:56:54'),
-(5, 2, '100', 'buku', '100', '2018', '2022-11-16 17:58:26', '2022-11-16 17:58:26'),
-(6, 2, '100', 'buku', '100', '2019', '2022-11-16 17:58:41', '2022-11-16 17:58:41'),
-(7, 20, '100', 'buku', '99', '2021', '2022-11-16 23:01:33', '2022-11-16 23:01:33');
+INSERT INTO `tujuan_target_satuan_rp_realisasis` (`id`, `tujuan_indikator_kinerja_id`, `target`, `tahun`, `created_at`, `updated_at`) VALUES
+(1, 13, '100', '2018', '2022-11-16 17:55:49', '2022-11-16 17:55:49'),
+(2, 13, '50', '2019', '2022-11-16 17:56:04', '2022-11-16 17:56:04'),
+(4, 19, '100', '2020', '2022-11-16 17:56:54', '2022-11-16 17:56:54'),
+(5, 2, '100', '2018', '2022-11-16 17:58:26', '2022-11-16 17:58:26'),
+(6, 2, '100', '2019', '2022-11-16 17:58:41', '2022-11-16 17:58:41'),
+(7, 20, '100', '2021', '2022-11-16 23:01:33', '2022-11-16 23:01:33'),
+(8, 13, '120', '2020', '2022-11-24 07:43:36', '2022-11-24 07:43:45');
 
 -- --------------------------------------------------------
 
@@ -5421,7 +5674,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `color_layout`, `nav_color`, `placement`, `behaviour`, `layout`, `radius`, `kabupaten_id`) VALUES
-(1, 'Bappeda', 'bappeda@emonev.madiun', NULL, '$2y$10$i1XQWqM7gdTg8clhJmnRj.qdWm2nFcG514aRQVCCrW/7H/FfvndMa', NULL, NULL, '2022-11-14 08:12:24', 'light-blue', 'default', 'horizontal', 'pinned', 'fluid', 'standard', 62);
+(1, 'Bappeda', 'bappeda@emonev.madiun', NULL, '$2y$10$i1XQWqM7gdTg8clhJmnRj.qdWm2nFcG514aRQVCCrW/7H/FfvndMa', NULL, NULL, '2022-12-03 01:59:43', 'light-blue', 'default', 'horizontal', 'pinned', 'boxed', 'rounded', 62);
 
 -- --------------------------------------------------------
 
@@ -5691,6 +5944,42 @@ ALTER TABLE `renstra_kegiatans`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `rkpd_opd_tahun_pembangunans`
+--
+ALTER TABLE `rkpd_opd_tahun_pembangunans`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `rkpd_tahun_pembangunans`
+--
+ALTER TABLE `rkpd_tahun_pembangunans`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `rkpd_tahun_pembangunan_kegiatans`
+--
+ALTER TABLE `rkpd_tahun_pembangunan_kegiatans`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `rkpd_tahun_pembangunan_programs`
+--
+ALTER TABLE `rkpd_tahun_pembangunan_programs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `rkpd_tahun_pembangunan_sub_kegiatans`
+--
+ALTER TABLE `rkpd_tahun_pembangunan_sub_kegiatans`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `rkpd_tahun_pembangunan_urusans`
+--
+ALTER TABLE `rkpd_tahun_pembangunan_urusans`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `sasarans`
 --
 ALTER TABLE `sasarans`
@@ -5712,6 +6001,18 @@ ALTER TABLE `sasaran_pds`
 -- Indeks untuk tabel `sasaran_pd_indikator_kinerjas`
 --
 ALTER TABLE `sasaran_pd_indikator_kinerjas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `sasaran_pd_program_rpjmds`
+--
+ALTER TABLE `sasaran_pd_program_rpjmds`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `sasaran_pd_realisasi_renjas`
+--
+ALTER TABLE `sasaran_pd_realisasi_renjas`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -5793,6 +6094,12 @@ ALTER TABLE `tujuan_pd_indikator_kinerjas`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `tujuan_pd_realisasi_renjas`
+--
+ALTER TABLE `tujuan_pd_realisasi_renjas`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `tujuan_pd_target_satuan_rp_realisasis`
 --
 ALTER TABLE `tujuan_pd_target_satuan_rp_realisasis`
@@ -5867,19 +6174,19 @@ ALTER TABLE `kegiatans`
 -- AUTO_INCREMENT untuk tabel `kegiatan_indikator_kinerjas`
 --
 ALTER TABLE `kegiatan_indikator_kinerjas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1130;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1133;
 
 --
 -- AUTO_INCREMENT untuk tabel `kegiatan_target_satuan_rp_realisasis`
 --
 ALTER TABLE `kegiatan_target_satuan_rp_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `kegiatan_tw_realisasis`
 --
 ALTER TABLE `kegiatan_tw_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `kelurahans`
@@ -5897,13 +6204,13 @@ ALTER TABLE `master_opds`
 -- AUTO_INCREMENT untuk tabel `master_tws`
 --
 ALTER TABLE `master_tws`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- AUTO_INCREMENT untuk tabel `misis`
@@ -5927,7 +6234,7 @@ ALTER TABLE `opds`
 -- AUTO_INCREMENT untuk tabel `opd_kegiatan_indikator_kinerjas`
 --
 ALTER TABLE `opd_kegiatan_indikator_kinerjas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `opd_program_indikator_kinerjas`
@@ -5939,7 +6246,7 @@ ALTER TABLE `opd_program_indikator_kinerjas`
 -- AUTO_INCREMENT untuk tabel `opd_sub_kegiatan_indikator_kinerjas`
 --
 ALTER TABLE `opd_sub_kegiatan_indikator_kinerjas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `pivot_opd_rentra_kegiatans`
@@ -6041,13 +6348,13 @@ ALTER TABLE `program_rpjmds`
 -- AUTO_INCREMENT untuk tabel `program_target_satuan_rp_realisasis`
 --
 ALTER TABLE `program_target_satuan_rp_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `program_tw_realisasis`
 --
 ALTER TABLE `program_tw_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `provinsis`
@@ -6060,6 +6367,42 @@ ALTER TABLE `provinsis`
 --
 ALTER TABLE `renstra_kegiatans`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `rkpd_opd_tahun_pembangunans`
+--
+ALTER TABLE `rkpd_opd_tahun_pembangunans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT untuk tabel `rkpd_tahun_pembangunans`
+--
+ALTER TABLE `rkpd_tahun_pembangunans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT untuk tabel `rkpd_tahun_pembangunan_kegiatans`
+--
+ALTER TABLE `rkpd_tahun_pembangunan_kegiatans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT untuk tabel `rkpd_tahun_pembangunan_programs`
+--
+ALTER TABLE `rkpd_tahun_pembangunan_programs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT untuk tabel `rkpd_tahun_pembangunan_sub_kegiatans`
+--
+ALTER TABLE `rkpd_tahun_pembangunan_sub_kegiatans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `rkpd_tahun_pembangunan_urusans`
+--
+ALTER TABLE `rkpd_tahun_pembangunan_urusans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `sasarans`
@@ -6077,19 +6420,31 @@ ALTER TABLE `sasaran_indikator_kinerjas`
 -- AUTO_INCREMENT untuk tabel `sasaran_pds`
 --
 ALTER TABLE `sasaran_pds`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `sasaran_pd_indikator_kinerjas`
 --
 ALTER TABLE `sasaran_pd_indikator_kinerjas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT untuk tabel `sasaran_pd_program_rpjmds`
+--
+ALTER TABLE `sasaran_pd_program_rpjmds`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `sasaran_pd_realisasi_renjas`
+--
+ALTER TABLE `sasaran_pd_realisasi_renjas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `sasaran_pd_target_satuan_rp_realisasis`
 --
 ALTER TABLE `sasaran_pd_target_satuan_rp_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `sasaran_target_satuan_rp_realisasis`
@@ -6107,19 +6462,19 @@ ALTER TABLE `sub_kegiatans`
 -- AUTO_INCREMENT untuk tabel `sub_kegiatan_indikator_kinerjas`
 --
 ALTER TABLE `sub_kegiatan_indikator_kinerjas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `sub_kegiatan_target_satuan_rp_realisasis`
 --
 ALTER TABLE `sub_kegiatan_target_satuan_rp_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `sub_kegiatan_tw_realisasis`
 --
 ALTER TABLE `sub_kegiatan_tw_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `tahun_periodes`
@@ -6155,7 +6510,7 @@ ALTER TABLE `tujuan_indikator_kinerjas`
 -- AUTO_INCREMENT untuk tabel `tujuan_pds`
 --
 ALTER TABLE `tujuan_pds`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `tujuan_pd_indikator_kinerjas`
@@ -6164,16 +6519,22 @@ ALTER TABLE `tujuan_pd_indikator_kinerjas`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT untuk tabel `tujuan_pd_realisasi_renjas`
+--
+ALTER TABLE `tujuan_pd_realisasi_renjas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT untuk tabel `tujuan_pd_target_satuan_rp_realisasis`
 --
 ALTER TABLE `tujuan_pd_target_satuan_rp_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `tujuan_target_satuan_rp_realisasis`
 --
 ALTER TABLE `tujuan_target_satuan_rp_realisasis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `urusans`

@@ -967,20 +967,33 @@
                             <div class="tab-content">
                                 @foreach ($tahuns as $tahun)
                                     <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_81_{{$tahun}}" role="tabpanel">
-                                        <div class="d-flex justify-content-between">
-                                            <div></div>
-                                            <button
-                                                class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
-                                                type="button"
-                                                data-bs-toggle="dropdown"
-                                                aria-expanded="false"
-                                                aria-haspopup="true"
-                                            >
-                                                <i data-acorn-icon="download" data-acorn-size="15"></i>
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
-                                                <a class="dropdown-item" href="{{ route('admin.laporan.e-81.ekspor.pdf', ['tahun'=>$tahun]) }}">PDF</a>
-                                                <a class="dropdown-item" href="{{ route('admin.laporan.e-81.ekspor.excel', ['tahun'=>$tahun]) }}">Excel</a>
+                                        <div class="row mb-5">
+                                            <div class="col-6">
+                                                <h2 class="small-title">Filter By Opd</h2>
+                                                <select id="e_81_opd_id_{{$tahun}}" class="form-control e_81_opd_id" data-tahun="{{$tahun}}">
+                                                    @foreach ($opds as $id => $nama)
+                                                        <option value="{{$id}}" @if($id == 16) selected @endif>{{$nama}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-6" style="text-align: right">
+                                                <h2 class="small-title">Ekspor Data</h2>
+                                                <div class="d-flex justify-content-between">
+                                                    <div></div>
+                                                    <button
+                                                        class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                                        type="button"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                        aria-haspopup="true"
+                                                    >
+                                                        <i data-acorn-icon="download" data-acorn-size="15"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                                        <a class="dropdown-item e_81_ekspor_pdf" data-tahun="{{$tahun}}">PDF</a>
+                                                        <a class="dropdown-item e_81_ekspor_excel" data-tahun="{{$tahun}}">Excel</a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
@@ -1053,9 +1066,7 @@
                                                         <th>Rp</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody class="tbodyE81" style="text-align: left">
-                                                    {!!$e_81!!}
-                                                </tbody>
+                                                <tbody id="tbodyE81{{$tahun}}" style="text-align: left"></tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -1094,6 +1105,7 @@
         $('#tc_23_opd_id').select2();
         $('#tc_24_opd_id').select2();
         $('#tc_27_opd_id').select2();
+        $('.e_81_opd_id').select2();
         $.ajax({
             url: "{{ route('admin.laporan.tc-14') }}",
             dataType:"json",
@@ -1175,6 +1187,19 @@
             },
             success: function(data){
                 $('#tbodyE80').html(data.e_80);
+            }
+        });
+
+        $.ajax({
+            url: "{{ route('admin.laporan.e-81') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                opd_id:16,
+                tahun: tahun_awal
+            },
+            success: function(data){
+                $('#tbodyE81'+tahun_awal).html(data.e_81);
             }
         });
     });
@@ -1344,34 +1369,56 @@
         });
     });
 
-    $('.navE80').click(function(){
-        var tahun = $(this).attr('data-tahun');
-        $.ajax({
-            url: "{{ route('admin.laporan.e-80') }}",
-            method: 'POST',
-            data: {
-                "_token": "{{ csrf_token() }}",
-                tahun:tahun
-            },
-            success: function(data){
-                $('.tbodyE80').html(data.e_80);
-            }
-        });
-    });
-
     $('.navE81').click(function(){
         var tahun = $(this).attr('data-tahun');
+        var opd_id = $('#e_81_opd_id_'+tahun).val();
         $.ajax({
             url: "{{ route('admin.laporan.e-81') }}",
             method: 'POST',
             data: {
                 "_token": "{{ csrf_token() }}",
-                tahun:tahun
+                tahun:tahun,
+                opd_id: opd_id
             },
             success: function(data){
                 $('.tbodyE81').html(data.e_81);
             }
         });
+    });
+
+    $('.e_81_opd_id').change(function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $('#e_81_opd_id_'+tahun).val();
+        $.ajax({
+            url: "{{ route('admin.laporan.e-81') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                opd_id:opd_id,
+                tahun: tahun
+            },
+            success: function(data){
+                $('#tbodyE81'+tahun_awal).html(data.e_81);
+            }
+        });
+    });
+
+    $('.e_81_ekspor_pdf').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $('#e_81_opd_id_'+tahun).val();
+        var a = document.createElement('a');
+        a.href = "{{ url('/admin/laporan/e-81/ekspor/pdf') }}"+'/'+opd_id+'/'+tahun;
+        document.body.appendChild(a);
+        a.click();
+    });
+
+    $('.e_81_ekspor_excel').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $('#e_81_opd_id_'+tahun).val();
+        var a = document.createElement('a');
+        a.href = "{{ url('/admin/laporan/e-81/ekspor/excel') }}"+'/'+opd_id+'/'+tahun;
+        document.body.appendChild(a);
+        a.click();
     });
 </script>
 @endsection
