@@ -1745,7 +1745,7 @@
                         </div>
                         <div class="mb-3 position-relative form-group">
                             <label for="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
-                            <input type="number" class="form-control" id="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" name="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" required>
+                            <input type="number" class="form-control" id="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" name="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" step="any" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
@@ -1801,7 +1801,36 @@
                         </div>
                         <div class="mb-3 position-relative form-group">
                             <label for="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
-                            <input type="number" class="form-control" id="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" name="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" required>
+                            <input type="number" class="form-control" id="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" name="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" step="any" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hapusTujuanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="hapusTujuanModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Hapus Tujuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.tujuan.hapus') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="hapus_tujuan_id" id="hapus_tujuan_id">
+                        <div class="position-relative form-group mb-3">
+                            <label for="hapus_tujuan_tahun" class="form-label">Pilih Tahun</label>
+                            <select name="hapus_tujuan_tahun" id="hapus_tujuan_tahun" class="form-control" required>
+                                <option value="semua">Semua</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
@@ -1952,7 +1981,7 @@
                         </div>
                         <div class="mb-3 position-relative form-group">
                             <label for="indikator_kinerja_sasaran_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
-                            <input type="number" name="indikator_kinerja_sasaran_kondisi_target_kinerja_awal" id="indikator_kinerja_sasaran_kondisi_target_kinerja_awal" class="form-control" required>
+                            <input type="number" name="indikator_kinerja_sasaran_kondisi_target_kinerja_awal" id="indikator_kinerja_sasaran_kondisi_target_kinerja_awal" step="any" class="form-control" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
@@ -2008,10 +2037,39 @@
                         </div>
                         <div class="mb-3 position-relative form-group">
                             <label for="edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal" class="form-label">Kondisi Target Kinerja Awal</label>
-                            <input type="number" name="edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal" id="edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal" class="form-control" required>
+                            <input type="number" name="edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal" id="edit_indikator_kinerja_sasaran_kondisi_target_kinerja_awal" step="any" class="form-control" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hapusSasaranModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="hapusSasaranModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Hapus Sasaran</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.sasaran.hapus') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="hapus_sasaran_id" id="hapus_sasaran_id">
+                        <div class="position-relative form-group mb-3">
+                            <label for="hapus_sasaran_tahun" class="form-label">Pilih Tahun</label>
+                            <select name="hapus_sasaran_tahun" id="hapus_sasaran_tahun" class="form-control" required>
+                                <option value="semua">Semua</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -2039,7 +2097,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="" class="form-label">Target</label>
-                            <input type="number" name="sasaran_indikator_target" id="sasaran_indikator_target" class="form-control" required>
+                            <input type="number" name="sasaran_indikator_target" id="sasaran_indikator_target" class="form-control" step="any" required>
                         </div>
                         <div class="mb-3">
                             <label for="" class="form-label">Satuan</label>
@@ -2640,10 +2698,10 @@
                         {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Menambahkan Visi',
-                            },
-                            function(){
-                                location.reload();
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -2672,16 +2730,12 @@
                         }
                         if(data.success)
                         {
-                            // html = '<div class="alert alert-success">'+ data.success +'</div>';
-                            $('#visi_form')[0].reset();
-                            $('#visi_aksi_button').prop('disabled', false);
-                            $('#visi_aksi_button').text('Save');
-                            $('#visi_table').DataTable().ajax.reload();
-                            $('#addEditVisiModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil di ubah',
+                                title: data.success,
                                 showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -2775,10 +2829,10 @@
                         {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Menambahkan Misi',
-                            },
-                            function(){
-                                location.reload();
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -2813,10 +2867,10 @@
                         {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Merubah Misi',
-                            },
-                            function(){
-                                location.reload();
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -2935,10 +2989,10 @@
                         {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Menambahkan Tujuan',
-                            },
-                            function(){
-                                location.reload();
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -2973,10 +3027,10 @@
                         {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Menambahkan Tujuan',
-                            },
-                            function(){
-                                location.reload();
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -3166,6 +3220,12 @@
 
             $('#editTargetTujuanModal').modal('show');
         });
+
+        $(document).on('click', '.hapus-tujuan', function(){
+            var tujuan_id = $(this).attr('data-tujuan-id');
+            $('#hapus_tujuan_id').val(tujuan_id);
+            $('#hapusTujuanModal').modal('show');
+        });
         // Tujuan End
 
         // Sasaran Start
@@ -3231,10 +3291,10 @@
                         {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Menambahkan Sasaran',
-                            },
-                            function(){
-                                location.reload();
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -3269,10 +3329,10 @@
                         {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Merubah Sasaran',
-                            },
-                            function(){
-                                location.reload();
+                                title: data.success,
+                                showConfirmButton: true
+                            }).then(function() {
+                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
                         }
 
@@ -3464,6 +3524,12 @@
             $('#sasaran_edit_target').val(target);
 
             $('#editTargetSasaranModal').modal('show');
+        });
+
+        $(document).on('click', '.hapus-sasaran', function(){
+            var sasaran_id = $(this).attr('data-sasaran-id');
+            $('#hapus_sasaran_id').val(sasaran_id);
+            $('#hapusSasaranModal').modal('show');
         });
         // Sasaran End
 
