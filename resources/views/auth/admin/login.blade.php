@@ -35,26 +35,57 @@
             </p> --}}
             </div>
             <div>
-            <form action="{{ route('admin.login.submit') }}" method="POST" class="tooltip-end-bottom" novalidate>
-                @csrf
-                <div class="mb-3 filled form-group tooltip-end-top">
-                    <i data-acorn-icon="email"></i>
-                    <input class="form-control" placeholder="Email" name="email" />
+                <ul class="nav nav-tabs nav-tabs-line card-header-tabs responsive-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#first" role="tab" type="button" aria-selected="true">
+                        OPD LOGIN
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#second" role="tab" type="button" aria-selected="false">BAPPEDA LOGIN</button>
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade" id="first" role="tabpanel">
+                            <form action="{{ route('opd.login.submit') }}" method="POST" class="tooltip-end-bottom" novalidate>
+                                @csrf
+                                <div class="mb-3 filled form-group tooltip-end-top">
+                                    <i data-acorn-icon="email"></i>
+                                    <input class="form-control" placeholder="Email" name="email" />
+                                </div>
+                                <div class="mb-3 filled form-group tooltip-end-top">
+                                    <i data-acorn-icon="lock-off"></i>
+                                    <input class="form-control pe-7" name="password" type="password" placeholder="Password" />
+                                    {{-- <a class="text-small position-absolute t-3 e-3" href="Pages.Authentication.ForgotPassword.html">Forgot?</a> --}}
+                                </div>
+                                <button type="submit" class="btn btn-lg btn-primary mb-3">Login</button>
+                                {{-- <div>
+                                    <p class="h6">
+                                        Jika ingin login sebagai admin,
+                                        <a href="{{ route('admin.login') }}">Login Admin</a>
+                                        .
+                                    </p>
+                                </div> --}}
+                            </form>
+                        </div>
+                        <div class="tab-pane fade active show" id="second" role="tabpanel">
+                            <form action="{{ route('admin.login.submit') }}" method="POST" class="tooltip-end-bottom" novalidate>
+                                @csrf
+                                <div class="mb-3 filled form-group tooltip-end-top">
+                                    <i data-acorn-icon="email"></i>
+                                    <input class="form-control" placeholder="Email" name="email" />
+                                </div>
+                                <div class="mb-3 filled form-group tooltip-end-top">
+                                    <i data-acorn-icon="lock-off"></i>
+                                    <input class="form-control pe-7" name="password" type="password" placeholder="Password" />
+                                    {{-- <a class="text-small position-absolute t-3 e-3" href="Pages.Authentication.ForgotPassword.html">Forgot?</a> --}}
+                                </div>
+                                <button type="submit" class="btn btn-lg btn-primary mb-3">Login</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3 filled form-group tooltip-end-top">
-                    <i data-acorn-icon="lock-off"></i>
-                    <input class="form-control pe-7" name="password" type="password" placeholder="Password" />
-                    {{-- <a class="text-small position-absolute t-3 e-3" href="Pages.Authentication.ForgotPassword.html">Forgot?</a> --}}
-                </div>
-                <button type="submit" class="btn btn-lg btn-primary mb-3">Login</button>
-                <div>
-                    <p class="h6">
-                        Jika ingin login sebagai OPD,
-                        <a href="{{ route('opd.login') }}">Login OPD</a>
-                        .
-                    </p>
-                </div>
-            </form>
             </div>
         </div>
         </div>
