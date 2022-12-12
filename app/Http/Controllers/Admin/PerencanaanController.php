@@ -524,7 +524,7 @@ class PerencanaanController extends Controller
                                                                                 <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                             </td>';
                                                                             $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="30%"><table>
+                                                                            $html .= '<td width="28%"><table>
                                                                                 <tbody>';
                                                                                     foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
                                                                                         $html .= '<tr>';
@@ -537,10 +537,11 @@ class PerencanaanController extends Controller
                                                                                     }
                                                                                 $html .= '</tbody>
                                                                             </table></td>';
-                                                                            $html .= '<td width="20%">
+                                                                            $html .= '<td width="22%">
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
                                                                             </td>
                                                                         </tr>';
                                                                         $html .= '<tr>
@@ -820,7 +821,7 @@ class PerencanaanController extends Controller
                                                                                 <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                             </td>';
                                                                             $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="30%"><table>
+                                                                            $html .= '<td width="28%"><table>
                                                                                 <tbody>';
                                                                                     foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
                                                                                         $html .= '<tr>';
@@ -833,10 +834,11 @@ class PerencanaanController extends Controller
                                                                                     }
                                                                                 $html .= '</tbody>
                                                                             </table></td>';
-                                                                            $html .= '<td width="20%">
+                                                                            $html .= '<td width="22%">
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
                                                                             </td>
                                                                         </tr>';
                                                                         $html .= '<tr>
@@ -1176,7 +1178,7 @@ class PerencanaanController extends Controller
                                                                                                                                     //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
                                                                                                                                     //     }
                                                                                                                                     // $html .= '</ul></td>';
-                                                                                                                                    $html .= '<td width="30%"><table>
+                                                                                                                                    $html .= '<td width="28%"><table>
                                                                                                                                                 <tbody>';
                                                                                                                                                     foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
                                                                                                                                                         $html .= '<tr>';
@@ -1189,10 +1191,11 @@ class PerencanaanController extends Controller
                                                                                                                                                     }
                                                                                                                                                 $html .= '</tbody>
                                                                                                                                             </table></td>';
-                                                                                                                                    $html .='<td width="20%">
+                                                                                                                                    $html .='<td width="22%">
                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 <tr>
@@ -1537,7 +1540,7 @@ class PerencanaanController extends Controller
                                                                                                                                     //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
                                                                                                                                     //     }
                                                                                                                                     // $html .= '</ul></td>';
-                                                                                                                                    $html .= '<td width="30%"><table>
+                                                                                                                                    $html .= '<td width="28%"><table>
                                                                                                                                                 <tbody>';
                                                                                                                                                     foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
                                                                                                                                                         $html .= '<tr>';
@@ -1550,10 +1553,11 @@ class PerencanaanController extends Controller
                                                                                                                                                     }
                                                                                                                                                 $html .= '</tbody>
                                                                                                                                             </table></td>';
-                                                                                                                                    $html .='<td width="20%">
+                                                                                                                                    $html .='<td width="22%">
                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 <tr>
@@ -2897,7 +2901,7 @@ class PerencanaanController extends Controller
                                                                                                                                     //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
                                                                                                                                     //     }
                                                                                                                                     // $html .= '</ul></td>';
-                                                                                                                                    $html .= '<td width="30%"><table>
+                                                                                                                                    $html .= '<td width="28%"><table>
                                                                                                                                                 <tbody>';
                                                                                                                                                     foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
                                                                                                                                                         $html .= '<tr>';
@@ -2910,10 +2914,11 @@ class PerencanaanController extends Controller
                                                                                                                                                     }
                                                                                                                                                 $html .= '</tbody>
                                                                                                                                             </table></td>';
-                                                                                                                                    $html .='<td width="20%">
+                                                                                                                                    $html .='<td width="22%">
                                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
                                                                                                                                         <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
                                                                                                                                     </td>
                                                                                                                                 </tr>
                                                                                                                                 <tr>
@@ -3216,7 +3221,7 @@ class PerencanaanController extends Controller
                                                                                 <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
                                                                             </td>';
                                                                             $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="30%"><table>
+                                                                            $html .= '<td width="28%"><table>
                                                                                 <tbody>';
                                                                                     foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
                                                                                         $html .= '<tr>';
@@ -3229,10 +3234,11 @@ class PerencanaanController extends Controller
                                                                                     }
                                                                                 $html .= '</tbody>
                                                                             </table></td>';
-                                                                            $html .= '<td width="20%">
+                                                                            $html .= '<td width="22%">
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
                                                                             </td>
                                                                         </tr>';
                                                                         $html .= '<tr>
