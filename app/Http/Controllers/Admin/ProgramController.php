@@ -370,7 +370,7 @@ class ProgramController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $cek_pivot = PivotPerubahanProgram::where('program_id', $program_hidden_id)
+        $cek_pivot = PivotPerubahanProgram::where('program_id', $request->program_hidden_id)
                         ->where('urusan_id', $request->program_urusan_id)
                         ->where('kode', $request->program_kode)
                         ->where('tahun_perubahan', $request->program_tahun_perubahan)
