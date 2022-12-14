@@ -204,6 +204,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/program/edit/{id}/{tahun}','Admin\ProgramController@edit');
     Route::post('/admin/program/update','Admin\ProgramController@update')->name('admin.program.update');
     Route::get('/admin/program/destroy/{id}','Admin\ProgramController@destroy');
+    Route::post('/admin/program/hapus','Admin\ProgramController@hapus')->name('admin.program.hapus');
     Route::post('/admin/program/destroy/impor', 'Admin\ProgramController@impor')->name('admin.program.impor');
     Route::post('/admin/program/indikator-kinerja/tambah', 'Admin\ProgramController@indikator_kinerja_tambah')->name('admin.program.indikator-kinerja.tambah');
     Route::post('/admin/program/indikator-kinerja/hapus', 'Admin\ProgramController@indikator_kinerja_hapus')->name('admin.program.indikator-kinerja.hapus');
