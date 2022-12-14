@@ -186,6 +186,7 @@ class NomenklaturController extends Controller
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="semua" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
+                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Hapus Program"><i class="fas fa-trash"></i></button>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -531,6 +532,7 @@ class NomenklaturController extends Controller
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="semua" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
+                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Hapus Program"><i class="fas fa-trash"></i></button>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -852,6 +854,7 @@ class NomenklaturController extends Controller
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="semua" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
+                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Hapus Program"><i class="fas fa-trash"></i></button>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -5625,6 +5628,7 @@ class NomenklaturController extends Controller
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="semua" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
+                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Hapus Program"><i class="fas fa-trash"></i></button>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -5957,6 +5961,7 @@ class NomenklaturController extends Controller
                                                                                 <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
                                                                                 <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="semua" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
                                                                                 <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
+                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Hapus Program"><i class="fas fa-trash"></i></button>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
