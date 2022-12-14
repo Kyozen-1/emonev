@@ -13,14 +13,60 @@ use Validator;
 use DataTables;
 use Excel;
 use Carbon\Carbon;
+use App\Models\TahunPeriode;
+use App\Models\Visi;
+use App\Models\PivotPerubahanVisi;
+use App\Models\Misi;
+use App\Models\PivotPerubahanMisi;
+use App\Models\Tujuan;
+use App\Models\PivotPerubahanTujuan;
+use App\Models\Sasaran;
+use App\Models\PivotPerubahanSasaran;
+use App\Models\PivotSasaranIndikator;
+use App\Models\ProgramRpjmd;
+use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
 use App\Models\PivotPerubahanUrusan;
+use App\Models\MasterOpd;
+use App\Models\PivotSasaranIndikatorProgramRpjmd;
 use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
-use App\Imports\ProgramImport;
+use App\Models\PivotProgramKegiatanRenstra;
+use App\Models\TargetRpPertahunProgram;
+use App\Models\RenstraKegiatan;
+use App\Models\PivotOpdRentraKegiatan;
+use App\Models\Kegiatan;
+use App\Models\PivotPerubahanKegiatan;
+use App\Models\TargetRpPertahunRenstraKegiatan;
+use App\Models\SasaranIndikatorKinerja;
+use App\Models\TujuanPd;
+use App\Models\PivotPerubahanTujuanPd;
+use App\Models\TujuanPdIndikatorKinerja;
+use App\Models\TujuanPdTargetSatuanRpRealisasi;
+use App\Models\SasaranPd;
+use App\Models\PivotPerubahanSasaranPd;
+use App\Models\SasaranPdIndikatorKinerja;
+use App\Models\SasaranPdTargetSatuanRpRealisasi;
 use App\Models\ProgramIndikatorKinerja;
 use App\Models\OpdProgramIndikatorKinerja;
 use App\Models\ProgramTargetSatuanRpRealisasi;
+use App\Models\KegiatanIndikatorKinerja;
+use App\Models\KegiatanTargetSatuanRpRealisasi;
+use App\Models\MasterTw;
+use App\Models\ProgramTwRealisasi;
+use App\Models\KegiatanTwRealisasi;
+use App\Models\TujuanPdRealisasiRenja;
+use App\Models\SasaranPdRealisasiRenja;
+use App\Models\SasaranPdProgramRpjmd;
+use App\Models\SubKegiatan;
+use App\Models\PivotPerubahanSubKegiatan;
+use App\Models\SubKegiatanIndikatorKinerja;
+use App\Models\OpdSubKegiatanIndikatorKinerja;
+use App\Models\SubKegiatanTargetSatuanRpRealisasi;
+use App\Models\SubKegiatanTwRealisasi;
+use App\Models\TujuanIndikatorKinerja;
+use App\Models\TujuanTargetSatuanRpRealisasi;
+use App\Models\SasaranTargetSatuanRpRealisasi;
 
 class ProgramController extends Controller
 {
@@ -578,5 +624,108 @@ class ProgramController extends Controller
         $opd->save();
 
         return response()->json(['success' => 'Berhasil menyimpan data']);
+    }
+
+    public function hapus(Request $request)
+    {
+        if($request->hapus_program_tahun == 'semua')
+        {
+            $get_perubahan_programs = PivotPerubahanProgram::where('program_id', $request->hapus_program_id)->get();
+            foreach ($get_perubahan_programs as $get_perubahan_program) {
+                PivotPerubahanProgram::find($get_perubahan_program->id)->delete();
+            }
+
+            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $request->hapus_program_id)->get();
+            foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
+                foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
+                    $program_target_satuan_rp_realisasies = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)->get();
+                    foreach ($program_target_satuan_rp_realisasies as $program_target_satuan_rp_realisasi) {
+                        $program_tw_realisasies = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id', $program_target_satuan_rp_realisasi->id)->get();
+                        foreach ($program_tw_realisasies as $program_tw_realisasi) {
+                            ProgramTwRealisasi::find($program_tw_realisasi->id)->delete();
+                        }
+
+                        ProgramTargetSatuanRpRealisasi::find($program_target_satuan_rp_realisasi->id)->delete();
+                    }
+
+                    OpdProgramIndikatorKinerja::find($opd_program_indikator_kinerja->id)->delete();
+                }
+
+                ProgramIndikatorKinerja::find($program_indikator_kinerja->id)->delete();
+            }
+
+            $program_rpjmds = ProgramRpjmd::where('program_id', $request->hapus_program_id)->get();
+            foreach ($program_rpjmds as $program_rpjmd) {
+                $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('program_rpjmd_id', $program_rpjmd->id)->get();
+                foreach ($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd) {
+                    PivotSasaranIndikatorProgramRpjmd::find($pivot_sasaran_indikator_program_rpjmd->id)->delete();
+                }
+
+                $sasaran_pd_program_rpjmds = SasaranPdProgramRpjmd::where('program_rpjmd_id', $program_rpjmd->id)->get();
+                foreach ($sasaran_pd_program_rpjmds as $sasaran_pd_program_rpjmd) {
+                    SasaranPdProgramRpjmd::find($sasaran_pd_program_rpjmd->id)->delete();
+                }
+
+                ProgramRpjmd::find($program_rpjmd->id)->delete();
+            }
+
+            Program::find($request->hapus_program_id)->delete();
+        } else {
+            $cek_perubahan_program_1 = PivotPerubahanProgram::where('program_id', $request->hapus_program_id)->where('tahun_perubahan', $request->hapus_program_tahun)->first();
+            if($cek_perubahan_program_1)
+            {
+                PivotPerubahanProgram::find($cek_perubahan_program_1->id)->delete();
+            } else {
+                $cek_perubahan_program_2 = PivotPerubahanProgram::where('program_id', $request->hapus_program_id)->first();
+                if(!$cek_perubahan_program_2)
+                {
+                    $get_perubahan_programs = PivotPerubahanProgram::where('program_id', $request->hapus_program_id)->get();
+                    foreach ($get_perubahan_programs as $get_perubahan_program) {
+                        PivotPerubahanProgram::find($get_perubahan_program->id)->delete();
+                    }
+
+                    $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $request->hapus_program_id)->get();
+                    foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                        $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
+                        foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
+                            $program_target_satuan_rp_realisasies = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)->get();
+                            foreach ($program_target_satuan_rp_realisasies as $program_target_satuan_rp_realisasi) {
+                                $program_tw_realisasies = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id', $program_target_satuan_rp_realisasi->id)->get();
+                                foreach ($program_tw_realisasies as $program_tw_realisasi) {
+                                    ProgramTwRealisasi::find($program_tw_realisasi->id)->delete();
+                                }
+
+                                ProgramTargetSatuanRpRealisasi::find($program_target_satuan_rp_realisasi->id)->delete();
+                            }
+
+                            OpdProgramIndikatorKinerja::find($opd_program_indikator_kinerja->id)->delete();
+                        }
+
+                        ProgramIndikatorKinerja::find($program_indikator_kinerja->id)->delete();
+                    }
+
+                    $program_rpjmds = ProgramRpjmd::where('program_id', $request->hapus_program_id)->get();
+                    foreach ($program_rpjmds as $program_rpjmd) {
+                        $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('program_rpjmd_id', $program_rpjmd->id)->get();
+                        foreach ($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd) {
+                            PivotSasaranIndikatorProgramRpjmd::find($pivot_sasaran_indikator_program_rpjmd->id)->delete();
+                        }
+
+                        $sasaran_pd_program_rpjmds = SasaranPdProgramRpjmd::where('program_rpjmd_id', $program_rpjmd->id)->get();
+                        foreach ($sasaran_pd_program_rpjmds as $sasaran_pd_program_rpjmd) {
+                            SasaranPdProgramRpjmd::find($sasaran_pd_program_rpjmd->id)->delete();
+                        }
+
+                        ProgramRpjmd::find($program_rpjmd->id)->delete();
+                    }
+
+                    Program::find($request->hapus_program_id)->delete();
+                }
+            }
+        }
+
+        Alert::success('Berhasil', 'Berhasil Menghapus Program');
+        return redirect()->route('admin.nomenklatur.index');
     }
 }
