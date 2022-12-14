@@ -992,6 +992,35 @@
             </div>
         </div>
     </div>
+
+    <div id="hapusProgramModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="hapusProgramModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Hapus Program</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.program.hapus') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="hapus_program_id" id="hapus_program_id">
+                        <div class="position-relative form-group mb-3">
+                            <label for="hapus_program_tahun" class="form-label">Pilih Tahun</label>
+                            <select name="hapus_program_tahun" id="hapus_program_tahun" class="form-control" required>
+                                <option value="semua">Semua</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     {{-- Modal Program End --}}
 
     {{-- Modal Kegiatan Start --}}
@@ -1963,6 +1992,12 @@
                 });
             }
         });
+    });
+
+    $(document).on('click', '.hapus-program', function(){
+        var program_id = $(this).attr('data-program-id');
+        $('#hapus_program_id').val(program_id);
+        $('#hapusProgramModal').modal('show');
     });
     // Program End
 
