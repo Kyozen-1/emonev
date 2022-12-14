@@ -670,6 +670,66 @@ class ProgramController extends Controller
                 ProgramRpjmd::find($program_rpjmd->id)->delete();
             }
 
+            $kegiatans = Kegiatan::where('program_id', $request->hapus_program_id)->get();
+            foreach ($kegiatans as $kegiatan) {
+                $get_perubahan_kegiatans = PivotPerubahanKegiatan::where('kegiatan_id', $kegiatan_id)->get();
+                foreach ($get_perubahan_kegiatans as $get_perubahan_kegiatan) {
+                    PivotPerubahanKegiatan::find($get_perubahan_kegiatan->id)->delete();
+                }
+
+                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan_id)->get();
+                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                    $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->get();
+                    foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
+                        $kegiatan_target_satuan_rp_realisasies = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)->get();
+                        foreach ($kegiatan_target_satuan_rp_realisasies as $kegiatan_target_satuan_rp_realisasi) {
+                            $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $kegiatan_target_satuan_rp_realisasi->id)->get();
+                            foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                KegiatanTwRealisasi::find($kegiatan_tw_realisasi->id)->delete();
+                            }
+
+                            KegiatanTargetSatuanRpRealisasi::find($kegiatan_target_satuan_rp_realisasi->id)->delete();
+                        }
+
+                        OpdKegiatanIndikatorKinerja::find($opd_kegiatan_indikator_kinerja->id)->delete();
+                    }
+
+                    KegiatanIndikatorKinerja::find($kegiatan_indikator_kinerja->id)->delete();
+                }
+
+                $sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan->id)->get();
+                foreach ($sub_kegiatans as $sub_kegiatan) {
+                    $get_perubahan_sub_kegiatans = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $sub_kegiatan_id)->get();
+                    foreach ($get_perubahan_sub_kegiatans as $get_perubahan_sub_kegiatan) {
+                        PivotPerubahanSubKegiatan::find($get_perubahan_sub_kegiatan->id)->delete();
+                    }
+
+                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan_id)->get();
+                    foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                        $opd_sub_kegiatan_indikator_kinerjas = OpdSubKegiatanIndikatorKinerja::where('sub_kegiatan_indikator_kinerja_id', $sub_kegiatan_indikator_kinerja->id)->get();
+                        foreach ($opd_sub_kegiatan_indikator_kinerjas as $opd_sub_kegiatan_indikator_kinerja) {
+                            $sub_kegiatan_target_satuan_rp_realisasies = SubKegiatanTargetSatuanRpRealisasi::where('opd_sub_kegiatan_indikator_kinerja_id', $opd_sub_kegiatan_indikator_kinerja->id)->get();
+                            foreach ($sub_kegiatan_target_satuan_rp_realisasies as $sub_kegiatan_target_satuan_rp_realisasi) {
+                                $sub_kegiatan_tw_realisasies = SubKegiatanTwRealisasi::where('sub_kegiatan_target_satuan_rp_realisasi_id', $sub_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                foreach ($sub_kegiatan_tw_realisasies as $sub_kegiatan_tw_realisasi) {
+                                    SubKegiatanTwRealisasi::find($sub_kegiatan_tw_realisasi->id)->delete();
+                                }
+
+                                SubKegiatanTargetSatuanRpRealisasi::find($kegiatan_target_satuan_rp_realisasi->id)->delete();
+                            }
+
+                            SubOpdKegiatanIndikatorKinerja::find($opd_kegiatan_indikator_kinerja->id)->delete();
+                        }
+
+                        SubKegiatanIndikatorKinerja::find($kegiatan_indikator_kinerja->id)->delete();
+                    }
+
+                    SubKegiatan::find($sub_kegiatan->id)->delete();
+                }
+
+                Kegiatan::find($kegiatan->id)->delete();
+            }
+
             Program::find($request->hapus_program_id)->delete();
         } else {
             $cek_perubahan_program_1 = PivotPerubahanProgram::where('program_id', $request->hapus_program_id)->where('tahun_perubahan', $request->hapus_program_tahun)->first();
@@ -718,6 +778,66 @@ class ProgramController extends Controller
                         }
 
                         ProgramRpjmd::find($program_rpjmd->id)->delete();
+                    }
+
+                    $kegiatans = Kegiatan::where('program_id', $request->hapus_program_id)->get();
+                    foreach ($kegiatans as $kegiatan) {
+                        $get_perubahan_kegiatans = PivotPerubahanKegiatan::where('kegiatan_id', $kegiatan_id)->get();
+                        foreach ($get_perubahan_kegiatans as $get_perubahan_kegiatan) {
+                            PivotPerubahanKegiatan::find($get_perubahan_kegiatan->id)->delete();
+                        }
+
+                        $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan_id)->get();
+                        foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                            $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->get();
+                            foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
+                                $kegiatan_target_satuan_rp_realisasies = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)->get();
+                                foreach ($kegiatan_target_satuan_rp_realisasies as $kegiatan_target_satuan_rp_realisasi) {
+                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $kegiatan_target_satuan_rp_realisasi->id)->get();
+                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                        KegiatanTwRealisasi::find($kegiatan_tw_realisasi->id)->delete();
+                                    }
+
+                                    KegiatanTargetSatuanRpRealisasi::find($kegiatan_target_satuan_rp_realisasi->id)->delete();
+                                }
+
+                                OpdKegiatanIndikatorKinerja::find($opd_kegiatan_indikator_kinerja->id)->delete();
+                            }
+
+                            KegiatanIndikatorKinerja::find($kegiatan_indikator_kinerja->id)->delete();
+                        }
+
+                        $sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan->id)->get();
+                        foreach ($sub_kegiatans as $sub_kegiatan) {
+                            $get_perubahan_sub_kegiatans = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $sub_kegiatan_id)->get();
+                            foreach ($get_perubahan_sub_kegiatans as $get_perubahan_sub_kegiatan) {
+                                PivotPerubahanSubKegiatan::find($get_perubahan_sub_kegiatan->id)->delete();
+                            }
+
+                            $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan_id)->get();
+                            foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                                $opd_sub_kegiatan_indikator_kinerjas = OpdSubKegiatanIndikatorKinerja::where('sub_kegiatan_indikator_kinerja_id', $sub_kegiatan_indikator_kinerja->id)->get();
+                                foreach ($opd_sub_kegiatan_indikator_kinerjas as $opd_sub_kegiatan_indikator_kinerja) {
+                                    $sub_kegiatan_target_satuan_rp_realisasies = SubKegiatanTargetSatuanRpRealisasi::where('opd_sub_kegiatan_indikator_kinerja_id', $opd_sub_kegiatan_indikator_kinerja->id)->get();
+                                    foreach ($sub_kegiatan_target_satuan_rp_realisasies as $sub_kegiatan_target_satuan_rp_realisasi) {
+                                        $sub_kegiatan_tw_realisasies = SubKegiatanTwRealisasi::where('sub_kegiatan_target_satuan_rp_realisasi_id', $sub_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                        foreach ($sub_kegiatan_tw_realisasies as $sub_kegiatan_tw_realisasi) {
+                                            SubKegiatanTwRealisasi::find($sub_kegiatan_tw_realisasi->id)->delete();
+                                        }
+
+                                        SubKegiatanTargetSatuanRpRealisasi::find($kegiatan_target_satuan_rp_realisasi->id)->delete();
+                                    }
+
+                                    SubOpdKegiatanIndikatorKinerja::find($opd_kegiatan_indikator_kinerja->id)->delete();
+                                }
+
+                                SubKegiatanIndikatorKinerja::find($kegiatan_indikator_kinerja->id)->delete();
+                            }
+
+                            SubKegiatan::find($sub_kegiatan->id)->delete();
+                        }
+
+                        Kegiatan::find($kegiatan->id)->delete();
                     }
 
                     Program::find($request->hapus_program_id)->delete();
