@@ -1001,7 +1001,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.program.hapus') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <form id="hapus_program_form" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="hapus_program_id" id="hapus_program_id">
                         <div class="position-relative form-group mb-3">
@@ -1014,7 +1014,7 @@
                             </select>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
-                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                            <button class="btn btn-success waves-effect waves-light" type="button" id="hapus_program_btn">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -1662,7 +1662,13 @@
                     }
                     if(data.success)
                     {
-                        window.location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        }).then(function() {
+                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                        });
                     }
 
                     $('#program_form_result').html(html);
@@ -1694,7 +1700,13 @@
                     }
                     if(data.success)
                     {
-                        window.location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        }).then(function() {
+                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                        });
                     }
 
                     $('#program_form_result').html(html);
@@ -1999,6 +2011,47 @@
         $('#hapus_program_id').val(program_id);
         $('#hapusProgramModal').modal('show');
     });
+
+    $('#hapus_program_btn').click(function(){
+        var hapus_program_id = $('#hapus_program_id').val();
+        var hapus_program_tahun = $('#hapus_program_tahun').val();
+        var nav_nomenklatur_program_tahun = $('.navNomenklaturProgram.active').attr('data-tahun');
+        var program_filter_urusan = $('#program_filter_urusan_'+nav_nomenklatur_program_tahun).val();
+        var program_filter_program = $('#program_filter_program_'+nav_nomenklatur_program_tahun).val();
+
+        $.ajax({
+            url: "{{ route('admin.program.hapus') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                hapus_program_id:hapus_program_id,
+                hapus_program_tahun : hapus_program_tahun,
+                nav_nomenklatur_program_tahun: nav_nomenklatur_program_tahun,
+                program_filter_urusan : program_filter_urusan,
+                program_filter_program : program_filter_program,
+            },
+            success: function(data){
+                if(data.errors)
+                {
+                    Swal.fire({
+                        icon: 'error',
+                        title: data.errors,
+                        showConfirmButton: true
+                    });
+                }
+                if(data.success)
+                {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.success,
+                        showConfirmButton: true
+                    });
+                }
+                $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                $('#hapusProgramModal').modal('hide');
+            }
+        });
+    });
     // Program End
 
     // Kegiatan Start
@@ -2062,7 +2115,13 @@
                     }
                     if(data.success)
                     {
-                        window.location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        }).then(function() {
+                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                        });
                     }
 
                     $('#kegiatan_form_result').html(html);
@@ -2093,7 +2152,13 @@
                     }
                     if(data.success)
                     {
-                        window.location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        }).then(function() {
+                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                        });
                     }
 
                     $('#kegiatan_form_result').html(html);
@@ -2266,7 +2331,13 @@
                     }
                     if(data.success)
                     {
-                        window.location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        }).then(function() {
+                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                        });
                     }
 
                     $('#sub_kegiatan_form_result').html(html);
@@ -2297,7 +2368,13 @@
                     }
                     if(data.success)
                     {
-                        window.location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        }).then(function() {
+                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                        });
                     }
 
                     $('#sub_kegiatan_form_result').html(html);
