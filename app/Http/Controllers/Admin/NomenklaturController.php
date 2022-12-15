@@ -442,9 +442,9 @@ class NomenklaturController extends Controller
                             <table class="table table-condensed table-striped">
                                 <thead>
                                     <tr>
-                                        <th width="15%">Kode</th>
+                                        <th width="5%">Kode</th>
                                         <th width="40%">Deskripsi</th>
-                                        <th width="25%">Indikator Kinerja</th>
+                                        <th width="35%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -776,9 +776,9 @@ class NomenklaturController extends Controller
                             <table class="table table-condensed table-striped">
                                 <thead>
                                     <tr>
-                                        <th width="15%">Kode</th>
+                                        <th width="5%">Kode</th>
                                         <th width="40%">Deskripsi</th>
-                                        <th width="25%">Indikator Kinerja</th>
+                                        <th width="35%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -5533,9 +5533,9 @@ class NomenklaturController extends Controller
                             <table class="table table-condensed table-striped">
                                 <thead>
                                     <tr>
-                                        <th width="15%">Kode</th>
+                                        <th width="5%">Kode</th>
                                         <th width="40%">Deskripsi</th>
-                                        <th width="25%">Indikator Kinerja</th>
+                                        <th width="35%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -5877,9 +5877,9 @@ class NomenklaturController extends Controller
                             <table class="table table-condensed table-striped">
                                 <thead>
                                     <tr>
-                                        <th width="15%">Kode</th>
+                                        <th width="5%">Kode</th>
                                         <th width="40%">Deskripsi</th>
-                                        <th width="25%">Tahun Perubahan</th>
+                                        <th width="35%">Indikator Kinerja</th>
                                         <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
