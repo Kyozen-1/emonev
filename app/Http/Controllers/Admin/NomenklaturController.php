@@ -244,9 +244,9 @@ class NomenklaturController extends Controller
                                                                                                                                 </td>';
                                                                                                                     $html .='</tr>';
                                                                                                                 } else {
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -284,9 +284,9 @@ class NomenklaturController extends Controller
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -325,9 +325,9 @@ class NomenklaturController extends Controller
                                                                                                                                     </td>';
                                                                                                                         $html .='</tr>';
                                                                                                                     } else {
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -365,9 +365,9 @@ class NomenklaturController extends Controller
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -590,9 +590,9 @@ class NomenklaturController extends Controller
                                                                                                                                 </td>';
                                                                                                                     $html .='</tr>';
                                                                                                                 } else {
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -630,9 +630,9 @@ class NomenklaturController extends Controller
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -671,9 +671,9 @@ class NomenklaturController extends Controller
                                                                                                                                     </td>';
                                                                                                                         $html .='</tr>';
                                                                                                                     } else {
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -711,9 +711,9 @@ class NomenklaturController extends Controller
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -912,9 +912,9 @@ class NomenklaturController extends Controller
                                                                                                                                 </td>';
                                                                                                                     $html .='</tr>';
                                                                                                                 } else {
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -952,9 +952,9 @@ class NomenklaturController extends Controller
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -993,9 +993,9 @@ class NomenklaturController extends Controller
                                                                                                                                     </td>';
                                                                                                                         $html .='</tr>';
                                                                                                                     } else {
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -1033,9 +1033,9 @@ class NomenklaturController extends Controller
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -5686,9 +5686,9 @@ class NomenklaturController extends Controller
                                                                                                                                 </td>';
                                                                                                                     $html .='</tr>';
                                                                                                                 } else {
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -5726,9 +5726,9 @@ class NomenklaturController extends Controller
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -5767,9 +5767,9 @@ class NomenklaturController extends Controller
                                                                                                                                     </td>';
                                                                                                                         $html .='</tr>';
                                                                                                                     } else {
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -5807,9 +5807,9 @@ class NomenklaturController extends Controller
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -6019,9 +6019,9 @@ class NomenklaturController extends Controller
                                                                                                                                 </td>';
                                                                                                                     $html .='</tr>';
                                                                                                                 } else {
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -6059,9 +6059,9 @@ class NomenklaturController extends Controller
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -6100,9 +6100,9 @@ class NomenklaturController extends Controller
                                                                                                                                     </td>';
                                                                                                                         $html .='</tr>';
                                                                                                                     } else {
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -6140,9 +6140,9 @@ class NomenklaturController extends Controller
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
