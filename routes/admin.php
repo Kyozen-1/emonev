@@ -233,6 +233,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/kegiatan/edit/{id}/{tahun}','Admin\KegiatanController@edit');
     Route::post('/admin/kegiatan/update','Admin\KegiatanController@update')->name('admin.kegiatan.update');
     Route::get('/admin/kegiatan/destroy/{id}','Admin\KegiatanController@destroy');
+    Route::post('/admin/kegiatan/hapus','Admin\KegiatanController@hapus')->name('admin.kegiatan.hapus');
     Route::post('/admin/kegiatan/destroy/impor', 'Admin\KegiatanController@impor')->name('admin.kegiatan.impor');
     Route::post('/admin/kegiatan/indikator-kinerja/tambah', 'Admin\KegiatanController@indikator_kinerja_tambah')->name('admin.kegiatan.indikator-kinerja.tambah');
     Route::post('/admin/kegiatan/indikator-kinerja/hapus', 'Admin\KegiatanController@indikator_kinerja_hapus')->name('admin.kegiatan.indikator-kinerja.hapus');
