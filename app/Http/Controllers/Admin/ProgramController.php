@@ -239,8 +239,7 @@ class ProgramController extends Controller
                                 Kode Urusan: '.$data->urusan->kode.' <br>
                                 Kode: '.$data->kode.'<br>
                                 Deskripsi: '.$data->deskripsi.'<br>
-                                Tahun Perubahan: '.$data->tahun_perubahan.'<br>
-                                Status: <span class="text-primary">Sebelum Perubahan</span>
+                                Tahun: '.$data->tahun_perubahan.'<br>
                             </p></li>';
                 $a = 1;
                 foreach ($get_perubahans as $get_perubahan) {
@@ -248,8 +247,7 @@ class ProgramController extends Controller
                                 Kode Urusan: '.$get_perubahan->program->urusan->kode.' <br>
                                 Kode: '.$get_perubahan->kode.'<br>
                                 Deskripsi: '.$get_perubahan->deskripsi.'<br>
-                                Tahun Perubahan: '.$get_perubahan->tahun_perubahan.'<br>
-                                Status: <span class="text-warning">Perubahan '.$a++.'</span>
+                                Tahun: '.$get_perubahan->tahun_perubahan.'<br>
                             </p></li>';
                 }
                 $html .= '</ul>';
@@ -297,7 +295,6 @@ class ProgramController extends Controller
                                 Kode: '.$data->kode.'<br>
                                 Deskripsi: '.$data->deskripsi.'<br>
                                 Tahun Perubahan: '.$data->tahun_perubahan.'<br>
-                                Status: <span class="text-primary">Sebelum Perubahan</span>
                             </p></li>';
                 $a = 1;
                 foreach ($get_perubahans as $get_perubahan) {
@@ -306,7 +303,6 @@ class ProgramController extends Controller
                                 Kode: '.$get_perubahan->kode.'<br>
                                 Deskripsi: '.$get_perubahan->deskripsi.'<br>
                                 Tahun Perubahan: '.$get_perubahan->tahun_perubahan.'<br>
-                                Status: <span class="text-warning">Perubahan '.$a++.'</span>
                             </p></li>';
                 }
                 $html .= '</ul>';
@@ -1057,9 +1053,9 @@ class ProgramController extends Controller
                                                                                                                                 </td>';
                                                                                                                     $html .='</tr>';
                                                                                                                 } else {
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -1097,9 +1093,9 @@ class ProgramController extends Controller
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -1138,9 +1134,9 @@ class ProgramController extends Controller
                                                                                                                                     </td>';
                                                                                                                         $html .='</tr>';
                                                                                                                     } else {
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -1178,9 +1174,9 @@ class ProgramController extends Controller
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -1390,9 +1386,9 @@ class ProgramController extends Controller
                                                                                                                                 </td>';
                                                                                                                     $html .='</tr>';
                                                                                                                 } else {
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -1430,9 +1426,9 @@ class ProgramController extends Controller
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td></td>';
                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -1471,9 +1467,9 @@ class ProgramController extends Controller
                                                                                                                                     </td>';
                                                                                                                         $html .='</tr>';
                                                                                                                     } else {
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
@@ -1511,9 +1507,9 @@ class ProgramController extends Controller
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td></td>';
                                                                                                                         $html .= '<td>'.$tahun.'</td>';
