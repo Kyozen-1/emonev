@@ -24,6 +24,7 @@ use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
 use App\Models\PivotSasaranIndikator;
 use App\Models\ProgramRpjmd;
+use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
 use App\Models\PivotPerubahanUrusan;
 use App\Models\MasterOpd;
@@ -33,15 +34,38 @@ use App\Models\PivotPerubahanProgram;
 use App\Models\PivotProgramKegiatanRenstra;
 use App\Models\TargetRpPertahunProgram;
 use App\Models\RenstraKegiatan;
-use App\Models\PivotPerubahanKegiatan;
-use App\Models\Kegiatan;
 use App\Models\PivotOpdRentraKegiatan;
+use App\Models\Kegiatan;
+use App\Models\PivotPerubahanKegiatan;
 use App\Models\TargetRpPertahunRenstraKegiatan;
+use App\Models\SasaranIndikatorKinerja;
+use App\Models\TujuanPd;
+use App\Models\PivotPerubahanTujuanPd;
+use App\Models\TujuanPdIndikatorKinerja;
+use App\Models\TujuanPdTargetSatuanRpRealisasi;
+use App\Models\SasaranPd;
+use App\Models\PivotPerubahanSasaranPd;
+use App\Models\SasaranPdIndikatorKinerja;
+use App\Models\SasaranPdTargetSatuanRpRealisasi;
+use App\Models\ProgramIndikatorKinerja;
+use App\Models\OpdProgramIndikatorKinerja;
+use App\Models\ProgramTargetSatuanRpRealisasi;
+use App\Models\KegiatanIndikatorKinerja;
+use App\Models\KegiatanTargetSatuanRpRealisasi;
+use App\Models\MasterTw;
+use App\Models\ProgramTwRealisasi;
+use App\Models\KegiatanTwRealisasi;
+use App\Models\TujuanPdRealisasiRenja;
+use App\Models\SasaranPdRealisasiRenja;
+use App\Models\SasaranPdProgramRpjmd;
 use App\Models\SubKegiatan;
 use App\Models\PivotPerubahanSubKegiatan;
+use App\Models\SubKegiatanIndikatorKinerja;
+use App\Models\OpdSubKegiatanIndikatorKinerja;
+use App\Models\SubKegiatanTargetSatuanRpRealisasi;
+use App\Models\SubKegiatanTwRealisasi;
 use App\Models\TujuanIndikatorKinerja;
 use App\Models\TujuanTargetSatuanRpRealisasi;
-use App\Models\SasaranIndikatorKinerja;
 use App\Models\SasaranTargetSatuanRpRealisasi;
 
 class PerencanaanController extends Controller
@@ -1679,7 +1703,7 @@ class PerencanaanController extends Controller
     {
         $get_visis = Visi::all();
         $visis = [];
-        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
+        $tahun_sekarang = Carbon::now()->year;
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->latest()->first();
             if($cek_perubahan_visi)
@@ -1901,7 +1925,15 @@ class PerencanaanController extends Controller
                                                                                                                                                             {
                                                                                                                                                                 if($a == 1)
                                                                                                                                                                 {
-                                                                                                                                                                        $html .= '<td>'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $tahun_sekarang)->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
                                                                                                                                                                         if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
                                                                                                                                                                         {
                                                                                                                                                                             $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
@@ -1914,7 +1946,15 @@ class PerencanaanController extends Controller
                                                                                                                                                                 } else{
                                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                                         $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td>'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $tahun_sekarang)->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
                                                                                                                                                                         if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
                                                                                                                                                                         {
                                                                                                                                                                             $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
@@ -2185,7 +2225,15 @@ class PerencanaanController extends Controller
                                                                                                                                                             {
                                                                                                                                                                 if($a == 1)
                                                                                                                                                                 {
-                                                                                                                                                                        $html .= '<td>'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $tahun)->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
                                                                                                                                                                         if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
                                                                                                                                                                         {
                                                                                                                                                                             $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
@@ -2198,7 +2246,15 @@ class PerencanaanController extends Controller
                                                                                                                                                                 } else{
                                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                                         $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td>'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $tahun)->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
                                                                                                                                                                         if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
                                                                                                                                                                         {
                                                                                                                                                                             $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
@@ -2611,35 +2667,51 @@ class PerencanaanController extends Controller
                                                                                                                                                         $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)->get();
                                                                                                                                                         $a = 1;
                                                                                                                                                         foreach($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd)
-                                                                                                                                                        {
-                                                                                                                                                            if($a == 1)
                                                                                                                                                             {
-                                                                                                                                                                    $html .= '<td>'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
-                                                                                                                                                                    if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
-                                                                                                                                                                    {
-                                                                                                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<button type="button" class="btn-close btn-hapus-pivot-sasaran-indikator-program-rpjmd"
-                                                                                                                                                                    data-pivot-sasaran-indikator-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->id.'"
-                                                                                                                                                                    data-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id.'"
-                                                                                                                                                                    data-sasaran-indikator-kinerja-id="'.$pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id.'"></button></td>';
-                                                                                                                                                                $html .= '</tr>';
-                                                                                                                                                            } else{
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td>'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
-                                                                                                                                                                    if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
-                                                                                                                                                                    {
-                                                                                                                                                                        $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<button type="button" class="btn-close btn-hapus-pivot-sasaran-indikator-program-rpjmd"
-                                                                                                                                                                    data-pivot-sasaran-indikator-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->id.'"
-                                                                                                                                                                    data-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id.'"
-                                                                                                                                                                    data-sasaran-indikator-kinerja-id="'.$pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id.'"></button></td>';
-                                                                                                                                                                $html .= '</tr>';
+                                                                                                                                                                if($a == 1)
+                                                                                                                                                                {
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $request->tahun)->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
+                                                                                                                                                                        if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<button type="button" class="btn-close btn-hapus-pivot-sasaran-indikator-program-rpjmd"
+                                                                                                                                                                        data-pivot-sasaran-indikator-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->id.'"
+                                                                                                                                                                        data-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id.'"
+                                                                                                                                                                        data-sasaran-indikator-kinerja-id="'.$pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id.'"></button></td>';
+                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                } else{
+                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $request->tahun)->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
+                                                                                                                                                                        if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<button type="button" class="btn-close btn-hapus-pivot-sasaran-indikator-program-rpjmd"
+                                                                                                                                                                        data-pivot-sasaran-indikator-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->id.'"
+                                                                                                                                                                        data-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id.'"
+                                                                                                                                                                        data-sasaran-indikator-kinerja-id="'.$pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id.'"></button></td>';
+                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                }
+                                                                                                                                                                $a++;
                                                                                                                                                             }
-                                                                                                                                                            $a++;
-                                                                                                                                                        }
                                                                                                                                                 }
                                                                                                                                                 $html .= '</tbody>
                                                                                                                                         </table>';
