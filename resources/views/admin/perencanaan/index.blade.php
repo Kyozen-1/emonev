@@ -1566,7 +1566,7 @@
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                     <input type="hidden" name="misi_aksi" id="misi_aksi" value="Save">
                     <input type="hidden" name="misi_hidden_id" id="misi_hidden_id">
-                    <button type="submit" class="btn btn-primary" name="misi_aksi_button" id="misi_aksi_button">Add</button>
+                    <button type="button" class="btn btn-primary" name="misi_aksi_button" id="misi_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -2801,19 +2801,41 @@
             $('#misi_form_result').html('');
         });
 
-        $('#misi_form').on('submit', function(e){
-            e.preventDefault();
+        $('#misi_aksi_button').click(function(){
+            var misi_visi_id = $('#misi_visi_id').val();
+            var misi_kode = $('#misi_kode').val();
+            var misi_deskripsi = $('#misi_deskripsi').val();
+            var misi_tahun_perubahan = $('#misi_tahun_perubahan').val();
+            var misi_hidden_id = $('#misi_hidden_id').val();
+            var nav_rpjmd_misi_tahun = $('.navRpjmdMisi.active').attr('data-tahun');
+            var misi_filter_visi = $('#misi_filter_visi_'+nav_rpjmd_misi_tahun).val();
+            var misi_filter_misi = $('#misi_filter_misi_'+nav_rpjmd_misi_tahun).val();
+
             if($('#misi_aksi').val() == 'Save')
             {
                 $.ajax({
                     url: "{{ route('admin.misi.store') }}",
                     method: "POST",
-                    data: $(this).serialize(),
-                    dataType: "json",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        misi_visi_id:misi_visi_id,
+                        misi_kode:misi_kode,
+                        misi_deskripsi:misi_deskripsi,
+                        misi_tahun_perubahan:misi_tahun_perubahan,
+                        misi_hidden_id:misi_hidden_id,
+                        nav_rpjmd_misi_tahun:nav_rpjmd_misi_tahun,
+                        misi_filter_visi:misi_filter_visi,
+                        misi_filter_misi:misi_filter_misi
+                    },
                     beforeSend: function()
                     {
-                        $('#misi_aksi_button').text('Menyimpan...');
-                        $('#misi_aksi_button').prop('disabled', true);
+                        return new swal({
+                            title: "Checking...",
+                            text: "Harap Menunggu",
+                            imageUrl: "{{ asset('/images/preloader.gif') }}",
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
                     },
                     success: function(data)
                     {
@@ -2821,9 +2843,9 @@
                         if(data.errors)
                         {
                             html = '<div class="alert alert-danger">'+data.errors+'</div>';
-                            $('#misi_aksi_button').prop('disabled', false);
-                            $('#misi_form')[0].reset();
-                            $('#misi_aksi_button').text('Save');
+                            $('#kegiatan_aksi_button').prop('disabled', false);
+                            $('#kegiatan_form')[0].reset();
+                            $('#kegiatan_aksi_button').text('Save');
                         }
                         if(data.success)
                         {
@@ -2831,9 +2853,9 @@
                                 icon: 'success',
                                 title: data.success,
                                 showConfirmButton: true
-                            }).then(function() {
-                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
+                            $('#misiNavDiv'+nav_rpjmd_misi_tahun).html(data.html);
+                            $('#addEditMisiModal').modal('hide');
                         }
 
                         $('#misi_form_result').html(html);
@@ -2846,12 +2868,26 @@
                 $.ajax({
                     url: "{{ route('admin.misi.update') }}",
                     method: "POST",
-                    data: $(this).serialize(),
-                    dataType: "json",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        misi_visi_id:misi_visi_id,
+                        misi_kode:misi_kode,
+                        misi_deskripsi:misi_deskripsi,
+                        misi_tahun_perubahan:misi_tahun_perubahan,
+                        misi_hidden_id:misi_hidden_id,
+                        nav_rpjmd_misi_tahun:nav_rpjmd_misi_tahun,
+                        misi_filter_visi:misi_filter_visi,
+                        misi_filter_misi:misi_filter_misi
+                    },
                     beforeSend: function()
                     {
-                        $('#misi_aksi_button').text('Menyimpan...');
-                        $('#misi_aksi_button').prop('disabled', true);
+                        return new swal({
+                            title: "Checking...",
+                            text: "Harap Menunggu",
+                            imageUrl: "{{ asset('/images/preloader.gif') }}",
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
                     },
                     success: function(data)
                     {
@@ -2859,9 +2895,9 @@
                         if(data.errors)
                         {
                             html = '<div class="alert alert-danger">'+data.errors+'</div>';
-                            $('#misi_aksi_button').prop('disabled', false);
-                            $('#misi_form')[0].reset();
-                            $('#misi_aksi_button').text('Save');
+                            $('#kegiatan_aksi_button').prop('disabled', false);
+                            $('#kegiatan_form')[0].reset();
+                            $('#kegiatan_aksi_button').text('Save');
                         }
                         if(data.success)
                         {
@@ -2869,9 +2905,9 @@
                                 icon: 'success',
                                 title: data.success,
                                 showConfirmButton: true
-                            }).then(function() {
-                                window.location.href = "{{ route('admin.perencanaan.index') }}";
                             });
+                            $('#misiNavDiv'+nav_rpjmd_misi_tahun).html(data.html);
+                            $('#addEditMisiModal').modal('hide');
                         }
 
                         $('#misi_form_result').html(html);
