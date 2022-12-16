@@ -5506,7 +5506,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->get();
+            $get_urusans = $get_urusans->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -5850,7 +5850,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->get();
+            $get_urusans = $get_urusans->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
