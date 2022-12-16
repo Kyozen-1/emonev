@@ -1234,6 +1234,7 @@ class NomenklaturController extends Controller
                                                                                                                 <td width="20%">
                                                                                                                     <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
                                                                                                                     <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                    <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
                                                                                                                 </td>
                                                                                                             </tr>
                                                                                                             <tr>
@@ -1642,6 +1643,7 @@ class NomenklaturController extends Controller
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
                                                                                                                         <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
@@ -2024,6 +2026,7 @@ class NomenklaturController extends Controller
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
                                                                                                                         <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
@@ -2422,7 +2425,6 @@ class NomenklaturController extends Controller
                                                                                                                 </td>
                                                                                                                 <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                                                 <td width="20%">
-                                                                                                                    <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                 </td>
                                                                                                             </tr>
                                                                                                             <tr>
@@ -2877,7 +2879,6 @@ class NomenklaturController extends Controller
                                                                                                                     </td>
                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                                                     <td width="20%">
-                                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
@@ -3319,7 +3320,6 @@ class NomenklaturController extends Controller
                                                                                                                     </td>
                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%"></td>
                                                                                                                     <td width="20%">
-                                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
@@ -3911,7 +3911,6 @@ class NomenklaturController extends Controller
                                                                                                                     </td>
                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%">'.$kegiatan['tahun_perubahan'].'</td>
                                                                                                                     <td width="20%">
-                                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
@@ -4373,7 +4372,6 @@ class NomenklaturController extends Controller
                                                                                                                     </td>
                                                                                                                     <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%">'.$kegiatan['tahun_perubahan'].'</td>
                                                                                                                     <td width="20%">
-                                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sub_kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSubKegiatanModal" title="Tambah Data Sub Kegiatan" data-kegiatan-id="'.$kegiatan['id'].'"><i class="fas fa-plus"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
@@ -4684,7 +4682,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->get();
+            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -4846,6 +4844,7 @@ class NomenklaturController extends Controller
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
                                                                                                                         <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
@@ -5096,7 +5095,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->get();
+            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -5243,6 +5242,7 @@ class NomenklaturController extends Controller
                                                                                                                     <td width="20%">
                                                                                                                         <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
                                                                                                                         <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
                                                                                                                     </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
