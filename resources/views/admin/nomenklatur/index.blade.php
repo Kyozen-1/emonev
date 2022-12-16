@@ -1058,7 +1058,7 @@
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                     <input type="hidden" name="kegiatan_aksi" id="kegiatan_aksi" value="Save">
                     <input type="hidden" name="kegiatan_hidden_id" id="kegiatan_hidden_id">
-                    <button type="submit" class="btn btn-primary" name="kegiatan_aksi_button" id="kegiatan_aksi_button">Add</button>
+                    <button type="button" class="btn btn-primary" name="kegiatan_aksi_button" id="kegiatan_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -1150,6 +1150,35 @@
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hapusKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="hapusKegiatanModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Hapus Kegiatan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="hapus_kegiatan_form" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="hapus_kegiatan_id" id="hapus_kegiatan_id">
+                        <div class="position-relative form-group mb-3">
+                            <label for="hapus_kegiatan_tahun" class="form-label">Pilih Tahun</label>
+                            <select name="hapus_kegiatan_tahun" id="hapus_kegiatan_tahun" class="form-control" required>
+                                <option value="semua">Semua</option>
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{$tahun}}">{{$tahun}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light" type="button" id="hapus_kegiatan_btn">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -2351,15 +2380,34 @@
         $('#kegiatan_form_result').html('');
     });
 
-    $('#kegiatan_form').on('submit', function(e){
-        e.preventDefault();
+    $('#kegiatan_aksi_button').click(function(){
+        var kegiatan_program_id = $('#kegiatan_program_id').val();
+        var kegiatan_kode = $('#kegiatan_kode').val();
+        var kegiatan_deskripsi = $('#kegiatan_deskripsi').val();
+        var kegiatan_tahun_perubahan = $('#kegiatan_tahun_perubahan').val();
+        var kegiatan_hidden_id = $('#kegiatan_hidden_id').val();
+        var nav_nomenklatur_kegiatan_tahun = $('.navNomenklaturKegiatan.active').attr('data-tahun');
+        var kegiatan_filter_urusan = $('#kegiatan_filter_urusan_'+nav_nomenklatur_kegiatan_tahun).val();
+        var kegiatan_filter_program = $('#kegiatan_filter_program_'+nav_nomenklatur_kegiatan_tahun).val();
+        var kegiatan_filter_kegiatan = $('#kegiatan_filter_kegiatan_'+nav_nomenklatur_kegiatan_tahun).val();
+
         if($('#kegiatan_aksi').val() == 'Save')
         {
             $.ajax({
                 url: "{{ route('admin.kegiatan.store') }}",
                 method: "POST",
-                data: $(this).serialize(),
-                dataType: "json",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    kegiatan_program_id:kegiatan_program_id,
+                    kegiatan_kode:kegiatan_kode,
+                    kegiatan_deskripsi:kegiatan_deskripsi,
+                    kegiatan_tahun_perubahan:kegiatan_tahun_perubahan,
+                    kegiatan_hidden_id:kegiatan_hidden_id,
+                    nav_nomenklatur_kegiatan_tahun:nav_nomenklatur_kegiatan_tahun,
+                    kegiatan_filter_urusan:kegiatan_filter_urusan,
+                    kegiatan_filter_program:kegiatan_filter_program,
+                    kegiatan_filter_kegiatan:kegiatan_filter_kegiatan,
+                },
                 beforeSend: function()
                 {
                     $('#kegiatan_aksi_button').text('Menyimpan...');
@@ -2381,9 +2429,9 @@
                             icon: 'success',
                             title: data.success,
                             showConfirmButton: true
-                        }).then(function() {
-                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
                         });
+                        $('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
+                        $('#addEditKegiatanModal').modal('hide');
                     }
 
                     $('#kegiatan_form_result').html(html);
@@ -2396,8 +2444,18 @@
             $.ajax({
                 url: "{{ route('admin.kegiatan.update') }}",
                 method: "POST",
-                data: $(this).serialize(),
-                dataType: "json",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    kegiatan_program_id:kegiatan_program_id,
+                    kegiatan_kode:kegiatan_kode,
+                    kegiatan_deskripsi:kegiatan_deskripsi,
+                    kegiatan_tahun_perubahan:kegiatan_tahun_perubahan,
+                    kegiatan_hidden_id:kegiatan_hidden_id,
+                    nav_nomenklatur_kegiatan_tahun:nav_nomenklatur_kegiatan_tahun,
+                    kegiatan_filter_urusan:kegiatan_filter_urusan,
+                    kegiatan_filter_program:kegiatan_filter_program,
+                    kegiatan_filter_kegiatan:kegiatan_filter_kegiatan,
+                },
                 beforeSend: function()
                 {
                     $('#kegiatan_aksi_button').text('Menyimpan...');
@@ -2410,7 +2468,8 @@
                     {
                         html = '<div class="alert alert-danger">'+data.errors+'</div>';
                         $('#kegiatan_aksi_button').prop('disabled', false);
-                        $('#kegiatan_aksi_button').text('Edit');
+                        $('#kegiatan_form')[0].reset();
+                        $('#kegiatan_aksi_button').text('Save');
                     }
                     if(data.success)
                     {
@@ -2418,9 +2477,9 @@
                             icon: 'success',
                             title: data.success,
                             showConfirmButton: true
-                        }).then(function() {
-                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
                         });
+                        $('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
+                        $('#addEditKegiatanModal').modal('hide');
                     }
 
                     $('#kegiatan_form_result').html(html);
@@ -2527,6 +2586,66 @@
                         }
                     }
                 });
+            }
+        });
+    });
+
+    $(document).on('click', '.hapus-kegiatan', function(){
+        var kegiatan_id = $(this).attr('data-kegiatan-id');
+        $('#hapus_kegiatan_id').val(kegiatan_id);
+        $('.modal-title').text('Hapus Data Kegiatan');
+        $('#hapusKegiatanModal').modal('show');
+    });
+
+    $('#hapus_kegiatan_btn').click(function(){
+        var hapus_kegiatan_id = $('#hapus_kegiatan_id').val();
+        var hapus_kegiatan_tahun = $('#hapus_kegiatan_tahun').val();
+        var nav_nomenklatur_kegiatan_tahun = $('.navNomenklaturKegiatan.active').attr('data-tahun');
+        var kegiatan_filter_urusan = $('#kegiatan_filter_urusan_'+nav_nomenklatur_kegiatan_tahun).val();
+        var kegiatan_filter_program = $('#kegiatan_filter_program_'+nav_nomenklatur_kegiatan_tahun).val();
+        var kegiatan_filter_kegiatan = $('#kegiatan_filter_kegiatan_'+nav_nomenklatur_kegiatan_tahun).val();
+
+        $.ajax({
+            url: "{{ route('admin.kegiatan.hapus') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                hapus_kegiatan_id:hapus_kegiatan_id,
+                hapus_kegiatan_tahun : hapus_kegiatan_tahun,
+                nav_nomenklatur_kegiatan_tahun:nav_nomenklatur_kegiatan_tahun,
+                kegiatan_filter_urusan:kegiatan_filter_urusan,
+                kegiatan_filter_program:kegiatan_filter_program,
+                kegiatan_filter_kegiatan:kegiatan_filter_kegiatan,
+            },
+            beforeSend: function()
+            {
+                return new swal({
+                    title: "Checking...",
+                    text: "Harap Menunggu",
+                    imageUrl: "{{ asset('/images/preloader.gif') }}",
+                    showConfirmButton: false,
+                    allowOutsideClick: false
+                });
+            },
+            success: function(data){
+                if(data.errors)
+                {
+                    Swal.fire({
+                        icon: 'error',
+                        title: data.errors,
+                        showConfirmButton: true
+                    });
+                }
+                if(data.success)
+                {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.success,
+                        showConfirmButton: true
+                    });
+                }
+                $('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
+                $('#hapusKegiatanModal').modal('hide');
             }
         });
     });
