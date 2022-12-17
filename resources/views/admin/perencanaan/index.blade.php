@@ -1631,7 +1631,7 @@
                                 <input name="tujuan_kode" id="tujuan_kode" type="number" class="form-control" required/>
                             </div>
                             <div class="mb-3">
-                                <label for="" class="form-label">Deskripsi</label>
+                                <label for="tujuan_deskripsi" class="form-label">Deskripsi</label>
                                 <textarea name="tujuan_deskripsi" id="tujuan_deskripsi" rows="5" class="form-control"></textarea>
                             </div>
                             <div class="mb-3">
@@ -1649,7 +1649,7 @@
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                     <input type="hidden" name="tujuan_aksi" id="tujuan_aksi" value="Save">
                     <input type="hidden" name="tujuan_hidden_id" id="tujuan_hidden_id">
-                    <button type="submit" class="btn btn-primary" name="tujuan_aksi_button" id="tujuan_aksi_button">Add</button>
+                    <button type="button" class="btn btn-primary" name="tujuan_aksi_button" id="tujuan_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -1732,7 +1732,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.tujuan.indikator-kinerja.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        {{-- action="{{ route('admin.tujuan.indikator-kinerja.tambah') }}" --}}
                         @csrf
                         <input type="hidden" name="indikator_kinerja_tujuan_tujuan_id" id="indikator_kinerja_tujuan_tujuan_id">
                         <div class="mb-3 position-relative form-group">
@@ -1748,7 +1749,7 @@
                             <input type="number" class="form-control" id="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" name="indikator_kinerja_tujuan_kondisi_target_kinerja_awal" step="any" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
-                            <button class="btn btn-success waves-effect waves-light">Tambah Indikator Kinerja</button>
+                            <button class="btn btn-success waves-effect waves-light" id="indikator_kinerja_tujuan_btn" type="button">Tambah Indikator Kinerja</button>
                         </div>
                     </form>
                 </div>
@@ -1764,7 +1765,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.tujuan.indikator.target-satuan-rp-realisasi_update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        {{-- action="{{ route('admin.tujuan.indikator.target-satuan-rp-realisasi_update') }}" --}}
                         @csrf
                         <input type="hidden" name="tujuan_target_satuan_rp_realisasi" id="tujuan_target_satuan_rp_realisasi">
                         <div class="form-group position-relative">
@@ -1772,7 +1774,7 @@
                             <input type="text" class="form-control" id="tujuan_edit_target" name="tujuan_edit_target" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
-                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                            <button class="btn btn-success waves-effect waves-light" type="button" id="tujuan_edit_btn">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -1788,8 +1790,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.tujuan.indikator-kinerja.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
+                        {{-- action="{{ route('admin.tujuan.indikator-kinerja.update') }}" --}}
                         <input type="hidden" name="edit_indikator_kinerja_tujuan_id" id="edit_indikator_kinerja_tujuan_id">
                         <div class="mb-3 position-relative form-group">
                             <label class="d-block form-label">Indikator Kinerja</label>
@@ -1804,7 +1807,7 @@
                             <input type="number" class="form-control" id="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" name="edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal" step="any" required>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
-                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                            <button class="btn btn-success waves-effect waves-light" type="button" id="edit_indikator_kinerja_tujuan_btn">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -1820,7 +1823,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.tujuan.hapus') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        {{-- action="{{ route('admin.tujuan.hapus') }}" --}}
                         @csrf
                         <input type="hidden" name="hapus_tujuan_id" id="hapus_tujuan_id">
                         <div class="position-relative form-group mb-3">
@@ -1833,7 +1837,7 @@
                             </select>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
-                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                            <button class="btn btn-success waves-effect waves-light" type="button" id="hapus_tujuan_btn">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -2843,9 +2847,9 @@
                         if(data.errors)
                         {
                             html = '<div class="alert alert-danger">'+data.errors+'</div>';
-                            $('#kegiatan_aksi_button').prop('disabled', false);
-                            $('#kegiatan_form')[0].reset();
-                            $('#kegiatan_aksi_button').text('Save');
+                            $('#misi_aksi_button').prop('disabled', false);
+                            $('#misi_form')[0].reset();
+                            $('#misi_aksi_button').text('Save');
                         }
                         if(data.success)
                         {
@@ -2895,9 +2899,9 @@
                         if(data.errors)
                         {
                             html = '<div class="alert alert-danger">'+data.errors+'</div>';
-                            $('#kegiatan_aksi_button').prop('disabled', false);
-                            $('#kegiatan_form')[0].reset();
-                            $('#kegiatan_aksi_button').text('Save');
+                            $('#misi_aksi_button').prop('disabled', false);
+                            $('#misi_form')[0].reset();
+                            $('#misi_aksi_button').text('Save');
                         }
                         if(data.success)
                         {
@@ -3076,6 +3080,124 @@
             }
         });
 
+        $('#tujuan_aksi_button').click(function(){
+            var tujuan_misi_id = $('#tujuan_misi_id').val();
+            var tujuan_kode = $('#tujuan_kode').val();
+            var tujuan_deskripsi = $('#tujuan_deskripsi').val();
+            var tujuan_tahun_perubahan = $('#tujuan_tahun_perubahan').val();
+            var tujuan_hidden_id = $('#tujuan_hidden_id').val();
+            var nav_rpjmd_tujuan_tahun = $('.navRpjmdTujuan.active').attr('data-tahun');
+            var tujuan_filter_visi = $('#tujuan_filter_visi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_misi = $('#tujuan_filter_misi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_tujuan = $('#tujuan_filter_tujuan_'+nav_rpjmd_tujuan_tahun).val();
+
+            if($('#tujuan_aksi').val() == 'Save')
+            {
+                $.ajax({
+                    url: "{{ route('admin.tujuan.store') }}",
+                    method: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        tujuan_misi_id:tujuan_misi_id,
+                        tujuan_kode:tujuan_kode,
+                        tujuan_deskripsi:tujuan_deskripsi,
+                        tujuan_tahun_perubahan:tujuan_tahun_perubahan,
+                        tujuan_hidden_id:tujuan_hidden_id,
+                        nav_rpjmd_tujuan_tahun:nav_rpjmd_tujuan_tahun,
+                        tujuan_filter_visi:tujuan_filter_visi,
+                        tujuan_filter_misi:tujuan_filter_misi,
+                        tujuan_filter_tujuan:tujuan_filter_tujuan
+                    },
+                    beforeSend: function()
+                    {
+                        return new swal({
+                            title: "Checking...",
+                            text: "Harap Menunggu",
+                            imageUrl: "{{ asset('/images/preloader.gif') }}",
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#tujuan_aksi_button').prop('disabled', false);
+                            $('#tujuan_form')[0].reset();
+                            $('#tujuan_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.success,
+                                showConfirmButton: true
+                            });
+                            $('#tujuanNavDiv'+nav_rpjmd_tujuan_tahun).html(data.html);
+                            $('#addEditTujuanModal').modal('hide');
+                        }
+
+                        $('#tujuan_form_result').html(html);
+                    }
+                });
+            }
+
+            if($('#tujuan_aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('admin.tujuan.update') }}",
+                    method: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        tujuan_misi_id:tujuan_misi_id,
+                        tujuan_kode:tujuan_kode,
+                        tujuan_deskripsi:tujuan_deskripsi,
+                        tujuan_tahun_perubahan:tujuan_tahun_perubahan,
+                        tujuan_hidden_id:tujuan_hidden_id,
+                        nav_rpjmd_tujuan_tahun:nav_rpjmd_tujuan_tahun,
+                        tujuan_filter_visi:tujuan_filter_visi,
+                        tujuan_filter_misi:tujuan_filter_misi,
+                        tujuan_filter_tujuan:tujuan_filter_tujuan
+                    },
+                    beforeSend: function()
+                    {
+                        return new swal({
+                            title: "Checking...",
+                            text: "Harap Menunggu",
+                            imageUrl: "{{ asset('/images/preloader.gif') }}",
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#tujuan_aksi_button').prop('disabled', false);
+                            $('#tujuan_form')[0].reset();
+                            $('#tujuan_aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.success,
+                                showConfirmButton: true
+                            });
+                            $('#tujuanNavDiv'+nav_rpjmd_tujuan_tahun).html(data.html);
+                            $('#addEditTujuanModal').modal('hide');
+                        }
+
+                        $('#tujuan_form_result').html(html);
+                    }
+                });
+            }
+        });
+
         $(document).on('click','.tujuan_btn_impor_template',function(){
             $('.modal-title').text('Import Data Tujuan');
             $('#importTujuanModal').modal('show');
@@ -3149,6 +3271,10 @@
         $(document).on('click', '.btn-hapus-tujuan-indikator-kinerja', function(){
             var tujuan_indikator_kinerja_id = $(this).attr('data-tujuan-indikator-kinerja-id');
             var tujuan_id = $(this).attr('data-tujuan-id');
+            var nav_rpjmd_tujuan_tahun = $('.navRpjmdTujuan.active').attr('data-tahun');
+            var tujuan_filter_visi = $('#tujuan_filter_visi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_misi = $('#tujuan_filter_misi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_tujuan = $('#tujuan_filter_tujuan_'+nav_rpjmd_tujuan_tahun).val();
 
             return new swal({
                 title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
@@ -3165,14 +3291,18 @@
                         data: {
                             "_token": "{{ csrf_token() }}",
                             tujuan_id:tujuan_id,
-                            tujuan_indikator_kinerja_id: tujuan_indikator_kinerja_id
+                            tujuan_indikator_kinerja_id: tujuan_indikator_kinerja_id,
+                            nav_rpjmd_tujuan_tahun:nav_rpjmd_tujuan_tahun,
+                            tujuan_filter_visi:tujuan_filter_visi,
+                            tujuan_filter_misi:tujuan_filter_misi,
+                            tujuan_filter_tujuan:tujuan_filter_tujuan
                         },
                         success: function(data)
                         {
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
@@ -3183,9 +3313,8 @@
                                     icon: 'success',
                                     title: data.success,
                                     showConfirmButton: true
-                                }).then(function() {
-                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
                                 });
+                                $('#tujuanNavDiv'+nav_rpjmd_tujuan_tahun).html(data.html);
                             }
                         }
                     });
@@ -3198,6 +3327,11 @@
             var tahun = $(this).attr('data-tahun');
 
             var target = $('.tujuan-add-target.'+tahun+'.data-tujuan-indikator-kinerja-'+tujuan_indikator_kinerja_id).val();
+
+            var nav_rpjmd_tujuan_tahun = $('.navRpjmdTujuan.active').attr('data-tahun');
+            var tujuan_filter_visi = $('#tujuan_filter_visi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_misi = $('#tujuan_filter_misi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_tujuan = $('#tujuan_filter_tujuan_'+nav_rpjmd_tujuan_tahun).val();
 
             return new swal({
                 title: "Apakah Anda Yakin?",
@@ -3216,28 +3350,39 @@
                             tahun:tahun,
                             tujuan_indikator_kinerja_id:tujuan_indikator_kinerja_id,
                             target:target,
+                            nav_rpjmd_tujuan_tahun:nav_rpjmd_tujuan_tahun,
+                            tujuan_filter_visi:tujuan_filter_visi,
+                            tujuan_filter_misi:tujuan_filter_misi,
+                            tujuan_filter_tujuan:tujuan_filter_tujuan
                         },
-                        dataType: "json",
+                        beforeSend: function()
+                        {
+                            return new swal({
+                                title: "Checking...",
+                                text: "Harap Menunggu",
+                                imageUrl: "{{ asset('/images/preloader.gif') }}",
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
                         success: function(data)
                         {
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
                             }
-
                             if(data.success)
                             {
                                 Swal.fire({
                                     icon: 'success',
                                     title: data.success,
                                     showConfirmButton: true
-                                }).then(function() {
-                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
                                 });
+                                $('#tujuanNavDiv'+nav_rpjmd_tujuan_tahun).html(data.html);
                             }
                         }
                     });
@@ -3261,6 +3406,233 @@
             var tujuan_id = $(this).attr('data-tujuan-id');
             $('#hapus_tujuan_id').val(tujuan_id);
             $('#hapusTujuanModal').modal('show');
+        });
+
+        $('#indikator_kinerja_tujuan_btn').click(function(){
+            var indikator_kinerja_tujuan_tujuan_id = $('#indikator_kinerja_tujuan_tujuan_id').val();
+            var indikator_kinerja_tujuan_deskripsi = $('#indikator_kinerja_tujuan_deskripsi').val();
+            var indikator_kinerja_tujuan_satuan = $('#indikator_kinerja_tujuan_satuan').val();
+            var indikator_kinerja_tujuan_kondisi_target_kinerja_awal = $('#indikator_kinerja_tujuan_kondisi_target_kinerja_awal').val();
+            var nav_rpjmd_tujuan_tahun = $('.navRpjmdTujuan.active').attr('data-tahun');
+            var tujuan_filter_visi = $('#tujuan_filter_visi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_misi = $('#tujuan_filter_misi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_tujuan = $('#tujuan_filter_tujuan_'+nav_rpjmd_tujuan_tahun).val();
+            $.ajax({
+                url: "{{ route('admin.tujuan.indikator-kinerja.tambah') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    indikator_kinerja_tujuan_tujuan_id:indikator_kinerja_tujuan_tujuan_id,
+                    indikator_kinerja_tujuan_deskripsi:indikator_kinerja_tujuan_deskripsi,
+                    indikator_kinerja_tujuan_satuan:indikator_kinerja_tujuan_satuan,
+                    indikator_kinerja_tujuan_kondisi_target_kinerja_awal:indikator_kinerja_tujuan_kondisi_target_kinerja_awal,
+                    nav_rpjmd_tujuan_tahun:nav_rpjmd_tujuan_tahun,
+                    tujuan_filter_visi:tujuan_filter_visi,
+                    tujuan_filter_misi:tujuan_filter_misi,
+                    tujuan_filter_tujuan:tujuan_filter_tujuan
+                },
+                beforeSend: function()
+                {
+                    return new swal({
+                        title: "Checking...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.errors,
+                            showConfirmButton: true
+                        });
+                    }
+                    if(data.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        });
+                        $('#tujuanNavDiv'+nav_rpjmd_tujuan_tahun).html(data.html);
+                        $('#indikatorKinerjaTujuanModal').modal('hide');
+                    }
+                }
+            });
+        });
+
+        $('#hapus_tujuan_btn').click(function(){
+            var hapus_tujuan_id = $('#hapus_tujuan_id').val();
+            var hapus_tujuan_tahun = $('#hapus_tujuan_tahun').val();
+            var nav_rpjmd_tujuan_tahun = $('.navRpjmdTujuan.active').attr('data-tahun');
+            var tujuan_filter_visi = $('#tujuan_filter_visi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_misi = $('#tujuan_filter_misi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_tujuan = $('#tujuan_filter_tujuan_'+nav_rpjmd_tujuan_tahun).val();
+
+            $.ajax({
+                url: "{{ route('admin.tujuan.hapus') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    hapus_tujuan_id:hapus_tujuan_id,
+                    hapus_tujuan_tahun:hapus_tujuan_tahun,
+                    nav_rpjmd_tujuan_tahun:nav_rpjmd_tujuan_tahun,
+                    tujuan_filter_visi:tujuan_filter_visi,
+                    tujuan_filter_misi:tujuan_filter_misi,
+                    tujuan_filter_tujuan:tujuan_filter_tujuan
+                },
+                beforeSend: function()
+                {
+                    return new swal({
+                        title: "Checking...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.errors,
+                            showConfirmButton: true
+                        });
+                    }
+                    if(data.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        });
+                        $('#tujuanNavDiv'+nav_rpjmd_tujuan_tahun).html(data.html);
+                        $('#hapusTujuanModal').modal('hide');
+                    }
+                }
+            });
+        });
+
+        $('#edit_indikator_kinerja_tujuan_btn').click(function(){
+            var edit_indikator_kinerja_tujuan_id = $('#edit_indikator_kinerja_tujuan_id').val();
+            var edit_indikator_kinerja_tujuan_deskripsi = $('#edit_indikator_kinerja_tujuan_deskripsi').val();
+            var edit_indikator_kinerja_tujuan_satuan = $('#edit_indikator_kinerja_tujuan_satuan').val();
+            var edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal = $('#edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal').val();
+            var nav_rpjmd_tujuan_tahun = $('.navRpjmdTujuan.active').attr('data-tahun');
+            var tujuan_filter_visi = $('#tujuan_filter_visi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_misi = $('#tujuan_filter_misi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_tujuan = $('#tujuan_filter_tujuan_'+nav_rpjmd_tujuan_tahun).val();
+
+            $.ajax({
+                url: "{{ route('admin.tujuan.indikator-kinerja.update') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    edit_indikator_kinerja_tujuan_id:edit_indikator_kinerja_tujuan_id,
+                    edit_indikator_kinerja_tujuan_deskripsi:edit_indikator_kinerja_tujuan_deskripsi,
+                    edit_indikator_kinerja_tujuan_satuan:edit_indikator_kinerja_tujuan_satuan,
+                    edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal:edit_indikator_kinerja_tujuan_kondisi_target_kinerja_awal,
+                    nav_rpjmd_tujuan_tahun:nav_rpjmd_tujuan_tahun,
+                    tujuan_filter_visi:tujuan_filter_visi,
+                    tujuan_filter_misi:tujuan_filter_misi,
+                    tujuan_filter_tujuan:tujuan_filter_tujuan
+                },
+                beforeSend: function()
+                {
+                    return new swal({
+                        title: "Checking...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.errors,
+                            showConfirmButton: true
+                        });
+                    }
+                    if(data.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        });
+                        $('#tujuanNavDiv'+nav_rpjmd_tujuan_tahun).html(data.html);
+                        $('#editIndikatorKinerjaTujuanModal').modal('hide');
+                    }
+                }
+            });
+        });
+
+        $('#tujuan_edit_btn').click(function(){
+            var tujuan_target_satuan_rp_realisasi = $('#tujuan_target_satuan_rp_realisasi').val();
+            var tujuan_edit_target = $('#tujuan_edit_target').val();
+            var nav_rpjmd_tujuan_tahun = $('.navRpjmdTujuan.active').attr('data-tahun');
+            var tujuan_filter_visi = $('#tujuan_filter_visi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_misi = $('#tujuan_filter_misi_'+nav_rpjmd_tujuan_tahun).val();
+            var tujuan_filter_tujuan = $('#tujuan_filter_tujuan_'+nav_rpjmd_tujuan_tahun).val();
+
+            $.ajax({
+                url: "{{ route('admin.tujuan.indikator.target-satuan-rp-realisasi_update') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    tujuan_target_satuan_rp_realisasi:tujuan_target_satuan_rp_realisasi,
+                    tujuan_edit_target:tujuan_edit_target,
+                    nav_rpjmd_tujuan_tahun:nav_rpjmd_tujuan_tahun,
+                    tujuan_filter_visi:tujuan_filter_visi,
+                    tujuan_filter_misi:tujuan_filter_misi,
+                    tujuan_filter_tujuan:tujuan_filter_tujuan
+                },
+                beforeSend: function()
+                {
+                    return new swal({
+                        title: "Checking...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.errors,
+                            showConfirmButton: true
+                        });
+                    }
+                    if(data.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        });
+                        $('#tujuanNavDiv'+nav_rpjmd_tujuan_tahun).html(data.html);
+                        $('#editTargetTujuanModal').modal('hide');
+                    }
+                }
+            });
         });
         // Tujuan End
 
