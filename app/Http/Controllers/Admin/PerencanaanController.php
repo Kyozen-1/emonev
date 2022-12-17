@@ -2746,7 +2746,7 @@ class PerencanaanController extends Controller
     public function filter_sasaran(Request $request)
     {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $tahun_awal = $get_periode->tahun_awal-1;
+        $tahun_awal = $get_periode->tahun_awal;
         $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
         $tahuns = [];
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
@@ -2921,8 +2921,12 @@ class PerencanaanController extends Controller
                                                                                                                     $get_sasarans = $get_sasarans->get();
                                                                                                                     $sasarans = [];
                                                                                                                     foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $request->tahun)
-                                                                                                                                                    ->latest()->first();
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
+                                                                                                                        if($request->tahun != 'semua')
+                                                                                                                        {
+                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->tahun);
+                                                                                                                        }
+                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
                                                                                                                         if($cek_perubahan_sasaran)
                                                                                                                         {
                                                                                                                             $sasarans[] = [
@@ -2967,12 +2971,6 @@ class PerencanaanController extends Controller
                                                                                                                                         <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
                                                                                                                                     </td>';
                                                                                                                                     $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    // $html .= '<td width="30%"><ul>';
-                                                                                                                                    //     foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
-                                                                                                                                    //     {
-                                                                                                                                    //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
-                                                                                                                                    //     }
-                                                                                                                                    // $html .= '</ul></td>';
                                                                                                                                     $html .= '<td width="28%"><table>
                                                                                                                                                 <tbody>';
                                                                                                                                                     foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
