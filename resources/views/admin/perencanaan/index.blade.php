@@ -2250,7 +2250,7 @@
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                     <input type="hidden" name="program_aksi" id="program_aksi" value="Save">
                     <input type="hidden" name="program_hidden_id" id="program_hidden_id">
-                    <button type="submit" class="btn btn-primary" name="program_aksi_button" id="program_aksi_button">Add</button>
+                    <button type="button" class="btn btn-primary" name="program_aksi_button" id="program_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -4489,6 +4489,79 @@
             }
         });
 
+        $('#program_aksi_button').click(function(){
+            var nav_rpjmd_program_tahun = $('.navRpjmdProgram.active').attr('data-tahun');
+            var program_filter_visi = $('#program_filter_visi_'+nav_rpjmd_program_tahun).val();
+            var program_filter_misi = $('#program_filter_misi_'+nav_rpjmd_program_tahun).val();
+            var program_filter_tujuan = $('#program_filter_tujuan_'+nav_rpjmd_program_tahun).val();
+            var program_filter_sasaran = $('#program_filter_sasaran_'+nav_rpjmd_program_tahun).val();
+            var status_program_option = $('input[name="status_program_option_'+nav_rpjmd_program_tahun+'"]:checked').val();
+            var program_urusan_id = $('#program_urusan_id').val();
+            var program_program_id = $('#program_program_id').val();
+            var program_status_program = $('#program_status_program').val();
+            var program_misi_id = $('#program_misi_id').val();
+            var program_tujuan_id = $('#program_tujuan_id').val();
+            var program_sasaran_id = $('#program_sasaran_id').val();
+            var program_sasaran_indikator_id = $('#program_sasaran_indikator_id').val();
+            var program_hidden_id = $('#program_hidden_id').val();
+
+            $.ajax({
+                url: "{{ route('admin.program-rpjmd.store') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    nav_rpjmd_program_tahun:nav_rpjmd_program_tahun,
+                    program_filter_visi:program_filter_visi,
+                    program_filter_misi:program_filter_misi,
+                    program_filter_tujuan:program_filter_tujuan,
+                    program_filter_sasaran:program_filter_sasaran,
+                    status_program_option:status_program_option,
+                    program_urusan_id:program_urusan_id,
+                    program_program_id:program_program_id,
+                    program_status_program:program_status_program,
+                    program_misi_id:program_misi_id,
+                    program_tujuan_id:program_tujuan_id,
+                    program_sasaran_id:program_sasaran_id,
+                    program_sasaran_indikator_id:program_sasaran_indikator_id,
+                    program_hidden_id: program_hidden_id
+                },
+                beforeSend: function()
+                {
+                    return new swal({
+                        title: "Checking...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                        $('#program_aksi_button').prop('disabled', false);
+                        $('#program_form')[0].reset();
+                        $('#program_aksi_button').text('Save');
+                    }
+                    if(data.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        });
+
+                        $('#programNavDiv'+nav_rpjmd_program_tahun).html(data.html);
+                        $('#addEditProgramModal').modal('hide');
+                    }
+
+                    $('#program_form_result').html(html);
+                }
+            });
+        });
+
         $('#edit_program_form').on('submit', function(e){
             e.preventDefault();
             $.ajax({
@@ -4531,6 +4604,12 @@
             var pivot_sasaran_indikator_program_rpjmd_id = $(this).attr('data-pivot-sasaran-indikator-program-rpjmd-id');
             var program_rpjmd_id = $(this).attr('data-program-rpjmd-id');
             var sasaran_indikator_kinerja_id = $(this).attr('data-sasaran-indikator-kinerja-id');
+            var nav_rpjmd_program_tahun = $('.navRpjmdProgram.active').attr('data-tahun');
+            var program_filter_visi = $('#program_filter_visi_'+nav_rpjmd_program_tahun).val();
+            var program_filter_misi = $('#program_filter_misi_'+nav_rpjmd_program_tahun).val();
+            var program_filter_tujuan = $('#program_filter_tujuan_'+nav_rpjmd_program_tahun).val();
+            var program_filter_sasaran = $('#program_filter_sasaran_'+nav_rpjmd_program_tahun).val();
+            var status_program_option = $('input[name="status_program_option_'+nav_rpjmd_program_tahun+'"]:checked').val();
             return new swal({
                 title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
                 icon: "warning",
@@ -4547,7 +4626,13 @@
                             "_token": "{{ csrf_token() }}",
                             pivot_sasaran_indikator_program_rpjmd_id:pivot_sasaran_indikator_program_rpjmd_id,
                             program_rpjmd_id: program_rpjmd_id,
-                            sasaran_indikator_kinerja_id : sasaran_indikator_kinerja_id
+                            sasaran_indikator_kinerja_id : sasaran_indikator_kinerja_id,
+                            nav_rpjmd_program_tahun:nav_rpjmd_program_tahun,
+                            program_filter_visi:program_filter_visi,
+                            program_filter_misi:program_filter_misi,
+                            program_filter_tujuan:program_filter_tujuan,
+                            program_filter_sasaran:program_filter_sasaran,
+                            status_program_option:status_program_option,
                         },
                         success: function(data)
                         {
@@ -4565,9 +4650,9 @@
                                     icon: 'success',
                                     title: data.success,
                                     showConfirmButton: true
-                                }).then(function() {
-                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
                                 });
+
+                                $('#programNavDiv'+nav_rpjmd_program_tahun).html(data.html);
                             }
                         }
                     });
