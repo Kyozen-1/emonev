@@ -22,7 +22,7 @@ use App\Models\Tujuan;
 use App\Models\PivotPerubahanTujuan;
 use App\Models\Sasaran;
 use App\Models\PivotPerubahanSasaran;
-use App\Models\SasaranIndikatorKinerja;
+use App\Models\PivotSasaranIndikator;
 use App\Models\ProgramRpjmd;
 use App\Models\PivotOpdProgramRpjmd;
 use App\Models\Urusan;
@@ -33,6 +33,40 @@ use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotProgramKegiatanRenstra;
 use App\Models\TargetRpPertahunProgram;
+use App\Models\RenstraKegiatan;
+use App\Models\PivotOpdRentraKegiatan;
+use App\Models\Kegiatan;
+use App\Models\PivotPerubahanKegiatan;
+use App\Models\TargetRpPertahunRenstraKegiatan;
+use App\Models\SasaranIndikatorKinerja;
+use App\Models\TujuanPd;
+use App\Models\PivotPerubahanTujuanPd;
+use App\Models\TujuanPdIndikatorKinerja;
+use App\Models\TujuanPdTargetSatuanRpRealisasi;
+use App\Models\SasaranPd;
+use App\Models\PivotPerubahanSasaranPd;
+use App\Models\SasaranPdIndikatorKinerja;
+use App\Models\SasaranPdTargetSatuanRpRealisasi;
+use App\Models\ProgramIndikatorKinerja;
+use App\Models\OpdProgramIndikatorKinerja;
+use App\Models\ProgramTargetSatuanRpRealisasi;
+use App\Models\KegiatanIndikatorKinerja;
+use App\Models\KegiatanTargetSatuanRpRealisasi;
+use App\Models\MasterTw;
+use App\Models\ProgramTwRealisasi;
+use App\Models\KegiatanTwRealisasi;
+use App\Models\TujuanPdRealisasiRenja;
+use App\Models\SasaranPdRealisasiRenja;
+use App\Models\SasaranPdProgramRpjmd;
+use App\Models\SubKegiatan;
+use App\Models\PivotPerubahanSubKegiatan;
+use App\Models\SubKegiatanIndikatorKinerja;
+use App\Models\OpdSubKegiatanIndikatorKinerja;
+use App\Models\SubKegiatanTargetSatuanRpRealisasi;
+use App\Models\SubKegiatanTwRealisasi;
+use App\Models\TujuanIndikatorKinerja;
+use App\Models\TujuanTargetSatuanRpRealisasi;
+use App\Models\SasaranTargetSatuanRpRealisasi;
 
 class ProgramRpjmdController extends Controller
 {
@@ -168,8 +202,7 @@ class ProgramRpjmdController extends Controller
 
         if($errors -> fails())
         {
-            Alert::error('Gagal', $errors->errors()->all());
-            return redirect()->route('admin.perencanaan.index');
+            return response()->json(['errors' => $errors->errors()->all()]);
         }
 
         $program_rpjmd = new ProgramRpjmd;
@@ -186,7 +219,309 @@ class ProgramRpjmdController extends Controller
             $pivot_sasaran_indikator_program_rpjmd->save();
         }
 
-        return response()->json(['success' => 'Berhasil']);
+        $get_visis = Visi::all();
+        $visis = [];
+        foreach ($get_visis as $get_visi) {
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
+                                    ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)
+                                    ->latest()->first();
+            if($cek_perubahan_visi)
+            {
+                $visis[] = [
+                    'id' => $cek_perubahan_visi->visi_id,
+                    'deskripsi' => $cek_perubahan_visi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                ];
+            } else {
+                $visis[] = [
+                    'id' => $get_visi->id,
+                    'deskripsi' => $get_visi->deskripsi,
+                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                ];
+            }
+        }
+
+        $html = '<div class="data-table-rows slim" id="program_div_table">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Kode</th>
+                                    <th width="45%">Deskripsi</th>
+                                    <th width="50%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            foreach ($visis as $visi) {
+                                $html .= '<tr style="background: #bbbbbb;">
+                                    <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
+                                        <br>
+                                        <span class="badge bg-primary text-uppercase program-tagging">Visi</span>
+                                    </td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="hiddenRow">
+                                        <div class="collapse show" id="program_visi'.$visi['id'].'">
+                                            <table class="table table-condensed table-striped">
+                                                <tbody>';
+                                                    $get_misis = Misi::where('visi_id', $visi['id']);
+                                                    if($request->program_filter_visi == 'aman')
+                                                    {
+                                                        $get_misis = $get_misis->where(function($q){
+                                                            $q->where('kode', 1)->orWhere('kode', 2);
+                                                        });
+                                                    }
+                                                    if($request->program_filter_visi == 'mandiri')
+                                                    {
+                                                        $get_misis = $get_misis->where('kode', 3);
+                                                    }
+                                                    if($request->program_filter_visi == 'sejahtera')
+                                                    {
+                                                        $get_misis = $get_misis->where('kode', 4);
+                                                    }
+                                                    if($request->program_filter_visi == 'berahlak')
+                                                    {
+                                                        $get_misis = $get_misis->where('kode', 5);
+                                                    }
+                                                    if($request->program_filter_misi)
+                                                    {
+                                                        $get_misis = $get_misis->where('id', $request->program_filter_misi);
+                                                    }
+                                                    $get_misis = $get_misis->get();
+                                                    $misis = [];
+                                                    foreach ($get_misis as $get_misi) {
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                                                                ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)
+                                                                                ->latest()->first();
+                                                        if($cek_perubahan_misi)
+                                                        {
+                                                            $misis[] = [
+                                                                'id' => $cek_perubahan_misi->misi_id,
+                                                                'kode' => $cek_perubahan_misi->kode,
+                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
+                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
+                                                            ];
+                                                        } else {
+                                                            $misis[] = [
+                                                                'id' => $get_misi->id,
+                                                                'kode' => $get_misi->kode,
+                                                                'deskripsi' => $get_misi->deskripsi,
+                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
+                                                            ];
+                                                        }
+                                                    }
+                                                    foreach ($misis as $misi) {
+                                                        $html .= '<tr style="background: #c04141;">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#program_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#program_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                                        '.strtoupper($misi['deskripsi']).'
+                                                                        <br>';
+                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi '.$request->visi.'</span>';
+                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                    </td>
+                                                                    <td width="50%" data-bs-toggle="collapse" data-bs-target="#program_misi'.$misi['id'].'" class="accordion-toggle"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="4" class="hiddenRow">
+                                                                        <div class="collapse show" id="program_misi'.$misi['id'].'">
+                                                                            <table class="table table-condensed table-striped">
+                                                                                <tbody>';
+                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
+                                                                                    if($request->program_filter_tujuan)
+                                                                                    {
+                                                                                        $get_tujuans = $get_tujuans->where('id', $request->program_filter_tujuan);
+                                                                                    }
+                                                                                    $get_tujuans = $get_tujuans->get();
+                                                                                    $tujuans = [];
+                                                                                    foreach ($get_tujuans as $get_tujuan) {
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                                                                                                ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)
+                                                                                                                ->latest()
+                                                                                                                ->first();
+                                                                                        if($cek_perubahan_tujuan)
+                                                                                        {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                                'kode' => $cek_perubahan_tujuan->kode,
+                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        } else {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $get_tujuan->id,
+                                                                                                'kode' => $get_tujuan->kode,
+                                                                                                'deskripsi' => $get_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        }
+                                                                                    }
+                                                                                    foreach ($tujuans as $tujuan) {
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
+                                                                                                        <br>';
+                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi '.$request->visi.'</span>';
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                    </td>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="50%"></td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                        <div class="collapse show" id="program_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-bordered">
+                                                                                                                <tbody>';
+                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
+                                                                                                                    if($request->program_filter_sasaran)
+                                                                                                                    {
+                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->program_filter_sasaran);
+                                                                                                                    }
+                                                                                                                    $get_sasarans = $get_sasarans->get();
+                                                                                                                    $sasarans = [];
+                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
+                                                                                                                                                    ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)
+                                                                                                                                                    ->latest()->first();
+                                                                                                                        if($cek_perubahan_sasaran)
+                                                                                                                        {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
+                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
+                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        } else {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $get_sasaran->id,
+                                                                                                                                'kode' => $get_sasaran->kode,
+                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                    foreach ($sasarans as $sasaran) {
+                                                                                                                        $html .= '<tr>
+                                                                                                                                    <td width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                    <td width="45%">
+                                                                                                                                        '.$sasaran['deskripsi'].'
+                                                                                                                                        <br>';
+                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi '.$request->visi.'</span>';
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                    </td>
+                                                                                                                                    <td width="50%">';
+                                                                                                                                        $html .= '<table class="table table-bordered">
+                                                                                                                                                <thead>
+                                                                                                                                                    <tr>
+                                                                                                                                                        <th width="50%">Indikator Kinerja</th>
+                                                                                                                                                        <th width="50%">Program RPJMD</th>
+                                                                                                                                                    </tr>
+                                                                                                                                                </thead>
+                                                                                                                                                <tbody>';
+                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                        if($request->status_program_option == 'semua')
+                                                                                                                                                        {
+                                                                                                                                                            $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)->get();
+                                                                                                                                                        }
+                                                                                                                                                        if($request->status_program_option == 'prioritas')
+                                                                                                                                                        {
+                                                                                                                                                            $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                                                                        ->whereHas('program_rpjmd', function($q){
+                                                                                                                                                                                                            $q->where('status_program', 'Prioritas');
+                                                                                                                                                                                                        })->get();
+                                                                                                                                                        }
+                                                                                                                                                        if($request->status_program_option == 'pendukung')
+                                                                                                                                                        {
+                                                                                                                                                            $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                                                                        ->whereHas('program_rpjmd', function($q){
+                                                                                                                                                                                                            $q->where('status_program', 'Pendukung');
+                                                                                                                                                                                                        })->get();
+                                                                                                                                                        }
+                                                                                                                                                        $a = 1;
+                                                                                                                                                        foreach($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd)
+                                                                                                                                                            {
+                                                                                                                                                                if($a == 1)
+                                                                                                                                                                {
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)->latest()->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
+                                                                                                                                                                        if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<button type="button" class="btn-close btn-hapus-pivot-sasaran-indikator-program-rpjmd"
+                                                                                                                                                                        data-pivot-sasaran-indikator-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->id.'"
+                                                                                                                                                                        data-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id.'"
+                                                                                                                                                                        data-sasaran-indikator-kinerja-id="'.$pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id.'"></button></td>';
+                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                } else{
+                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)->latest()->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
+                                                                                                                                                                        if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<button type="button" class="btn-close btn-hapus-pivot-sasaran-indikator-program-rpjmd"
+                                                                                                                                                                        data-pivot-sasaran-indikator-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->id.'"
+                                                                                                                                                                        data-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id.'"
+                                                                                                                                                                        data-sasaran-indikator-kinerja-id="'.$pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id.'"></button></td>';
+                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                }
+                                                                                                                                                                $a++;
+                                                                                                                                                            }
+                                                                                                                                                }
+                                                                                                                                                $html .= '</tbody>
+                                                                                                                                        </table>';
+                                                                                                                                    $html .= '</td>
+                                                                                                                                </tr>';
+                                                                                                                    }
+                                                                                                                $html .= '</tbody>
+                                                                                                            </table>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>';
+                                                                                    }
+                                                                                $html .= '</tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>';
+                                                    }
+                                                $html .= '</tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>';
+                            }
+                            $html .='</tbody>
+                        </table>
+                    </div>
+                </div>';
+        return response()->json(['success' => 'Berhasil mengatur program RPJMD','html' => $html]);
     }
 
     public function detail($id)
@@ -808,6 +1143,308 @@ class ProgramRpjmdController extends Controller
             ProgramRpjmd::find($request->program_rpjmd_id)->delete();
         }
 
-        return response()->json(['success' => 'Berhasil']);
+        $get_visis = Visi::all();
+        $visis = [];
+        foreach ($get_visis as $get_visi) {
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
+                                    ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)
+                                    ->latest()->first();
+            if($cek_perubahan_visi)
+            {
+                $visis[] = [
+                    'id' => $cek_perubahan_visi->visi_id,
+                    'deskripsi' => $cek_perubahan_visi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                ];
+            } else {
+                $visis[] = [
+                    'id' => $get_visi->id,
+                    'deskripsi' => $get_visi->deskripsi,
+                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                ];
+            }
+        }
+
+        $html = '<div class="data-table-rows slim" id="program_div_table">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Kode</th>
+                                    <th width="45%">Deskripsi</th>
+                                    <th width="50%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            foreach ($visis as $visi) {
+                                $html .= '<tr style="background: #bbbbbb;">
+                                    <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                        '.strtoupper($visi['deskripsi']).'
+                                        <br>
+                                        <span class="badge bg-primary text-uppercase program-tagging">Visi</span>
+                                    </td>
+                                    <td data-bs-toggle="collapse" data-bs-target="#program_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="hiddenRow">
+                                        <div class="collapse show" id="program_visi'.$visi['id'].'">
+                                            <table class="table table-condensed table-striped">
+                                                <tbody>';
+                                                    $get_misis = Misi::where('visi_id', $visi['id']);
+                                                    if($request->program_filter_visi == 'aman')
+                                                    {
+                                                        $get_misis = $get_misis->where(function($q){
+                                                            $q->where('kode', 1)->orWhere('kode', 2);
+                                                        });
+                                                    }
+                                                    if($request->program_filter_visi == 'mandiri')
+                                                    {
+                                                        $get_misis = $get_misis->where('kode', 3);
+                                                    }
+                                                    if($request->program_filter_visi == 'sejahtera')
+                                                    {
+                                                        $get_misis = $get_misis->where('kode', 4);
+                                                    }
+                                                    if($request->program_filter_visi == 'berahlak')
+                                                    {
+                                                        $get_misis = $get_misis->where('kode', 5);
+                                                    }
+                                                    if($request->program_filter_misi)
+                                                    {
+                                                        $get_misis = $get_misis->where('id', $request->program_filter_misi);
+                                                    }
+                                                    $get_misis = $get_misis->get();
+                                                    $misis = [];
+                                                    foreach ($get_misis as $get_misi) {
+                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                                                                ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)
+                                                                                ->latest()->first();
+                                                        if($cek_perubahan_misi)
+                                                        {
+                                                            $misis[] = [
+                                                                'id' => $cek_perubahan_misi->misi_id,
+                                                                'kode' => $cek_perubahan_misi->kode,
+                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
+                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
+                                                            ];
+                                                        } else {
+                                                            $misis[] = [
+                                                                'id' => $get_misi->id,
+                                                                'kode' => $get_misi->kode,
+                                                                'deskripsi' => $get_misi->deskripsi,
+                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
+                                                            ];
+                                                        }
+                                                    }
+                                                    foreach ($misis as $misi) {
+                                                        $html .= '<tr style="background: #c04141;">
+                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#program_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#program_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                                        '.strtoupper($misi['deskripsi']).'
+                                                                        <br>';
+                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi '.$request->visi.'</span>';
+                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                    </td>
+                                                                    <td width="50%" data-bs-toggle="collapse" data-bs-target="#program_misi'.$misi['id'].'" class="accordion-toggle"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="4" class="hiddenRow">
+                                                                        <div class="collapse show" id="program_misi'.$misi['id'].'">
+                                                                            <table class="table table-condensed table-striped">
+                                                                                <tbody>';
+                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
+                                                                                    if($request->program_filter_tujuan)
+                                                                                    {
+                                                                                        $get_tujuans = $get_tujuans->where('id', $request->program_filter_tujuan);
+                                                                                    }
+                                                                                    $get_tujuans = $get_tujuans->get();
+                                                                                    $tujuans = [];
+                                                                                    foreach ($get_tujuans as $get_tujuan) {
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                                                                                                ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)
+                                                                                                                ->latest()
+                                                                                                                ->first();
+                                                                                        if($cek_perubahan_tujuan)
+                                                                                        {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                                'kode' => $cek_perubahan_tujuan->kode,
+                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        } else {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $get_tujuan->id,
+                                                                                                'kode' => $get_tujuan->kode,
+                                                                                                'deskripsi' => $get_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        }
+                                                                                    }
+                                                                                    foreach ($tujuans as $tujuan) {
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
+                                                                                                        <br>';
+                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi '.$request->visi.'</span>';
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                    </td>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#program_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="50%"></td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                        <div class="collapse show" id="program_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-bordered">
+                                                                                                                <tbody>';
+                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
+                                                                                                                    if($request->program_filter_sasaran)
+                                                                                                                    {
+                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->program_filter_sasaran);
+                                                                                                                    }
+                                                                                                                    $get_sasarans = $get_sasarans->get();
+                                                                                                                    $sasarans = [];
+                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
+                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
+                                                                                                                                                    ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)
+                                                                                                                                                    ->latest()->first();
+                                                                                                                        if($cek_perubahan_sasaran)
+                                                                                                                        {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
+                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
+                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        } else {
+                                                                                                                            $sasarans[] = [
+                                                                                                                                'id' => $get_sasaran->id,
+                                                                                                                                'kode' => $get_sasaran->kode,
+                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
+                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                                                                                                                            ];
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                    foreach ($sasarans as $sasaran) {
+                                                                                                                        $html .= '<tr>
+                                                                                                                                    <td width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                    <td width="45%">
+                                                                                                                                        '.$sasaran['deskripsi'].'
+                                                                                                                                        <br>';
+                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase program-tagging">Visi '.$request->visi.'</span>';
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase program-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase program-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase program-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                    </td>
+                                                                                                                                    <td width="50%">';
+                                                                                                                                        $html .= '<table class="table table-bordered">
+                                                                                                                                                <thead>
+                                                                                                                                                    <tr>
+                                                                                                                                                        <th width="50%">Indikator Kinerja</th>
+                                                                                                                                                        <th width="50%">Program RPJMD</th>
+                                                                                                                                                    </tr>
+                                                                                                                                                </thead>
+                                                                                                                                                <tbody>';
+                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                                                                                                                                foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                        if($request->status_program_option == 'semua')
+                                                                                                                                                        {
+                                                                                                                                                            $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)->get();
+                                                                                                                                                        }
+                                                                                                                                                        if($request->status_program_option == 'prioritas')
+                                                                                                                                                        {
+                                                                                                                                                            $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                                                                        ->whereHas('program_rpjmd', function($q){
+                                                                                                                                                                                                            $q->where('status_program', 'Prioritas');
+                                                                                                                                                                                                        })->get();
+                                                                                                                                                        }
+                                                                                                                                                        if($request->status_program_option == 'pendukung')
+                                                                                                                                                        {
+                                                                                                                                                            $pivot_sasaran_indikator_program_rpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                                                                                                                        ->whereHas('program_rpjmd', function($q){
+                                                                                                                                                                                                            $q->where('status_program', 'Pendukung');
+                                                                                                                                                                                                        })->get();
+                                                                                                                                                        }
+                                                                                                                                                        $a = 1;
+                                                                                                                                                        foreach($pivot_sasaran_indikator_program_rpjmds as $pivot_sasaran_indikator_program_rpjmd)
+                                                                                                                                                            {
+                                                                                                                                                                if($a == 1)
+                                                                                                                                                                {
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)->latest()->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
+                                                                                                                                                                        if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<button type="button" class="btn-close btn-hapus-pivot-sasaran-indikator-program-rpjmd"
+                                                                                                                                                                        data-pivot-sasaran-indikator-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->id.'"
+                                                                                                                                                                        data-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id.'"
+                                                                                                                                                                        data-sasaran-indikator-kinerja-id="'.$pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id.'"></button></td>';
+                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                } else{
+                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                        $html .= '<td></td>';
+                                                                                                                                                                        $get_perubahan_program = PivotPerubahanProgram::where('program_id', $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program_id)
+                                                                                                                                                                                                    ->where('tahun_perubahan', $request->nav_rpjmd_program_tahun)->latest()->first();
+                                                                                                                                                                        if($get_perubahan_program)
+                                                                                                                                                                        {
+                                                                                                                                                                            $program_deskripsi = $get_perubahan_program->deskripsi;
+                                                                                                                                                                        } else {
+                                                                                                                                                                            $program_deskripsi = $pivot_sasaran_indikator_program_rpjmd->program_rpjmd->program->deskripsi;
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<td>'.$program_deskripsi;
+                                                                                                                                                                        if($pivot_sasaran_indikator_program_rpjmd->program_rpjmd->status_program == 'Prioritas')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"></i>';
+                                                                                                                                                                        }
+                                                                                                                                                                        $html .= '<button type="button" class="btn-close btn-hapus-pivot-sasaran-indikator-program-rpjmd"
+                                                                                                                                                                        data-pivot-sasaran-indikator-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->id.'"
+                                                                                                                                                                        data-program-rpjmd-id="'.$pivot_sasaran_indikator_program_rpjmd->program_rpjmd_id.'"
+                                                                                                                                                                        data-sasaran-indikator-kinerja-id="'.$pivot_sasaran_indikator_program_rpjmd->sasaran_indikator_kinerja_id.'"></button></td>';
+                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                }
+                                                                                                                                                                $a++;
+                                                                                                                                                            }
+                                                                                                                                                }
+                                                                                                                                                $html .= '</tbody>
+                                                                                                                                        </table>';
+                                                                                                                                    $html .= '</td>
+                                                                                                                                </tr>';
+                                                                                                                    }
+                                                                                                                $html .= '</tbody>
+                                                                                                            </table>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>';
+                                                                                    }
+                                                                                $html .= '</tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>';
+                                                    }
+                                                $html .= '</tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>';
+                            }
+                            $html .='</tbody>
+                        </table>
+                    </div>
+                </div>';
+        return response()->json(['success' => 'Berhasil mengatur program RPJMD','html' => $html]);
     }
 }
