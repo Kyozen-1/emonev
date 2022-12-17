@@ -3114,7 +3114,7 @@ class PerencanaanController extends Controller
         $tahun_awal = $get_periode->tahun_awal;
 
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $tahun_awal = $get_periode->tahun_awal-1;
+        $tahun_awal = $get_periode->tahun_awal;
         $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
         $tahuns = [];
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
@@ -3122,7 +3122,7 @@ class PerencanaanController extends Controller
         }
 
         $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
+        $tahun_sekarang = Carbon::now()->year;
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
@@ -3246,10 +3246,13 @@ class PerencanaanController extends Controller
                                                                     $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
                                                                     $tujuans = [];
                                                                     foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
-                                                                                                    ->where('tahun_perubahan', $request->tahun)
-                                                                                                    ->latest()
-                                                                                                    ->first();
+                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
+                                                                        if($request->tahun != 'semua')
+                                                                        {
+                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->tahun);
+                                                                        }
+                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
+                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
                                                                         if($cek_perubahan_tujuan)
                                                                         {
                                                                             $tujuans[] = [
