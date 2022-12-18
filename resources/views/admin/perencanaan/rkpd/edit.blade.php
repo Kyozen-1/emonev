@@ -90,7 +90,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <div>{!! $html !!}</div>
+                        <div id="divRkpd">{!! $html !!}</div>
                     </div>
                 </div>
             </div>
@@ -105,10 +105,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.urusan.store') }}" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                    <form class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        {{-- action="{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.urusan.store') }}" --}}
                         @csrf
-                        <input type="hidden" name="rkpd_tahun_pembangunan_urusan_tahun" value="{{$tahun}}">
-                        <input type="hidden" name="rkpd_tahun_pembangunan_urusan_opd_id" value="{{$opd->id}}">
+                        <input type="hidden" name="rkpd_tahun_pembangunan_urusan_tahun" id="rkpd_tahun_pembangunan_urusan_tahun" value="{{$tahun}}">
+                        <input type="hidden" name="rkpd_tahun_pembangunan_urusan_opd_id" id="rkpd_tahun_pembangunan_urusan_opd_id" value="{{$opd->id}}">
                         <div class="form-group position-relative mb-3">
                             <label for="rkpd_tahun_pembangunan_urusan_urusan_id" class="form-label">Urusan</label>
                             <select name="rkpd_tahun_pembangunan_urusan_urusan_id[]" id="rkpd_tahun_pembangunan_urusan_urusan_id" class="form-control" multiple>
@@ -121,7 +122,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                     <input type="hidden" name="rkpd_tahun_pembangunan_urusan_aksi" id="rkpd_tahun_pembangunan_urusan_aksi" value="Save">
-                    <button type="submit" class="btn btn-primary" name="rkpd_tahun_pembangunan_urusan_aksi_button" id="rkpd_tahun_pembangunan_urusan_aksi_button">Add</button>
+                    <button type="button" class="btn btn-primary" name="rkpd_tahun_pembangunan_urusan_aksi_button" id="rkpd_tahun_pembangunan_urusan_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -138,10 +139,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.program.store') }}" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                    <form class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        {{-- action="{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.program.store') }}" --}}
                         @csrf
-                        <input type="hidden" name="rkpd_tahun_pembangunan_program_tahun" value="{{$tahun}}">
-                        <input type="hidden" name="rkpd_tahun_pembangunan_program_opd_id" value="{{$opd->id}}">
+                        <input type="hidden" name="rkpd_tahun_pembangunan_program_tahun" id="rkpd_tahun_pembangunan_program_tahun" value="{{$tahun}}">
+                        <input type="hidden" name="rkpd_tahun_pembangunan_program_opd_id" id="rkpd_tahun_pembangunan_program_opd_id" value="{{$opd->id}}">
                         <input type="hidden" name="rkpd_tahun_pembangunan_program_urusan_id" id="rkpd_tahun_pembangunan_program_urusan_id">
                         <div class="form-group position-relative mb-3">
                             <label for="rkpd_tahun_pembangunan_program_program_id" class="form-label">Program</label>
@@ -152,7 +154,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                     <input type="hidden" name="rkpd_tahun_pembangunan_program_aksi" id="rkpd_tahun_pembangunan_program_aksi" value="Save">
-                    <button type="submit" class="btn btn-primary" name="rkpd_tahun_pembangunan_program_aksi_button" id="rkpd_tahun_pembangunan_program_aksi_button">Add</button>
+                    <button type="button" class="btn btn-primary" name="rkpd_tahun_pembangunan_program_aksi_button" id="rkpd_tahun_pembangunan_program_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -387,6 +389,108 @@
             $('#rkpd_tahun_pembangunan_sub_kegiatan_program_id').val(program_id);
             $('#rkpd_tahun_pembangunan_sub_kegiatan_kegiatan_id').val(kegiatan_id);
             $('#addTahunPembangunanSubKegiatanModal').modal('show');
+        });
+
+        $('#rkpd_tahun_pembangunan_urusan_aksi_button').click(function(){
+            var rkpd_tahun_pembangunan_urusan_tahun = $('#rkpd_tahun_pembangunan_urusan_tahun').val();
+            var rkpd_tahun_pembangunan_urusan_opd_id = $('#rkpd_tahun_pembangunan_urusan_opd_id').val();
+            var rkpd_tahun_pembangunan_urusan_urusan_id = $('#rkpd_tahun_pembangunan_urusan_urusan_id').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.urusan.store') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    rkpd_tahun_pembangunan_urusan_tahun:rkpd_tahun_pembangunan_urusan_tahun,
+                    rkpd_tahun_pembangunan_urusan_opd_id:rkpd_tahun_pembangunan_urusan_opd_id,
+                    rkpd_tahun_pembangunan_urusan_urusan_id:rkpd_tahun_pembangunan_urusan_urusan_id
+                },
+                beforeSend: function()
+                {
+                    return new swal({
+                        title: "Checking...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.errors,
+                            showConfirmButton: true
+                        });
+                    }
+                    if(data.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        });
+                        $('#divRkpd').html(data.html);
+                        $("[name='rkpd_tahun_pembangunan_urusan_urusan_id[]']").val('').trigger('change');
+                        $('#addTahunPembangunanUrusanModal').modal('hide');
+                    }
+                }
+            });
+        });
+
+        $('#rkpd_tahun_pembangunan_program_aksi_button').click(function(){
+            var rkpd_tahun_pembangunan_program_tahun = $('#rkpd_tahun_pembangunan_program_tahun').val();
+            var rkpd_tahun_pembangunan_program_opd_id = $('#rkpd_tahun_pembangunan_program_opd_id').val();
+            var rkpd_tahun_pembangunan_program_urusan_id = $('#rkpd_tahun_pembangunan_program_urusan_id').val();
+            var rkpd_tahun_pembangunan_program_program_id = $('#rkpd_tahun_pembangunan_program_program_id').val();
+
+            $.ajax({
+                url: "{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.program.store') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    rkpd_tahun_pembangunan_program_tahun:rkpd_tahun_pembangunan_program_tahun,
+                    rkpd_tahun_pembangunan_program_opd_id:rkpd_tahun_pembangunan_program_opd_id,
+                    rkpd_tahun_pembangunan_program_urusan_id:rkpd_tahun_pembangunan_program_urusan_id,
+                    rkpd_tahun_pembangunan_program_program_id:rkpd_tahun_pembangunan_program_program_id
+                },
+                beforeSend: function()
+                {
+                    return new swal({
+                        title: "Checking...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.errors,
+                            showConfirmButton: true
+                        });
+                    }
+                    if(data.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        });
+                        $('#divRkpd').html(data.html);
+                        $("[name='rkpd_tahun_pembangunan_program_program_id[]']").val('').trigger('change');
+                        $('#addTahunPembangunanProgramModal').modal('hide');
+                    }
+                }
+            });
         });
     </script>
 @endsection
