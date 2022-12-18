@@ -153,7 +153,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.opd.store') }}" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                    <form class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        {{-- action="{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.opd.store') }}" --}}
                         @csrf
                         <input type="hidden" name="rkpd_opd_tahun_pembangunan_tahun" id="rkpd_opd_tahun_pembangunan_tahun">
                         <div class="form-group position-relative mb-3">
@@ -168,7 +169,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                     <input type="hidden" name="rkpd_opd_tahun_pembangunan_aksi" id="rkpd_opd_tahun_pembangunan_aksi" value="Save">
-                    <button type="submit" class="btn btn-primary" name="rkpd_opd_tahun_pembangunan_aksi_button" id="rkpd_opd_tahun_pembangunan_aksi_button">Add</button>
+                    <button type="button" class="btn btn-primary" name="rkpd_opd_tahun_pembangunan_aksi_button" id="rkpd_opd_tahun_pembangunan_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -419,6 +420,9 @@
             $(document).on('click', '.btn-hapus-rkpd-opd-tahun-pembangunan', function(){
                 var opd_id = $(this).attr('data-opd-id');
                 var tahun = $(this).attr('data-tahun');
+
+                var nav_rkpd_tahun = $('.navRkpd.active').attr('data-tahun');
+                var rkpd_filter_opd = $('#rkpd_filter_opd_'+nav_rkpd_tahun).val();
                 return new swal({
                     title: "Apakah Anda Yakin Menghapus Ini? Menghapus data ini akan menghapus data yang lain!!!",
                     icon: "warning",
@@ -434,7 +438,19 @@
                             data: {
                                 "_token": "{{ csrf_token() }}",
                                 opd_id:opd_id,
-                                tahun: tahun
+                                tahun: tahun,
+                                nav_rkpd_tahun:nav_rkpd_tahun,
+                                rkpd_filter_opd:rkpd_filter_opd,
+                            },
+                            beforeSend: function()
+                            {
+                                return new swal({
+                                    title: "Checking...",
+                                    text: "Harap Menunggu",
+                                    imageUrl: "{{ asset('/images/preloader.gif') }}",
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false
+                                });
                             },
                             success: function(data)
                             {
@@ -452,12 +468,62 @@
                                         icon: 'success',
                                         title: data.success,
                                         showConfirmButton: true
-                                    }).then(function() {
-                                        window.location.href = "{{ route('admin.perencanaan.index') }}";
                                     });
+                                    $('#rkpdNavDiv'+nav_rkpd_tahun).html(data.html);
                                 }
                             }
                         });
+                    }
+                });
+            });
+
+            $('#rkpd_opd_tahun_pembangunan_aksi_button').click(function(){
+                var nav_rkpd_tahun = $('.navRkpd.active').attr('data-tahun');
+                var rkpd_filter_opd = $('#rkpd_filter_opd_'+nav_rkpd_tahun).val();
+                var rkpd_opd_tahun_pembangunan_opd_id = $('#rkpd_opd_tahun_pembangunan_opd_id').val();
+                var rkpd_opd_tahun_pembangunan_tahun = $('#rkpd_opd_tahun_pembangunan_tahun').val();
+
+                $.ajax({
+                    url: "{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.opd.store') }}",
+                    method: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        nav_rkpd_tahun:nav_rkpd_tahun,
+                        rkpd_filter_opd:rkpd_filter_opd,
+                        rkpd_opd_tahun_pembangunan_opd_id:rkpd_opd_tahun_pembangunan_opd_id,
+                        rkpd_opd_tahun_pembangunan_tahun
+                    },
+                    beforeSend: function()
+                    {
+                        return new swal({
+                            title: "Checking...",
+                            text: "Harap Menunggu",
+                            imageUrl: "{{ asset('/images/preloader.gif') }}",
+                            showConfirmButton: false,
+                            allowOutsideClick: false
+                        });
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.errors,
+                                showConfirmButton: true
+                            });
+                        }
+                        if(data.success)
+                        {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.success,
+                                showConfirmButton: true
+                            });
+                            $('#rkpdNavDiv'+nav_rkpd_tahun).html(data.html);
+                            $('#addOpdTahunPembangunanModal').modal('hide');
+                        }
                     }
                 });
             });
