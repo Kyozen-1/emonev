@@ -157,8 +157,206 @@ class RkpdController extends Controller
             }
         }
 
-        Alert::success('Berhasil', 'Berhasil Mengatur OPD untuk tahun pembangunan '.$request->rkpd_opd_tahun_pembangunan_tahun);
-        return redirect()->route('admin.perencanaan.index');
+        $opd_id = $request->rkpd_filter_opd;
+        $tahun = $request->nav_rkpd_tahun;
+
+        $opds = MasterOpd::whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun){
+            $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                $q->where('tahun', $tahun);
+            });
+        });
+        if($opd_id)
+        {
+            $opds = $opds->where('id', $opd_id);
+        }
+        $opds = $opds->get();
+
+        $html = '<div class="data-table-rows slim">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th width="5%">No</th>
+                                    <th width="16%">OPD</th>
+                                    <th width="16%">Urusan</th>
+                                    <th width="16%">Program</th>
+                                    <th width="16%">Kegiatan</th>
+                                    <th width="16%">Sub Kegiatan</th>
+                                    <th width="15%">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            $a = 1;
+                            foreach ($opds as $opd) {
+                                $html .= '<tr>';
+                                    $html .= '<td>'.$a++.'</td>';
+                                    $html .= '<td>'.$opd->nama.'</td>';
+
+                                    $get_urusans = Urusan::whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($tahun, $opd){
+                                        $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun, $opd){
+                                            $q->where('opd_id', $opd->id);
+                                            $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                $q->where('tahun', $tahun);
+                                            });
+                                        });
+                                    })->orderBy('kode', 'asc')->get();
+
+                                    $urusans = [];
+
+                                    foreach ($get_urusans as $get_urusan) {
+                                        $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
+                                        if($cek_perubahan_urusan)
+                                        {
+                                            $urusans[] = [
+                                                'id' => $cek_perubahan_urusan->urusan_id,
+                                                'kode' => $cek_perubahan_urusan->kode,
+                                                'deskripsi' => $cek_perubahan_urusan->deskripsi
+                                            ];
+                                        } else {
+                                            $urusans[] = [
+                                                'id' => $get_urusan->id,
+                                                'kode' => $get_urusan->kode,
+                                                'deskripsi' => $get_urusan->deskripsi
+                                            ];
+                                        }
+                                    }
+                                    $html .= '<td><ul>';
+                                        foreach ($urusans as $urusan) {
+                                            $html .= '<li>'.$urusan['kode'].'. '.$urusan['deskripsi'].'</li>';
+                                        }
+                                    $html .= '</ul></td>';
+
+
+                                    $get_programs = Program::whereHas('rkpd_tahun_pembangunan_program', function($q) use ($opd, $tahun){
+                                        $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($tahun, $opd){
+                                            $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun, $opd){
+                                                $q->where('opd_id', $opd->id);
+                                                $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                    $q->where('tahun', $tahun);
+                                                });
+                                            });
+                                        });
+                                    })->orderBy('kode', 'asc')->get();
+
+                                    $programs = [];
+
+                                    foreach ($get_programs as $get_program) {
+                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
+                                        if($cek_perubahan_program)
+                                        {
+                                            $programs[] = [
+                                                'id' => $cek_perubahan_program->program_id,
+                                                'kode' => $cek_perubahan_program->kode,
+                                                'deskripsi' => $cek_perubahan_program->deskripsi
+                                            ];
+                                        } else {
+                                            $programs[] = [
+                                                'id' => $get_program->id,
+                                                'kode' => $get_program->kode,
+                                                'deskripsi' => $get_program->deskripsi
+                                            ];
+                                        }
+                                    }
+                                    $html .= '<td><ul>';
+                                        foreach ($programs as $program) {
+                                            $html .= '<li>'.$program['kode'].'. '.$program['deskripsi'].'</li>';
+                                        }
+                                    $html .= '</ul></td>';
+
+                                    $get_kegiatans = Kegiatan::whereHas('rkpd_tahun_pembangunan_kegiatan', function($q) use ($opd, $tahun) {
+                                        $q->whereHas('rkpd_tahun_pembangunan_program', function($q) use ($opd, $tahun){
+                                            $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($tahun, $opd){
+                                                $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun, $opd){
+                                                    $q->where('opd_id', $opd->id);
+                                                    $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                        $q->where('tahun', $tahun);
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    })->orderBy('kode', 'asc')->get();
+
+                                    $kegiatans = [];
+
+                                    foreach ($get_kegiatans as $get_kegiatan) {
+                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)->latest()->first();
+                                        if($cek_perubahan_kegiatan)
+                                        {
+                                            $kegiatans[] = [
+                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                'kode' => $cek_perubahan_kegiatan->kode,
+                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                                            ];
+                                        } else {
+                                            $kegiatans[] = [
+                                                'id' => $get_kegiatan->id,
+                                                'kode' => $get_kegiatan->kode,
+                                                'deskripsi' => $get_kegiatan->deskripsi
+                                            ];
+                                        }
+                                    }
+
+                                    $html .= '<td><ul>';
+                                        foreach ($kegiatans as $kegiatan) {
+                                            $html .= '<li>'.$kegiatan['kode'].'.'.$kegiatan['deskripsi'].'</li>';
+                                        }
+                                    $html .= '</ul></td>';
+
+                                    $get_sub_kegiatans = SubKegiatan::whereHas('rkpd_tahun_pembangunan_sub_kegiatan', function($q) use ($opd, $tahun){
+                                        $q->whereHas('rkpd_tahun_pembangunan_kegiatan', function($q) use ($opd, $tahun) {
+                                            $q->whereHas('rkpd_tahun_pembangunan_program', function($q) use ($opd, $tahun){
+                                                $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($tahun, $opd){
+                                                    $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun, $opd){
+                                                        $q->where('opd_id', $opd->id);
+                                                        $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                            $q->where('tahun', $tahun);
+                                                        });
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    })->orderBy('kode', 'asc')->get();
+
+                                    $sub_kegiatans = [];
+
+                                    foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
+                                        $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)->latest()->first();
+                                        if($cek_perubahan_sub_kegiatan)
+                                        {
+                                            $sub_kegiatans[] = [
+                                                'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
+                                                'kode' => $cek_perubahan_sub_kegiatan->kode,
+                                                'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi
+                                            ];
+                                        } else {
+                                            $sub_kegiatans[] = [
+                                                'id' => $get_sub_kegiatan->id,
+                                                'kode' => $get_sub_kegiatan->kode,
+                                                'deskripsi' => $get_sub_kegiatan->deskripsi,
+                                            ];
+                                        }
+                                    }
+
+                                    $html .= '<td><ul>';
+                                        foreach ($sub_kegiatans as $sub_kegiatan) {
+                                            $html .= '<li>'.$sub_kegiatan['kode'].'.'.$sub_kegiatan['deskripsi'].'</li>';
+                                        }
+                                    $html .= '</ul></td>';
+                                    $html .= '<td>
+                                                <a href="/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/atur/'.$opd->id.'/'.$tahun.'"
+                                                    class="btn btn-icon btn-warning waves-effect waves-light mr-1">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button class="btn btn-icon btn-danger waves-effect waves-light btn-hapus-rkpd-opd-tahun-pembangunan" data-opd-id="'.$opd->id.'" data-tahun="'.$tahun.'"><i class="fas fa-trash"></i></button>
+                                            </td>';
+                                $html .= '</tr>';
+                            }
+                            $html .= '</tbody>
+                        </table>
+                    </div>
+                </div>';
+
+        return response()->json(['success' => 'Berhasil menambahkan OPD','html' => $html]);
     }
 
     public function data_per_opd($tahun)
@@ -732,8 +930,331 @@ class RkpdController extends Controller
             }
         }
 
-        Alert::success('Berhasil', 'Berhasil Mengatur Urusan untuk OPD '.$opd->nama);
-        return redirect()->route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur', ['opd_id' => $opd_id, 'tahun' => $tahun]);
+        $opd = MasterOpd::find($opd_id);
+
+        $get_urusans = Urusan::all();
+        $urusans = [];
+        foreach ($get_urusans as $get_urusan) {
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $urusans[] = [
+                    'id' => $cek_perubahan_urusan->urusan_id,
+                    'kode' => $cek_perubahan_urusan->kode,
+                    'deskripsi' => $cek_perubahan_urusan->deskripsi
+                ];
+            } else {
+                $urusans[] = [
+                    'id' => $get_urusan->id,
+                    'kode' => $get_urusan->kode,
+                    'deskripsi' => $get_urusan->deskripsi
+                ];
+            }
+        }
+
+        $get_urusan_rkpds = Urusan::whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($opd_id, $tahun){
+            $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($opd_id, $tahun){
+                $q->where('opd_id', $opd_id);
+                $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun) {
+                    $q->where('tahun', $tahun);
+                });
+            });
+        })->get();
+
+        $urusan_rkpds = [];
+
+        foreach ($get_urusan_rkpds as $get_urusan_rkpd) {
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan_rkpd->id)->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $urusan_rkpds[] = [
+                    'id' => $cek_perubahan_urusan->urusan_id,
+                    'kode' => $cek_perubahan_urusan->kode,
+                    'deskripsi' => $cek_perubahan_urusan->deskripsi,
+                ];
+            } else {
+                $urusan_rkpds[] = [
+                    'id' => $get_urusan_rkpd->id,
+                    'kode' => $get_urusan_rkpd->kode,
+                    'deskripsi' => $get_urusan_rkpd->deskripsi,
+                ];
+            }
+        }
+
+        $html = '<div class="data-table-rows slim">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Kode</th>
+                                    <th width="80%">Deskripsi</th>
+                                    <th width="15%">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            foreach ($urusan_rkpds as $urusan_rkpd) {
+                                $html .= '<tr style="background: #bbbbbb;">';
+                                    $html .= '<td class="text-white">'.$urusan_rkpd['kode'].'</td>';
+                                    $html .= '<td class="text-white">'.$urusan_rkpd['deskripsi'].'</td>';
+                                    $html .= '<td><button class="btn btn-primary btn-icon waves-effect waves-light button-add-rkpd-tahun-pembangunan-program mr-1"
+                                                    data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                    data-opd-id="'.$opd->id.'"
+                                                    data-tahun="'.$tahun.'"
+                                                    type="button"
+                                                    title="Tambah Program">
+                                                        <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button"
+                                                    class="btn btn-icon btn-success waves-effect waves-light btn-open-rkpd-tahun-pembangunan-program data-urusan-'.$urusan_rkpd['id'].' data-opd-'.$opd->id.' data-tahun-'.$tahun.'"
+                                                    data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                    data-opd-id="'.$opd->id.'"
+                                                    data-tahun="'.$tahun.'"
+                                                    value="close"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#rkpd_urusan'.$urusan_rkpd['id'].'"
+                                                    class="accordion-toggle">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </td>';
+                                $html .= '</tr>
+                                        <tr>
+                                            <td colspan="3" class="hiddenRow">
+                                                <div class="collapse accordion-body" id="rkpd_urusan'.$urusan_rkpd['id'].'">
+                                                    <table class="table table-condensed table-striped">
+                                                        <tbody>';
+                                                            $get_program_rkpds = Program::whereHas('urusan', function($q) use ($opd, $tahun, $urusan_rkpd){
+                                                                $q->where('id', $urusan_rkpd['id']);
+                                                                $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($opd, $tahun, $urusan_rkpd) {
+                                                                    $q->where('urusan_id', $urusan_rkpd['id']);
+                                                                    $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($opd, $tahun) {
+                                                                        $q->where('opd_id', $opd->id);
+                                                                        $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                                            $q->where('tahun', $tahun);
+                                                                        });
+                                                                    });
+                                                                });
+                                                            })->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                                                    $q->where('opd_id', $opd->id);
+                                                                });
+                                                            })->whereHas('rkpd_tahun_pembangunan_program')->get();
+
+                                                            $program_rkpds = [];
+
+                                                            foreach ($get_program_rkpds as $get_program_rkpd) {
+                                                                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rkpd->id)->latest()->first();
+                                                                if($cek_perubahan_program)
+                                                                {
+                                                                    $program_rkpds[] = [
+                                                                        'id' => $cek_perubahan_program->program_id,
+                                                                        'kode' => $cek_perubahan_program->kode,
+                                                                        'deskripsi' => $cek_perubahan_program->deskripsi
+                                                                    ];
+                                                                } else {
+                                                                    $program_rkpds[] = [
+                                                                        'id' => $get_program_rkpd->id,
+                                                                        'kode' => $get_program_rkpd->kode,
+                                                                        'deskripsi' => $get_program_rkpd->deskripsi
+                                                                    ];
+                                                                }
+                                                            }
+                                                            foreach ($program_rkpds as $program_rkpd) {
+                                                                $html .= '<tr style="background: #c04141;">';
+                                                                    $html .= '<td width="5%"class="text-white">'.$urusan_rkpd['kode'].'.'.$program_rkpd['kode'].'</td>';
+                                                                    $html .= '<td width=80%" class="text-white">'.$program_rkpd['deskripsi'].'</td>';
+                                                                    $html .= '<td width="15%"><button class="btn btn-primary btn-icon waves-effect waves-light button-add-rkpd-tahun-pembangunan-kegiatan mr-1"
+                                                                                        data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                                                        data-program-id="'.$program_rkpd['id'].'"
+                                                                                        data-opd-id="'.$opd->id.'"
+                                                                                        data-tahun="'.$tahun.'"
+                                                                                        type="button"
+                                                                                        title="Tambah Kegiatan">
+                                                                                            <i class="fas fa-plus"></i>
+                                                                                    </button>
+                                                                                    <button type="button"
+                                                                                        class="btn btn-icon btn-success waves-effect waves-light btn-open-rkpd-tahun-pembangunan-kegiatan data-urusan-'.$urusan_rkpd['id'].' data-opd-'.$opd->id.' data-tahun-'.$tahun.' data-program-'.$program_rkpd['id'].'"
+                                                                                        data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                                                        data-opd-id="'.$opd->id.'"
+                                                                                        data-tahun="'.$tahun.'"
+                                                                                        data-program-id="'.$program_rkpd['id'].'"
+                                                                                        value="close"
+                                                                                        data-bs-toggle="collapse"
+                                                                                        data-bs-target="#rkpd_program'.$program_rkpd['id'].'"
+                                                                                        class="accordion-toggle">
+                                                                                            <i class="fas fa-chevron-right"></i>
+                                                                                    </button>
+                                                                                </td>';
+                                                                $html .= '</tr>
+                                                                        <tr>
+                                                                            <td colspan="3" class="hiddenRow">
+                                                                                <div class="collapse accordion-body" id="rkpd_program'.$program_rkpd['id'].'">
+                                                                                    <table class="table table-condensed table-striped">
+                                                                                    <tbody>';
+                                                                                        $get_kegiatan_rkpds = Kegiatan::whereHas('program', function($q) use ($opd_id, $tahun, $urusan_rkpd, $program_rkpd){
+                                                                                            $q->where('id', $program_rkpd['id']);
+                                                                                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                    $q->where('opd_id', $opd_id);
+                                                                                                });
+                                                                                            });
+
+                                                                                            $q->whereHas('urusan', function($q) use ($opd_id, $tahun, $urusan_rkpd){
+                                                                                                $q->where('id', $urusan_rkpd['id']);
+                                                                                                $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($opd_id, $tahun, $urusan_rkpd) {
+                                                                                                    $q->where('urusan_id', $urusan_rkpd['id']);
+                                                                                                    $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($opd_id, $tahun) {
+                                                                                                        $q->where('opd_id', $opd_id);
+                                                                                                        $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                                                                            $q->where('tahun', $tahun);
+                                                                                                        });
+                                                                                                    });
+                                                                                                });
+                                                                                            });
+                                                                                        })->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                            $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                $q->where('opd_id', $opd_id);
+                                                                                            });
+                                                                                        })->whereHas('rkpd_tahun_pembangunan_kegiatan')->get();
+
+                                                                                        $kegiatan_rkpds = [];
+
+                                                                                        foreach ($get_kegiatan_rkpds as $get_kegiatan_rkpd) {
+                                                                                            $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan_rkpd->id)->latest()->first();
+                                                                                            if($cek_perubahan_kegiatan)
+                                                                                            {
+                                                                                                $kegiatan_rkpds[] = [
+                                                                                                    'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                                                                    'kode' => $cek_perubahan_kegiatan->kode,
+                                                                                                    'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                                                                                                ];
+                                                                                            } else {
+                                                                                                $kegiatan_rkpds[] = [
+                                                                                                    'id' => $get_kegiatan_rkpd->id,
+                                                                                                    'kode' => $get_kegiatan_rkpd->kode,
+                                                                                                    'deskripsi' => $get_kegiatan_rkpd->deskripsi
+                                                                                                ];
+                                                                                            }
+                                                                                        }
+                                                                                        foreach ($kegiatan_rkpds as $kegiatan_rkpd) {
+                                                                                            $html .= '<tr style="background: #41c0c0">';
+                                                                                                $html .= '<td width="5%" class="text-white">'.$urusan_rkpd['kode'].'.'.$program_rkpd['kode'].'.'.$kegiatan_rkpd['kode'].'</td>';
+                                                                                                $html .= '<td width=80%" class="text-white">'.$kegiatan_rkpd['deskripsi'].'</td>';
+                                                                                                $html .= '<td width="15%"><button class="btn btn-primary btn-icon waves-effect waves-light button-add-rkpd-tahun-pembangunan-sub-kegiatan mr-1"
+                                                                                                                data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                                                                                data-program-id="'.$program_rkpd['id'].'"
+                                                                                                                data-kegiatan-id="'.$kegiatan_rkpd['id'].'"
+                                                                                                                data-opd-id="'.$opd->id.'"
+                                                                                                                data-tahun="'.$tahun.'"
+                                                                                                                type="button"
+                                                                                                                title="Tambah Sub Kegiatan">
+                                                                                                                    <i class="fas fa-plus"></i>
+                                                                                                            </button>
+                                                                                                            <button type="button"
+                                                                                                                class="btn btn-icon btn-success waves-effect waves-light btn-open-rkpd-tahun-pembangunan-sub-kegiatan data-urusan-'.$urusan_rkpd['id'].' data-opd-'.$opd->id.' data-tahun-'.$tahun.' data-program-'.$program_rkpd['id'].' data-kegiatan-'.$kegiatan_rkpd['id'].'"
+                                                                                                                data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                                                                                data-opd-id="'.$opd->id.'"
+                                                                                                                data-tahun="'.$tahun.'"
+                                                                                                                data-program-id="'.$program_rkpd['id'].'"
+                                                                                                                data-kegiatan-id="'.$kegiatan_rkpd['id'].'"
+                                                                                                                value="close"
+                                                                                                                data-bs-toggle="collapse"
+                                                                                                                data-bs-target="#rkpd_kegiatan'.$kegiatan_rkpd['id'].'"
+                                                                                                                class="accordion-toggle">
+                                                                                                                    <i class="fas fa-chevron-right"></i>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            $html .= '</tr>
+                                                                                                    <tr>
+                                                                                                        <td colspan="3" class="hiddenRow">
+                                                                                                            <div class="collapse accordion-body" id="rkpd_kegiatan'.$kegiatan_rkpd['id'].'">
+                                                                                                                <table class="table table-condensed table-striped">
+                                                                                                                <tbody>';
+                                                                                                                    $get_sub_kegiatan_rkpds = SubKegiatan::whereHas('kegiatan', function($q) use ($opd_id, $tahun, $urusan_rkpd, $program_rkpd, $kegiatan_rkpd) {
+                                                                                                                        $q->where('kegiatan_id', $kegiatan_rkpd['id']);
+                                                                                                                        $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                            $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd_id) {
+                                                                                                                                $q->where('opd_id', $opd_id);
+                                                                                                                            });
+                                                                                                                        });
+
+                                                                                                                        $q->whereHas('program', function($q) use ($opd_id, $tahun, $urusan_rkpd, $program_rkpd) {
+                                                                                                                            $q->where('id', $program_rkpd['id']);
+
+                                                                                                                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                                    $q->where('opd_id', $opd_id);
+                                                                                                                                });
+                                                                                                                            });
+
+                                                                                                                            $q->whereHas('urusan', function($q) use ($opd_id, $tahun, $urusan_rkpd){
+                                                                                                                                $q->where('id', $urusan_rkpd['id']);
+                                                                                                                                $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($opd_id, $tahun, $urusan_rkpd) {
+                                                                                                                                    $q->where('urusan_id', $urusan_rkpd['id']);
+                                                                                                                                    $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($opd_id, $tahun) {
+                                                                                                                                        $q->where('opd_id', $opd_id);
+                                                                                                                                        $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                                                                                                            $q->where('tahun', $tahun);
+                                                                                                                                        });
+                                                                                                                                    });
+                                                                                                                                });
+                                                                                                                            });
+                                                                                                                        });
+                                                                                                                    })->whereHas('sub_kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                        $q->whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                            $q->where('opd_id', $opd_id);
+                                                                                                                        });
+                                                                                                                    })->whereHas('rkpd_tahun_pembangunan_sub_kegiatan')->get();
+
+                                                                                                                    $sub_kegiatan_rkpds = [];
+
+                                                                                                                    foreach ($get_sub_kegiatan_rkpds as $get_sub_kegiatan_rkpd) {
+                                                                                                                        $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan_rkpd->id)->latest()->first();
+                                                                                                                        if($cek_perubahan_sub_kegiatan)
+                                                                                                                        {
+                                                                                                                            $sub_kegiatan_rkpds[] = [
+                                                                                                                                'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
+                                                                                                                                'kode' => $cek_perubahan_sub_kegiatan->kode,
+                                                                                                                                'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi
+                                                                                                                            ];
+                                                                                                                        } else {
+                                                                                                                            $sub_kegiatan_rkpds[] = [
+                                                                                                                                'id' => $get_sub_kegiatan_rkpd->id,
+                                                                                                                                'kode' => $get_sub_kegiatan_rkpd->kode,
+                                                                                                                                'deskripsi' => $get_sub_kegiatan_rkpd->deskripsi
+                                                                                                                            ];
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                    foreach ($sub_kegiatan_rkpds as $sub_kegiatan_rkpd) {
+                                                                                                                        $html .= '<tr style="background:#41c081">';
+                                                                                                                            $html .= '<td width="5%" class="text-white">'.$urusan_rkpd['kode'].'.'.$program_rkpd['kode'].'.'.$kegiatan_rkpd['kode'].'.'.$sub_kegiatan_rkpd['kode'].'</td>';
+                                                                                                                            $html .= '<td width=80%" class="text-white">'.$sub_kegiatan_rkpd['deskripsi'].'</td>';
+                                                                                                                            $html .= '<td width=20%" class="text-white"></td>';
+                                                                                                                        $html .= '</tr>';
+                                                                                                                    }
+                                                                                                                $html .= '</tbody>
+                                                                                                                </table>
+                                                                                                            </div>
+                                                                                                        </td>
+                                                                                                    </tr>';
+                                                                                        }
+                                                                                    $html .= '</tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>';
+                                                            }
+                                                        $html .= '</tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>';
+                            }
+                            $html .= '</tbody>
+                        </table>
+                    </div>
+                </div>';
+
+        return response()->json(['success' => 'Berhasil mengatur urusan', 'html' => $html]);
     }
 
     public function get_program_rkpd($opd_id, $tahun, $urusan_id)
@@ -808,8 +1329,309 @@ class RkpdController extends Controller
             }
         }
 
-        Alert::success('Berhasil', 'Berhasil Mengatur Program untuk OPD '.$opd->nama);
-        return redirect()->route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur', ['opd_id' => $opd_id, 'tahun' => $tahun]);
+        $get_urusan_rkpds = Urusan::whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($opd_id, $tahun){
+            $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($opd_id, $tahun){
+                $q->where('opd_id', $opd_id);
+                $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun) {
+                    $q->where('tahun', $tahun);
+                });
+            });
+        })->get();
+
+        $urusan_rkpds = [];
+
+        foreach ($get_urusan_rkpds as $get_urusan_rkpd) {
+            $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan_rkpd->id)->latest()->first();
+            if($cek_perubahan_urusan)
+            {
+                $urusan_rkpds[] = [
+                    'id' => $cek_perubahan_urusan->urusan_id,
+                    'kode' => $cek_perubahan_urusan->kode,
+                    'deskripsi' => $cek_perubahan_urusan->deskripsi,
+                ];
+            } else {
+                $urusan_rkpds[] = [
+                    'id' => $get_urusan_rkpd->id,
+                    'kode' => $get_urusan_rkpd->kode,
+                    'deskripsi' => $get_urusan_rkpd->deskripsi,
+                ];
+            }
+        }
+
+        $html = '<div class="data-table-rows slim">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Kode</th>
+                                    <th width="80%">Deskripsi</th>
+                                    <th width="15%">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            foreach ($urusan_rkpds as $urusan_rkpd) {
+                                $html .= '<tr style="background: #bbbbbb;">';
+                                    $html .= '<td class="text-white">'.$urusan_rkpd['kode'].'</td>';
+                                    $html .= '<td class="text-white">'.$urusan_rkpd['deskripsi'].'</td>';
+                                    $html .= '<td><button class="btn btn-primary btn-icon waves-effect waves-light button-add-rkpd-tahun-pembangunan-program mr-1"
+                                                    data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                    data-opd-id="'.$opd->id.'"
+                                                    data-tahun="'.$tahun.'"
+                                                    type="button"
+                                                    title="Tambah Program">
+                                                        <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button"
+                                                    class="btn btn-icon btn-success waves-effect waves-light btn-open-rkpd-tahun-pembangunan-program data-urusan-'.$urusan_rkpd['id'].' data-opd-'.$opd->id.' data-tahun-'.$tahun.'"
+                                                    data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                    data-opd-id="'.$opd->id.'"
+                                                    data-tahun="'.$tahun.'"
+                                                    value="close"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#rkpd_urusan'.$urusan_rkpd['id'].'"
+                                                    class="accordion-toggle">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </td>';
+                                $html .= '</tr>
+                                        <tr>
+                                            <td colspan="3" class="hiddenRow">
+                                                <div class="collapse accordion-body" id="rkpd_urusan'.$urusan_rkpd['id'].'">
+                                                    <table class="table table-condensed table-striped">
+                                                        <tbody>';
+                                                            $get_program_rkpds = Program::whereHas('urusan', function($q) use ($opd, $tahun, $urusan_rkpd){
+                                                                $q->where('id', $urusan_rkpd['id']);
+                                                                $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($opd, $tahun, $urusan_rkpd) {
+                                                                    $q->where('urusan_id', $urusan_rkpd['id']);
+                                                                    $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($opd, $tahun) {
+                                                                        $q->where('opd_id', $opd->id);
+                                                                        $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                                            $q->where('tahun', $tahun);
+                                                                        });
+                                                                    });
+                                                                });
+                                                            })->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                                                    $q->where('opd_id', $opd->id);
+                                                                });
+                                                            })->whereHas('rkpd_tahun_pembangunan_program')->get();
+
+                                                            $program_rkpds = [];
+
+                                                            foreach ($get_program_rkpds as $get_program_rkpd) {
+                                                                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rkpd->id)->latest()->first();
+                                                                if($cek_perubahan_program)
+                                                                {
+                                                                    $program_rkpds[] = [
+                                                                        'id' => $cek_perubahan_program->program_id,
+                                                                        'kode' => $cek_perubahan_program->kode,
+                                                                        'deskripsi' => $cek_perubahan_program->deskripsi
+                                                                    ];
+                                                                } else {
+                                                                    $program_rkpds[] = [
+                                                                        'id' => $get_program_rkpd->id,
+                                                                        'kode' => $get_program_rkpd->kode,
+                                                                        'deskripsi' => $get_program_rkpd->deskripsi
+                                                                    ];
+                                                                }
+                                                            }
+                                                            foreach ($program_rkpds as $program_rkpd) {
+                                                                $html .= '<tr style="background: #c04141;">';
+                                                                    $html .= '<td width="5%"class="text-white">'.$urusan_rkpd['kode'].'.'.$program_rkpd['kode'].'</td>';
+                                                                    $html .= '<td width=80%" class="text-white">'.$program_rkpd['deskripsi'].'</td>';
+                                                                    $html .= '<td width="15%"><button class="btn btn-primary btn-icon waves-effect waves-light button-add-rkpd-tahun-pembangunan-kegiatan mr-1"
+                                                                                        data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                                                        data-program-id="'.$program_rkpd['id'].'"
+                                                                                        data-opd-id="'.$opd->id.'"
+                                                                                        data-tahun="'.$tahun.'"
+                                                                                        type="button"
+                                                                                        title="Tambah Kegiatan">
+                                                                                            <i class="fas fa-plus"></i>
+                                                                                    </button>
+                                                                                    <button type="button"
+                                                                                        class="btn btn-icon btn-success waves-effect waves-light btn-open-rkpd-tahun-pembangunan-kegiatan data-urusan-'.$urusan_rkpd['id'].' data-opd-'.$opd->id.' data-tahun-'.$tahun.' data-program-'.$program_rkpd['id'].'"
+                                                                                        data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                                                        data-opd-id="'.$opd->id.'"
+                                                                                        data-tahun="'.$tahun.'"
+                                                                                        data-program-id="'.$program_rkpd['id'].'"
+                                                                                        value="close"
+                                                                                        data-bs-toggle="collapse"
+                                                                                        data-bs-target="#rkpd_program'.$program_rkpd['id'].'"
+                                                                                        class="accordion-toggle">
+                                                                                            <i class="fas fa-chevron-right"></i>
+                                                                                    </button>
+                                                                                </td>';
+                                                                $html .= '</tr>
+                                                                        <tr>
+                                                                            <td colspan="3" class="hiddenRow">
+                                                                                <div class="collapse accordion-body" id="rkpd_program'.$program_rkpd['id'].'">
+                                                                                    <table class="table table-condensed table-striped">
+                                                                                    <tbody>';
+                                                                                        $get_kegiatan_rkpds = Kegiatan::whereHas('program', function($q) use ($opd_id, $tahun, $urusan_rkpd, $program_rkpd){
+                                                                                            $q->where('id', $program_rkpd['id']);
+                                                                                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                    $q->where('opd_id', $opd_id);
+                                                                                                });
+                                                                                            });
+
+                                                                                            $q->whereHas('urusan', function($q) use ($opd_id, $tahun, $urusan_rkpd){
+                                                                                                $q->where('id', $urusan_rkpd['id']);
+                                                                                                $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($opd_id, $tahun, $urusan_rkpd) {
+                                                                                                    $q->where('urusan_id', $urusan_rkpd['id']);
+                                                                                                    $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($opd_id, $tahun) {
+                                                                                                        $q->where('opd_id', $opd_id);
+                                                                                                        $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                                                                            $q->where('tahun', $tahun);
+                                                                                                        });
+                                                                                                    });
+                                                                                                });
+                                                                                            });
+                                                                                        })->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                            $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                $q->where('opd_id', $opd_id);
+                                                                                            });
+                                                                                        })->whereHas('rkpd_tahun_pembangunan_kegiatan')->get();
+
+                                                                                        $kegiatan_rkpds = [];
+
+                                                                                        foreach ($get_kegiatan_rkpds as $get_kegiatan_rkpd) {
+                                                                                            $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan_rkpd->id)->latest()->first();
+                                                                                            if($cek_perubahan_kegiatan)
+                                                                                            {
+                                                                                                $kegiatan_rkpds[] = [
+                                                                                                    'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                                                                    'kode' => $cek_perubahan_kegiatan->kode,
+                                                                                                    'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                                                                                                ];
+                                                                                            } else {
+                                                                                                $kegiatan_rkpds[] = [
+                                                                                                    'id' => $get_kegiatan_rkpd->id,
+                                                                                                    'kode' => $get_kegiatan_rkpd->kode,
+                                                                                                    'deskripsi' => $get_kegiatan_rkpd->deskripsi
+                                                                                                ];
+                                                                                            }
+                                                                                        }
+                                                                                        foreach ($kegiatan_rkpds as $kegiatan_rkpd) {
+                                                                                            $html .= '<tr style="background: #41c0c0">';
+                                                                                                $html .= '<td width="5%" class="text-white">'.$urusan_rkpd['kode'].'.'.$program_rkpd['kode'].'.'.$kegiatan_rkpd['kode'].'</td>';
+                                                                                                $html .= '<td width=80%" class="text-white">'.$kegiatan_rkpd['deskripsi'].'</td>';
+                                                                                                $html .= '<td width="15%"><button class="btn btn-primary btn-icon waves-effect waves-light button-add-rkpd-tahun-pembangunan-sub-kegiatan mr-1"
+                                                                                                                data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                                                                                data-program-id="'.$program_rkpd['id'].'"
+                                                                                                                data-kegiatan-id="'.$kegiatan_rkpd['id'].'"
+                                                                                                                data-opd-id="'.$opd->id.'"
+                                                                                                                data-tahun="'.$tahun.'"
+                                                                                                                type="button"
+                                                                                                                title="Tambah Sub Kegiatan">
+                                                                                                                    <i class="fas fa-plus"></i>
+                                                                                                            </button>
+                                                                                                            <button type="button"
+                                                                                                                class="btn btn-icon btn-success waves-effect waves-light btn-open-rkpd-tahun-pembangunan-sub-kegiatan data-urusan-'.$urusan_rkpd['id'].' data-opd-'.$opd->id.' data-tahun-'.$tahun.' data-program-'.$program_rkpd['id'].' data-kegiatan-'.$kegiatan_rkpd['id'].'"
+                                                                                                                data-urusan-id="'.$urusan_rkpd['id'].'"
+                                                                                                                data-opd-id="'.$opd->id.'"
+                                                                                                                data-tahun="'.$tahun.'"
+                                                                                                                data-program-id="'.$program_rkpd['id'].'"
+                                                                                                                data-kegiatan-id="'.$kegiatan_rkpd['id'].'"
+                                                                                                                value="close"
+                                                                                                                data-bs-toggle="collapse"
+                                                                                                                data-bs-target="#rkpd_kegiatan'.$kegiatan_rkpd['id'].'"
+                                                                                                                class="accordion-toggle">
+                                                                                                                    <i class="fas fa-chevron-right"></i>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            $html .= '</tr>
+                                                                                                    <tr>
+                                                                                                        <td colspan="3" class="hiddenRow">
+                                                                                                            <div class="collapse accordion-body" id="rkpd_kegiatan'.$kegiatan_rkpd['id'].'">
+                                                                                                                <table class="table table-condensed table-striped">
+                                                                                                                <tbody>';
+                                                                                                                    $get_sub_kegiatan_rkpds = SubKegiatan::whereHas('kegiatan', function($q) use ($opd_id, $tahun, $urusan_rkpd, $program_rkpd, $kegiatan_rkpd) {
+                                                                                                                        $q->where('kegiatan_id', $kegiatan_rkpd['id']);
+                                                                                                                        $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                            $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd_id) {
+                                                                                                                                $q->where('opd_id', $opd_id);
+                                                                                                                            });
+                                                                                                                        });
+
+                                                                                                                        $q->whereHas('program', function($q) use ($opd_id, $tahun, $urusan_rkpd, $program_rkpd) {
+                                                                                                                            $q->where('id', $program_rkpd['id']);
+
+                                                                                                                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                                    $q->where('opd_id', $opd_id);
+                                                                                                                                });
+                                                                                                                            });
+
+                                                                                                                            $q->whereHas('urusan', function($q) use ($opd_id, $tahun, $urusan_rkpd){
+                                                                                                                                $q->where('id', $urusan_rkpd['id']);
+                                                                                                                                $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($opd_id, $tahun, $urusan_rkpd) {
+                                                                                                                                    $q->where('urusan_id', $urusan_rkpd['id']);
+                                                                                                                                    $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($opd_id, $tahun) {
+                                                                                                                                        $q->where('opd_id', $opd_id);
+                                                                                                                                        $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                                                                                                            $q->where('tahun', $tahun);
+                                                                                                                                        });
+                                                                                                                                    });
+                                                                                                                                });
+                                                                                                                            });
+                                                                                                                        });
+                                                                                                                    })->whereHas('sub_kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                        $q->whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($opd_id){
+                                                                                                                            $q->where('opd_id', $opd_id);
+                                                                                                                        });
+                                                                                                                    })->whereHas('rkpd_tahun_pembangunan_sub_kegiatan')->get();
+
+                                                                                                                    $sub_kegiatan_rkpds = [];
+
+                                                                                                                    foreach ($get_sub_kegiatan_rkpds as $get_sub_kegiatan_rkpd) {
+                                                                                                                        $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan_rkpd->id)->latest()->first();
+                                                                                                                        if($cek_perubahan_sub_kegiatan)
+                                                                                                                        {
+                                                                                                                            $sub_kegiatan_rkpds[] = [
+                                                                                                                                'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
+                                                                                                                                'kode' => $cek_perubahan_sub_kegiatan->kode,
+                                                                                                                                'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi
+                                                                                                                            ];
+                                                                                                                        } else {
+                                                                                                                            $sub_kegiatan_rkpds[] = [
+                                                                                                                                'id' => $get_sub_kegiatan_rkpd->id,
+                                                                                                                                'kode' => $get_sub_kegiatan_rkpd->kode,
+                                                                                                                                'deskripsi' => $get_sub_kegiatan_rkpd->deskripsi
+                                                                                                                            ];
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                    foreach ($sub_kegiatan_rkpds as $sub_kegiatan_rkpd) {
+                                                                                                                        $html .= '<tr style="background:#41c081">';
+                                                                                                                            $html .= '<td width="5%" class="text-white">'.$urusan_rkpd['kode'].'.'.$program_rkpd['kode'].'.'.$kegiatan_rkpd['kode'].'.'.$sub_kegiatan_rkpd['kode'].'</td>';
+                                                                                                                            $html .= '<td width=80%" class="text-white">'.$sub_kegiatan_rkpd['deskripsi'].'</td>';
+                                                                                                                            $html .= '<td width=20%" class="text-white"></td>';
+                                                                                                                        $html .= '</tr>';
+                                                                                                                    }
+                                                                                                                $html .= '</tbody>
+                                                                                                                </table>
+                                                                                                            </div>
+                                                                                                        </td>
+                                                                                                    </tr>';
+                                                                                        }
+                                                                                    $html .= '</tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>';
+                                                            }
+                                                        $html .= '</tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>';
+                            }
+                            $html .= '</tbody>
+                        </table>
+                    </div>
+                </div>';
+
+        return response()->json(['success' => 'Berhasil mengatur Program', 'html' => $html]);
     }
 
     public function get_kegiatan_rkpd($opd_id, $tahun, $urusan_id, $program_id)
@@ -1440,6 +2262,205 @@ class RkpdController extends Controller
 
         RkpdOpdTahunPembangunan::find($rkpd_opd_tahun_pembangunan->id)->delete();
 
-        return response()->json(['success' => 'Berhasil menghapus opd pada tema pembangunan tahun '.$tahun]);
+        $opd_id = $request->rkpd_filter_opd;
+        $tahun = $request->nav_rkpd_tahun;
+
+        $opds = MasterOpd::whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun){
+            $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                $q->where('tahun', $tahun);
+            });
+        });
+        if($opd_id)
+        {
+            $opds = $opds->where('id', $opd_id);
+        }
+        $opds = $opds->get();
+
+        $html = '<div class="data-table-rows slim">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th width="5%">No</th>
+                                    <th width="16%">OPD</th>
+                                    <th width="16%">Urusan</th>
+                                    <th width="16%">Program</th>
+                                    <th width="16%">Kegiatan</th>
+                                    <th width="16%">Sub Kegiatan</th>
+                                    <th width="15%">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            $a = 1;
+                            foreach ($opds as $opd) {
+                                $html .= '<tr>';
+                                    $html .= '<td>'.$a++.'</td>';
+                                    $html .= '<td>'.$opd->nama.'</td>';
+
+                                    $get_urusans = Urusan::whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($tahun, $opd){
+                                        $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun, $opd){
+                                            $q->where('opd_id', $opd->id);
+                                            $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                $q->where('tahun', $tahun);
+                                            });
+                                        });
+                                    })->orderBy('kode', 'asc')->get();
+
+                                    $urusans = [];
+
+                                    foreach ($get_urusans as $get_urusan) {
+                                        $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
+                                        if($cek_perubahan_urusan)
+                                        {
+                                            $urusans[] = [
+                                                'id' => $cek_perubahan_urusan->urusan_id,
+                                                'kode' => $cek_perubahan_urusan->kode,
+                                                'deskripsi' => $cek_perubahan_urusan->deskripsi
+                                            ];
+                                        } else {
+                                            $urusans[] = [
+                                                'id' => $get_urusan->id,
+                                                'kode' => $get_urusan->kode,
+                                                'deskripsi' => $get_urusan->deskripsi
+                                            ];
+                                        }
+                                    }
+                                    $html .= '<td><ul>';
+                                        foreach ($urusans as $urusan) {
+                                            $html .= '<li>'.$urusan['kode'].'. '.$urusan['deskripsi'].'</li>';
+                                        }
+                                    $html .= '</ul></td>';
+
+
+                                    $get_programs = Program::whereHas('rkpd_tahun_pembangunan_program', function($q) use ($opd, $tahun){
+                                        $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($tahun, $opd){
+                                            $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun, $opd){
+                                                $q->where('opd_id', $opd->id);
+                                                $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                    $q->where('tahun', $tahun);
+                                                });
+                                            });
+                                        });
+                                    })->orderBy('kode', 'asc')->get();
+
+                                    $programs = [];
+
+                                    foreach ($get_programs as $get_program) {
+                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
+                                        if($cek_perubahan_program)
+                                        {
+                                            $programs[] = [
+                                                'id' => $cek_perubahan_program->program_id,
+                                                'kode' => $cek_perubahan_program->kode,
+                                                'deskripsi' => $cek_perubahan_program->deskripsi
+                                            ];
+                                        } else {
+                                            $programs[] = [
+                                                'id' => $get_program->id,
+                                                'kode' => $get_program->kode,
+                                                'deskripsi' => $get_program->deskripsi
+                                            ];
+                                        }
+                                    }
+                                    $html .= '<td><ul>';
+                                        foreach ($programs as $program) {
+                                            $html .= '<li>'.$program['kode'].'. '.$program['deskripsi'].'</li>';
+                                        }
+                                    $html .= '</ul></td>';
+
+                                    $get_kegiatans = Kegiatan::whereHas('rkpd_tahun_pembangunan_kegiatan', function($q) use ($opd, $tahun) {
+                                        $q->whereHas('rkpd_tahun_pembangunan_program', function($q) use ($opd, $tahun){
+                                            $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($tahun, $opd){
+                                                $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun, $opd){
+                                                    $q->where('opd_id', $opd->id);
+                                                    $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                        $q->where('tahun', $tahun);
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    })->orderBy('kode', 'asc')->get();
+
+                                    $kegiatans = [];
+
+                                    foreach ($get_kegiatans as $get_kegiatan) {
+                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)->latest()->first();
+                                        if($cek_perubahan_kegiatan)
+                                        {
+                                            $kegiatans[] = [
+                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                'kode' => $cek_perubahan_kegiatan->kode,
+                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi
+                                            ];
+                                        } else {
+                                            $kegiatans[] = [
+                                                'id' => $get_kegiatan->id,
+                                                'kode' => $get_kegiatan->kode,
+                                                'deskripsi' => $get_kegiatan->deskripsi
+                                            ];
+                                        }
+                                    }
+
+                                    $html .= '<td><ul>';
+                                        foreach ($kegiatans as $kegiatan) {
+                                            $html .= '<li>'.$kegiatan['kode'].'.'.$kegiatan['deskripsi'].'</li>';
+                                        }
+                                    $html .= '</ul></td>';
+
+                                    $get_sub_kegiatans = SubKegiatan::whereHas('rkpd_tahun_pembangunan_sub_kegiatan', function($q) use ($opd, $tahun){
+                                        $q->whereHas('rkpd_tahun_pembangunan_kegiatan', function($q) use ($opd, $tahun) {
+                                            $q->whereHas('rkpd_tahun_pembangunan_program', function($q) use ($opd, $tahun){
+                                                $q->whereHas('rkpd_tahun_pembangunan_urusan', function($q) use ($tahun, $opd){
+                                                    $q->whereHas('rkpd_opd_tahun_pembangunan', function($q) use ($tahun, $opd){
+                                                        $q->where('opd_id', $opd->id);
+                                                        $q->whereHas('rkpd_tahun_pembangunan', function($q) use ($tahun){
+                                                            $q->where('tahun', $tahun);
+                                                        });
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    })->orderBy('kode', 'asc')->get();
+
+                                    $sub_kegiatans = [];
+
+                                    foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
+                                        $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)->latest()->first();
+                                        if($cek_perubahan_sub_kegiatan)
+                                        {
+                                            $sub_kegiatans[] = [
+                                                'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
+                                                'kode' => $cek_perubahan_sub_kegiatan->kode,
+                                                'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi
+                                            ];
+                                        } else {
+                                            $sub_kegiatans[] = [
+                                                'id' => $get_sub_kegiatan->id,
+                                                'kode' => $get_sub_kegiatan->kode,
+                                                'deskripsi' => $get_sub_kegiatan->deskripsi,
+                                            ];
+                                        }
+                                    }
+
+                                    $html .= '<td><ul>';
+                                        foreach ($sub_kegiatans as $sub_kegiatan) {
+                                            $html .= '<li>'.$sub_kegiatan['kode'].'.'.$sub_kegiatan['deskripsi'].'</li>';
+                                        }
+                                    $html .= '</ul></td>';
+                                    $html .= '<td>
+                                                <a href="/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/atur/'.$opd->id.'/'.$tahun.'"
+                                                    class="btn btn-icon btn-warning waves-effect waves-light mr-1">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button class="btn btn-icon btn-danger waves-effect waves-light btn-hapus-rkpd-opd-tahun-pembangunan" data-opd-id="'.$opd->id.'" data-tahun="'.$tahun.'"><i class="fas fa-trash"></i></button>
+                                            </td>';
+                                $html .= '</tr>';
+                            }
+                            $html .= '</tbody>
+                        </table>
+                    </div>
+                </div>';
+
+        return response()->json(['success' => 'Berhasil menghapus opd pada tema pembangunan tahun '.$tahun,'html' => $html]);
     }
 }
