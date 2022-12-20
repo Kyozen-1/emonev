@@ -111,19 +111,39 @@ class ProgramRpjmdController extends Controller
         $get_programs = Program::select('id', 'deskripsi', 'kode')->where('urusan_id', $request->id)->orderBy('kode', 'asc')->get();
         $program = [];
         foreach ($get_programs as $get_program) {
+            $opd_program = [];
+            $not_unique_opd_program = [];
+            $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::whereHas('program_indikator_kinerja', function($q) use ($get_program){
+                $q->whereHas('program', function($q) use ($get_program){
+                    $q->where('id', $get_program->id);
+                });
+            })->get();
+            foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
+                $not_unique_opd_program[] = $opd_program_indikator_kinerja->opd_id;
+            }
+            $unique_opd_program = array_unique($not_unique_opd_program);
+            for ($i=0; $i < count($unique_opd_program); $i++) {
+                $master_opd = MasterOpd::where('id', $unique_opd_program[$i])->first();
+                if($master_opd)
+                {
+                    $opd_program[] = $master_opd->nama;
+                }
+            }
             $cek_perubahan_program = PivotPerubahanProgram::select('program_id', 'deskripsi', 'kode')->where('program_id', $get_program->id)->latest()->first();
             if($cek_perubahan_program)
             {
                 $program[] = [
                     'id' => $cek_perubahan_program->program_id,
                     'deskripsi' => $cek_perubahan_program->deskripsi,
-                    'kode' => $cek_perubahan_program->kode
+                    'kode' => $cek_perubahan_program->kode,
+                    'opd_program' => $opd_program
                 ];
             } else {
                 $program[] = [
                     'id' => $get_program->id,
                     'deskripsi' => $get_program->deskripsi,
-                    'kode' => $get_program->kode
+                    'kode' => $get_program->kode,
+                    'opd_program' => $opd_program
                 ];
             }
         }
