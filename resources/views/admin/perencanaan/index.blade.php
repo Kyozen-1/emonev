@@ -4290,7 +4290,11 @@
                         $('#program_program_id').prop('disabled', false);
                         $('#program_program_id').append('<option value="">--- Pilih Program ---</option>');
                         $.each(response, function(key, value){
-                            $('#program_program_id').append(new Option(value.kode +'. '+value.deskripsi, value.id));
+                            var html = '';
+                            $.each(value.opd_program, function(key, value){
+                                html += value;
+                            });
+                            $('#program_program_id').append(new Option(value.kode +'. '+value.deskripsi+' | OPD: '+html, value.id));
                         });
                     }
                 });
