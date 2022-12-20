@@ -171,10 +171,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.kegiatan.store') }}" class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                    <form class="tooltip-label-end" method="POST" novalidate enctype="multipart/form-data">
+                        {{-- action="{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.kegiatan.store') }}" --}}
                         @csrf
-                        <input type="hidden" name="rkpd_tahun_pembangunan_kegiatan_tahun" value="{{$tahun}}">
-                        <input type="hidden" name="rkpd_tahun_pembangunan_kegiatan_opd_id" value="{{$opd->id}}">
+                        <input type="hidden" name="rkpd_tahun_pembangunan_kegiatan_tahun" id="rkpd_tahun_pembangunan_kegiatan_tahun" value="{{$tahun}}">
+                        <input type="hidden" name="rkpd_tahun_pembangunan_kegiatan_opd_id" id="rkpd_tahun_pembangunan_kegiatan_opd_id" value="{{$opd->id}}">
                         <input type="hidden" name="rkpd_tahun_pembangunan_kegiatan_urusan_id" id="rkpd_tahun_pembangunan_kegiatan_urusan_id">
                         <input type="hidden" name="rkpd_tahun_pembangunan_kegiatan_program_id" id="rkpd_tahun_pembangunan_kegiatan_program_id">
                         <div class="form-group position-relative mb-3">
@@ -186,7 +187,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                     <input type="hidden" name="rkpd_tahun_pembangunan_kegiatan_aksi" id="rkpd_tahun_pembangunan_kegiatan_aksi" value="Save">
-                    <button type="submit" class="btn btn-primary" name="rkpd_tahun_pembangunan_kegiatan_aksi_button" id="rkpd_tahun_pembangunan_kegiatan_aksi_button">Add</button>
+                    <button type="button" class="btn btn-primary" name="rkpd_tahun_pembangunan_kegiatan_aksi_button" id="rkpd_tahun_pembangunan_kegiatan_aksi_button">Add</button>
                 </div>
             </form>
             </div>
@@ -488,6 +489,59 @@
                         $('#divRkpd').html(data.html);
                         $("[name='rkpd_tahun_pembangunan_program_program_id[]']").val('').trigger('change');
                         $('#addTahunPembangunanProgramModal').modal('hide');
+                    }
+                }
+            });
+        });
+
+        $('#rkpd_tahun_pembangunan_kegiatan_aksi_button').click(function(){
+            var rkpd_tahun_pembangunan_kegiatan_tahun = $('#rkpd_tahun_pembangunan_kegiatan_tahun').val();
+            var rkpd_tahun_pembangunan_kegiatan_opd_id = $('#rkpd_tahun_pembangunan_kegiatan_opd_id').val();
+            var rkpd_tahun_pembangunan_kegiatan_urusan_id = $('#rkpd_tahun_pembangunan_kegiatan_urusan_id').val();
+            var rkpd_tahun_pembangunan_kegiatan_program_id = $('#rkpd_tahun_pembangunan_kegiatan_program_id').val();
+            var rkpd_tahun_pembangunan_kegiatan_kegiatan_id = $('#rkpd_tahun_pembangunan_kegiatan_kegiatan_id').val();
+            $.ajax({
+                url: "{{ route('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.atur.kegiatan.store') }}",
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    rkpd_tahun_pembangunan_kegiatan_tahun:rkpd_tahun_pembangunan_kegiatan_tahun,
+                    rkpd_tahun_pembangunan_kegiatan_opd_id:rkpd_tahun_pembangunan_kegiatan_opd_id,
+                    rkpd_tahun_pembangunan_kegiatan_urusan_id:rkpd_tahun_pembangunan_kegiatan_urusan_id,
+                    rkpd_tahun_pembangunan_kegiatan_program_id:rkpd_tahun_pembangunan_kegiatan_program_id,
+                    rkpd_tahun_pembangunan_kegiatan_kegiatan_id:rkpd_tahun_pembangunan_kegiatan_kegiatan_id
+                },
+                beforeSend: function()
+                {
+                    return new swal({
+                        title: "Checking...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
+                success: function(data)
+                {
+                    var html = '';
+                    if(data.errors)
+                    {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.errors,
+                            showConfirmButton: true
+                        });
+                    }
+                    if(data.success)
+                    {
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.success,
+                            showConfirmButton: true
+                        });
+                        $('#divRkpd').html(data.html);
+                        $("[name='rkpd_tahun_pembangunan_kegiatan_kegiatan_id[]']").val('').trigger('change');
+                        $('#addTahunPembangunanKegiatanModal').modal('hide');
                     }
                 }
             });
