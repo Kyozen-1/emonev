@@ -471,7 +471,8 @@
                 </ul>
             </li>
             <li>
-                @if (request()->routeIs('admin.manajemen-akun.opd.index'))
+                @if (request()->routeIs('admin.manajemen-akun.opd.index') ||
+                request()->routeIs('admin.manajemen-akun.bappeda.index'))
                     <a href="#manajemen-akun" class="active">
                 @else
                     <a href="#manajemen-akun">
@@ -487,6 +488,15 @@
                             <a href="{{ route('admin.manajemen-akun.opd.index') }}">
                         @endif
                             <span class="label">OPD</span>
+                        </a>
+                    </li>
+                    <li>
+                        @if (request()->routeIs('admin.manajemen-akun.bappeda.index'))
+                            <a href="{{ route('admin.manajemen-akun.bappeda.index') }}" class="active">
+                        @else
+                            <a href="{{ route('admin.manajemen-akun.bappeda.index') }}">
+                        @endif
+                            <span class="label">BAPPEDA</span>
                         </a>
                     </li>
                 </ul>
