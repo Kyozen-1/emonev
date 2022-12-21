@@ -43,6 +43,15 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/manajemen-akun/opd/change-password','Admin\ManajemenAkun\OpdController@change_password')->name('admin.manajemen-akun.opd.change-password');
     Route::post('/admin/manajemen-akun/opd/destroy','Admin\ManajemenAkun\OpdController@destroy')->name('admin.manajemen-akun.opd.destroy');
 
+    //Manajemen Akun BAPPEDA
+    Route::get('/admin/manajemen-akun/bappeda', 'Admin\ManajemenAkun\BappedaController@index')->name('admin.manajemen-akun.bappeda.index');
+    Route::get('/admin/manajemen-akun/bappeda/get-akun-tidak-aktif', 'Admin\ManajemenAkun\BappedaController@get_akun_tidak_aktif')->name('admin.manajemen-akun.bappeda.get-akun-tidak-aktif');
+    Route::get('/admin/manajemen-akun/bappeda/detail/{id}', 'Admin\ManajemenAkun\BappedaController@show');
+    Route::post('/admin/manajemen-akun/bappeda','Admin\ManajemenAkun\BappedaController@store')->name('admin.manajemen-akun.bappeda.store');
+    Route::post('/admin/manajemen-akun/bappeda/change-password','Admin\ManajemenAkun\BappedaController@change_password')->name('admin.manajemen-akun.bappeda.change-password');
+    Route::get('/admin/manajemen-akun/bappeda/destroy/{id}','Admin\ManajemenAkun\BappedaController@destroy');
+    Route::get('/admin/manajemen-akun/bappeda/aktif/{id}','Admin\ManajemenAkun\BappedaController@aktif');
+
     //Master TW
     Route::get('/admin/master-tw', 'Admin\MasterTwController@index')->name('admin.master-tw.index');
     Route::get('/admin/master-tw/detail/{id}', 'Admin\MasterTwController@show');
