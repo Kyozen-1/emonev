@@ -833,8 +833,7 @@ class RenstraController extends Controller
                                                                                             if($cek_perubahan_tujuan_opd)
                                                                                             {
                                                                                                 $tujuan_pds[] = [
-                                                                                                    'id' => $cek_perubahan_tujuan_opd->id,
-                                                                                                    'tujuan_pd_id' => $cek_perubahan_tujuan_opd->tujuan_pd_id,
+                                                                                                    'id' => $cek_perubahan_tujuan_opd->tujuan_pd_id,
                                                                                                     'tujuan_id' => $cek_perubahan_tujuan_opd->tujuan_id,
                                                                                                     'kode' => $cek_perubahan_tujuan_opd->kode,
                                                                                                     'deskripsi' => $cek_perubahan_tujuan_opd->deskripsi,
@@ -1275,8 +1274,7 @@ class RenstraController extends Controller
                                                                                             if($cek_perubahan_tujuan_opd)
                                                                                             {
                                                                                                 $tujuan_pds[] = [
-                                                                                                    'id' => $cek_perubahan_tujuan_opd->id,
-                                                                                                    'tujuan_pd_id' => $cek_perubahan_tujuan_opd->tujuan_pd_id,
+                                                                                                    'id' => $cek_perubahan_tujuan_opd->tujuan_pd_id,
                                                                                                     'tujuan_id' => $cek_perubahan_tujuan_opd->tujuan_id,
                                                                                                     'kode' => $cek_perubahan_tujuan_opd->kode,
                                                                                                     'deskripsi' => $cek_perubahan_tujuan_opd->deskripsi,
@@ -1790,8 +1788,7 @@ class RenstraController extends Controller
                                                                                                                                                     if($cek_perubahan_sasaran_opd)
                                                                                                                                                     {
                                                                                                                                                         $sasaran_pds[] = [
-                                                                                                                                                            'id' => $cek_perubahan_sasaran_opd->id,
-                                                                                                                                                            'sasaran_pd_id' => $cek_perubahan_sasaran_opd->sasaran_pd_id,
+                                                                                                                                                            'id' => $cek_perubahan_sasaran_opd->sasaran_pd_id,
                                                                                                                                                             'sasaran_id' => $cek_perubahan_sasaran_opd->sasaran_id,
                                                                                                                                                             'kode' => $cek_perubahan_sasaran_opd->kode,
                                                                                                                                                             'deskripsi' => $cek_perubahan_sasaran_opd->deskripsi,
@@ -1819,7 +1816,13 @@ class RenstraController extends Controller
                                                                                                                                                         {
                                                                                                                                                             if($sasaran_pd_program_rpjmd->program_rpjmd)
                                                                                                                                                             {
-                                                                                                                                                                $html .= '<li>'.$sasaran_pd_program_rpjmd->program_rpjmd->program->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-pd-program-rpjmd" data-sasaran-pd-program-rpjmd-id="'.$sasaran_pd_program_rpjmd->id.'"></button></li>';
+                                                                                                                                                                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $sasaran_pd_program_rpjmd->program_rpjmd->program->id)->latest()->first();
+                                                                                                                                                                if($cek_perubahan_program)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<li>'.$cek_perubahan_program->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-pd-program-rpjmd" data-sasaran-pd-program-rpjmd-id="'.$sasaran_pd_program_rpjmd->id.'"></button></li>';
+                                                                                                                                                                } else {
+                                                                                                                                                                    $html .= '<li>'.$sasaran_pd_program_rpjmd->program_rpjmd->program->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-pd-program-rpjmd" data-sasaran-pd-program-rpjmd-id="'.$sasaran_pd_program_rpjmd->id.'"></button></li>';
+                                                                                                                                                                }
                                                                                                                                                             }
                                                                                                                                                         }
                                                                                                                                                         $html .= '</ul></td>';
@@ -2324,8 +2327,7 @@ class RenstraController extends Controller
                                                                                                                                                     if($cek_perubahan_sasaran_opd)
                                                                                                                                                     {
                                                                                                                                                         $sasaran_pds[] = [
-                                                                                                                                                            'id' => $cek_perubahan_sasaran_opd->id,
-                                                                                                                                                            'sasaran_pd_id' => $cek_perubahan_sasaran_opd->sasaran_pd_id,
+                                                                                                                                                            'id' => $cek_perubahan_sasaran_opd->sasaran_pd_id,
                                                                                                                                                             'sasaran_id' => $cek_perubahan_sasaran_opd->sasaran_id,
                                                                                                                                                             'kode' => $cek_perubahan_sasaran_opd->kode,
                                                                                                                                                             'deskripsi' => $cek_perubahan_sasaran_opd->deskripsi,
@@ -2351,7 +2353,16 @@ class RenstraController extends Controller
                                                                                                                                                         $sasaran_pd_program_rpjmds = SasaranPdProgramRpjmd::where('sasaran_pd_id', $sasaran_pd['id'])->get();
                                                                                                                                                         foreach($sasaran_pd_program_rpjmds as $sasaran_pd_program_rpjmd)
                                                                                                                                                         {
-                                                                                                                                                            $html .= '<li>'.$sasaran_pd_program_rpjmd->program_rpjmd->program->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-pd-program-rpjmd" data-sasaran-pd-program-rpjmd-id="'.$sasaran_pd_program_rpjmd->id.'"></button></li>';
+                                                                                                                                                            if($sasaran_pd_program_rpjmd->program_rpjmd)
+                                                                                                                                                            {
+                                                                                                                                                                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $sasaran_pd_program_rpjmd->program_rpjmd->program->id)->latest()->first();
+                                                                                                                                                                if($cek_perubahan_program)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<li>'.$cek_perubahan_program->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-pd-program-rpjmd" data-sasaran-pd-program-rpjmd-id="'.$sasaran_pd_program_rpjmd->id.'"></button></li>';
+                                                                                                                                                                } else {
+                                                                                                                                                                    $html .= '<li>'.$sasaran_pd_program_rpjmd->program_rpjmd->program->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-pd-program-rpjmd" data-sasaran-pd-program-rpjmd-id="'.$sasaran_pd_program_rpjmd->id.'"></button></li>';
+                                                                                                                                                                }
+                                                                                                                                                            }
                                                                                                                                                         }
                                                                                                                                                         $html .= '</ul></td>';
                                                                                                                                                         $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd['id'])->get();
