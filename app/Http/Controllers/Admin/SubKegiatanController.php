@@ -510,9 +510,8 @@ class SubKegiatanController extends Controller
 
     public function impor(Request $request)
     {
-        $kegiatan_id = $request->sub_kegiatan_impor_kegiatan_id;
         $file = $request->file('impor_sub_kegiatan');
-        Excel::import(new SubKegiatanImport($kegiatan_id), $file->store('temp'));
+        Excel::import(new SubKegiatanImport, $file->store('temp'));
         $msg = [session('import_status'), session('import_message')];
         if ($msg[0]) {
             Alert::success('Berhasil', $msg[1]);
