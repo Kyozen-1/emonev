@@ -27,12 +27,6 @@ class SubKegiatanImport implements ToCollection,WithStartRow
     /**
     * @param Collection $collection
     */
-    protected $kegiatan_id;
-
-    public function __construct($kegiatan_id)
-    {
-        $this->kegiatan_id = $kegiatan_id;
-    }
 
     public function startRow(): int
     {
@@ -54,30 +48,30 @@ class SubKegiatanImport implements ToCollection,WithStartRow
             foreach ($rows as $key => $row) {
                 if($row->filter()->isNotEmpty())
                 {
-                    if($row[1] == null)
-                    {
-                        $response['import_status'] = false;
-                        $response['import_message'] = 'Kode Sub Kegiatan Harus Diisi';
-                        session(['import_status' => $response['import_status']]);
-                        session(['import_message' => $response['import_message']]);
-                        return false;
-                    }
-                    if($row[2] == null)
-                    {
-                        $response['import_status'] = false;
-                        $response['import_message'] = 'Sub Kegiatan Harus Diisi';
-                        session(['import_status' => $response['import_status']]);
-                        session(['import_message' => $response['import_message']]);
-                        return false;
-                    }
-                    if($row[3] == null)
-                    {
-                        $response['import_status'] = false;
-                        $response['import_message'] = 'Tahun Perubahan Harus Diisi';
-                        session(['import_status' => $response['import_status']]);
-                        session(['import_message' => $response['import_message']]);
-                        return false;
-                    }
+                    // if($row[1] == null)
+                    // {
+                    //     $response['import_status'] = false;
+                    //     $response['import_message'] = 'Kode Sub Kegiatan Harus Diisi';
+                    //     session(['import_status' => $response['import_status']]);
+                    //     session(['import_message' => $response['import_message']]);
+                    //     return false;
+                    // }
+                    // if($row[2] == null)
+                    // {
+                    //     $response['import_status'] = false;
+                    //     $response['import_message'] = 'Sub Kegiatan Harus Diisi';
+                    //     session(['import_status' => $response['import_status']]);
+                    //     session(['import_message' => $response['import_message']]);
+                    //     return false;
+                    // }
+                    // if($row[3] == null)
+                    // {
+                    //     $response['import_status'] = false;
+                    //     $response['import_message'] = 'Tahun Perubahan Harus Diisi';
+                    //     session(['import_status' => $response['import_status']]);
+                    //     session(['import_message' => $response['import_message']]);
+                    //     return false;
+                    // }
                     // Semua
                     $cek_sub_kegiatan = SubKegiatan::where('kode', $row[4])->whereHas('kegiatan', function($q) use ($row){
                         $q->where('kode', $row[3]);
@@ -88,7 +82,6 @@ class SubKegiatanImport implements ToCollection,WithStartRow
                             });
                         });
                     })->first();
-
                     if($cek_sub_kegiatan)
                     {
                         $cek_pivot = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $cek_sub_kegiatan->id)
