@@ -2326,7 +2326,7 @@ class NomenklaturController extends Controller
                                         if($cek_perubahan_program)
                                         {
                                             $programs[] = [
-                                                'id' => $cek_perubahan_program->program_id,
+                                                'id' => $get_program->id,
                                                 'kode' => $cek_perubahan_program->kode,
                                                 'deskripsi' => $cek_perubahan_program->deskripsi,
                                                 'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
@@ -2392,7 +2392,7 @@ class NomenklaturController extends Controller
                                                                                                     if($cek_perubahan_kegiatan)
                                                                                                     {
                                                                                                         $kegiatans[] = [
-                                                                                                            'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                                                                            'id' => $get_kegiatan->id,
                                                                                                             'program_id' => $cek_perubahan_kegiatan->program_id,
                                                                                                             'kode' => $cek_perubahan_kegiatan->kode,
                                                                                                             'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
@@ -2432,10 +2432,11 @@ class NomenklaturController extends Controller
                                                                                                                     <div class="collapse show" id="sub_kegiatan_kegiatan'.$kegiatan['id'].'">
                                                                                                                         <table class="table table-striped table-condesed">
                                                                                                                             <tbody>';
-                                                                                                                                $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->orderBy('kode', 'asc')->get();
+                                                                                                                                $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])
+                                                                                                                                                        ->orderBy('kode', 'asc')->get();
                                                                                                                                 $sub_kegiatans = [];
                                                                                                                                 foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
-                                                                                                                                    $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)->orderBy('tahun_perubahan', 'asc')->latest()->first();
+                                                                                                                                    $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
                                                                                                                                     if($cek_perubahan_sub_kegiatan)
                                                                                                                                     {
                                                                                                                                         $sub_kegiatans[] = [
@@ -2886,10 +2887,12 @@ class NomenklaturController extends Controller
                                                                                                                         <div class="collapse show" id="sub_kegiatan_kegiatan'.$kegiatan['id'].'">
                                                                                                                             <table class="table table-striped table-condesed">
                                                                                                                                 <tbody>';
-                                                                                                                                    $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->orderBy('kode', 'asc')->get();
+                                                                                                                                    $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])
+                                                                                                                                                            ->orderBy('kode', 'desc')->get();
                                                                                                                                     $sub_kegiatans = [];
                                                                                                                                     foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
-                                                                                                                                        $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)->orderBy('tahun_perubahan', 'asc')->latest()->first();
+                                                                                                                                        $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)
+                                                                                                                                                                        ->orderBy('tahun_perubahan', 'desc')->latest()->first();
                                                                                                                                         if($cek_perubahan_sub_kegiatan)
                                                                                                                                         {
                                                                                                                                             $sub_kegiatans[] = [
@@ -3899,17 +3902,17 @@ class NomenklaturController extends Controller
                                                                                                     $a = 1;
                                                                                                     foreach ($kegiatans as $kegiatan) {
                                                                                                         $html .= '<tr style="background: #41c0c0">
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%">
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="40%">
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                                                         '.$kegiatan['deskripsi'].'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="25%"></td>
                                                                                                                     <td width="20%">
                                                                                                                     </td>
                                                                                                                 </tr>
@@ -4251,7 +4254,7 @@ class NomenklaturController extends Controller
                                         <th width="15%">Kode</th>
                                         <th width="40%">Deskripsi</th>
                                         <th width="25%">Indikator Kinerja</th>
-                                        <th width="15%">Tahun Perubahan</th>
+                                        <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>';
@@ -4360,17 +4363,17 @@ class NomenklaturController extends Controller
                                                                                                     $a = 1;
                                                                                                     foreach ($kegiatans as $kegiatan) {
                                                                                                         $html .= '<tr style="background: #41c0c0">
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="15%">
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="15%">
                                                                                                                         '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="40%">
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="40%">
                                                                                                                         '.$kegiatan['deskripsi'].'
                                                                                                                         <br>
                                                                                                                         <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
                                                                                                                         <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
                                                                                                                         <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
                                                                                                                     </td>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle" width="25%">'.$kegiatan['tahun_perubahan'].'</td>
+                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan'.$kegiatan['id'].'" class="accordion-toggle text-white" width="25%"></td>
                                                                                                                     <td width="20%">
                                                                                                                     </td>
                                                                                                                 </tr>
