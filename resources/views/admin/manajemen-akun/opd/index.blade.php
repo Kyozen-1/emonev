@@ -65,6 +65,7 @@
                         <th class="text-muted text-small text-uppercase">Nama Admin</th>
                         <th class="text-muted text-small text-uppercase">Email</th>
                         <th class="text-muted text-small text-uppercase">Telp</th>
+                        <th class="text-muted text-small text-uppercase">Kecamatan</th>
                         <th class="text-muted text-small text-uppercase">Foto Admin</th>
                         <th class="text-muted text-small text-uppercase">Aksi</th>
                     </tr>
@@ -104,6 +105,15 @@
                             <div class="mb-3">
                                 <label for="no_hp" class="form-label">No. HP</label>
                                 <input type="number" name="no_hp" id="no_hp" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kecamatan_id" class="form-label">Kecamatan <span class="text-danger">*tidak perlu diisi</span></label>
+                                <select name="kecamatan_id" id="kecamatan_id" class="form-control">
+                                    <option value="">--- Pilih Kecamatan ---</option>
+                                    @foreach ($kecamatan as $id => $nama)
+                                        <option value="{{$id}}">{{$nama}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="" class="form-label">Alamat</label>
@@ -170,6 +180,10 @@
                             <input type="text" class="form-control" id="detail_kabupaten" disabled>
                         </div>
                         <div class="mb-3">
+                            <label for="detail_kecamatan" class="form-label">Kecamatan</label>
+                            <input type="text" class="form-control" id="detail_kecamatan" disabled>
+                        </div>
+                        <div class="mb-3">
                             <label for="detail_alamat" class="form-label">Alamat</label>
                             <textarea id="detail_alamat" rows="5" class="form-control" disabled></textarea>
                         </div>
@@ -211,6 +225,7 @@
             $('.dropify').dropify();
             $('.dropify-wrapper').css('line-height', '3rem');
             $('#opd_id').select2();
+            $('#kecamatan_id').select2();
             var dataTables = $('#opd_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -240,6 +255,10 @@
                         name: 'no_hp'
                     },
                     {
+                        data: 'kecamatan_id',
+                        name: 'kecamatan_id'
+                    },
+                    {
                         data: 'foto',
                         name: 'foto'
                     },
@@ -255,6 +274,7 @@
         $('#create').click(function(){
             $('#opd_form')[0].reset();
             $("[name='opd_id']").val('').trigger('change');
+            $("[name='kecamatan_id']").val('').trigger('change');
             $('.dropify-clear').click();
             $('#aksi_button').text('Save');
             $('#aksi_button').prop('disabled', false);
@@ -289,6 +309,7 @@
                             $('#aksi_button').prop('disabled', false);
                             $('#opd_form')[0].reset();
                             $("[name='opd_id']").val('').trigger('change');
+                            $("[name='kecamatan_id']").val('').trigger('change');
                             $('.dropify-clear').click();
                             $('#aksi_button').text('Save');
                             $('#opd_table').DataTable().ajax.reload();
@@ -302,7 +323,7 @@
                         {
                             $('#aksi_button').prop('disabled', false);
                             $('#opd_form')[0].reset();
-                            $("[name='opd_id']").val('').trigger('change');
+                            $("[name='kecamatan_id']").val('').trigger('change');
                             $('.dropify-clear').click();
                             $('#aksi_button').text('Save');
                             $('#opd_table').DataTable().ajax.reload();
@@ -329,6 +350,7 @@
                     $('#detail-title').text('Detail Data');
                     $('#detail_provinsi').val(data.result.provinsi);
                     $('#detail_kabupaten').val(data.result.kabupaten);
+                    $('#detail_kecamatan_id').val(data.result.kecamatan_id);
                     $('#detail_master_opd').val(data.result.master_opd);
                     $('#detail_nama').val(data.result.nama);
                     $('#detail_email').val(data.result.email);
