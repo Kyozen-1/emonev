@@ -16,6 +16,7 @@ use App\AkunOpd;
 use App\Models\Opd;
 use Illuminate\Support\Facades\Hash;
 use App\Models\MasterOpd;
+use App\Models\Kecamatan;
 
 class OpdController extends Controller
 {
@@ -51,12 +52,22 @@ class OpdController extends Controller
                     $name = strip_tags(substr($data->name,0, 15)) . '...';
                     return $name;
                 })
-                ->rawColumns(['aksi', 'foto'])
+                ->addColumn('kecamatan_id', function($data){
+                    if($data->opd->kecamatan_id)
+                    {
+                        return $data->opd->kecamatan->nama;
+                    } else {
+                        return 'belum ada';
+                    }
+                })
+                ->rawColumns(['aksi', 'foto', 'kecamatan_id'])
                 ->make(true);
         }
         $master_opd = MasterOpd::pluck('nama', 'id');
+        $kecamatan = Kecamatan::pluck('nama', 'id');
         return view('admin.manajemen-akun.opd.index', [
-            'master_opd' => $master_opd
+            'master_opd' => $master_opd,
+            'kecamatan' => $kecamatan
         ]);
     }
 
@@ -90,6 +101,10 @@ class OpdController extends Controller
         $opd->negara_id = 62;
         $opd->provinsi_id = 5;
         $opd->kabupaten_id = 62;
+        if($request->kecamatan_id)
+        {
+            $opd->kecamatan_id = $request->kecamatan_id;
+        }
         $opd->opd_id = $request->opd_id;
         $opd->foto = $fotoName;
         $opd->save();
@@ -113,6 +128,7 @@ class OpdController extends Controller
             'email' => $data->email,
             'provinsi' => $data->opd->provinsi->nama,
             'kabupaten' => $data->opd->kabupaten->nama,
+            'kecamatan' => $data->opd->kecamatan_id?$data->opd->kecamatan->nama:'tidak ada',
             'no_hp' => $data->opd->no_hp,
             'alamat' => $data->opd->alamat,
             'foto' => $data->opd->foto
