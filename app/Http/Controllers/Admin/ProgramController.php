@@ -5497,12 +5497,12 @@ class ProgramController extends Controller
 
                 $sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan->id)->get();
                 foreach ($sub_kegiatans as $sub_kegiatan) {
-                    $get_perubahan_sub_kegiatans = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $sub_kegiatan_id)->get();
+                    $get_perubahan_sub_kegiatans = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $sub_kegiatan->id)->get();
                     foreach ($get_perubahan_sub_kegiatans as $get_perubahan_sub_kegiatan) {
                         PivotPerubahanSubKegiatan::find($get_perubahan_sub_kegiatan->id)->delete();
                     }
 
-                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan_id)->get();
+                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan->id)->get();
                     foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
                         $opd_sub_kegiatan_indikator_kinerjas = OpdSubKegiatanIndikatorKinerja::where('sub_kegiatan_indikator_kinerja_id', $sub_kegiatan_indikator_kinerja->id)->get();
                         foreach ($opd_sub_kegiatan_indikator_kinerjas as $opd_sub_kegiatan_indikator_kinerja) {
@@ -5624,12 +5624,12 @@ class ProgramController extends Controller
 
                         $sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan->id)->get();
                         foreach ($sub_kegiatans as $sub_kegiatan) {
-                            $get_perubahan_sub_kegiatans = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $sub_kegiatan_id)->get();
+                            $get_perubahan_sub_kegiatans = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $sub_kegiatan->id)->get();
                             foreach ($get_perubahan_sub_kegiatans as $get_perubahan_sub_kegiatan) {
                                 PivotPerubahanSubKegiatan::find($get_perubahan_sub_kegiatan->id)->delete();
                             }
 
-                            $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan_id)->get();
+                            $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan->id)->get();
                             foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
                                 $opd_sub_kegiatan_indikator_kinerjas = OpdSubKegiatanIndikatorKinerja::where('sub_kegiatan_indikator_kinerja_id', $sub_kegiatan_indikator_kinerja->id)->get();
                                 foreach ($opd_sub_kegiatan_indikator_kinerjas as $opd_sub_kegiatan_indikator_kinerja) {
