@@ -122,8 +122,9 @@ class ProgramRpjmdController extends Controller
                 $not_unique_opd_program[] = $opd_program_indikator_kinerja->opd_id;
             }
             $unique_opd_program = array_unique($not_unique_opd_program);
-            for ($i=0; $i < count($unique_opd_program); $i++) {
-                $master_opd = MasterOpd::where('id', $unique_opd_program[$i])->first();
+            $combine_unique_opd_program = array_combine(range(0, count($unique_opd_program) - 1), array_values($unique_opd_program));
+            for ($i=0; $i < count($combine_unique_opd_program); $i++) {
+                $master_opd = MasterOpd::where('id', $combine_unique_opd_program[$i])->first();
                 if($master_opd)
                 {
                     $opd_program[] = $master_opd->nama;
