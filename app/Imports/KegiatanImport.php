@@ -70,76 +70,76 @@ class KegiatanImport implements ToCollection,WithStartRow
                     //     return false;
                     // }
                     // Semua
-                    // $cek_kegiatan = Kegiatan::where('kode', $row[3])
-                    //                 ->whereHas("program", function($q) use ($row){
-                    //                     $q->where('kode', $row[2]);
-                    //                     $q->whereHas('urusan', function($q) use ($row){
-                    //                         $q->where('kode', $row[1]);
-                    //                     });
-                    //                 })->first();
-                    // if($cek_kegiatan)
-                    // {
-                    //     $cek_pivot_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $cek_kegiatan->id)
-                    //                             ->where('program_id', $cek_kegiatan->program_id)
-                    //                             ->where('kode', $row[3])
-                    //                             ->where('tahun_perubahan', $row[5])
-                    //                             ->first();
-                    //     if($cek_pivot_kegiatan)
-                    //     {
-                    //         PivotPerubahanKegiatan::find($cek_pivot_kegiatan->id)->delete();
+                    $cek_kegiatan = Kegiatan::where('kode', $row[3])
+                                    ->whereHas("program", function($q) use ($row){
+                                        $q->where('kode', $row[2]);
+                                        $q->whereHas('urusan', function($q) use ($row){
+                                            $q->where('kode', $row[1]);
+                                        });
+                                    })->first();
+                    if($cek_kegiatan)
+                    {
+                        $cek_pivot_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $cek_kegiatan->id)
+                                                ->where('program_id', $cek_kegiatan->program_id)
+                                                ->where('kode', $row[3])
+                                                ->where('tahun_perubahan', $row[5])
+                                                ->first();
+                        if($cek_pivot_kegiatan)
+                        {
+                            PivotPerubahanKegiatan::find($cek_pivot_kegiatan->id)->delete();
 
-                    //         $pivot = new PivotPerubahanKegiatan;
-                    //         $pivot->kegiatan_id = $cek_kegiatan->id;
-                    //         $pivot->program_id = $cek_kegiatan->program_id;
-                    //         $pivot->kode = $row[3];
-                    //         $pivot->deskripsi = $row[4];
-                    //         $pivot->tahun_perubahan = $row[5];
-                    //         if($row[5] > 2020)
-                    //         {
-                    //             $pivot->status_aturan = 'Sesudah Perubahan';
-                    //         } else {
-                    //             $pivot->status_aturan = 'Sebelum Perubahan';
-                    //         }
-                    //         $pivot->kabupaten_id = 62;
-                    //         $pivot->save();
-                    //     } else {
-                    //         $pivot = new PivotPerubahanKegiatan;
-                    //         $pivot->kegiatan_id = $cek_kegiatan->id;
-                    //         $pivot->program_id = $cek_kegiatan->program_id;
-                    //         $pivot->kode = $row[3];
-                    //         $pivot->deskripsi = $row[4];
-                    //         $pivot->tahun_perubahan = $row[5];
-                    //         if($row[5] > 2020)
-                    //         {
-                    //             $pivot->status_aturan = 'Sesudah Perubahan';
-                    //         } else {
-                    //             $pivot->status_aturan = 'Sebelum Perubahan';
-                    //         }
-                    //         $pivot->kabupaten_id = 62;
-                    //         $pivot->save();
-                    //     }
-                    // } else {
-                    //     $get_program = Program::where('kode', $row[2])
-                    //                     ->whereHas('urusan', function($q) use ($row){
-                    //                         $q->where('kode', $row[1]);
-                    //                     })->first();
-                    //     if($get_program)
-                    //     {
-                    //         $kegiatan = new Kegiatan;
-                    //         $kegiatan->program_id = $get_program->id;
-                    //         $kegiatan->kode = $row[3];
-                    //         $kegiatan->deskripsi = $row[4];
-                    //         $kegiatan->tahun_perubahan = $row[5];
-                    //         if($row[5] > 2020)
-                    //         {
-                    //             $kegiatan->status_aturan = 'Sesudah Perubahan';
-                    //         } else {
-                    //             $kegiatan->status_aturan = 'Sebelum Perubahan';
-                    //         }
-                    //         $kegiatan->kabupaten_id = 62;
-                    //         $kegiatan->save();
-                    //     }
-                    // }
+                            $pivot = new PivotPerubahanKegiatan;
+                            $pivot->kegiatan_id = $cek_kegiatan->id;
+                            $pivot->program_id = $cek_kegiatan->program_id;
+                            $pivot->kode = $row[3];
+                            $pivot->deskripsi = $row[4];
+                            $pivot->tahun_perubahan = $row[5];
+                            if($row[5] > 2020)
+                            {
+                                $pivot->status_aturan = 'Sesudah Perubahan';
+                            } else {
+                                $pivot->status_aturan = 'Sebelum Perubahan';
+                            }
+                            $pivot->kabupaten_id = 62;
+                            $pivot->save();
+                        } else {
+                            $pivot = new PivotPerubahanKegiatan;
+                            $pivot->kegiatan_id = $cek_kegiatan->id;
+                            $pivot->program_id = $cek_kegiatan->program_id;
+                            $pivot->kode = $row[3];
+                            $pivot->deskripsi = $row[4];
+                            $pivot->tahun_perubahan = $row[5];
+                            if($row[5] > 2020)
+                            {
+                                $pivot->status_aturan = 'Sesudah Perubahan';
+                            } else {
+                                $pivot->status_aturan = 'Sebelum Perubahan';
+                            }
+                            $pivot->kabupaten_id = 62;
+                            $pivot->save();
+                        }
+                    } else {
+                        $get_program = Program::where('kode', $row[2])
+                                        ->whereHas('urusan', function($q) use ($row){
+                                            $q->where('kode', $row[1]);
+                                        })->first();
+                        if($get_program)
+                        {
+                            $kegiatan = new Kegiatan;
+                            $kegiatan->program_id = $get_program->id;
+                            $kegiatan->kode = $row[3];
+                            $kegiatan->deskripsi = $row[4];
+                            $kegiatan->tahun_perubahan = $row[5];
+                            if($row[5] > 2020)
+                            {
+                                $kegiatan->status_aturan = 'Sesudah Perubahan';
+                            } else {
+                                $kegiatan->status_aturan = 'Sebelum Perubahan';
+                            }
+                            $kegiatan->kabupaten_id = 62;
+                            $kegiatan->save();
+                        }
+                    }
                     // Satu Per Satu
                     // $cek_kegiatan = Kegiatan::where('kode', ''.$row[1])->where('program_id', $this->program_id)->first();
                     // if($cek_kegiatan)
@@ -175,50 +175,50 @@ class KegiatanImport implements ToCollection,WithStartRow
                     // }
 
                     // Kegiatan Indikator Kinerja
-                    $cek_kegiatan_indikator_kinerja = KegiatanIndikatorKinerja::whereHas('kegiatan', function($q) use ($row){
-                        $q->where('kode', $row[3]);
-                        $q->whereHas('program', function($q) use ($row){
-                            $q->where('kode', $row[2]);
-                            $q->whereHas('urusan', function($q) use ($row){
-                                $q->where('kode', $row[1]);
-                            });
-                        });
-                    })->first();
+                    // $cek_kegiatan_indikator_kinerja = KegiatanIndikatorKinerja::whereHas('kegiatan', function($q) use ($row){
+                    //     $q->where('kode', $row[3]);
+                    //     $q->whereHas('program', function($q) use ($row){
+                    //         $q->where('kode', $row[2]);
+                    //         $q->whereHas('urusan', function($q) use ($row){
+                    //             $q->where('kode', $row[1]);
+                    //         });
+                    //     });
+                    // })->first();
 
-                    if($cek_kegiatan_indikator_kinerja)
-                    {
-                        KegiatanIndikatorKinerja::find($cek_kegiatan_indikator_kinerja->id)->delete();
+                    // if($cek_kegiatan_indikator_kinerja)
+                    // {
+                    //     KegiatanIndikatorKinerja::find($cek_kegiatan_indikator_kinerja->id)->delete();
 
-                        $get_kegiatan = Kegiatan::where('kode', $row[3])->whereHas('program', function($q) use ($row){
-                                            $q->where('kode', $row[2]);
-                                            $q->whereHas('urusan', function($q) use ($row){
-                                                $q->where('kode', $row[1]);
-                                            });
-                                        })->first();
+                    //     $get_kegiatan = Kegiatan::where('kode', $row[3])->whereHas('program', function($q) use ($row){
+                    //                         $q->where('kode', $row[2]);
+                    //                         $q->whereHas('urusan', function($q) use ($row){
+                    //                             $q->where('kode', $row[1]);
+                    //                         });
+                    //                     })->first();
 
-                        if($get_kegiatan)
-                        {
-                            $kegiatan_indikator_kinerja = new KegiatanIndikatorKinerja;
-                            $kegiatan_indikator_kinerja->kegiatan_id = $get_kegiatan->id;
-                            $kegiatan_indikator_kinerja->deskripsi = $row[4];
-                            $kegiatan_indikator_kinerja->save();
-                        }
-                    } else {
-                        $get_kegiatan = Kegiatan::where('kode', $row[3])->whereHas('program', function($q) use ($row){
-                            $q->where('kode', $row[2]);
-                            $q->whereHas('urusan', function($q) use ($row){
-                                $q->where('kode', $row[1]);
-                            });
-                        })->first();
+                    //     if($get_kegiatan)
+                    //     {
+                    //         $kegiatan_indikator_kinerja = new KegiatanIndikatorKinerja;
+                    //         $kegiatan_indikator_kinerja->kegiatan_id = $get_kegiatan->id;
+                    //         $kegiatan_indikator_kinerja->deskripsi = $row[4];
+                    //         $kegiatan_indikator_kinerja->save();
+                    //     }
+                    // } else {
+                    //     $get_kegiatan = Kegiatan::where('kode', $row[3])->whereHas('program', function($q) use ($row){
+                    //         $q->where('kode', $row[2]);
+                    //         $q->whereHas('urusan', function($q) use ($row){
+                    //             $q->where('kode', $row[1]);
+                    //         });
+                    //     })->first();
 
-                        if($get_kegiatan)
-                        {
-                            $kegiatan_indikator_kinerja = new KegiatanIndikatorKinerja;
-                            $kegiatan_indikator_kinerja->kegiatan_id = $get_kegiatan->id;
-                            $kegiatan_indikator_kinerja->deskripsi = $row[4];
-                            $kegiatan_indikator_kinerja->save();
-                        }
-                    }
+                    //     if($get_kegiatan)
+                    //     {
+                    //         $kegiatan_indikator_kinerja = new KegiatanIndikatorKinerja;
+                    //         $kegiatan_indikator_kinerja->kegiatan_id = $get_kegiatan->id;
+                    //         $kegiatan_indikator_kinerja->deskripsi = $row[4];
+                    //         $kegiatan_indikator_kinerja->save();
+                    //     }
+                    // }
                 }
                 $n++;
             }
