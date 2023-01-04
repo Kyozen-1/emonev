@@ -1187,7 +1187,7 @@ class NomenklaturController extends Controller
                                                                                                 $kegiatans = [];
                                                                                                 foreach ($get_kegiatans as $get_kegiatan) {
                                                                                                     $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
-                                                                                                                                ->orderBy('tahun_perubahan', 'desc')->first();
+                                                                                                                                ->orderBy('id', 'desc')->first();
                                                                                                     if($cek_perubahan_kegiatan)
                                                                                                     {
                                                                                                         $kegiatans[] = [
@@ -1596,7 +1596,7 @@ class NomenklaturController extends Controller
                                                                                                     $kegiatans = [];
                                                                                                     foreach ($get_kegiatans as $get_kegiatan) {
                                                                                                         $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
-                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->first();
+                                                                                                                                    ->orderBy('id', 'desc')->first();
                                                                                                         if($cek_perubahan_kegiatan)
                                                                                                         {
                                                                                                             $kegiatans[] = [
@@ -4800,7 +4800,7 @@ class NomenklaturController extends Controller
                                                                                                     $kegiatans = [];
                                                                                                     foreach ($get_kegiatans as $get_kegiatan) {
                                                                                                         $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
-                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->first();
+                                                                                                                                    ->orderBy('id', 'desc')->first();
                                                                                                         if($cek_perubahan_kegiatan)
                                                                                                         {
                                                                                                             $kegiatans[] = [
