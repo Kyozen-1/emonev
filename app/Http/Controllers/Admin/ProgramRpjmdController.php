@@ -110,6 +110,7 @@ class ProgramRpjmdController extends Controller
     {
         $get_programs = Program::select('id', 'deskripsi', 'kode')->where('urusan_id', $request->id)->orderBy('kode', 'asc')->get();
         $program = [];
+        $tampung = [];
         foreach ($get_programs as $get_program) {
             $opd_program = [];
             $not_unique_opd_program = [];
@@ -122,30 +123,33 @@ class ProgramRpjmdController extends Controller
                 $not_unique_opd_program[] = $opd_program_indikator_kinerja->opd_id;
             }
             $unique_opd_program = array_unique($not_unique_opd_program);
-            $combine_unique_opd_program = array_combine(range(0, count($unique_opd_program) - 1), array_values($unique_opd_program));
-            for ($i=0; $i < count($combine_unique_opd_program); $i++) {
-                $master_opd = MasterOpd::where('id', $combine_unique_opd_program[$i])->first();
-                if($master_opd)
-                {
-                    $opd_program[] = $master_opd->nama;
-                }
-            }
-            $cek_perubahan_program = PivotPerubahanProgram::select('program_id', 'deskripsi', 'kode')->where('program_id', $get_program->id)->latest()->first();
-            if($cek_perubahan_program)
+            if($unique_opd_program != null)
             {
-                $program[] = [
-                    'id' => $cek_perubahan_program->program_id,
-                    'deskripsi' => $cek_perubahan_program->deskripsi,
-                    'kode' => $cek_perubahan_program->kode,
-                    'opd_program' => $opd_program
-                ];
-            } else {
-                $program[] = [
-                    'id' => $get_program->id,
-                    'deskripsi' => $get_program->deskripsi,
-                    'kode' => $get_program->kode,
-                    'opd_program' => $opd_program
-                ];
+                $combine_unique_opd_program = array_combine(range(0, count($unique_opd_program) - 1), array_values($unique_opd_program));
+                for ($i=0; $i < count($combine_unique_opd_program); $i++) {
+                    $master_opd = MasterOpd::find($combine_unique_opd_program[$i]);
+                    if($master_opd)
+                    {
+                        $opd_program[] = $master_opd->nama;
+                    }
+                }
+                $cek_perubahan_program = PivotPerubahanProgram::select('program_id', 'deskripsi', 'kode')->where('program_id', $get_program->id)->latest()->first();
+                if($cek_perubahan_program)
+                {
+                    $program[] = [
+                        'id' => $cek_perubahan_program->program_id,
+                        'deskripsi' => $cek_perubahan_program->deskripsi,
+                        'kode' => $cek_perubahan_program->kode,
+                        'opd_program' => $opd_program
+                    ];
+                } else {
+                    $program[] = [
+                        'id' => $get_program->id,
+                        'deskripsi' => $get_program->deskripsi,
+                        'kode' => $get_program->kode,
+                        'opd_program' => $opd_program
+                    ];
+                }
             }
         }
         return response()->json($program);
