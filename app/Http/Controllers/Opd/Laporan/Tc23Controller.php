@@ -600,8 +600,13 @@ class Tc23Controller extends Controller
                                                     foreach ($kegiatan_tw_realisasi_renjas as $kegiatan_tw_realisasi_renja) {
                                                         $realisasi[] = $kegiatan_tw_realisasi_renja->realisasi;
                                                     }
-                                                    $rasio = (array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    if($kegiatan_target_satuan_rp_realisasi->target)
+                                                    {
+                                                        $rasio = (array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target;
+                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    } else {
+                                                        $tc_23 .= '<td>0</td>';
+                                                    }
                                                 } else {
                                                     $tc_23 .= '<td></td>';
                                                 }
