@@ -88,7 +88,7 @@ class E79Controller extends Controller
         $tws = MasterTw::all();
 
         // E 79 Start
-        $get_sasarans = Sasaran::all();
+        $get_sasarans = Sasaran::where('tahun_periode_id', $get_periode->id)->get();
         $sasarans = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
@@ -1042,9 +1042,9 @@ class E79Controller extends Controller
                                                                     });
                                                                 })->where('tahun', $item)->first();
 
-                                                                $kegiatan_target_satuan_rp_realisasi_target[] = $cek_kegiatan_target_satuan_rp_realisasi->target;
-                                                                $kegiatan_indikator_kinerja_satuan[] = $cek_kegiatan_target_satuan_rp_realisasi->satuan;
-                                                                $kegiatan_target_satuan_rp_realisasi_target_rp[] = $cek_kegiatan_target_satuan_rp_realisasi->target_rp;
+                                                                $kegiatan_target_satuan_rp_realisasi_target[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->target : 0;
+                                                                $kegiatan_indikator_kinerja_satuan[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->satuan : '';
+                                                                $kegiatan_target_satuan_rp_realisasi_target_rp[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->target_rp : 0;
                                                             }
 
                                                             $e_79 .= '<td>'.array_sum($kegiatan_target_satuan_rp_realisasi_target).'/'.implode('', array_unique($kegiatan_indikator_kinerja_satuan)).'</td>';
@@ -1203,9 +1203,9 @@ class E79Controller extends Controller
                                                                     });
                                                                 })->where('tahun', $item)->first();
 
-                                                                $kegiatan_target_satuan_rp_realisasi_target[] = $cek_kegiatan_target_satuan_rp_realisasi->target;
-                                                                $kegiatan_indikator_kinerja_satuan[] = $cek_kegiatan_target_satuan_rp_realisasi->satuan;
-                                                                $kegiatan_target_satuan_rp_realisasi_target_rp[] = $cek_kegiatan_target_satuan_rp_realisasi->target_rp;
+                                                                $kegiatan_target_satuan_rp_realisasi_target[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->target : 0;
+                                                                $kegiatan_indikator_kinerja_satuan[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->satuan : '';
+                                                                $kegiatan_target_satuan_rp_realisasi_target_rp[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->target_rp : 0;
                                                             }
 
                                                             $e_79 .= '<td>'.(array_sum($kegiatan_realisasi_tahun_lalu) + array_sum($kegiatan_realisasi_tahun_sekarang)) / array_sum($kegiatan_target_satuan_rp_realisasi_target).'/'.$program_indikator_kinerja->satuan.'</td>';
@@ -3471,9 +3471,11 @@ class E79Controller extends Controller
 
     public function laporan_e_79(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
         $tahun_awal = $request->tahun;
         // E 79 Start
-        $get_sasarans = Sasaran::all();
+        $get_sasarans = Sasaran::where('tahun_periode_id', $get_periode->id)->get();
         $sasarans = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
@@ -6872,9 +6874,11 @@ class E79Controller extends Controller
 
     public function e_79_ekspor_pdf($tahun)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
         $tahun_awal = $tahun;
         // E 79 Start
-        $get_sasarans = Sasaran::all();
+        $get_sasarans = Sasaran::where('tahun_periode_id', $get_periode->id)->get();
         $sasarans = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)

@@ -74,9 +74,15 @@ class E79Ekspor implements FromView
 
     public function view(): View
     {
+        $jarak_tahun = $get_periode->tahun_akhir - $get_periode->tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         $tahun_awal = $this->tahun;
         // E 79 Start
-        $get_sasarans = Sasaran::all();
+        $get_sasarans = Sasaran::where('tahun_periode_id', $get_periode->id)->get();
         $sasarans = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)
@@ -101,11 +107,6 @@ class E79Ekspor implements FromView
         $a = 1;
         $tws = MasterTw::all();
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $jarak_tahun = $get_periode->tahun_akhir - $get_periode->tahun_awal;
-        $tahuns = [];
-        for ($i=0; $i < $jarak_tahun + 1; $i++) {
-            $tahuns[] = $tahun_awal + $i;
-        }
         foreach ($sasarans as $sasaran) {
             $e_79 .= '<tr>';
                 $e_79 .= '<td>'.$a++.'</td>';

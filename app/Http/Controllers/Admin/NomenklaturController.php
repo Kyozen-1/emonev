@@ -40,7 +40,7 @@ class NomenklaturController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $urusans[] = [
@@ -69,7 +69,7 @@ class NomenklaturController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->orderBy('tahun_perubahan', 'desc')->first();
@@ -415,7 +415,7 @@ class NomenklaturController extends Controller
         }
         if($tahun == 'semua')
         {
-            $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+            $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->orderBy('tahun_perubahan', 'desc')->first();
@@ -749,7 +749,7 @@ class NomenklaturController extends Controller
 
             return response()->json(['html' => $html]);
         } else {
-            $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+            $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->orderBy('tahun_perubahan', 'desc')->first();
@@ -1083,7 +1083,7 @@ class NomenklaturController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -1492,7 +1492,7 @@ class NomenklaturController extends Controller
         }
         if($tahun == 'semua')
         {
-            $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+            $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -1889,7 +1889,7 @@ class NomenklaturController extends Controller
 
             return response()->json(['html' => $html]);
         } else {
-            $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+            $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -2284,7 +2284,7 @@ class NomenklaturController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -2739,7 +2739,7 @@ class NomenklaturController extends Controller
 
         if($tahun == 'semua')
         {
-            $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+            $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -3182,7 +3182,7 @@ class NomenklaturController extends Controller
 
             return response()->json(['html' => $html]);
         } else {
-            $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+            $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -3627,9 +3627,10 @@ class NomenklaturController extends Controller
 
     public function filter_get_program(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         if($request->tahun == 'semua')
         {
-            $get_programs = Program::where('urusan_id', $request->id)->get();
+            $get_programs = Program::where('tahun_periode_id', $get_periode->id)->where('urusan_id', $request->id)->get();
             $programs = [];
 
             foreach ($get_programs as $get_program) {
@@ -3653,7 +3654,7 @@ class NomenklaturController extends Controller
 
             return response()->json($programs);
         } else {
-            $get_programs = Program::where('urusan_id', $request->id)->where('tahun_perubahan', $request->tahun)->get();
+            $get_programs = Program::where('tahun_periode_id', $get_periode->id)->where('urusan_id', $request->id)->where('tahun_perubahan', $request->tahun)->get();
             $programs = [];
 
             foreach ($get_programs as $get_program) {
@@ -3670,9 +3671,10 @@ class NomenklaturController extends Controller
 
     public function filter_get_kegiatan(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         if($request->tahun == 'semua')
         {
-            $get_kegiatans = Kegiatan::where('program_id', $request->id)->get();
+            $get_kegiatans = Kegiatan::where('tahun_periode_id', $get_periode->id)->where('program_id', $request->id)->get();
             $kegiatans = [];
             foreach ($get_kegiatans as $get_kegiatan) {
                 $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
@@ -3693,7 +3695,7 @@ class NomenklaturController extends Controller
                 }
             }
         } else {
-            $get_kegiatans = Kegiatan::where('program_id', $request->id)->where('tahun_perubahan', $request->tahun)->get();
+            $get_kegiatans = Kegiatan::where('tahun_periode_id', $get_periode->id)->where('program_id', $request->id)->where('tahun_perubahan', $request->tahun)->get();
             $kegiatans = [];
             foreach ($get_kegiatans as $get_kegiatan) {
                 $kegiatans[] = [
@@ -3709,9 +3711,10 @@ class NomenklaturController extends Controller
 
     public function filter_get_sub_kegiatan(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         if($request->tahun == 'semua')
         {
-            $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $request->id)->get();
+            $get_sub_kegiatans = SubKegiatan::where('tahun_periode_id', $get_periode->id)->where('kegiatan_id', $request->id)->get();
             $sub_kegiatans = [];
             foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
                 $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)
@@ -3732,7 +3735,7 @@ class NomenklaturController extends Controller
                 }
             }
         } else {
-            $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $request->id)->get();
+            $get_sub_kegiatans = SubKegiatan::where('tahun_periode_id', $get_periode->id)->where('kegiatan_id', $request->id)->get();
             $sub_kegiatans = [];
             foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
                 $sub_kegiatans[] = [
@@ -3763,7 +3766,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->orderBy('kode', 'asc')->get();
+            $get_urusans = $get_urusans->where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -4224,7 +4227,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->orderBy('kode', 'asc')->get();
+            $get_urusans = $get_urusans->where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -4685,7 +4688,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
+            $get_urusans = $get_urusans->where('tahun_periode_id', $get_periode->id)->orderBy('kode','asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -5098,7 +5101,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
+            $get_urusans = $get_urusans->where('tahun_periode_id', $get_periode->id)->orderBy('kode','asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -5509,7 +5512,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->orderBy('kode', 'asc')->get();
+            $get_urusans = $get_urusans->where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -5853,7 +5856,7 @@ class NomenklaturController extends Controller
             {
                 $get_urusans = $get_urusans->where('id', $request->urusan);
             }
-            $get_urusans = $get_urusans->orderBy('kode', 'asc')->get();
+            $get_urusans = $get_urusans->where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
             $urusans = [];
             foreach ($get_urusans as $get_urusan) {
                 $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();

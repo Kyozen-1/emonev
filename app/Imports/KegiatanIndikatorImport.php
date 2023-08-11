@@ -18,6 +18,7 @@ use App\Models\PivotKegiatanIndikator;
 use App\Imports\KegiatanImport;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotPerubahanUrusan;
+use App\Models\TahunPeriode;
 
 class KegiatanIndikatorImport implements ToCollection,WithStartRow
 {

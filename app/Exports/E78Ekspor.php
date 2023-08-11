@@ -85,7 +85,7 @@ class E78Ekspor implements FromView
         }
 
         // E 78 Start
-        $get_sasarans = Sasaran::all();
+        $get_sasarans = Sasaran::where('tahun_periode_id', $get_periode->id)->get();
         $sasarans = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();

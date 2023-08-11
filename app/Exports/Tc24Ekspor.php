@@ -81,7 +81,7 @@ class Tc24Ekspor implements FromView
         }
 
         $a = 1;
-        $get_visis = Visi::whereHas('misi', function($q) use ($opd_id){
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->whereHas('misi', function($q) use ($opd_id){
             $q->whereHas('tujuan', function($q) use ($opd_id){
                 $q->whereHas('sasaran', function($q) use ($opd_id){
                     $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){

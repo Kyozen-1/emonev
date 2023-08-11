@@ -15,6 +15,7 @@ use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
 use Carbon\Carbon;
 use App\Models\ProgramIndikatorKinerja;
+use App\Models\TahunPeriode;
 
 class ProgramImport implements ToCollection,WithStartRow
 {
@@ -69,10 +70,11 @@ class ProgramImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
+                    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
                     // Semua
                     $cek_program = Program::where('kode', $row[2])->whereHas('urusan', function($q) use ($row){
                         $q->where('kode', $row[1]);
-                    })->first();
+                    })->where('tahun_periode_id', $get_periode->id)->first();
                     if($cek_program)
                     {
                         $cek_pivot_program = PivotPerubahanProgram::where('program_id', $cek_program->id)
@@ -130,6 +132,7 @@ class ProgramImport implements ToCollection,WithStartRow
                             } else {
                                 $program->status_aturan = 'Sebelum Perubahan';
                             }
+                            $program->tahun_periode_id = $get_periode->id;
                             $program->save();
                         }
                     }

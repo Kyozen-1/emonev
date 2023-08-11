@@ -96,7 +96,7 @@ class Tc24Controller extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -474,7 +474,7 @@ class Tc24Controller extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $visis = [];
         foreach ($get_visis as $get_visi) {

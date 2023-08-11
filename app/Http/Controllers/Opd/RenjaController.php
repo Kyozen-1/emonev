@@ -101,7 +101,7 @@ class RenjaController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -529,7 +529,7 @@ class RenjaController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -1056,7 +1056,7 @@ class RenjaController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {
@@ -1990,7 +1990,7 @@ class RenjaController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {
@@ -2750,7 +2750,7 @@ class RenjaController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {

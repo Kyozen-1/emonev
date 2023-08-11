@@ -85,7 +85,7 @@ class OpdE80Ekspor implements FromView
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $tujuans = [];
 

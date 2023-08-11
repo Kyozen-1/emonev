@@ -19,6 +19,7 @@ use App\Imports\KegiatanImport;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotPerubahanUrusan;
 use App\Models\KegiatanIndikatorKinerja;
+use App\Models\TahunPeriode;
 
 class KegiatanImport implements ToCollection,WithStartRow
 {
@@ -70,13 +71,15 @@ class KegiatanImport implements ToCollection,WithStartRow
                     //     return false;
                     // }
                     // Semua
+                    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
                     $cek_kegiatan = Kegiatan::where('kode', $row[3])
                                     ->whereHas("program", function($q) use ($row){
                                         $q->where('kode', $row[2]);
                                         $q->whereHas('urusan', function($q) use ($row){
                                             $q->where('kode', $row[1]);
                                         });
-                                    })->first();
+                                    })->where('tahun_periode_id', $get_periode->id)->first();
                     if($cek_kegiatan)
                     {
                         $cek_pivot_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $cek_kegiatan->id)
@@ -122,7 +125,7 @@ class KegiatanImport implements ToCollection,WithStartRow
                         $get_program = Program::where('kode', $row[2])
                                         ->whereHas('urusan', function($q) use ($row){
                                             $q->where('kode', $row[1]);
-                                        })->first();
+                                        })->where('tahun_periode_id', $get_periode->id)->first();
                         if($get_program)
                         {
                             $kegiatan = new Kegiatan;
@@ -137,6 +140,7 @@ class KegiatanImport implements ToCollection,WithStartRow
                                 $kegiatan->status_aturan = 'Sebelum Perubahan';
                             }
                             $kegiatan->kabupaten_id = 62;
+                            $kegiatan->tahun_periode_id = $get_periode->id;
                             $kegiatan->save();
                         }
                     }

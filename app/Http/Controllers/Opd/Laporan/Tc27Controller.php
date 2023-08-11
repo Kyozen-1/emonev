@@ -81,7 +81,7 @@ class Tc27Controller extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $tujuans = [];
 
@@ -602,7 +602,7 @@ class Tc27Controller extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $tujuans = [];
 

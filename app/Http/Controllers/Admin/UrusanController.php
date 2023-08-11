@@ -43,9 +43,17 @@ class UrusanController extends Controller
 {
     public function index()
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
         if(request()->ajax())
         {
-            $data = Urusan::orderBy('kode', 'desc')->get();
+            $data = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'desc')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
@@ -77,14 +85,6 @@ class UrusanController extends Controller
                 })
                 ->rawColumns(['aksi'])
                 ->make(true);
-        }
-
-        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $tahun_awal = $get_periode->tahun_awal;
-        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
-        $tahuns = [];
-        for ($i=0; $i < $jarak_tahun + 1; $i++) {
-            $tahuns[] = $tahun_awal + $i;
         }
 
         return view('admin.urusan.index', [
@@ -125,8 +125,9 @@ class UrusanController extends Controller
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
 
-        $cek_urusan =  Urusan::where('kode', $request->urusan_kode)->first();
+        $cek_urusan =  Urusan::where('kode', $request->urusan_kode)->where('tahun_periode_id', $get_periode->id)->first();
         if($cek_urusan)
         {
             $cek_pivot_urusan = PivotPerubahanUrusan::where('kode', $request->urusan_kode)
@@ -177,6 +178,7 @@ class UrusanController extends Controller
                 $urusan->status_aturan = 'Sebelum Perubahan';
             }
             $urusan->kabupaten_id = 62;
+            $urusan->tahun_periode_id = $get_periode->id;
             $urusan->save();
         }
 

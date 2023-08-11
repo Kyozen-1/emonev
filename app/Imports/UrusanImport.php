@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Concerns\WithStartRow;
 use DB;
 use App\Models\Urusan;
 use App\Models\PivotPerubahanUrusan;
+use App\Models\TahunPeriode;
 
 class UrusanImport implements ToCollection,WithStartRow
 {
@@ -62,7 +63,8 @@ class UrusanImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
-                    $cek_urusan =  Urusan::where('kode', $row[1])->first();
+                    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+                    $cek_urusan =  Urusan::where('kode', $row[1])->where('tahun_periode_id', $get_periode->id)->first();
                     if($cek_urusan)
                     {
                         $cek_pivot_perubahan_urusan = PivotPerubahanUrusan::where('kode', $row[1])
@@ -113,6 +115,7 @@ class UrusanImport implements ToCollection,WithStartRow
                             $urusan->status_aturan = 'Sebelum Perubahan';
                         }
                         $urusan->kabupaten_id = 62;
+                        $urusan->tahun_periode_id = $get_periode->id;
                         $urusan->save();
                     }
                 }

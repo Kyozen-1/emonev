@@ -87,7 +87,7 @@ class E81Ekspor implements FromView
 
         $opd = MasterOpd::find($opd_id);
 
-        $get_tujuans = Tujuan::whereHas('sasaran', function($q) use ($opd_id){
+        $get_tujuans = Tujuan::where('tahun_periode_id', $get_periode->id)->whereHas('sasaran', function($q) use ($opd_id){
             $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
                 $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
                     $q->whereHas('program_rpjmd', function($q) use ($opd_id){

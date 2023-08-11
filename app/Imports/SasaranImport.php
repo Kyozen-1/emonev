@@ -29,6 +29,7 @@ use App\Models\Program;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotProgramKegiatanRenstra;
 use App\Models\TargetRpPertahunProgram;
+use App\Models\TahunPeriode;
 
 class SasaranImport implements ToCollection,WithStartRow
 {
@@ -80,13 +81,14 @@ class SasaranImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
+                    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
                     // Import Semua Sasaran
                     $cek_sasaran = Sasaran::where('kode', $row[3])->whereHas('tujuan', function($q) use ($row){
                         $q->where('kode', $row[2]);
                         $q->whereHas('misi', function($q) use ($row){
                             $q->where('kode', $row[1]);
                         });
-                    })->first();
+                    })->where('tahun_periode_id', $get_periode->id)->first();
                     if($cek_sasaran)
                     {
                         $cek_pivot = PivotPerubahanSasaran::where('sasaran_id', $cek_sasaran->id)
@@ -119,13 +121,14 @@ class SasaranImport implements ToCollection,WithStartRow
                     } else {
                         $get_tujuan = Tujuan::where('kode', $row[2])->whereHas('misi', function($q) use ($row){
                             $q->where('kode', $row[1]);
-                        })->first();
+                        })->where('tahun_periode_id', $get_periode->id)->first();
                         $sasaran = new Sasaran;
                         $sasaran->tujuan_id = $get_tujuan->id;
                         $sasaran->kode = $row[3];
                         $sasaran->deskripsi = $row[4];
                         $sasaran->kabupaten_id = 62;
                         $sasaran->tahun_perubahan = $row[5];
+                        $sasaran->tahun_periode_id = $get_periode->id;
                         $sasaran->save();
                     }
                     // Import Sasaran Spesifik

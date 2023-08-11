@@ -19,6 +19,7 @@ use App\Models\PivotPerubahanTujuan;
 use App\Models\PivotTujuanIndikator;
 use App\Imports\TujuanImport;
 use App\Models\TujuanIndikatorKinerja;
+use App\Models\TahunPeriode;
 
 class TujuanImport implements ToCollection,WithStartRow
 {
@@ -70,10 +71,11 @@ class TujuanImport implements ToCollection,WithStartRow
                         session(['import_message' => $response['import_message']]);
                         return false;
                     }
+                    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
                     // Impor Semua Tujuan
                     $cek_tujuan = Tujuan::where('kode', $row['2'])->whereHas('misi', function($q) use ($row) {
                         $q->where('kode', $row[1]);
-                    })->first();
+                    })->where('tahun_periode_id', $get_periode->id)->first();
                     if($cek_tujuan)
                     {
                         $cek_pivot = PivotPerubahanTujuan::where('tujuan_id', $cek_tujuan->id)
@@ -102,7 +104,7 @@ class TujuanImport implements ToCollection,WithStartRow
                             $pivot->save();
                         }
                     } else {
-                        $get_misi = Misi::where('kode', $row[1])->first();
+                        $get_misi = Misi::where('kode', $row[1])->where('tahun_periode_id', $get_periode->id)->first();
                         if($get_misi)
                         {
                             $tujuan = new Tujuan;
@@ -111,6 +113,7 @@ class TujuanImport implements ToCollection,WithStartRow
                             $tujuan->deskripsi = $row[3];
                             $tujuan->tahun_perubahan = $row[4];
                             $tujuan->kabupaten_id = 62;
+                            $tujuan->tahun_periode_id = $get_periode->id;
                             $tujuan->save();
                         }
                     }

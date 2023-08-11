@@ -84,7 +84,7 @@ class Tc14Controller extends Controller
             $new_tahuns[] = $new_tahun_awal + $i;
         }
 
-        $get_visis = Visi::whereHas('misi', function($q){
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->whereHas('misi', function($q){
             $q->whereHas('tujuan', function($q){
                 $q->whereHas('sasaran', function($q){
                     $q->whereHas('sasaran_indikator_kinerja', function($q){
@@ -742,7 +742,7 @@ class Tc14Controller extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::whereHas('misi', function($q){
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->whereHas('misi', function($q){
             $q->whereHas('tujuan', function($q){
                 $q->whereHas('sasaran', function($q){
                     $q->whereHas('sasaran_indikator_kinerja', function($q){

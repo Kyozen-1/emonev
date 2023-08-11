@@ -73,11 +73,13 @@ class Tc19Ekspor implements FromView
 
     public function view(): View
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
         $tahun_awal = $this->tahun;
         // TC 19 Start
         $tc_19 = '';
 
-        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();

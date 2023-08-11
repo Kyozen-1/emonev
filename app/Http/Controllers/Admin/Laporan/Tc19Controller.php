@@ -88,7 +88,7 @@ class Tc19Controller extends Controller
         // TC 19 Start
         $tc_19 = '';
 
-        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -1710,6 +1710,7 @@ class Tc19Controller extends Controller
 
     public function laporan_tc_19(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $request->tahun;
         // TC 19 Start
         $tc_19 = '';
@@ -1722,7 +1723,7 @@ class Tc19Controller extends Controller
         }
         $tws = MasterTw::all();
 
-        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
@@ -3342,11 +3343,12 @@ class Tc19Controller extends Controller
 
     public function tc_19_ekspor_pdf($tahun)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $tahun;
         // TC 19 Start
         $tc_19 = '';
 
-        $get_urusans = Urusan::orderBy('kode', 'asc')->get();
+        $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();

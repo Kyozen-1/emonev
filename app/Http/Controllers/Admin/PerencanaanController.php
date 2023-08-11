@@ -79,7 +79,7 @@ class PerencanaanController extends Controller
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
         }
-        $get_urusans = Urusan::select('id', 'kode', 'deskripsi')->orderBy('kode','asc')->get();
+        $get_urusans = Urusan::select('id', 'kode', 'deskripsi')->where('tahun_periode_id', $get_periode->id)->orderBy('kode','asc')->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->orderBy('tahun_perubahan', 'desc')
@@ -99,7 +99,7 @@ class PerencanaanController extends Controller
                 ];
             }
         }
-        $get_misis = Misi::select('id', 'kode', 'deskripsi')->get();
+        $get_misis = Misi::select('id', 'kode', 'deskripsi')->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $misis = [];
         foreach ($get_misis as $get_misi) {
@@ -139,7 +139,7 @@ class PerencanaanController extends Controller
         $tahun_awal = $get_periode->tahun_awal;
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
@@ -260,7 +260,7 @@ class PerencanaanController extends Controller
     public function get_misi_tahun($tahun)
     {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun)
@@ -392,7 +392,7 @@ class PerencanaanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->latest()->first();
@@ -690,7 +690,7 @@ class PerencanaanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->latest()->first();
@@ -987,7 +987,7 @@ class PerencanaanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->latest()->first();
@@ -1347,7 +1347,7 @@ class PerencanaanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
@@ -1701,7 +1701,9 @@ class PerencanaanController extends Controller
 
     public function get_program()
     {
-        $get_visis = Visi::all();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::now()->year;
         foreach ($get_visis as $get_visi) {
@@ -2015,7 +2017,8 @@ class PerencanaanController extends Controller
 
     public function get_program_tahun($tahun)
     {
-        $get_visis = Visi::all();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun)
@@ -2329,6 +2332,7 @@ class PerencanaanController extends Controller
 
     public function filter_get_misi(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $get_misis = new Misi;
         if($request->id == 'aman')
         {
@@ -2348,7 +2352,7 @@ class PerencanaanController extends Controller
         {
             $get_misis = $get_misis->where('kode', 5);
         }
-        $get_misis = $get_misis->get();
+        $get_misis = $get_misis->where('tahun_periode_id', $get_periode->id)->get();
         $misis = [];
         foreach ($get_misis as $get_misi) {
             $cek_perubahan_misi = PivotPerubahanMisi::select('misi_id', 'deskripsi', 'kode')
@@ -2374,7 +2378,8 @@ class PerencanaanController extends Controller
 
     public function filter_get_tujuan(Request $request)
     {
-        $get_tujuans = Tujuan::select('id', 'deskripsi', 'kode')->where('misi_id', $request->id)->get();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $get_tujuans = Tujuan::select('id', 'deskripsi', 'kode')->where('misi_id', $request->id)->where('tahun_periode_id', $get_periode->id)->get();
         $tujuan = [];
         foreach ($get_tujuans as $get_tujuan) {
             $cek_perubahan_tujuan = PivotPerubahanTujuan::select('tujuan_id', 'deskripsi', 'kode')
@@ -2400,7 +2405,8 @@ class PerencanaanController extends Controller
 
     public function filter_get_sasaran(Request $request)
     {
-        $get_sasarans = Sasaran::select('id', 'deskripsi', 'kode')->where('tujuan_id', $request->id)->get();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $get_sasarans = Sasaran::select('id', 'deskripsi', 'kode')->where('tujuan_id', $request->id)->where('tahun_periode_id', $get_periode->id)->get();
         $sasaran = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::select('sasaran_id', 'deskripsi', 'kode')
@@ -2487,7 +2493,8 @@ class PerencanaanController extends Controller
 
     public function filter_program(Request $request)
     {
-        $get_visis = Visi::all();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
@@ -2795,7 +2802,7 @@ class PerencanaanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -3152,16 +3159,13 @@ class PerencanaanController extends Controller
     {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
-
-        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $tahun_awal = $get_periode->tahun_awal;
         $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
         $tahuns = [];
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::now()->year;
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -3467,7 +3471,8 @@ class PerencanaanController extends Controller
 
     public function filter_misi(Request $request)
     {
-        $get_visis = Visi::all();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
@@ -3596,7 +3601,8 @@ class PerencanaanController extends Controller
 
     public function rpjmd_filter_program_status(Request $request)
     {
-        $get_visis = Visi::all();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)

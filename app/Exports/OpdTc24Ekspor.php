@@ -93,7 +93,7 @@ class OpdTc24Ekspor implements FromView
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $visis = [];
         foreach ($get_visis as $get_visi) {

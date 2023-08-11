@@ -72,7 +72,7 @@ class RenstraController extends Controller
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
         }
-        $get_urusans = Urusan::select('id', 'kode', 'deskripsi')->get();
+        $get_urusans = Urusan::select('id', 'kode', 'deskripsi')->where('tahun_periode_id', $get_periode->id)->get();
         $urusans = [];
         foreach ($get_urusans as $get_urusan) {
             $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->orderBy('tahun_perubahan', 'desc')
@@ -92,7 +92,7 @@ class RenstraController extends Controller
                 ];
             }
         }
-        $get_misis = Misi::select('id', 'kode', 'deskripsi')->get();
+        $get_misis = Misi::select('id', 'kode', 'deskripsi')->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $misis = [];
         foreach ($get_misis as $get_misi) {
@@ -124,6 +124,7 @@ class RenstraController extends Controller
 
     public function filter_get_misi(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $get_misis = new Misi;
         if($request->id == 'aman')
         {
@@ -143,7 +144,7 @@ class RenstraController extends Controller
         {
             $get_misis = $get_misis->where('kode', 5);
         }
-        $get_misis = $get_misis->get();
+        $get_misis = $get_misis->where('tahun_periode_id', $get_periode->id)->get();
         $misis = [];
         foreach ($get_misis as $get_misi) {
             $cek_perubahan_misi = PivotPerubahanMisi::select('misi_id', 'deskripsi', 'kode')
@@ -169,7 +170,9 @@ class RenstraController extends Controller
 
     public function filter_get_tujuan(Request $request)
     {
-        $get_tujuans = Tujuan::select('id', 'deskripsi', 'kode')->where('misi_id', $request->id)->get();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
+        $get_tujuans = Tujuan::select('id', 'deskripsi', 'kode')->where('misi_id', $request->id)->where('tahun_periode_id', $get_periode->id)->get();
         $tujuan = [];
         foreach ($get_tujuans as $get_tujuan) {
             $cek_perubahan_tujuan = PivotPerubahanTujuan::select('tujuan_id', 'deskripsi', 'kode')
@@ -195,7 +198,9 @@ class RenstraController extends Controller
 
     public function filter_get_sasaran(Request $request)
     {
-        $get_sasarans = Sasaran::select('id', 'deskripsi', 'kode')->where('tujuan_id', $request->id)->get();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
+        $get_sasarans = Sasaran::select('id', 'deskripsi', 'kode')->where('tujuan_id', $request->id)->where('tahun_periode_id', $get_periode->id)->get();
         $sasaran = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::select('sasaran_id', 'deskripsi', 'kode')
@@ -221,6 +226,7 @@ class RenstraController extends Controller
 
     public function filter_get_program(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $get_programs = Program::whereHas('program_rpjmd', function($q) use ($request){
             $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($request) {
                 $q->whereHas('sasaran_indikator_kinerja', function($q) use ($request){
@@ -233,7 +239,7 @@ class RenstraController extends Controller
             $q->whereHas('opd_program_indikator_kinerja', function($q){
                 $q->where('opd_id', Auth::user()->opd->opd_id);
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $programs = [];
         foreach ($get_programs as $get_program) {
@@ -260,6 +266,7 @@ class RenstraController extends Controller
 
     public function filter_get_kegiatan(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $get_renstra_kegiatans = RenstraKegiatan::where('program_rpjmd_id', $request->id)->get();
         $kegiatans = [];
         foreach ($get_renstra_kegiatans as $get_renstra_kegiatan) {
@@ -286,7 +293,8 @@ class RenstraController extends Controller
 
     public function option_kegiatan(Request $request)
     {
-        $get_kegiatans = Kegiatan::where('program_id', $request->id)->get();
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $get_kegiatans = Kegiatan::where('program_id', $request->id)->where('tahun_periode_id', $get_periode->id)->get();
         $kegiatans = [];
         foreach ($get_kegiatans as $get_kegiatan) {
             $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
@@ -334,7 +342,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)
@@ -462,6 +470,8 @@ class RenstraController extends Controller
 
     public function get_filter_misi(Request $request)
     {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
         $get_visis = Visi::whereHas('misi', function($q){
             $q->whereHas('tujuan', function($q){
                 $q->whereHas('sasaran', function($q){
@@ -480,7 +490,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -626,7 +636,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -1093,7 +1103,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -1573,7 +1583,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -2138,7 +2148,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -2702,7 +2712,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {
@@ -3287,7 +3297,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {
@@ -3904,7 +3914,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {
@@ -4521,7 +4531,7 @@ class RenstraController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {

@@ -387,4 +387,11 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/renstra/kegiatan', 'Admin\RenstraKegiatanController@store')->name('admin.renstra.kegiatan.store');
     Route::get('/admin/renstra/kegiatan/detail/{id}','Admin\RenstraKegiatanController@detail');
     Route::post('/admin/renstra/kegiatan/detail/target-rp-pertahun', 'Admin\RenstraKegiatanController@store_target_rp_pertahun')->name('admin.renstra.kegiatan.detail.target-rp-pertahun');
+
+    // Normalisasi
+    Route::prefix('admin')->group(function(){
+        route::prefix('normalisasi')->group(function(){
+            Route::get('/memberikan-id-tahun-periode', 'Admin\NormalisasiController@memberikan_id_tahun_periode');
+        });
+    });
 });

@@ -74,7 +74,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -518,7 +518,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun)
@@ -961,7 +961,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -1417,10 +1417,7 @@ class RenstraController extends Controller
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
         }
-
-        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $tahun_awal = $get_periode->tahun_awal;
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -1922,7 +1919,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -2424,7 +2421,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -2929,7 +2926,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {
@@ -3403,7 +3400,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {
@@ -3877,7 +3874,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
@@ -4382,10 +4379,7 @@ class RenstraController extends Controller
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
         }
-
-        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
-        $tahun_awal = $get_periode->tahun_awal;
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
         foreach ($get_visis as $get_visi) {
@@ -4932,7 +4926,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun)
@@ -5478,7 +5472,7 @@ class RenstraController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
+        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->get();
         $visis = [];
         foreach ($get_visis as $get_visi) {
             $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)

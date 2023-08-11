@@ -95,7 +95,7 @@ class OpdE81Ekspor implements FromView
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $tujuans = [];
 
@@ -224,9 +224,9 @@ class OpdE81Ekspor implements FromView
                                                 });
                                             })->where('tahun', $item)->first();
 
-                                            $program_target_satuan_rp_realisasi_target[] = $cek_program_target_satuan_rp_realisasi->target;
-                                            $program_indikator_kinerja_satuan[] = $cek_program_target_satuan_rp_realisasi->satuan;
-                                            $program_target_satuan_rp_realisasi_target_rp[] = $cek_program_target_satuan_rp_realisasi->target_rp;
+                                            $program_target_satuan_rp_realisasi_target[] = $cek_program_target_satuan_rp_realisasi ? $cek_program_target_satuan_rp_realisasi->target : 0;
+                                            $program_indikator_kinerja_satuan[] = $cek_program_target_satuan_rp_realisasi ? $cek_program_target_satuan_rp_realisasi->satuan : '';
+                                            $program_target_satuan_rp_realisasi_target_rp[] = $cek_program_target_satuan_rp_realisasi ? $cek_program_target_satuan_rp_realisasi->target_rp : 0;
                                         }
 
                                         $e_81 .= '<td>'.array_sum($program_target_satuan_rp_realisasi_target).'/'.implode('', array_unique($program_indikator_kinerja_satuan)).'</td>';
@@ -353,12 +353,22 @@ class OpdE81Ekspor implements FromView
                                             $program_target_satuan_rp_realisasi_tahun_sekarang_target_rp = $cek_program_target_satuan_rp_realisasi_tahun_sekarang->target_rp;
                                         }
 
-                                        $e_81 .= '<td>'.$program_target_satuan_rp_realisasi_tahun_lalu_target + $program_target_satuan_rp_realisasi_tahun_sekarang_target.'/'.$cek_program_target_satuan_rp_realisasi_tahun_sekarang->satuan.'</td>';
+                                        $e_81 .= '<td>'.$program_target_satuan_rp_realisasi_tahun_lalu_target + $program_target_satuan_rp_realisasi_tahun_sekarang_target.'/</td>';
                                         $e_81 .= '<td>Rp. '.number_format($program_target_satuan_rp_realisasi_tahun_lalu_target_rp + $program_target_satuan_rp_realisasi_tahun_sekarang_target_rp, 2, ',', '.').'</td>';
                                         // Kolom 13 End
                                         // Kolom 14 Start
-                                        $k_14_target = (($program_target_satuan_rp_realisasi_tahun_lalu_target + $program_target_satuan_rp_realisasi_tahun_sekarang_target) / array_sum($program_target_satuan_rp_realisasi_target));
-                                        $k_14_target_rp = ($program_target_satuan_rp_realisasi_tahun_lalu_target_rp + $program_target_satuan_rp_realisasi_tahun_sekarang_target_rp) / array_sum($program_target_satuan_rp_realisasi_target_rp);
+                                        if(array_sum($program_target_satuan_rp_realisasi_target) != 0)
+                                        {
+                                            $k_14_target = (($program_target_satuan_rp_realisasi_tahun_lalu_target + $program_target_satuan_rp_realisasi_tahun_sekarang_target) / array_sum($program_target_satuan_rp_realisasi_target));
+                                        } else {
+                                            $k_14_target = 0;
+                                        }
+                                        if(array_sum($program_target_satuan_rp_realisasi_target_rp))
+                                        {
+                                            $k_14_target_rp = ($program_target_satuan_rp_realisasi_tahun_lalu_target_rp + $program_target_satuan_rp_realisasi_tahun_sekarang_target_rp) / array_sum($program_target_satuan_rp_realisasi_target_rp);
+                                        } else {
+                                            $k_14_target_rp = 0;
+                                        }
                                         $e_81 .= '<td>'.number_format($k_14_target, 2).'</td>';
                                         $e_81 .= '<td>'.number_format($k_14_target_rp, 2, ',').'</td>';
                                         // Kolom 14 End
@@ -383,9 +393,9 @@ class OpdE81Ekspor implements FromView
                                                 });
                                             })->where('tahun', $item)->first();
 
-                                            $program_target_satuan_rp_realisasi_target[] = $cek_program_target_satuan_rp_realisasi->target;
-                                            $program_indikator_kinerja_satuan[] = $cek_program_target_satuan_rp_realisasi->satuan;
-                                            $program_target_satuan_rp_realisasi_target_rp[] = $cek_program_target_satuan_rp_realisasi->target_rp;
+                                            $program_target_satuan_rp_realisasi_target[] = $cek_program_target_satuan_rp_realisasi ? $cek_program_target_satuan_rp_realisasi->target : 0;
+                                            $program_indikator_kinerja_satuan[] = $cek_program_target_satuan_rp_realisasi ? $cek_program_target_satuan_rp_realisasi->satuan : '';
+                                            $program_target_satuan_rp_realisasi_target_rp[] = $cek_program_target_satuan_rp_realisasi ? $cek_program_target_satuan_rp_realisasi->target_rp : 0;
                                         }
 
                                         $e_81 .= '<td>'.array_sum($program_target_satuan_rp_realisasi_target).'/'.implode('', array_unique($program_indikator_kinerja_satuan)).'</td>';
@@ -513,12 +523,23 @@ class OpdE81Ekspor implements FromView
                                             $program_target_satuan_rp_realisasi_tahun_sekarang_target_rp = $cek_program_target_satuan_rp_realisasi_tahun_sekarang->target_rp;
                                         }
 
-                                        $e_81 .= '<td>'.$program_target_satuan_rp_realisasi_tahun_lalu_target + $program_target_satuan_rp_realisasi_tahun_sekarang_target.'/'.$cek_program_target_satuan_rp_realisasi_tahun_sekarang->satuan.'</td>';
+                                        $e_81 .= '<td>'.$program_target_satuan_rp_realisasi_tahun_lalu_target + $program_target_satuan_rp_realisasi_tahun_sekarang_target.'/</td>';
                                         $e_81 .= '<td>Rp. '.number_format($program_target_satuan_rp_realisasi_tahun_lalu_target_rp + $program_target_satuan_rp_realisasi_tahun_sekarang_target_rp, 2, ',', '.').'</td>';
                                         // Kolom 13 End
                                         // Kolom 14 Start
-                                        $k_14_target = (($program_target_satuan_rp_realisasi_tahun_lalu_target + $program_target_satuan_rp_realisasi_tahun_sekarang_target) / array_sum($program_target_satuan_rp_realisasi_target));
-                                        $k_14_target_rp = ($program_target_satuan_rp_realisasi_tahun_lalu_target_rp + $program_target_satuan_rp_realisasi_tahun_sekarang_target_rp) / array_sum($program_target_satuan_rp_realisasi_target_rp);
+                                        if(array_sum($program_target_satuan_rp_realisasi_target) != 0)
+                                        {
+                                            $k_14_target = (($program_target_satuan_rp_realisasi_tahun_lalu_target + $program_target_satuan_rp_realisasi_tahun_sekarang_target) / array_sum($program_target_satuan_rp_realisasi_target));
+                                        } else {
+                                            $k_14_target = 0;
+                                        }
+
+                                        if(array_sum($program_target_satuan_rp_realisasi_target_rp) != 0)
+                                        {
+                                            $k_14_target_rp = ($program_target_satuan_rp_realisasi_tahun_lalu_target_rp + $program_target_satuan_rp_realisasi_tahun_sekarang_target_rp) / array_sum($program_target_satuan_rp_realisasi_target_rp);
+                                        } else {
+                                            $k_14_target_rp = 0;
+                                        }
                                         $e_81 .= '<td>'.number_format($k_14_target, 2).'</td>';
                                         $e_81 .= '<td>'.number_format($k_14_target_rp, 2, ',').'</td>';
                                         // Kolom 14 End
@@ -582,9 +603,9 @@ class OpdE81Ekspor implements FromView
                                                     });
                                                 })->where('tahun', $item)->first();
 
-                                                $kegiatan_target_satuan_rp_realisasi_target[] = $cek_kegiatan_target_satuan_rp_realisasi->target;
-                                                $kegiatan_indikator_kinerja_satuan[] = $cek_kegiatan_target_satuan_rp_realisasi->satuan;
-                                                $kegiatan_target_satuan_rp_realisasi_target_rp[] = $cek_kegiatan_target_satuan_rp_realisasi->target_rp;
+                                                $kegiatan_target_satuan_rp_realisasi_target[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->target : 0;
+                                                $kegiatan_indikator_kinerja_satuan[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->satuan : '';
+                                                $kegiatan_target_satuan_rp_realisasi_target_rp[] = $cek_kegiatan_target_satuan_rp_realisasi ? $cek_kegiatan_target_satuan_rp_realisasi->target_rp : 0;
                                             }
 
                                             $e_81 .= '<td>'.array_sum($kegiatan_target_satuan_rp_realisasi_target).'/'.implode('', array_unique($kegiatan_indikator_kinerja_satuan)).'</td>';
@@ -711,7 +732,7 @@ class OpdE81Ekspor implements FromView
                                                 $kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target_rp = $cek_kegiatan_target_satuan_rp_realisasi_tahun_sekarang->target_rp;
                                             }
 
-                                            $e_81 .= '<td>'.$kegiatan_target_satuan_rp_realisasi_tahun_lalu_target + $kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target.'/'.$cek_kegiatan_target_satuan_rp_realisasi_tahun_sekarang->satuan.'</td>';
+                                            $e_81 .= '<td>'.$kegiatan_target_satuan_rp_realisasi_tahun_lalu_target + $kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target.'/</td>';
                                             $e_81 .= '<td>Rp. '.number_format($kegiatan_target_satuan_rp_realisasi_tahun_lalu_target_rp + $kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target_rp, 2, ',', '.').'</td>';
                                             // Kolom 13 End
                                             // Kolom 14 Start
@@ -1086,6 +1107,10 @@ class OpdE81Ekspor implements FromView
                                                     $sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target = $cek_sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang->target;
                                                     $sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target_rp = $cek_sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang->target_rp;
                                                     $cek_sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang_satuan = $cek_sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang->satuan;
+                                                } else {
+                                                    $sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target = 0;
+                                                    $sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target_rp = 0;
+                                                    $cek_sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang_satuan = '';
                                                 }
 
                                                 $e_81 .= '<td>'.$sub_kegiatan_target_satuan_rp_realisasi_tahun_lalu_target + $sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang_target.'/'.$cek_sub_kegiatan_target_satuan_rp_realisasi_tahun_sekarang_satuan.'</td>';

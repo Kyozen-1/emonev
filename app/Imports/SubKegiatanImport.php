@@ -21,6 +21,7 @@ use App\Models\PivotPerubahanUrusan;
 use App\Models\SubKegiatan;
 use App\Models\PivotPerubahanSubKegiatan;
 use App\Models\PivotSubKegiatanIndikator;
+use App\Models\TahunPeriode;
 
 class SubKegiatanImport implements ToCollection,WithStartRow
 {
@@ -73,6 +74,8 @@ class SubKegiatanImport implements ToCollection,WithStartRow
                     //     return false;
                     // }
                     // Semua
+                    $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+
                     $cek_sub_kegiatan = SubKegiatan::where('kode', $row[4])->whereHas('kegiatan', function($q) use ($row){
                         $q->where('kode', $row[3]);
                         $q->whereHas('program', function($q) use ($row){
@@ -81,7 +84,7 @@ class SubKegiatanImport implements ToCollection,WithStartRow
                                 $q->where('kode', $row[1]);
                             });
                         });
-                    })->first();
+                    })->where('tahun_periode_id', $get_periode->id)->first();
                     if($cek_sub_kegiatan)
                     {
                         $cek_pivot = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $cek_sub_kegiatan->id)
@@ -129,7 +132,7 @@ class SubKegiatanImport implements ToCollection,WithStartRow
                             $q->whereHas('urusan', function($q) use ($row){
                                 $q->where('kode', $row[1]);
                             });
-                        })->first();
+                        })->where('tahun_periode_id', $get_periode->id)->first();
                         if($get_kegiatan)
                         {
                             $pivot = new SubKegiatan;
@@ -144,6 +147,7 @@ class SubKegiatanImport implements ToCollection,WithStartRow
                                 $pivot->status_aturan = 'Sebelum Perubahan';
                             }
                             $pivot->kabupaten_id = 62;
+                            $pivot->tahun_periode_id = $get_periode->id;
                             $pivot->save();
                         }
                     }
