@@ -56,8 +56,8 @@
 
     <div class="data-table-rows slim">
         <!-- Table Start -->
-        <div class="data-table-responsive-wrapper">
-            <table id="opd_table" class="data-table nowrap w-100">
+        <div class="table-responsive">
+            <table id="opd_table" class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th class="text-muted text-small text-uppercase">No</th>
@@ -375,6 +375,60 @@
                 {
                     $.ajax({
                         url: "{{ route('admin.manajemen-akun.opd.change-password') }}",
+                        method: "POST",
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            'id' : id
+                        },
+                        dataType: "json",
+                        beforeSend: function()
+                        {
+                            return new swal({
+                                title: "Checking...",
+                                text: "Harap Menunggu",
+                                imageUrl: "{{ asset('/images/preloader.gif') }}",
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'errors',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                $('#opd_table').DataTable().ajax.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.delete', function(){
+            var id = $(this).attr('id');
+            return new swal({
+                title: "Apakah Anda Yakin Merubah Password?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.manajemen-akun.opd.destroy') }}",
                         method: "POST",
                         data: {
                             "_token": "{{ csrf_token() }}",

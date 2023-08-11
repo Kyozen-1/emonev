@@ -108,7 +108,7 @@
                                 <a class="dropdown-item" href="{{ route('opd.laporan.tc-23.ekspor.excel') }}">Excel</a>
                             </div>
                         </div>
-                        <div class="data-table-responsive-wrapper">
+                        <div class="table-responsive">
                             <div class="text-center">
                                 <h1>Tabel T-C.23</h1>
                                 <h3>Pencapaian Kinerja Pelayanan Perangkat Daerah {{Auth::user()->opd->master_opd->nama}}</h3>
@@ -507,7 +507,7 @@
                                                         <th rowspan="2">Sasaran</th>
                                                         <th rowspan="2">Program / Kegiatan</th>
                                                         <th rowspan="2">Indikator Kinerja Program (outcome)/ Kegiatan (output)</th>
-                                                        <th rowspan="2" colspan="2">Target Renstra Perangkat Daerah pada Tahun {{$tahun}} (Akhir Periode Renstra Perangkat Daerah) </th>
+                                                        <th rowspan="2" colspan="2">Target Renstra Perangkat Daerah (Akhir Periode Renstra Perangkat Daerah)</th>
                                                         <th rowspan="2" colspan="2">Realisasi Capaian Kinerja Renstra Perangkat Daerah sampai dengan Renja Perangkat Daerah Tahun Lalu (n-2)</th>
                                                         <th rowspan="2" colspan="2">Target Kinerja dan Anggaran Renja Perangkat Daerah Tahun berjalan (Tahun n-1) yang dievaluasi</th>
                                                         <th colspan="8">Realisasi Kinerja Pada Triwulan</th>

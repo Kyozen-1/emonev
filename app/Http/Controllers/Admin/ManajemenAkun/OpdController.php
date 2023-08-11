@@ -24,16 +24,16 @@ class OpdController extends Controller
     {
         if(request()->ajax())
         {
-            $data = AkunOpd::latest()->get();
+            $data = AkunOpd::where('status_hapus', '0')->latest()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
                     $button_show = '<button type="button" name="detail" id="'.$data->id.'" class="detail btn btn-icon waves-effect btn-outline-success" title="Detail Data"><i class="fas fa-eye"></i></button>';
                     $button_edit = '<button type="button" name="change-password" id="'.$data->id.'"
                     class="change-password btn btn-icon waves-effect btn-outline-warning" title="Change Password"><i class="fas fa-lock"></i></button>';
-                    // $button_delete = '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-icon waves-effect btn-outline-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
-                    // $button = $button_show . ' ' . $button_edit . ' ' . $button_delete;
-                    $button = $button_show . ' ' . $button_edit;
+                    $button_delete = '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-icon waves-effect btn-outline-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
+                    $button = $button_show . ' ' . $button_edit . ' ' . $button_delete;
+                    // $button = $button_show . ' ' . $button_edit;
                     return $button;
                 })
                 ->editColumn('no_hp', function($data){
@@ -144,5 +144,14 @@ class OpdController extends Controller
         $akun_opd->save();
 
         return response()->json(['success' => 'Berhasil Merubah Password! Passwordnya 12345678']);
+    }
+
+    public function destroy(Request $request)
+    {
+        $akun_opd = AkunOpd::find($request->id);
+        $akun_opd->status_hapus = '1';
+        $akun_opd->save();
+
+        return response()->json(['success' => 'Berhasil Menghapus Akun']);
     }
 }

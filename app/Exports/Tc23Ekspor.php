@@ -258,8 +258,13 @@ class Tc23Ekspor implements FromView
                                         $tujuan_pd_realisasi_renja = TujuanPdRealisasiRenja::where('tujuan_pd_target_satuan_rp_realisasi_id', $tujuan_pd_target_satuan_rp_realisasi->id)->first();
                                         if($tujuan_pd_realisasi_renja)
                                         {
-                                            $rasio = $tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target;
-                                            $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                            if($tujuan_pd_target_satuan_rp_realisasi->target == '0')
+                                            {
+                                                $tc_23 .= '<td>0</td>';
+                                            } else {
+                                                $rasio = $tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target;
+                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                            }
                                         } else {
                                             $tc_23 .= '<td></td>';
                                         }
@@ -366,8 +371,13 @@ class Tc23Ekspor implements FromView
                                             $sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id', $sasaran_pd_target_satuan_rp_realisasi->id)->first();
                                             if($sasaran_pd_realisasi_renja)
                                             {
-                                                $rasio = $sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target;
-                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                if($sasaran_pd_target_satuan_rp_realisasi->target == '0')
+                                                {
+                                                    $tc_23 .= '<td>0</td>';
+                                                } else {
+                                                    $rasio = $sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                }
                                             } else {
                                                 $tc_23 .= '<td></td>';
                                             }
@@ -379,7 +389,7 @@ class Tc23Ekspor implements FromView
                             }
                         }
 
-                        $get_programs = Program::whereHas('program_rpjmd', function($q) use ($sasaran) {
+                        $get_programs = Program::whereHas('program_rpjmd', function($q) use ($sasaran){
                             $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran) {
                                 $q->whereHas('sasaran_indikator_kinerja', function($q) use ($sasaran){
                                     $q->whereHas('sasaran', function($q) use ($sasaran) {
@@ -427,7 +437,7 @@ class Tc23Ekspor implements FromView
                                     $tc_23 .= '<td></td>';
                                     $tc_23 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
                                     foreach ($tahuns as $tahun) {
-                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd_id){
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd_id) {
                                                                                         $q->where('opd_id', $opd_id);
                                                                                         $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                                                             $q->where('id', $program_indikator_kinerja->id);
@@ -482,8 +492,13 @@ class Tc23Ekspor implements FromView
                                                 foreach ($program_tw_realisasi_renjas as $program_tw_realisasi_renja) {
                                                     $realisasi[] = $program_tw_realisasi_renja->realisasi;
                                                 }
-                                                $rasio = (array_sum($realisasi))/$program_target_satuan_rp_realisasi->target;
-                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                if($program_target_satuan_rp_realisasi->target == '0')
+                                                {
+                                                    $tc_23 .= '<td>0</td>';
+                                                } else {
+                                                    $rasio = (array_sum($realisasi))/$program_target_satuan_rp_realisasi->target;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                }
                                             } else {
                                                 $tc_23 .= '<td></td>';
                                             }
@@ -604,8 +619,13 @@ class Tc23Ekspor implements FromView
                                                     foreach ($kegiatan_tw_realisasi_renjas as $kegiatan_tw_realisasi_renja) {
                                                         $realisasi[] = $kegiatan_tw_realisasi_renja->realisasi;
                                                     }
-                                                    $rasio = (array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    if($kegiatan_target_satuan_rp_realisasi->target)
+                                                    {
+                                                        $rasio = (array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target;
+                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    } else {
+                                                        $tc_23 .= '<td>0</td>';
+                                                    }
                                                 } else {
                                                     $tc_23 .= '<td></td>';
                                                 }

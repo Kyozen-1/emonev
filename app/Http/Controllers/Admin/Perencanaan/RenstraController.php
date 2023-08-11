@@ -239,7 +239,9 @@ class RenstraController extends Controller
                                                                                             </tr>
                                                                                         </thead>
                                                                                         <tbody>';
-                                                                                        $opds = MasterOpd::all();
+                                                                                        $opds = MasterOpd::whereHas('tujuan_pd', function($q) use ($tujuan){
+                                                                                            $q->where('tujuan_id', $tujuan['id']);
+                                                                                        })->get();
                                                                                         foreach ($opds as $opd) {
                                                                                             $html .= '<tr>';
                                                                                                 $html .= '<td>'.$opd->nama.'</td>';
@@ -280,6 +282,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
+                                                                                                                                    <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
                                                                                                                             <tbody>';
@@ -316,6 +319,12 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                if($tujuan_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                } else {
+                                                                                                                                                    $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                }
                                                                                                                                             $html .='</tr>';
                                                                                                                                         } else {
                                                                                                                                             $html .= '<tr>';
@@ -343,6 +352,7 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                $html .= '<td></td>';
                                                                                                                                             $html .='</tr>';
                                                                                                                                         }
                                                                                                                                         $c++;
@@ -387,6 +397,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
+                                                                                                                                    <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
                                                                                                                             <tbody>';
@@ -423,6 +434,12 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                if($tujuan_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                } else {
+                                                                                                                                                    $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                }
                                                                                                                                             $html .='</tr>';
                                                                                                                                         } else {
                                                                                                                                             $html .= '<tr>';
@@ -450,6 +467,7 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                $html .= '<td></td>';
                                                                                                                                             $html .='</tr>';
                                                                                                                                         }
                                                                                                                                         $c++;
@@ -664,7 +682,9 @@ class RenstraController extends Controller
                                                                                             </tr>
                                                                                         </thead>
                                                                                         <tbody>';
-                                                                                        $opds = MasterOpd::all();
+                                                                                        $opds = MasterOpd::whereHas('tujuan_pd', function($q) use ($tujuan){
+                                                                                            $q->where('tujuan_id', $tujuan['id']);
+                                                                                        })->get();
                                                                                         foreach ($opds as $opd) {
                                                                                             $html .= '<tr>';
                                                                                                 $html .= '<td>'.$opd->nama.'</td>';
@@ -705,6 +725,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
+                                                                                                                                    <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
                                                                                                                             <tbody>';
@@ -741,6 +762,12 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                if($tujuan_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                } else {
+                                                                                                                                                    $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                }
                                                                                                                                             $html .='</tr>';
                                                                                                                                         } else {
                                                                                                                                             $html .= '<tr>';
@@ -768,6 +795,7 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                $html .= '<td></td>';
                                                                                                                                             $html .='</tr>';
                                                                                                                                         }
                                                                                                                                         $c++;
@@ -812,6 +840,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
+                                                                                                                                    <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
                                                                                                                             <tbody>';
@@ -848,6 +877,12 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                if($tujuan_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                } else {
+                                                                                                                                                    $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                }
                                                                                                                                             $html .='</tr>';
                                                                                                                                         } else {
                                                                                                                                             $html .= '<tr>';
@@ -875,6 +910,7 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                $html .= '<td></td>';
                                                                                                                                             $html .='</tr>';
                                                                                                                                         }
                                                                                                                                         $c++;
@@ -1103,7 +1139,9 @@ class RenstraController extends Controller
                                                                                             </tr>
                                                                                         </thead>
                                                                                         <tbody>';
-                                                                                        $opds = MasterOpd::all();
+                                                                                        $opds = MasterOpd::whereHas('tujuan_pd', function($q) use ($tujuan){
+                                                                                            $q->where('tujuan_id', $tujuan['id']);
+                                                                                        })->get();
                                                                                         foreach ($opds as $opd) {
                                                                                             $html .= '<tr>';
                                                                                                 $html .= '<td>'.$opd->nama.'</td>';
@@ -1144,6 +1182,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
+                                                                                                                                    <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
                                                                                                                             <tbody>';
@@ -1180,6 +1219,12 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                if($tujuan_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                } else {
+                                                                                                                                                    $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                }
                                                                                                                                             $html .='</tr>';
                                                                                                                                         } else {
                                                                                                                                             $html .= '<tr>';
@@ -1207,6 +1252,7 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                $html .= '<td></td>';
                                                                                                                                             $html .='</tr>';
                                                                                                                                         }
                                                                                                                                         $c++;
@@ -1251,6 +1297,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
+                                                                                                                                    <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
                                                                                                                             <tbody>';
@@ -1287,6 +1334,12 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                if($tujuan_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                } else {
+                                                                                                                                                    $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                }
                                                                                                                                             $html .='</tr>';
                                                                                                                                         } else {
                                                                                                                                             $html .= '<tr>';
@@ -1314,6 +1367,7 @@ class RenstraController extends Controller
                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                 }
                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                $html .= '<td></td>';
                                                                                                                                             $html .='</tr>';
                                                                                                                                         }
                                                                                                                                         $c++;
@@ -1582,7 +1636,9 @@ class RenstraController extends Controller
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
-                                                                                                                                                $opds = MasterOpd::all();
+                                                                                                                                                $opds = MasterOpd::whereHas('sasaran_pd', function($q) use ($sasaran){
+                                                                                                                                                    $q->where('sasaran_id', $sasaran['id']);
+                                                                                                                                                })->get();
                                                                                                                                                 foreach ($opds as $opd) {
                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                         $html .= '<td>'.$opd->nama.'</td>';
@@ -1624,6 +1680,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
+                                                                                                                                                                                        <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -1660,6 +1717,12 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    if($sasaran_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                                                                    }
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             } else {
                                                                                                                                                                                                 $html .= '<tr>';
@@ -1687,6 +1750,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    $html .= '<td></td>';
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             }
                                                                                                                                                                                             $c++;
@@ -1731,6 +1795,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
+                                                                                                                                                                                        <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -1767,6 +1832,12 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    if($sasaran_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                                                                    }
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             } else {
                                                                                                                                                                                                 $html .= '<tr>';
@@ -1794,6 +1865,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    $html .= '<td></td>';
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             }
                                                                                                                                                                                             $c++;
@@ -2066,7 +2138,9 @@ class RenstraController extends Controller
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
-                                                                                                                                                $opds = MasterOpd::all();
+                                                                                                                                                $opds = MasterOpd::whereHas('sasaran_pd', function($q) use ($sasaran){
+                                                                                                                                                    $q->where('sasaran_id', $sasaran['id']);
+                                                                                                                                                })->get();
                                                                                                                                                 foreach ($opds as $opd) {
                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                         $html .= '<td>'.$opd->nama.'</td>';
@@ -2108,6 +2182,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
+                                                                                                                                                                                        <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -2144,6 +2219,12 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    if($sasaran_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                                                                    }
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             } else {
                                                                                                                                                                                                 $html .= '<tr>';
@@ -2171,6 +2252,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    $html .= '<td></td>';
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             }
                                                                                                                                                                                             $c++;
@@ -2215,6 +2297,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
+                                                                                                                                                                                        <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -2251,6 +2334,12 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    if($sasaran_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                                                                    }
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             } else {
                                                                                                                                                                                                 $html .= '<tr>';
@@ -2278,6 +2367,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    $html .= '<td></td>';
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             }
                                                                                                                                                                                             $c++;
@@ -2553,7 +2643,9 @@ class RenstraController extends Controller
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
                                                                                                                                                 <tbody>';
-                                                                                                                                                $opds = MasterOpd::all();
+                                                                                                                                                $opds = MasterOpd::whereHas('sasaran_pd', function($q) use ($sasaran){
+                                                                                                                                                    $q->where('sasaran_id', $sasaran['id']);
+                                                                                                                                                })->get();
                                                                                                                                                 foreach ($opds as $opd) {
                                                                                                                                                     $html .= '<tr>';
                                                                                                                                                         $html .= '<td>'.$opd->nama.'</td>';
@@ -2595,6 +2687,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
+                                                                                                                                                                                        <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -2631,6 +2724,12 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    if($sasaran_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                                                                    }
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             } else {
                                                                                                                                                                                                 $html .= '<tr>';
@@ -2658,6 +2757,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    $html .= '<td></td>';
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             }
                                                                                                                                                                                             $c++;
@@ -2702,6 +2802,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
+                                                                                                                                                                                        <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
                                                                                                                                                                                 <tbody>';
@@ -2738,6 +2839,12 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    if($sasaran_pd_indikator_kinerja->status_lock == 1)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                        $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                                                                                                                                                                                    }
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             } else {
                                                                                                                                                                                                 $html .= '<tr>';
@@ -2765,6 +2872,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                         $html .= '<td></td>';
                                                                                                                                                                                                     }
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                    $html .= '<td></td>';
                                                                                                                                                                                                 $html .='</tr>';
                                                                                                                                                                                             }
                                                                                                                                                                                             $c++;
@@ -3121,7 +3229,12 @@ class RenstraController extends Controller
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                                            $html .= '<td>Rp.'.number_format($program_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                                                                                                                            if(is_numeric($program_indikator_kinerja->kondisi_target_anggaran_awal))
+                                                                                                                                                                            {
+                                                                                                                                                                                $html .= '<td>Rp.'.number_format($program_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                                                                                                                            } else {
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                            }
                                                                                                                                                                             $html .= '<td><ul>';
                                                                                                                                                                             $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
                                                                                                                                                                             foreach($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja)
@@ -3590,7 +3703,12 @@ class RenstraController extends Controller
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                                            $html .= '<td>Rp.'.number_format($program_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                                                                                                                            if(is_numeric($program_indikator_kinerja->kondisi_target_anggaran_awal))
+                                                                                                                                                                            {
+                                                                                                                                                                                $html .= '<td>Rp.'.number_format($program_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                                                                                                                            } else {
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                            }
                                                                                                                                                                             $html .= '<td><ul>';
                                                                                                                                                                             $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
                                                                                                                                                                             foreach($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja)
@@ -4091,7 +4209,12 @@ class RenstraController extends Controller
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
                                                                                                                                                                             $html .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                                            $html .= '<td>Rp.'.number_format($program_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                                                                                                                            if(is_numeric($program_indikator_kinerja->kondisi_target_anggaran_awal))
+                                                                                                                                                                            {
+                                                                                                                                                                                $html .= '<td>Rp.'.number_format($program_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                                                                                                                            } else {
+                                                                                                                                                                                $html .= '<td></td>';
+                                                                                                                                                                            }
                                                                                                                                                                             $html .= '<td><ul>';
                                                                                                                                                                             $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
                                                                                                                                                                             foreach($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja)
@@ -5922,5 +6045,45 @@ class RenstraController extends Controller
                     </div>
                 </div>';
         return response()->json(['html' => $html]);
+    }
+
+    public function renstra_tujuan_lock_indikator(Request $request)
+    {
+        try {
+            $tujuan_pd_indikator_kinerja = TujuanPdIndikatorKinerja::find($request->id);
+            if($request->label == 'buka')
+            {
+                $tujuan_pd_indikator_kinerja->status_lock = '0';
+            }
+            if($request->label == 'tutup')
+            {
+                $tujuan_pd_indikator_kinerja->status_lock = '1';
+            }
+            $tujuan_pd_indikator_kinerja->save();
+
+            return response()->json(['success' => 'Berhasil '.$request->label.' akses']);
+        } catch (\Throwable $th) {
+            return response()->json(['errors' => $th->getMessage()]);
+        }
+    }
+
+    public function renstra_sasaran_lock_indikator(Request $request)
+    {
+        try {
+            $sasaran_pd_indikator_kinerja = SasaranPdIndikatorKinerja::find($request->id);
+            if($request->label == 'buka')
+            {
+                $sasaran_pd_indikator_kinerja->status_lock = '0';
+            }
+            if($request->label == 'tutup')
+            {
+                $sasaran_pd_indikator_kinerja->status_lock = '1';
+            }
+            $sasaran_pd_indikator_kinerja->save();
+
+            return response()->json(['success' => 'Berhasil '.$request->label.' akses']);
+        } catch (\Throwable $th) {
+            return response()->json(['errors' => $th->getMessage()]);
+        }
     }
 }

@@ -213,7 +213,12 @@ class E80Ekspor implements FromView
                                             $cek_sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id', $cek_sasaran_pd_target_satuan_rp_realisasi->id)->first();
                                             if($cek_sasaran_pd_realisasi_renja)
                                             {
-                                                $rasio_target = $cek_sasaran_pd_realisasi_renja->realisasi/$cek_sasaran_pd_target_satuan_rp_realisasi->target;
+                                                if($cek_sasaran_pd_target_satuan_rp_realisasi->target)
+                                                {
+                                                    $rasio_target = $cek_sasaran_pd_realisasi_renja->realisasi/$cek_sasaran_pd_target_satuan_rp_realisasi->target;
+                                                } else {
+                                                    $rasio_target = 0;
+                                                }
                                                 $e_80 .= '<td>'.number_format($rasio_target,2,',').'</td>';
                                                 $e_80 .= '<td></td>';
                                             } else {
@@ -277,7 +282,12 @@ class E80Ekspor implements FromView
                                             $cek_sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id', $cek_sasaran_pd_target_satuan_rp_realisasi->id)->first();
                                             if($cek_sasaran_pd_realisasi_renja)
                                             {
-                                                $rasio_target = $cek_sasaran_pd_realisasi_renja->realisasi/$cek_sasaran_pd_target_satuan_rp_realisasi->target;
+                                                if($cek_sasaran_pd_target_satuan_rp_realisasi->target)
+                                                {
+                                                    $rasio_target = $cek_sasaran_pd_realisasi_renja->realisasi/$cek_sasaran_pd_target_satuan_rp_realisasi->target;
+                                                } else {
+                                                    $rasio_target = 0;
+                                                }
                                                 $e_80 .= '<td>'.number_format($rasio_target,2,',').'</td>';
                                                 $e_80 .= '<td></td>';
                                             } else {
@@ -408,7 +418,12 @@ class E80Ekspor implements FromView
                                                         foreach ($program_tw_realisasis as $program_tw_realisasi) {
                                                             $program_tw_target_realisasi[] = $program_tw_realisasi->realisasi;
                                                         }
-                                                        $program_rasio = (array_sum($program_tw_target_realisasi)) / $cek_program_target_satuan_rp_realisasi->target;
+                                                        if($cek_program_target_satuan_rp_realisasi->target)
+                                                        {
+                                                            $program_rasio = (array_sum($program_tw_target_realisasi)) / $cek_program_target_satuan_rp_realisasi->target;
+                                                        } else {
+                                                            $program_rasio = 0;
+                                                        }
                                                         $e_80 .= '<td>'.$program_rasio.'</td>';
                                                         $e_80 .= '<td></td>';
                                                     } else {
@@ -496,7 +511,12 @@ class E80Ekspor implements FromView
                                                         foreach ($program_tw_realisasis as $program_tw_realisasi) {
                                                             $program_tw_target_realisasi[] = $program_tw_realisasi->realisasi;
                                                         }
-                                                        $program_rasio = (array_sum($program_tw_target_realisasi)) / $cek_program_target_satuan_rp_realisasi->target;
+                                                        if($cek_program_target_satuan_rp_realisasi->target)
+                                                        {
+                                                            $program_rasio = (array_sum($program_tw_target_realisasi)) / $cek_program_target_satuan_rp_realisasi->target;
+                                                        } else {
+                                                            $program_rasio = 0;
+                                                        }
                                                         $e_80 .= '<td>'.$program_rasio.'</td>';
                                                         $e_80 .= '<td></td>';
                                                     } else {
@@ -622,7 +642,12 @@ class E80Ekspor implements FromView
                                                             foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
                                                                 $program_tw_target_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                             }
-                                                            $kegiatan_rasio = (array_sum($program_tw_target_realisasi)) / $cek_kegiatan_target_satuan_rp_realisasi->target;
+                                                            if($cek_kegiatan_target_satuan_rp_realisasi->target)
+                                                            {
+                                                                $kegiatan_rasio = (array_sum($program_tw_target_realisasi)) / $cek_kegiatan_target_satuan_rp_realisasi->target;
+                                                            } else {
+                                                                $kegiatan_rasio = 0;
+                                                            }
                                                             $e_80 .= '<td>'.$kegiatan_rasio.'</td>';
                                                             $e_80 .= '<td></td>';
                                                         } else {

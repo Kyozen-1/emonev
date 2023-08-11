@@ -62,7 +62,8 @@ class TahunPeriodeController extends Controller
     public function store(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'jangka_tahun' => 'required',
+            'tahun_awal' => 'required',
+            'tahun_akhir' => 'required'
         ]);
 
         if($errors -> fails())
@@ -70,11 +71,15 @@ class TahunPeriodeController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $jangka_tahun = explode(' ',$request->jangka_tahun);
+        $cek_tahun_periode = TahunPeriode::where('status', 'Aktif')->first();
+        if($cek_tahun_periode)
+        {
+            return response()->json(['errors' => 'Tidak bisa menambahkan karena ada periode aktif']);
+        }
 
         $tahun_periode = new TahunPeriode;
-        $tahun_periode->tahun_awal = $jangka_tahun[0];
-        $tahun_periode->tahun_akhir = $jangka_tahun[1];
+        $tahun_periode->tahun_awal = $request->tahun_awal;
+        $tahun_periode->tahun_akhir = $request->tahun_akhir;
         $tahun_periode->save();
 
         return response()->json(['success' => 'Berhasil Menambahkan Tahun Periode ']);
@@ -120,12 +125,19 @@ class TahunPeriodeController extends Controller
         {
             return response()->json(['errors' => $errors->errors()->all()]);
         }
-
+        $cek_tahun_periode = TahunPeriode::where('status', 'Aktif')->first();
+        if($cek_tahun_periode)
+        {
+            if($cek_tahun_periode->id != $request->hidden_id)
+            {
+                return response()->json(['errors' => 'Tidak bisa merubah status karena ada periode lain "Aktif"']);
+            }
+        }
         $tahun_periode = TahunPeriode::find($request->hidden_id);
         $tahun_periode->status = $request->status;
         $tahun_periode->save();
 
-        return response()->json(['success' => 'Berhasil Merubah Status Tahun Periode ']);
+        return response()->json(['success' => 'Berhasil Merubah Status Tahun Periode']);
     }
 
     /**

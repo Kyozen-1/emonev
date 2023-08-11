@@ -105,10 +105,12 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/perencanaan/renstra/get-tujuan/{tahun}', 'Admin\Perencanaan\RenstraController@renstra_get_tujuan_tahun');
     Route::post('/admin/perencanaan/renstra/filter/tujuan', 'Admin\Perencanaan\RenstraController@renstra_filter_tujuan')->name('admin.perencanaan.renstra.filter.tujuan');
     Route::post('/admin/perencanaan/renstra/reset/tujuan', 'Admin\Perencanaan\RenstraController@renstra_get_tujuan')->name('admin.perencanaan.renstra.reset.tujuan');
+    Route::post('/admin/perencanaan/renstra/tujuan/lock-indikator', 'Admin\Perencanaan\RenstraController@renstra_tujuan_lock_indikator')->name('admin.perencanaan.renstra.tujuan.lock-indikator');
     Route::get('/admin/perencanaan/renstra/get-sasaran', 'Admin\Perencanaan\RenstraController@renstra_get_sasaran')->name('admin.perencanaan.renstra.get-sasaran');
     Route::get('/admin/perencanaan/renstra/get-sasaran/{tahun}', 'Admin\Perencanaan\RenstraController@renstra_get_sasaran_tahun');
     Route::post('/admin/perencanaan/renstra/filter/sasaran', 'Admin\Perencanaan\RenstraController@renstra_filter_sasaran')->name('admin.perencanaan.renstra.filter.sasaran');
     Route::post('/admin/perencanaan/renstra/reset/sasaran', 'Admin\Perencanaan\RenstraController@renstra_get_sasaran')->name('admin.perencanaan.renstra.reset.sasaran');
+    Route::post('/admin/perencanaan/renstra/sasaran/lock-indikator', 'Admin\Perencanaan\RenstraController@renstra_sasaran_lock_indikator')->name('admin.perencanaan.renstra.sasaran.lock-indikator');
     Route::get('/admin/perencanaan/renstra/get-program', 'Admin\Perencanaan\RenstraController@renstra_get_program')->name('admin.perencanaan.renstra.get-program');
     Route::get('/admin/perencanaan/renstra/get-program/{tahun}', 'Admin\Perencanaan\RenstraController@renstra_get_program_tahun');
     Route::post('/admin/perencanaan/renstra/filter/program', 'Admin\Perencanaan\RenstraController@renstra_filter_program')->name('admin.perencanaan.renstra.filter.program');

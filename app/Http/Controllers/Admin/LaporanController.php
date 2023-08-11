@@ -88,62 +88,12 @@ class LaporanController extends Controller
         for ($i=0; $i < $new_jarak_tahun + 1; $i++) {
             $new_tahuns[] = $new_tahun_awal + $i;
         }
-        $e_81 = '';
-        // $a = 1;
-        // foreach ($sasarans as $sasaran) {
-        //     $e_81 .= '<tr>';
-        //         $e_81 .= '<td colspan="41" style="text-align: left"><strong>Sasaran</strong></td>';
-        //     $e_81 .= '</tr>';
-        //     $e_81 .= '<tr>';
-        //         $e_81 .= '<td>'.$a++.'</td>';
-        //         $e_81 .= '<td>'.$sasaran['deskripsi'].'</td>';
-
-        //     $get_program_rpjmds = ProgramRpjmd::whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran){
-        //         $q->whereHas('pivot_sasaran_indikator', function($q) use ($sasaran) {
-        //             $q->where('sasaran_id', $sasaran['id']);
-        //         });
-        //     })->get();
-        //     $program = [];
-        //     $urutan_a = 1;
-        //     foreach ($get_program_rpjmds as $get_program_rpjmd) {
-        //         $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program_rpjmd->program_id)
-        //                                     ->where('tahun_perubahan', $tahun_awal)->latest()->first();
-        //         if($cek_perubahan_program)
-        //         {
-        //             $program = [
-        //                 'id' => $cek_perubahan_program->program_id,
-        //                 'kode' => $cek_perubahan_program->kode,
-        //                 'deskripsi' => $cek_perubahan_program->deskripsi
-        //             ];
-        //         } else {
-        //             $program = [
-        //                 'id' => $get_program_rpjmd->program_id,
-        //                 'kode' => $get_program_rpjmd->program->kode,
-        //                 'deskripsi' => $get_program_rpjmd->program->deskripsi
-        //             ];
-        //         }
-        //         if($urutan_a == 1)
-        //         {
-        //                 $e_81 .= '<td>'.$program['deskripsi'].'</td>';
-        //             $e_81 .= '</tr>';
-        //         } else {
-        //             $e_81 .= '<tr>';
-        //                 $e_81 .= '<td>'.$a++.'</td>';
-        //                 $e_81 .= '<td>'.$sasaran['deskripsi'].'</td>';
-        //                 $e_81 .= '<td>'.$program['deskripsi'].'</td>';
-        //             $e_81 .= '</tr>';
-        //         }
-        //         $urutan_a++;
-        //     }
-        // }
-        // E 81 End
 
         $opds = MasterOpd::pluck('nama', 'id');
 
         return view('admin.laporan.index', [
             'tahun_awal' => $tahun_awal,
             'tahuns' => $tahuns,
-            'e_81' => $e_81,
             'opds' => $opds
         ]);
     }

@@ -19,7 +19,7 @@
             height: 41px !important;
         }
         .select2-selection__arrow {
-            height: 36px !important;
+            height: 0px !important;
         }
     </style>
 @endsection
@@ -144,36 +144,61 @@
         });
 
         $('#create').click(function(){
-            $('#form_jangka_tahun').remove();
             $('#form_status').remove();
             $('#tahun_periode_form')[0].reset();
-            $("[name='jangka_tahun']").val('').trigger('change');
+            $('#form_jangka_waktu').remove();
+            var jangka_waktu = $(`<div id="form_jangka_waktu">
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="tahun_awal" class="form-label">Tahun Awal</label>
+                                    <select name="tahun_awal" id="tahun_awal" class="form-control" required>
+                                        <option value="">--- Pilih Tahun Awal ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="form-group position-relative mb-3">
+                                    <label for="tahun_akhir" class="form-label">Tahun Akhir</label>
+                                    <select name="tahun_akhir" id="tahun_akhir" class="form-control" required>
+                                        <option value="">--- Pilih Tahun Akhir ---</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`);
+            $('#div_form').after(jangka_waktu);
+            $("[name='tahun_awal']").val('').trigger('change');
+            $("[name='tahun_akhir']").val('').trigger('change');
+            var year = (new Date()).getFullYear();
+            var current = year;
+            year += 0;
+            for(var i = 0; i < 10; i++)
+            {
+                if((year+i) == current)
+                {
+                    $('#tahun_awal').append('<option value="' + (year + i) +'" selected>' + (year + i) +'</option>');
+                    $('#tahun_akhir').append('<option value="' + (year + i) +'" selected>' + (year + i) +'</option>');
+                } else {
+                    $('#tahun_awal').append('<option value="' + (year + i) +'">' + (year + i) +'</option>');
+                    $('#tahun_akhir').append('<option value="' + (year + i) +'">' + (year + i) +'</option>');
+                }
+            }
+            $('#tahun_awal').select2({
+                dropdownParent: $("#addEditModal")
+            });
+
+            $('#tahun_akhir').select2({
+                dropdownParent: $("#addEditModal")
+            });
             $('#aksi_button').text('Save');
             $('#aksi_button').prop('disabled', false);
             $('.modal-title').text('Add Data');
             $('#aksi_button').val('Save');
             $('#aksi').val('Save');
             $('#form_result').html('');
-            var jangka_tahun = $('<div class="mb-3" id="form_jangka_tahun">'+
-            '<label for="" class="form-label">Jangka Tahun</label>'+
-            '<select name="jangka_tahun" id="jangka_tahun" class="form-control" required>'+
-            '<option value="">--- Pilih Jangka Tahun ---</option>'+
-            '</select>'+
-            '</div>');
-            $('#div_form').after(jangka_tahun);
-            var year = (new Date()).getFullYear();
-            var current = year;
-            year -= 5;
-            for(var i = 0; i < 6; i++)
-            {
-                if((year+i) == current)
-                {
-                    $('#jangka_tahun').append('<option selected value="' + (year + i) + ' '+(year + i+4)+'">' + (year + i) + '-'+(year + i + 4)+'</option>');
-                } else {
-                    $('#jangka_tahun').append('<option selected value="' + (year + i) + ' '+(year + i+4)+'">' + (year + i) + '-'+(year + i + 4)+'</option>');
-                }
-            }
         });
+
         $('#tahun_periode_form').on('submit', function(e){
             e.preventDefault();
             if($('#aksi').val() == 'Save')
@@ -196,7 +221,8 @@
                             html = '<div class="alert alert-danger">'+data.errors+'</div>';
                             $('#aksi_button').prop('disabled', false);
                             $('#tahun_periode_form')[0].reset();
-                            $("[name='jangka_tahun']").val('').trigger('change');
+                            $("[name='tahun_awal']").val('').trigger('change');
+                            $("[name='tahun_akhir']").val('').trigger('change');
                             $('#aksi_button').text('Save');
                             $('#tahun_periode_table').DataTable().ajax.reload();
                         }
@@ -205,7 +231,8 @@
                             html = '<div class="alert alert-success">'+data.success+'</div>';
                             $('#aksi_button').prop('disabled', false);
                             $('#tahun_periode_form')[0].reset();
-                            $("[name='jangka_tahun']").val('').trigger('change');
+                            $("[name='tahun_awal']").val('').trigger('change');
+                            $("[name='tahun_akhir']").val('').trigger('change');
                             $('#aksi_button').text('Save');
                             $('#tahun_periode_table').DataTable().ajax.reload();
                         }
@@ -253,6 +280,7 @@
                 });
             }
         });
+
         $(document).on('click', '.edit', function(){
             var id = $(this).attr('id');
             $('#form_result').html('');
@@ -261,7 +289,7 @@
                 dataType: "json",
                 success: function(data)
                 {
-                    $('#form_jangka_tahun').remove();
+                    $('#form_jangka_waktu').remove();
                     $('#form_status').remove();
                     var status = $('<div class="mb-3" id="form_status">'+
                     '<label for="" class="form-label">Status</label>'+
@@ -272,6 +300,8 @@
                     '</select>'+
                     '</div>');
                     $('#div_form').after(status);
+                    $("[name='tahun_awal']").val('').trigger('change');
+                    $("[name='tahun_akhir']").val('').trigger('change');
                     $("[name='status']").val(data.result.status).trigger('change');
                     $('#hidden_id').val(id);
                     $('.modal-title').text('Edit Data');

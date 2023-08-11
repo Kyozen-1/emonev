@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class AdminLoginController extends Controller
 {
@@ -27,7 +28,14 @@ class AdminLoginController extends Controller
         ]);
         // Attempt to log the user in
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->intended(route('admin.dashboard.index'));
+            if(Auth::guard('admin')->user()->status_hapus == '1')
+            {
+                Auth::guard('admin')->logout();
+                Alert::error('Gagal Login', 'Akun anda sudah di hapus!');
+                return redirect('admin/login');
+            } else {
+                return redirect()->intended(route('admin.dashboard.index'));
+            }
         }
         // if unsuccessful, then redirect back to the login with the form data
         return redirect()->back()->withInput($request->only('email', 'remember'));

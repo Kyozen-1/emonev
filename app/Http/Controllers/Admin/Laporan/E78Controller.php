@@ -278,7 +278,12 @@ class E78Controller extends Controller
                                                     $program_tw_realisasi[] = $cek_program_tw_realisasi->realisasi;
                                                 }
                                             }
-                                            $tingkat_capaian = (array_sum($program_tw_realisasi) / $cek_program_target_satuan_rp_realisasi->target) * 100;
+                                            if($cek_program_target_satuan_rp_realisasi->target)
+                                            {
+                                                $tingkat_capaian = (array_sum($program_tw_realisasi) / $cek_program_target_satuan_rp_realisasi->target) * 100;
+                                            } else {
+                                                $tingkat_capaian = 0;
+                                            }
                                             $e_78 .= '<td>'.number_format($tingkat_capaian, 2, ',', '.').'</td>';
                                             $e_78 .= '<td></td>';
                                         } else {
@@ -457,7 +462,12 @@ class E78Controller extends Controller
                                                     $program_tw_realisasi[] = $cek_program_tw_realisasi->realisasi;
                                                 }
                                             }
-                                            $tingkat_capaian = (array_sum($program_tw_realisasi) / $cek_program_target_satuan_rp_realisasi->target) * 100;
+                                            if($cek_program_target_satuan_rp_realisasi->target)
+                                            {
+                                                $tingkat_capaian = (array_sum($program_tw_realisasi) / $cek_program_target_satuan_rp_realisasi->target) * 100;
+                                            } else {
+                                                $tingkat_capaian = 0;
+                                            }
                                             $e_78 .= '<td>'.number_format($tingkat_capaian, 2, ',', '.').'</td>';
                                             $e_78 .= '<td></td>';
                                         } else {
@@ -645,7 +655,13 @@ class E78Controller extends Controller
                                                     $program_tw_realisasi[] = $cek_program_tw_realisasi->realisasi;
                                                 }
                                             }
-                                            $tingkat_capaian = (array_sum($program_tw_realisasi) / $cek_program_target_satuan_rp_realisasi->target) * 100;
+                                            if($cek_program_target_satuan_rp_realisasi->target)
+                                            {
+                                                $tingkat_capaian = (array_sum($program_tw_realisasi) / $cek_program_target_satuan_rp_realisasi->target) * 100;
+                                            } else {
+                                                $tingkat_capaian = 0;
+                                            }
+
                                             $e_78 .= '<td>'.number_format($tingkat_capaian, 2, ',', '.').'</td>';
                                             $e_78 .= '<td></td>';
                                         } else {
@@ -824,7 +840,12 @@ class E78Controller extends Controller
                                                     $program_tw_realisasi[] = $cek_program_tw_realisasi->realisasi;
                                                 }
                                             }
-                                            $tingkat_capaian = (array_sum($program_tw_realisasi) / $cek_program_target_satuan_rp_realisasi->target) * 100;
+                                            if($cek_program_target_satuan_rp_realisasi->target)
+                                            {
+                                                $tingkat_capaian = (array_sum($program_tw_realisasi) / $cek_program_target_satuan_rp_realisasi->target) * 100;
+                                            } else {
+                                                $tingkat_capaian = 0;
+                                            }
                                             $e_78 .= '<td>'.number_format($tingkat_capaian, 2, ',', '.').'</td>';
                                             $e_78 .= '<td></td>';
                                         } else {

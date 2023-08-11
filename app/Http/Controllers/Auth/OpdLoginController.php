@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class OpdLoginController extends Controller
 {
@@ -27,7 +28,14 @@ class OpdLoginController extends Controller
         ]);
         // Attempt to log the user in
         if (Auth::guard('opd')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->intended(route('opd.dashboard.index'));
+            if(Auth::guard('opd')->user()->status_hapus == '1')
+            {
+                Auth::guard('opd')->logout();
+                Alert::error('Gagal Login', 'Akun anda sudah di hapus!');
+                return redirect('opd/login');
+            } else {
+                return redirect()->intended(route('opd.dashboard.index'));
+            }
         }
         // if unsuccessful, then redirect back to the login with the form data
         return redirect()->back()->withInput($request->only('email', 'remember'));

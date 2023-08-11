@@ -336,7 +336,7 @@
                                                         <th colspan="4" rowspan="2">Kode</th>
                                                         <th rowspan="2">Urusan / Bidang Urusan Pemerintah Daerah dan Program / Kegiatan</th>
                                                         <th rowspan="2">Indikator Kinerja Program (outcome) / Kegiatan (output)</th>
-                                                        <th colspan="2" rowspan="2">Capaian Kinerja RPJMD pada Tahun {{$tahun}} (Akhir Periode RPJMD)</th>
+                                                        <th colspan="2" rowspan="2">Capaian Kinerja RPJMD pada Tahun (Akhir Periode RPJMD)</th>
                                                         <th colspan="2" rowspan="2">Realisasi Capaian Kinerja RPJMD Kabupaten/kota sampai dengan RKPD Kabupaten/kota Tahun Lalu (n-2)</th>
                                                         <th colspan="2" rowspan="2">Target Kinerja dan Anggaran RKPD Kabupaten/kota Tahun Berjalan (Tahun n-1) yang dievaluasi</th>
                                                         <th colspan="8" rowspan="1">Realisasi Kinerja Pada Triwulan</th>
@@ -561,7 +561,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="data-table-responsive-wrapper">
+                        <div class="table-responsive">
                             <div class="text-center">
                                 <h1>Tabel T-C.23</h1>
                                 <h3>Pencapaian Kinerja Pelayanan Perangkat Daerah -</h3>

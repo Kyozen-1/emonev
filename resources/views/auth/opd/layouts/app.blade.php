@@ -41,5 +41,6 @@
             </div>
         </div>
         @include('auth.opd.layouts.js')
+        @include('sweetalert::alert')
     </body>
 </html>

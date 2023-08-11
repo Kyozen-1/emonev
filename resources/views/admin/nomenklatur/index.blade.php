@@ -1609,7 +1609,7 @@
                         }
                         if(data.success)
                         {
-                            $('#urusan_table').DataTable().ajax.reload();
+                            $('#urusan_table_semua').DataTable().ajax.reload();
                             Swal.fire({
                                 icon: 'success',
                                 title: data.success,

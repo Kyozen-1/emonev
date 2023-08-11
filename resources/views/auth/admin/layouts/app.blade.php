@@ -41,5 +41,6 @@
             </div>
         </div>
         @include('auth.admin.layouts.js')
+        @include('sweetalert::alert')
     </body>
 </html>

@@ -394,6 +394,7 @@ class Tc27Controller extends Controller
                                         $tc_27 .= '<td></td>';
                                         $tc_27 .= '<td></td>';
                                         $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
                                         $tc_27 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$program_indikator_kinerja->satuan.'</td>';
                                         $indikator_c = 0;
                                         $len_c = count($tahuns);
@@ -914,6 +915,7 @@ class Tc27Controller extends Controller
                                         $tc_27 .= '<td></td>';
                                         $tc_27 .= '<td></td>';
                                         $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
                                         $tc_27 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$program_indikator_kinerja->satuan.'</td>';
                                         $indikator_c = 0;
                                         $len_c = count($tahuns);

@@ -956,7 +956,7 @@
                                                         <div class="col">
                                                             <label for="" class="form-label">Aksi Filter</label>
                                                             <div class="form-group position-relative mb-3 justify-content-center align-self-center" style="text-align: center">
-                                                                <button class="btn btn-primary waves-effect waves-light mr-1 renstra_program_btn_filter" type="button" data-tahun="{{$tahun}}">Filter Data</button>
+                                                                <button class="btn btn-primary waves-effect waves-light mr-1 renstra_program_btn_filter" type="button" data-tahun="{{$tahun}}"><i class="fas fa-filter"></i></button>
                                                                 <button class="btn btn-secondary waves-effect waves-light renstra_program_btn_reset" type="button" data-tahun="{{$tahun}}">Reset</button>
                                                             </div>
                                                         </div>
@@ -5243,6 +5243,61 @@
             }
         });
 
+        $(document).on('click', '.btn_lock_tujuan_pd_indikator_kinerja',function(){
+            var id = $(this).attr('data-id');
+            var label = $(this).attr('data-label');
+            return new swal({
+                title: "Apakah Anda Yakin "+label+" Akses Ini?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.perencanaan.renstra.tujuan.lock-indikator') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            id:id,
+                            label:label
+                        },
+                        beforeSend: function()
+                        {
+                            return new swal({
+                                title: "Checking...",
+                                text: "Harap Menunggu",
+                                imageUrl: "{{ asset('/images/preloader.gif') }}",
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success
+                                    }).then(function() {
+                                        window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
         // Filter Data Renstra Tujuan
         $('.renstra_tujuan_filter_visi').on('change', function(){
             var tahun = $(this).attr('data-tahun');
@@ -5389,6 +5444,61 @@
             } else {
                 $('.sasaran-renstra-tagging').hide();
             }
+        });
+
+        $(document).on('click', '.btn_lock_sasaran_pd_indikator_kinerja',function(){
+            var id = $(this).attr('data-id');
+            var label = $(this).attr('data-label');
+            return new swal({
+                title: "Apakah Anda Yakin "+label+" Akses Ini?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.perencanaan.renstra.sasaran.lock-indikator') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            id:id,
+                            label:label
+                        },
+                        beforeSend: function()
+                        {
+                            return new swal({
+                                title: "Checking...",
+                                text: "Harap Menunggu",
+                                imageUrl: "{{ asset('/images/preloader.gif') }}",
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success
+                                    }).then(function() {
+                                        window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
         });
 
         // Filter Data Sasaran

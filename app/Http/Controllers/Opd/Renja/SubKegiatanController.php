@@ -131,9 +131,9 @@ class SubKegiatanController extends Controller
         foreach ($opd_sub_kegiatan_indikator_kinerjas as $opd_sub_kegiatan_indikator_kinerja) {
             $sub_kegiatan_target_satuan_rp_realisasis = SubKegiatanTargetSatuanRpRealisasi::where('opd_sub_kegiatan_indikator_kinerja_id', $opd_sub_kegiatan_indikator_kinerja->id)->get();
             foreach ($sub_kegiatan_target_satuan_rp_realisasis as $sub_kegiatan_target_satuan_rp_realisasi) {
-                $sub_kegiatan_tw_realisasis = SubKegiatanTwRealisasis::where('sub_kegiatan_target_satuan_rp_realisasi_id', $sub_kegiatan_target_satuan_rp_realisasi->id)->get();
+                $sub_kegiatan_tw_realisasis = SubKegiatanTwRealisasi::where('sub_kegiatan_target_satuan_rp_realisasi_id', $sub_kegiatan_target_satuan_rp_realisasi->id)->get();
                 foreach ($sub_kegiatan_tw_realisasis as $sub_kegiatan_tw_realisasi) {
-                    SubKegiatanTwRealisasis::find($sub_kegiatan_tw_realisasi->id)->delete();
+                    SubKegiatanTwRealisasi::find($sub_kegiatan_tw_realisasi->id)->delete();
                 }
                 SubKegiatanTargetSatuanRpRealisasi::find($sub_kegiatan_target_satuan_rp_realisasi->id)->delete();
             }
@@ -163,6 +163,7 @@ class SubKegiatanController extends Controller
         $sub_kegiatan_target_satuan_rp_realisasi->opd_sub_kegiatan_indikator_kinerja_id = $get_opd->id;
         $sub_kegiatan_target_satuan_rp_realisasi->target = $request->target;
         $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal = $request->target_anggaran_renja_awal;
+        $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan = $request->target_anggaran_renja_perubahan;
         $sub_kegiatan_target_satuan_rp_realisasi->tahun = $request->tahun;
         $sub_kegiatan_target_satuan_rp_realisasi->save();
 

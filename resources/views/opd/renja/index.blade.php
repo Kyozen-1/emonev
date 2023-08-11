@@ -68,7 +68,7 @@
 
         <div class="card mb-5">
             <div class="card-header border-0 pb-0">
-                <ul class="nav nav-pills responsive-tabs" role="tablist">
+                <ul class="nav nav-pills responsive-tabs" role="tablist" id="renjaTab">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="renja_tujuan_tab_button" data-bs-toggle="tab" data-bs-target="#renja_tujuan" role="tab" aria-selected="false" type="button">Tujuan</button>
                     </li>
@@ -414,7 +414,7 @@
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
@@ -492,7 +492,7 @@
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
@@ -586,7 +586,7 @@
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
@@ -679,7 +679,7 @@
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
@@ -755,7 +755,7 @@
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
@@ -842,7 +842,7 @@
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
@@ -913,7 +913,7 @@
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
