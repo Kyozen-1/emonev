@@ -66,7 +66,7 @@ class Tc24Controller extends Controller
     public function tc_24()
     {
         $tc_24 = '';
-
+        $tws = MasterTw::all();
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
         $tahun_akhir = $get_periode->tahun_akhir;
@@ -176,6 +176,7 @@ class Tc24Controller extends Controller
                         });
                     });
                 })->orderBy('kode', 'asc')->get();
+
                 $tujuans = [];
                 foreach ($get_tujuans as $get_tujuan) {
                     $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
@@ -198,6 +199,7 @@ class Tc24Controller extends Controller
                         ];
                     }
                 }
+
                 foreach ($tujuans as $tujuan)
                 {
                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q){
@@ -234,6 +236,7 @@ class Tc24Controller extends Controller
                             ];
                         }
                     }
+
                     foreach ($sasarans as $sasaran)
                     {
                         $get_programs = Program::whereHas('program_rpjmd', function($q) use ($sasaran){
@@ -244,11 +247,12 @@ class Tc24Controller extends Controller
                                     });
                                 });
                             });
-                        })->whereHas('program_indikator_kinerja', function($q){
-                            $q->whereHas('opd_program_indikator_kinerja', function($q){
-                                $q->where('opd_id', Auth::user()->opd->opd_id);
-                            });
+                            })->whereHas('program_indikator_kinerja', function($q){
+                                $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                });
                         })->get();
+
                         $programs = [];
                         foreach($get_programs as $get_program)
                         {
@@ -270,6 +274,7 @@ class Tc24Controller extends Controller
                                 ];
                             }
                         }
+
                         foreach($programs as $program)
                         {
                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
@@ -280,6 +285,7 @@ class Tc24Controller extends Controller
                             {
                                 $tc_24 .= '<tr>';
                                     $tc_24 .= '<td style="text-align:left;">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                    // Kolom 2 - 6 Start
                                     foreach ($tahuns as $tahun) {
                                         $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                                                         $q->where('opd_id', Auth::user()->opd->opd_id);
@@ -291,9 +297,71 @@ class Tc24Controller extends Controller
                                         {
                                             $tc_24 .= '<td>Rp.'.number_format($program_target_satuan_rp_realisasi->target_rp, 2, ',','.').'</td>';
                                         } else {
-                                            $tc_24 .= '<td></td>';
+                                            $tc_24 .= '<td>Rp. 0, 00</td>';
                                         }
                                     }
+                                    // Kolom 2 - 6 End
+
+                                    // Kolom 7 - 11 Start
+                                    foreach ($tahuns as $tahun) {
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                            $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
+                                                $q->where('id', $program_indikator_kinerja->id);
+                                            });
+                                        })->where('tahun', $tahun)->first();
+                                        if($program_target_satuan_rp_realisasi)
+                                        {
+                                            $realisasi_rp_kolom_7_11 = [];
+                                            foreach ($tws as $tw) {
+                                                $cek_program_tw_realisasi = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id',$program_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
+                                                if($cek_program_tw_realisasi)
+                                                {
+                                                    $realisasi_rp_kolom_7_11[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                } else {
+                                                    $realisasi_rp_kolom_7_11[] = 0;
+                                                }
+                                            }
+                                            $tc_24 .= '<td>Rp. '.number_format(array_sum($realisasi_rp_kolom_7_11), 2, ',', '.').'</td>';
+                                        } else {
+                                            $tc_24 .= '<td>Rp. 0, 00</td>';
+                                        }
+                                    }
+                                    // Kolom 7 - 11 End
+
+                                    // Kolom 12 - 16 Start
+                                    foreach ($tahuns as $tahun) {
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                            $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
+                                                $q->where('id', $program_indikator_kinerja->id);
+                                            });
+                                        })->where('tahun', $tahun)->first();
+                                        if($program_target_satuan_rp_realisasi)
+                                        {
+                                            $target_rp_kolom_12_6 = $program_target_satuan_rp_realisasi->target_rp;
+                                            $realisasi_rp_kolom_12_16 = [];
+                                            foreach ($tws as $tw) {
+                                                $cek_program_tw_realisasi = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id',$program_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
+                                                if($cek_program_tw_realisasi)
+                                                {
+                                                    $realisasi_rp_kolom_12_16[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                } else {
+                                                    $realisasi_rp_kolom_12_16[] = 0;
+                                                }
+                                            }
+                                            if($target_rp_kolom_12_6 != 0)
+                                            {
+                                                $rasio_kolom_12_16 = (array_sum($realisasi_rp_kolom_12_16) / $target_rp_kolom_12_6) * 100;
+                                            } else {
+                                                $rasio_kolom_12_16 = 0;
+                                            }
+                                            $tc_24 .= '<td>'.number_format($rasio_kolom_12_16, 2, ',', '.').'</td>';
+                                        } else {
+                                            $tc_24 .= '<td>0, 00</td>';
+                                        }
+                                    }
+                                    // Kolom 12 - 16 End
                                 $tc_24 .= '</tr>';
                             }
 
@@ -344,9 +412,69 @@ class Tc24Controller extends Controller
                                             {
                                                 $tc_24 .= '<td>Rp.'.number_format($kegiatan_target_satuan_rp_realisasi->target_rp,2, ',', '.').'</td>';
                                             } else {
-                                                $tc_24 .= '<td></td>';
+                                                $tc_24 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
+                                        // Kolom 7 - 11 Start
+                                        foreach ($tahuns as $tahun) {
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
+                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
+                                                    $q->where('id', $kegiatan_indikator_kinerja->id);
+                                                });
+                                            })->where('tahun', $tahun)->first();
+                                            if($kegiatan_target_satuan_rp_realisasi)
+                                            {
+                                                $realisasi_rp_kolom_7_11 = [];
+                                                foreach ($tws as $tw) {
+                                                    $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id',$kegiatan_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
+                                                    if($cek_kegiatan_tw_realisasi)
+                                                    {
+                                                        $realisasi_rp_kolom_7_11[] = $cek_kegiatan_tw_realisasi->realisasi_rp;
+                                                    } else {
+                                                        $realisasi_rp_kolom_7_11[] = 0;
+                                                    }
+                                                }
+                                                $tc_24 .= '<td>Rp. '.number_format(array_sum($realisasi_rp_kolom_7_11), 2, ',', '.').'</td>';
+                                            } else {
+                                                $tc_24 .= '<td>Rp. 0, 00</td>';
+                                            }
+                                        }
+                                        // Kolom 7 - 11 End
+
+                                        // Kolom 12 - 16 Start
+                                        foreach ($tahuns as $tahun) {
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
+                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
+                                                    $q->where('id', $kegiatan_indikator_kinerja->id);
+                                                });
+                                            })->where('tahun', $tahun)->first();
+                                            if($kegiatan_target_satuan_rp_realisasi)
+                                            {
+                                                $target_rp_kolom_12_6 = $kegiatan_target_satuan_rp_realisasi->target_rp;
+                                                $realisasi_rp_kolom_12_16 = [];
+                                                foreach ($tws as $tw) {
+                                                    $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id',$kegiatan_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
+                                                    if($cek_kegiatan_tw_realisasi)
+                                                    {
+                                                        $realisasi_rp_kolom_12_16[] = $cek_kegiatan_tw_realisasi->realisasi_rp;
+                                                    } else {
+                                                        $realisasi_rp_kolom_12_16[] = 0;
+                                                    }
+                                                }
+                                                if($target_rp_kolom_12_6 != 0)
+                                                {
+                                                    $rasio_kolom_12_16 = (array_sum($realisasi_rp_kolom_12_16) / $target_rp_kolom_12_6) * 100;
+                                                } else {
+                                                    $rasio_kolom_12_16 = 0;
+                                                }
+                                                $tc_24 .= '<td>'.number_format($rasio_kolom_12_16, 2, ',', '.').'</td>';
+                                            } else {
+                                                $tc_24 .= '<td>0, 00</td>';
+                                            }
+                                        }
+                                        // Kolom 12 - 16 End
                                     $tc_24 .= '</tr>';
                                 }
 
@@ -357,6 +485,7 @@ class Tc24Controller extends Controller
                                 foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
                                     $tc_24 .= '<tr>';
                                         $tc_24 .= '<td style="text-align:left;">'.$sub_kegiatan_indikator_kinerja->deskripsi.'</td>';
+                                        // Kolom 2 - 6 Start
                                         foreach ($tahuns as $tahun) {
                                             $sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($sub_kegiatan_indikator_kinerja){
                                                                                             $q->where('opd_id', Auth::user()->opd->opd_id);
@@ -368,9 +497,12 @@ class Tc24Controller extends Controller
                                             {
                                                 $tc_24 .= '<td>Rp.'.number_format($sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal, 2, ',', '.').'</td>';
                                             } else {
-                                                $tc_24 .= '<td></td>';
+                                                $tc_24 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
+                                        // Kolom 2 - 6 End
+
+                                        // Kolom 7 - 11 Start
                                         foreach ($tahuns as $tahun) {
                                             $sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($sub_kegiatan_indikator_kinerja){
                                                                                             $q->where('opd_id', Auth::user()->opd->opd_id);
@@ -390,12 +522,15 @@ class Tc24Controller extends Controller
                                                     }
                                                     $tc_23 .= '<td>Rp.'.number_format(array_sum($realisasi_rp), 2, ',', '.').'</td>';
                                                 } else {
-                                                    $tc_24 .= '<td></td>';
+                                                    $tc_24 .= '<td>Rp. 0, 00</td>';
                                                 }
                                             } else {
-                                                $tc_24 .= '<td></td>';
+                                                $tc_24 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
+                                        // Kolom 7 - 11 End
+
+                                        // Kolom 12 - 16 Start
                                         foreach ($tahuns as $tahun) {
                                             $sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($sub_kegiatan_indikator_kinerja){
                                                                                             $q->where('opd_id', Auth::user()->opd->opd_id);
@@ -413,15 +548,16 @@ class Tc24Controller extends Controller
                                                     foreach ($sub_kegiatan_tw_realisasi_renjas as $sub_kegiatan_tw_realisasi_renja) {
                                                         $realisasi_rp[] = $sub_kegiatan_tw_realisasi_renja->realisasi_rp;
                                                     }
-                                                    $rasio = array_sum($realisasi_rp) / $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal;
+                                                    $rasio = (array_sum($realisasi_rp) / $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal) * 100;
                                                     $tc_23 .= '<td>'.$rasio.'</td>';
                                                 } else {
-                                                    $tc_24 .= '<td></td>';
+                                                    $tc_24 .= '<td>0,00</td>';
                                                 }
                                             } else {
-                                                $tc_24 .= '<td></td>';
+                                                $tc_24 .= '<td>0,00</td>';
                                             }
                                         }
+                                        // Kolom 12 - 16 End
                                         $tc_24 .= '<td></td>';
                                         $tc_24 .= '<td></td>';
                                     $tc_24 .= '</tr>';
@@ -444,7 +580,7 @@ class Tc24Controller extends Controller
     public function tc_24_ekspor_pdf()
     {
         $tc_24 = '';
-
+        $tws = MasterTw::all();
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
         $tahun_akhir = $get_periode->tahun_akhir;
@@ -554,6 +690,7 @@ class Tc24Controller extends Controller
                         });
                     });
                 })->orderBy('kode', 'asc')->get();
+
                 $tujuans = [];
                 foreach ($get_tujuans as $get_tujuan) {
                     $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
@@ -576,6 +713,7 @@ class Tc24Controller extends Controller
                         ];
                     }
                 }
+
                 foreach ($tujuans as $tujuan)
                 {
                     $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q){
@@ -612,6 +750,7 @@ class Tc24Controller extends Controller
                             ];
                         }
                     }
+
                     foreach ($sasarans as $sasaran)
                     {
                         $get_programs = Program::whereHas('program_rpjmd', function($q) use ($sasaran){
@@ -622,11 +761,12 @@ class Tc24Controller extends Controller
                                     });
                                 });
                             });
-                        })->whereHas('program_indikator_kinerja', function($q){
-                            $q->whereHas('opd_program_indikator_kinerja', function($q){
-                                $q->where('opd_id', Auth::user()->opd->opd_id);
-                            });
+                            })->whereHas('program_indikator_kinerja', function($q){
+                                $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                });
                         })->get();
+
                         $programs = [];
                         foreach($get_programs as $get_program)
                         {
@@ -648,6 +788,7 @@ class Tc24Controller extends Controller
                                 ];
                             }
                         }
+
                         foreach($programs as $program)
                         {
                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
@@ -658,6 +799,7 @@ class Tc24Controller extends Controller
                             {
                                 $tc_24 .= '<tr>';
                                     $tc_24 .= '<td style="text-align:left;">'.$program_indikator_kinerja->deskripsi.'</td>';
+                                    // Kolom 2 - 6 Start
                                     foreach ($tahuns as $tahun) {
                                         $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                                                         $q->where('opd_id', Auth::user()->opd->opd_id);
@@ -669,9 +811,71 @@ class Tc24Controller extends Controller
                                         {
                                             $tc_24 .= '<td>Rp.'.number_format($program_target_satuan_rp_realisasi->target_rp, 2, ',','.').'</td>';
                                         } else {
-                                            $tc_24 .= '<td></td>';
+                                            $tc_24 .= '<td>Rp. 0, 00</td>';
                                         }
                                     }
+                                    // Kolom 2 - 6 End
+
+                                    // Kolom 7 - 11 Start
+                                    foreach ($tahuns as $tahun) {
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                            $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
+                                                $q->where('id', $program_indikator_kinerja->id);
+                                            });
+                                        })->where('tahun', $tahun)->first();
+                                        if($program_target_satuan_rp_realisasi)
+                                        {
+                                            $realisasi_rp_kolom_7_11 = [];
+                                            foreach ($tws as $tw) {
+                                                $cek_program_tw_realisasi = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id',$program_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
+                                                if($cek_program_tw_realisasi)
+                                                {
+                                                    $realisasi_rp_kolom_7_11[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                } else {
+                                                    $realisasi_rp_kolom_7_11[] = 0;
+                                                }
+                                            }
+                                            $tc_24 .= '<td>Rp. '.number_format(array_sum($realisasi_rp_kolom_7_11), 2, ',', '.').'</td>';
+                                        } else {
+                                            $tc_24 .= '<td>Rp. 0, 00</td>';
+                                        }
+                                    }
+                                    // Kolom 7 - 11 End
+
+                                    // Kolom 12 - 16 Start
+                                    foreach ($tahuns as $tahun) {
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                            $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
+                                                $q->where('id', $program_indikator_kinerja->id);
+                                            });
+                                        })->where('tahun', $tahun)->first();
+                                        if($program_target_satuan_rp_realisasi)
+                                        {
+                                            $target_rp_kolom_12_6 = $program_target_satuan_rp_realisasi->target_rp;
+                                            $realisasi_rp_kolom_12_16 = [];
+                                            foreach ($tws as $tw) {
+                                                $cek_program_tw_realisasi = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id',$program_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
+                                                if($cek_program_tw_realisasi)
+                                                {
+                                                    $realisasi_rp_kolom_12_16[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                } else {
+                                                    $realisasi_rp_kolom_12_16[] = 0;
+                                                }
+                                            }
+                                            if($target_rp_kolom_12_6 != 0)
+                                            {
+                                                $rasio_kolom_12_16 = (array_sum($realisasi_rp_kolom_12_16) / $target_rp_kolom_12_6) * 100;
+                                            } else {
+                                                $rasio_kolom_12_16 = 0;
+                                            }
+                                            $tc_24 .= '<td>'.number_format($rasio_kolom_12_16, 2, ',', '.').'</td>';
+                                        } else {
+                                            $tc_24 .= '<td>0, 00</td>';
+                                        }
+                                    }
+                                    // Kolom 12 - 16 End
                                 $tc_24 .= '</tr>';
                             }
 
@@ -722,9 +926,69 @@ class Tc24Controller extends Controller
                                             {
                                                 $tc_24 .= '<td>Rp.'.number_format($kegiatan_target_satuan_rp_realisasi->target_rp,2, ',', '.').'</td>';
                                             } else {
-                                                $tc_24 .= '<td></td>';
+                                                $tc_24 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
+                                        // Kolom 7 - 11 Start
+                                        foreach ($tahuns as $tahun) {
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
+                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
+                                                    $q->where('id', $kegiatan_indikator_kinerja->id);
+                                                });
+                                            })->where('tahun', $tahun)->first();
+                                            if($kegiatan_target_satuan_rp_realisasi)
+                                            {
+                                                $realisasi_rp_kolom_7_11 = [];
+                                                foreach ($tws as $tw) {
+                                                    $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id',$kegiatan_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
+                                                    if($cek_kegiatan_tw_realisasi)
+                                                    {
+                                                        $realisasi_rp_kolom_7_11[] = $cek_kegiatan_tw_realisasi->realisasi_rp;
+                                                    } else {
+                                                        $realisasi_rp_kolom_7_11[] = 0;
+                                                    }
+                                                }
+                                                $tc_24 .= '<td>Rp. '.number_format(array_sum($realisasi_rp_kolom_7_11), 2, ',', '.').'</td>';
+                                            } else {
+                                                $tc_24 .= '<td>Rp. 0, 00</td>';
+                                            }
+                                        }
+                                        // Kolom 7 - 11 End
+
+                                        // Kolom 12 - 16 Start
+                                        foreach ($tahuns as $tahun) {
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
+                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
+                                                    $q->where('id', $kegiatan_indikator_kinerja->id);
+                                                });
+                                            })->where('tahun', $tahun)->first();
+                                            if($kegiatan_target_satuan_rp_realisasi)
+                                            {
+                                                $target_rp_kolom_12_6 = $kegiatan_target_satuan_rp_realisasi->target_rp;
+                                                $realisasi_rp_kolom_12_16 = [];
+                                                foreach ($tws as $tw) {
+                                                    $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id',$kegiatan_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
+                                                    if($cek_kegiatan_tw_realisasi)
+                                                    {
+                                                        $realisasi_rp_kolom_12_16[] = $cek_kegiatan_tw_realisasi->realisasi_rp;
+                                                    } else {
+                                                        $realisasi_rp_kolom_12_16[] = 0;
+                                                    }
+                                                }
+                                                if($target_rp_kolom_12_6 != 0)
+                                                {
+                                                    $rasio_kolom_12_16 = (array_sum($realisasi_rp_kolom_12_16) / $target_rp_kolom_12_6) * 100;
+                                                } else {
+                                                    $rasio_kolom_12_16 = 0;
+                                                }
+                                                $tc_24 .= '<td>'.number_format($rasio_kolom_12_16, 2, ',', '.').'</td>';
+                                            } else {
+                                                $tc_24 .= '<td>0, 00</td>';
+                                            }
+                                        }
+                                        // Kolom 12 - 16 End
                                     $tc_24 .= '</tr>';
                                 }
 
@@ -735,6 +999,7 @@ class Tc24Controller extends Controller
                                 foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
                                     $tc_24 .= '<tr>';
                                         $tc_24 .= '<td style="text-align:left;">'.$sub_kegiatan_indikator_kinerja->deskripsi.'</td>';
+                                        // Kolom 2 - 6 Start
                                         foreach ($tahuns as $tahun) {
                                             $sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($sub_kegiatan_indikator_kinerja){
                                                                                             $q->where('opd_id', Auth::user()->opd->opd_id);
@@ -746,9 +1011,12 @@ class Tc24Controller extends Controller
                                             {
                                                 $tc_24 .= '<td>Rp.'.number_format($sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal, 2, ',', '.').'</td>';
                                             } else {
-                                                $tc_24 .= '<td></td>';
+                                                $tc_24 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
+                                        // Kolom 2 - 6 End
+
+                                        // Kolom 7 - 11 Start
                                         foreach ($tahuns as $tahun) {
                                             $sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($sub_kegiatan_indikator_kinerja){
                                                                                             $q->where('opd_id', Auth::user()->opd->opd_id);
@@ -768,12 +1036,15 @@ class Tc24Controller extends Controller
                                                     }
                                                     $tc_23 .= '<td>Rp.'.number_format(array_sum($realisasi_rp), 2, ',', '.').'</td>';
                                                 } else {
-                                                    $tc_24 .= '<td></td>';
+                                                    $tc_24 .= '<td>Rp. 0, 00</td>';
                                                 }
                                             } else {
-                                                $tc_24 .= '<td></td>';
+                                                $tc_24 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
+                                        // Kolom 7 - 11 End
+
+                                        // Kolom 12 - 16 Start
                                         foreach ($tahuns as $tahun) {
                                             $sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($sub_kegiatan_indikator_kinerja){
                                                                                             $q->where('opd_id', Auth::user()->opd->opd_id);
@@ -791,15 +1062,16 @@ class Tc24Controller extends Controller
                                                     foreach ($sub_kegiatan_tw_realisasi_renjas as $sub_kegiatan_tw_realisasi_renja) {
                                                         $realisasi_rp[] = $sub_kegiatan_tw_realisasi_renja->realisasi_rp;
                                                     }
-                                                    $rasio = array_sum($realisasi_rp) / $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal;
+                                                    $rasio = (array_sum($realisasi_rp) / $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal) * 100;
                                                     $tc_23 .= '<td>'.$rasio.'</td>';
                                                 } else {
-                                                    $tc_24 .= '<td></td>';
+                                                    $tc_24 .= '<td>0,00</td>';
                                                 }
                                             } else {
-                                                $tc_24 .= '<td></td>';
+                                                $tc_24 .= '<td>0,00</td>';
                                             }
                                         }
+                                        // Kolom 12 - 16 End
                                         $tc_24 .= '<td></td>';
                                         $tc_24 .= '<td></td>';
                                     $tc_24 .= '</tr>';

@@ -258,8 +258,8 @@ class Tc23Controller extends Controller
                                             {
                                                 $tc_23 .= '<td>0</td>';
                                             } else {
-                                                $rasio = $tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target;
-                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                $rasio = ($tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target) * 100;
+                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                             }
                                         } else {
                                             $tc_23 .= '<td></td>';
@@ -371,8 +371,8 @@ class Tc23Controller extends Controller
                                                 {
                                                     $tc_23 .= '<td>0</td>';
                                                 } else {
-                                                    $rasio = $sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    $rasio = ($sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target) * 100;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                 }
                                             } else {
                                                 $tc_23 .= '<td></td>';
@@ -492,8 +492,8 @@ class Tc23Controller extends Controller
                                                 {
                                                     $tc_23 .= '<td>0</td>';
                                                 } else {
-                                                    $rasio = (array_sum($realisasi))/$program_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    $rasio = ((array_sum($realisasi))/$program_target_satuan_rp_realisasi->target) * 100;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                 }
                                             } else {
                                                 $tc_23 .= '<td></td>';
@@ -617,8 +617,8 @@ class Tc23Controller extends Controller
                                                     }
                                                     if($kegiatan_target_satuan_rp_realisasi->target)
                                                     {
-                                                        $rasio = (array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target;
-                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                        $rasio = ((array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target) * 100;
+                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                     } else {
                                                         $tc_23 .= '<td>0</td>';
                                                     }
@@ -841,8 +841,8 @@ class Tc23Controller extends Controller
                                             {
                                                 $tc_23 .= '<td>0</td>';
                                             } else {
-                                                $rasio = $tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target;
-                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                $rasio = ($tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target) * 100;
+                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                             }
                                         } else {
                                             $tc_23 .= '<td></td>';
@@ -954,8 +954,8 @@ class Tc23Controller extends Controller
                                                 {
                                                     $tc_23 .= '<td>0</td>';
                                                 } else {
-                                                    $rasio = $sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    $rasio = ($sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target) * 100;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                 }
                                             } else {
                                                 $tc_23 .= '<td></td>';
@@ -1075,8 +1075,8 @@ class Tc23Controller extends Controller
                                                 {
                                                     $tc_23 .= '<td>0</td>';
                                                 } else {
-                                                    $rasio = (array_sum($realisasi))/$program_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    $rasio = ((array_sum($realisasi))/$program_target_satuan_rp_realisasi->target) * 100;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                 }
                                             } else {
                                                 $tc_23 .= '<td></td>';
@@ -1200,8 +1200,8 @@ class Tc23Controller extends Controller
                                                     }
                                                     if($kegiatan_target_satuan_rp_realisasi->target)
                                                     {
-                                                        $rasio = (array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target;
-                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                        $rasio = ((array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target) * 100;
+                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                     } else {
                                                         $tc_23 .= '<td>0</td>';
                                                     }

@@ -29,10 +29,12 @@ class OpdController extends Controller
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
                     $button_show = '<button type="button" name="detail" id="'.$data->id.'" class="detail btn btn-icon waves-effect btn-outline-success" title="Detail Data"><i class="fas fa-eye"></i></button>';
-                    $button_edit = '<button type="button" name="change-password" id="'.$data->id.'"
+                    $button_change_password = '<button type="button" name="change-password" id="'.$data->id.'"
                     class="change-password btn btn-icon waves-effect btn-outline-warning" title="Change Password"><i class="fas fa-lock"></i></button>';
                     $button_delete = '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-icon waves-effect btn-outline-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
-                    $button = $button_show . ' ' . $button_edit . ' ' . $button_delete;
+                    $button_edit = '<button type="button" name="edit" id="'.$data->opd_id.'"
+                    class="edit btn btn-icon waves-effect btn-outline-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
+                    $button = $button_show . ' ' .$button_edit. ' ' .$button_change_password . ' ' . $button_delete;
                     // $button = $button_show . ' ' . $button_edit;
                     return $button;
                 })
@@ -153,5 +155,68 @@ class OpdController extends Controller
         $akun_opd->save();
 
         return response()->json(['success' => 'Berhasil Menghapus Akun']);
+    }
+
+    public function edit($id)
+    {
+        $opd = Opd::find($id);
+
+        return response()->json(['result' => $opd]);
+    }
+
+    public function update(Request $request)
+    {
+        $errors = Validator::make($request->all(), [
+            'opd_id' => 'required',
+            'nama' => 'required',
+            'no_hp' => 'required',
+            'alamat' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        if($request->foto)
+        {
+            $errors = Validator::make($request->all(), [
+                'foto' => 'mimes:jpeg,jpg,png|max:1024'
+            ]);
+
+            if($errors -> fails())
+            {
+                return response()->json(['errors' => $errors->errors()->all()]);
+            }
+        }
+
+        $opd = Opd::find($request->hidden_id);
+        $opd->nama = $request->nama;
+        $opd->no_hp = $request->no_hp;
+        $opd->alamat = $request->alamat;
+        $opd->negara_id = 62;
+        $opd->provinsi_id = 5;
+        $opd->kabupaten_id = 62;
+        if($request->kecamatan_id)
+        {
+            $opd->kecamatan_id = $request->kecamatan_id;
+        }
+        $opd->opd_id = $request->opd_id;
+
+        if($request->foto)
+        {
+            File::delete(public_path('images/opd/'.$opd->foto));
+
+            $fotoExtension = $request->foto->extension();
+            $fotoName =  uniqid().'-'.date("ymd").'.'.$fotoExtension;
+            $foto = Image::make($request->foto);
+            $fotoSize = public_path('images/opd/'.$fotoName);
+            $foto->save($fotoSize, 100);
+
+            $opd->foto = $fotoName;
+        }
+        $opd->save();
+
+        return response()->json(['success' => 'Berhasil mengupdate data']);
     }
 }

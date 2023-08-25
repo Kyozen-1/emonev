@@ -18,4 +18,9 @@ class OpdKegiatanIndikatorKinerja extends Model
     {
         return $this->belongsTo('App\Models\MasterOpd', 'opd_id');
     }
+
+    public function kegiatan_target_satuan_rp_realisasi()
+    {
+        return $this->hasMany('App\Models\KegiatanTargetSatuanRpRealisasi', 'opd_kegiatan_indikator_kinerja_id');
+    }
 }

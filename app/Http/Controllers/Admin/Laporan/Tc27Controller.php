@@ -134,19 +134,19 @@ class Tc27Controller extends Controller
                                     if($cek_tujuan_pd_target_satuan_rp_realisasi)
                                     {
                                         $tc_27 .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
-                                        $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                         if($indikator_a == $len_a - 1)
                                         {
                                             $tc_27 .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                         }
                                     } else {
-                                        $tc_27 .= '<td></td>';
-                                        $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td>0/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
+                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                         if($indikator_a == $len_a - 1)
                                         {
-                                            $tc_27 .= '<td></td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>0/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                         }
                                     }
                                     $indikator_a++;
@@ -169,19 +169,19 @@ class Tc27Controller extends Controller
                                     if($cek_tujuan_pd_target_satuan_rp_realisasi)
                                     {
                                         $tc_27 .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
-                                        $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                         if($indikator_a == $len_a - 1)
                                         {
                                             $tc_27 .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                         }
                                     } else {
-                                        $tc_27 .= '<td></td>';
-                                        $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td>0/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
+                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                         if($indikator_a == $len_a - 1)
                                         {
-                                            $tc_27 .= '<td></td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>0/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                         }
                                     }
                                     $indikator_a++;
@@ -253,19 +253,19 @@ class Tc27Controller extends Controller
                                         if($cek_sasaran_pd_target_satuan_rp_realisasi)
                                         {
                                             $tc_27 .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                             if($indikator_b == $len_b - 1)
                                             {
                                                 $tc_27 .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                             }
                                         } else {
-                                            $tc_27 .= '<td></td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                             if($indikator_b == $len_b - 1)
                                             {
-                                                $tc_27 .= '<td></td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
                                         $indikator_b++;
@@ -288,19 +288,19 @@ class Tc27Controller extends Controller
                                         if($cek_sasaran_pd_target_satuan_rp_realisasi)
                                         {
                                             $tc_27 .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                             if($indikator_b == $len_b - 1)
                                             {
                                                 $tc_27 .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                             }
                                         } else {
-                                            $tc_27 .= '<td></td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                             if($indikator_b == $len_b - 1)
                                             {
-                                                $tc_27 .= '<td></td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
                                         $indikator_b++;
@@ -310,15 +310,16 @@ class Tc27Controller extends Controller
                                 $tc_27 .= '</tr>';
                             }
                             $b++;
-                        }
+                    }
+
                     $get_programs = Program::whereHas('program_indikator_kinerja', function($q) use ($opd){
                         $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
                             $q->where('opd_id', $opd->id);
                         });
-                    })->whereHas('program_rpjmd', function($q) use ($get_sasaran_pd){
-                        $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($get_sasaran_pd){
-                            $q->where('sasaran_pd_id', $get_sasaran_pd->id);
-                        });
+                        })->whereHas('program_rpjmd', function($q) use ($get_sasaran_pd){
+                            $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($get_sasaran_pd){
+                                $q->where('sasaran_pd_id', $get_sasaran_pd->id);
+                            });
                     })->get();
 
                     $programs = [];
@@ -352,10 +353,9 @@ class Tc27Controller extends Controller
                             $tc_27 .= '<td></td>';
                             $tc_27 .= '<td>'.$urusan->kode.'.'.$program['kode'].'</td>';
                             $tc_27 .= '<td style="text-align:left">'.$program['deskripsi'].'</td>';
-                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
-                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                                                                $q->where('opd_id', $opd->id);
-                                                            })->get();
+                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                $q->where('opd_id', $opd->id);
+                            })->get();
                             $c = 1;
                             foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
                                 if($c == 1)
@@ -376,20 +376,20 @@ class Tc27Controller extends Controller
                                             if($cek_program_target_satuan_rp_realisasi)
                                             {
                                                 $program_target_rp[] = $cek_program_target_satuan_rp_realisasi->target_rp;
-                                                $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$cek_program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                 $tc_27 .= '<td>Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                 if($indikator_c == $len_c - 1)
                                                 {
-                                                    $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$cek_program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                    $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $tc_27 .= '<td>Rp.'.number_format(array_sum($program_target_rp), 2, ',', '.').'</td>';
                                                 }
                                             } else {
-                                                $tc_27 .= '<td></td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                                 if($indikator_c == $len_c - 1)
                                                 {
-                                                    $tc_27 .= '<td></td>';
-                                                    $tc_27 .= '<td></td>';
+                                                    $tc_27 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                    $tc_27 .= '<td>Rp. 0, 00</td>';
                                                 }
                                             }
                                             $indikator_c++;
@@ -403,6 +403,7 @@ class Tc27Controller extends Controller
                                         $tc_27 .= '<td></td>';
                                         $tc_27 .= '<td></td>';
                                         $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
                                         $tc_27 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$program_indikator_kinerja->satuan.'</td>';
                                         $indikator_c = 0;
                                         $len_c = count($tahuns);
@@ -418,20 +419,20 @@ class Tc27Controller extends Controller
                                             if($cek_program_target_satuan_rp_realisasi)
                                             {
                                                 $program_target_rp[] = $cek_program_target_satuan_rp_realisasi->target_rp;
-                                                $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$cek_program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                 $tc_27 .= '<td>Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                 if($indikator_c == $len_c - 1)
                                                 {
-                                                    $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$cek_program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                    $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $tc_27 .= '<td>Rp.'.number_format(array_sum($program_target_rp), 2, ',', '.').'</td>';
                                                 }
                                             } else {
-                                                $tc_27 .= '<td></td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                                 if($indikator_c == $len_c - 1)
                                                 {
-                                                    $tc_27 .= '<td></td>';
-                                                    $tc_27 .= '<td></td>';
+                                                    $tc_27 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                                 }
                                             }
                                             $indikator_c++;
@@ -441,7 +442,7 @@ class Tc27Controller extends Controller
                                     $tc_27 .='</tr>';
                                 }
                                 $c++;
-                            }
+                        }
 
                         $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
                             $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
@@ -514,12 +515,12 @@ class Tc27Controller extends Controller
                                                         $tc_27 .= '<td>Rp.'.number_format(array_sum($kegiatan_target_rp), 2, ',', '.').'</td>';
                                                     }
                                                 } else {
-                                                    $tc_27 .= '<td></td>';
-                                                    $tc_27 .= '<td></td>';
+                                                    $tc_27 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                    $tc_27 .= '<td>Rp. 0, 00</td>';
                                                     if($indikator_d == $len_d - 1)
                                                     {
-                                                        $tc_27 .= '<td></td>';
-                                                        $tc_27 .= '<td></td>';
+                                                        $tc_27 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                                     }
                                                 }
                                                 $indikator_d++;
@@ -556,12 +557,12 @@ class Tc27Controller extends Controller
                                                         $tc_27 .= '<td>Rp.'.number_format(array_sum($kegiatan_target_rp), 2, ',', '.').'</td>';
                                                     }
                                                 } else {
-                                                    $tc_27 .= '<td></td>';
-                                                    $tc_27 .= '<td></td>';
+                                                    $tc_27 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                    $tc_27 .= '<td>Rp. 0, 00</td>';
                                                     if($indikator_d == $len_d - 1)
                                                     {
-                                                        $tc_27 .= '<td></td>';
-                                                        $tc_27 .= '<td></td>';
+                                                        $tc_27 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                                     }
                                                 }
                                                 $indikator_d++;
@@ -653,19 +654,19 @@ class Tc27Controller extends Controller
                                     if($cek_tujuan_pd_target_satuan_rp_realisasi)
                                     {
                                         $tc_27 .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
-                                        $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                         if($indikator_a == $len_a - 1)
                                         {
                                             $tc_27 .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                         }
                                     } else {
-                                        $tc_27 .= '<td></td>';
-                                        $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td>0/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
+                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                         if($indikator_a == $len_a - 1)
                                         {
-                                            $tc_27 .= '<td></td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>0/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                         }
                                     }
                                     $indikator_a++;
@@ -688,19 +689,19 @@ class Tc27Controller extends Controller
                                     if($cek_tujuan_pd_target_satuan_rp_realisasi)
                                     {
                                         $tc_27 .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
-                                        $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                         if($indikator_a == $len_a - 1)
                                         {
                                             $tc_27 .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                         }
                                     } else {
-                                        $tc_27 .= '<td></td>';
-                                        $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td>0/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
+                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                         if($indikator_a == $len_a - 1)
                                         {
-                                            $tc_27 .= '<td></td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>0/'.$tujuan_pd_indikator_kinerja->satuan.'</td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                         }
                                     }
                                     $indikator_a++;
@@ -772,19 +773,19 @@ class Tc27Controller extends Controller
                                         if($cek_sasaran_pd_target_satuan_rp_realisasi)
                                         {
                                             $tc_27 .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                             if($indikator_b == $len_b - 1)
                                             {
                                                 $tc_27 .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                             }
                                         } else {
-                                            $tc_27 .= '<td></td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                             if($indikator_b == $len_b - 1)
                                             {
-                                                $tc_27 .= '<td></td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
                                         $indikator_b++;
@@ -807,19 +808,19 @@ class Tc27Controller extends Controller
                                         if($cek_sasaran_pd_target_satuan_rp_realisasi)
                                         {
                                             $tc_27 .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                             if($indikator_b == $len_b - 1)
                                             {
                                                 $tc_27 .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                             }
                                         } else {
-                                            $tc_27 .= '<td></td>';
-                                            $tc_27 .= '<td></td>';
+                                            $tc_27 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                            $tc_27 .= '<td>Rp. 0, 00</td>';
                                             if($indikator_b == $len_b - 1)
                                             {
-                                                $tc_27 .= '<td></td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                             }
                                         }
                                         $indikator_b++;
@@ -829,15 +830,16 @@ class Tc27Controller extends Controller
                                 $tc_27 .= '</tr>';
                             }
                             $b++;
-                        }
+                    }
+
                     $get_programs = Program::whereHas('program_indikator_kinerja', function($q) use ($opd){
                         $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
                             $q->where('opd_id', $opd->id);
                         });
-                    })->whereHas('program_rpjmd', function($q) use ($get_sasaran_pd){
-                        $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($get_sasaran_pd){
-                            $q->where('sasaran_pd_id', $get_sasaran_pd->id);
-                        });
+                        })->whereHas('program_rpjmd', function($q) use ($get_sasaran_pd){
+                            $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($get_sasaran_pd){
+                                $q->where('sasaran_pd_id', $get_sasaran_pd->id);
+                            });
                     })->get();
 
                     $programs = [];
@@ -871,10 +873,9 @@ class Tc27Controller extends Controller
                             $tc_27 .= '<td></td>';
                             $tc_27 .= '<td>'.$urusan->kode.'.'.$program['kode'].'</td>';
                             $tc_27 .= '<td style="text-align:left">'.$program['deskripsi'].'</td>';
-                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
-                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                                                                $q->where('opd_id', $opd->id);
-                                                            })->get();
+                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                $q->where('opd_id', $opd->id);
+                            })->get();
                             $c = 1;
                             foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
                                 if($c == 1)
@@ -895,20 +896,20 @@ class Tc27Controller extends Controller
                                             if($cek_program_target_satuan_rp_realisasi)
                                             {
                                                 $program_target_rp[] = $cek_program_target_satuan_rp_realisasi->target_rp;
-                                                $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$cek_program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                 $tc_27 .= '<td>Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                 if($indikator_c == $len_c - 1)
                                                 {
-                                                    $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$cek_program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                    $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $tc_27 .= '<td>Rp.'.number_format(array_sum($program_target_rp), 2, ',', '.').'</td>';
                                                 }
                                             } else {
-                                                $tc_27 .= '<td></td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                                 if($indikator_c == $len_c - 1)
                                                 {
-                                                    $tc_27 .= '<td></td>';
-                                                    $tc_27 .= '<td></td>';
+                                                    $tc_27 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                    $tc_27 .= '<td>Rp. 0, 00</td>';
                                                 }
                                             }
                                             $indikator_c++;
@@ -922,6 +923,7 @@ class Tc27Controller extends Controller
                                         $tc_27 .= '<td></td>';
                                         $tc_27 .= '<td></td>';
                                         $tc_27 .= '<td></td>';
+                                        $tc_27 .= '<td style="text-align:left">'.$program_indikator_kinerja->deskripsi.'</td>';
                                         $tc_27 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'/'.$program_indikator_kinerja->satuan.'</td>';
                                         $indikator_c = 0;
                                         $len_c = count($tahuns);
@@ -937,20 +939,20 @@ class Tc27Controller extends Controller
                                             if($cek_program_target_satuan_rp_realisasi)
                                             {
                                                 $program_target_rp[] = $cek_program_target_satuan_rp_realisasi->target_rp;
-                                                $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$cek_program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                 $tc_27 .= '<td>Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                 if($indikator_c == $len_c - 1)
                                                 {
-                                                    $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$cek_program_target_satuan_rp_realisasi->satuan.'</td>';
+                                                    $tc_27 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $tc_27 .= '<td>Rp.'.number_format(array_sum($program_target_rp), 2, ',', '.').'</td>';
                                                 }
                                             } else {
-                                                $tc_27 .= '<td></td>';
-                                                $tc_27 .= '<td></td>';
+                                                $tc_27 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                                 if($indikator_c == $len_c - 1)
                                                 {
-                                                    $tc_27 .= '<td></td>';
-                                                    $tc_27 .= '<td></td>';
+                                                    $tc_27 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                $tc_27 .= '<td>Rp. 0, 00</td>';
                                                 }
                                             }
                                             $indikator_c++;
@@ -960,7 +962,7 @@ class Tc27Controller extends Controller
                                     $tc_27 .='</tr>';
                                 }
                                 $c++;
-                            }
+                        }
 
                         $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
                             $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
@@ -1033,12 +1035,12 @@ class Tc27Controller extends Controller
                                                         $tc_27 .= '<td>Rp.'.number_format(array_sum($kegiatan_target_rp), 2, ',', '.').'</td>';
                                                     }
                                                 } else {
-                                                    $tc_27 .= '<td></td>';
-                                                    $tc_27 .= '<td></td>';
+                                                    $tc_27 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                    $tc_27 .= '<td>Rp. 0, 00</td>';
                                                     if($indikator_d == $len_d - 1)
                                                     {
-                                                        $tc_27 .= '<td></td>';
-                                                        $tc_27 .= '<td></td>';
+                                                        $tc_27 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                                     }
                                                 }
                                                 $indikator_d++;
@@ -1075,12 +1077,12 @@ class Tc27Controller extends Controller
                                                         $tc_27 .= '<td>Rp.'.number_format(array_sum($kegiatan_target_rp), 2, ',', '.').'</td>';
                                                     }
                                                 } else {
-                                                    $tc_27 .= '<td></td>';
-                                                    $tc_27 .= '<td></td>';
+                                                    $tc_27 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                    $tc_27 .= '<td>Rp. 0, 00</td>';
                                                     if($indikator_d == $len_d - 1)
                                                     {
-                                                        $tc_27 .= '<td></td>';
-                                                        $tc_27 .= '<td></td>';
+                                                        $tc_27 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                        $tc_27 .= '<td>Rp. 0, 00</td>';
                                                     }
                                                 }
                                                 $indikator_d++;

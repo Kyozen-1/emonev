@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Opd\Renja;
+namespace App\Http\Controllers\Admin\Perencanaan\Rpjmd;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -12,7 +12,6 @@ use DB;
 use Validator;
 use DataTables;
 use Excel;
-use Auth;
 use Carbon\Carbon;
 use App\Models\TahunPeriode;
 use App\Models\Visi;
@@ -56,17 +55,29 @@ use App\Models\KegiatanTargetSatuanRpRealisasi;
 use App\Models\MasterTw;
 use App\Models\ProgramTwRealisasi;
 use App\Models\KegiatanTwRealisasi;
+use App\Models\TujuanPdRealisasiRenja;
+use App\Models\SasaranPdRealisasiRenja;
+use App\Models\SasaranPdProgramRpjmd;
+use App\Models\SubKegiatan;
+use App\Models\PivotPerubahanSubKegiatan;
+use App\Models\SubKegiatanIndikatorKinerja;
+use App\Models\OpdSubKegiatanIndikatorKinerja;
+use App\Models\SubKegiatanTargetSatuanRpRealisasi;
 use App\Models\SubKegiatanTwRealisasi;
+use App\Models\TujuanIndikatorKinerja;
+use App\Models\TujuanTargetSatuanRpRealisasi;
+use App\Models\SasaranTargetSatuanRpRealisasi;
+use App\Models\TujuanTwRealisasi;
+use App\Models\SasaranTwRealisasi;
 
-class ProgramTwController extends Controller
+class SasaranController extends Controller
 {
     public function tambah(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'program_target_satuan_rp_realisasi_id' => 'required',
+            'sasaran_target_satuan_rp_realisasi_id' => 'required',
             'tw_id' => 'required',
-            'realisasi' => 'required',
-            'realisasi_rp' => 'required',
+            'realisasi' => 'required'
         ]);
 
         if($errors -> fails())
@@ -74,12 +85,11 @@ class ProgramTwController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $program_tw_realisasi = new ProgramTwRealisasi;
-        $program_tw_realisasi->program_target_satuan_rp_realisasi_id = $request->program_target_satuan_rp_realisasi_id;
-        $program_tw_realisasi->tw_id = $request->tw_id;
-        $program_tw_realisasi->realisasi = $request->realisasi;
-        $program_tw_realisasi->realisasi_rp = $request->realisasi_rp;
-        $program_tw_realisasi->save();
+        $sasaran_tw_realisasi = new SasaranTwRealisasi;
+        $sasaran_tw_realisasi->sasaran_target_satuan_rp_realisasi_id = $request->sasaran_target_satuan_rp_realisasi_id;
+        $sasaran_tw_realisasi->tw_id = $request->tw_id;
+        $sasaran_tw_realisasi->realisasi = $request->realisasi;
+        $sasaran_tw_realisasi->save();
 
         return response()->json(['success' => 'Berhasil menambahkan data']);
     }
@@ -87,9 +97,8 @@ class ProgramTwController extends Controller
     public function ubah(Request $request)
     {
         $errors = Validator::make($request->all(), [
-            'program_tw_realisasi_id' => 'required',
-            'program_edit_realisasi' => 'required',
-            'program_edit_realisasi_rp' => 'required'
+            'sasaran_tw_realisasi_id' => 'required',
+            'sasaran_edit_realisasi' => 'required',
         ]);
 
         if($errors -> fails())
@@ -97,22 +106,11 @@ class ProgramTwController extends Controller
             return response()->json(['errors' => $errors->errors()->all()]);
         }
 
-        $program_tw_realisasi = ProgramTwRealisasi::find($request->program_tw_realisasi_id);
-        $program_tw_realisasi->realisasi = $request->program_edit_realisasi;
-        $program_tw_realisasi->realisasi_rp = $request->program_edit_realisasi_rp;
-        $program_tw_realisasi->save();
+        $sasaran_tw_realisasi = SasaranTwRealisasi::find($request->sasaran_tw_realisasi_id);
+        $sasaran_tw_realisasi->realisasi = $request->sasaran_edit_realisasi;
+        $sasaran_tw_realisasi->save();
 
-        Alert::success('Berhasil', 'Berhasil Merubah Realisasi Program');
-        return redirect()->route('opd.renja.index');
-    }
-
-    public function target_satuan_realisasi_ubah(Request $request)
-    {
-        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::find($request->program_target_satuan_rp_realisasi_id);
-        $program_target_satuan_rp_realisasi->target_anggaran_perubahan = $request->program_edit_target_anggaran_perubahan;
-        $program_target_satuan_rp_realisasi->save();
-
-        Alert::success('Berhasil', 'Berhasil Merubah Data');
-        return redirect()->route('opd.renja.index');
+        Alert::success('Berhasil', 'Berhasil Merubah Realisasi Sasaran');
+        return redirect()->route('admin.perencanaan.index');
     }
 }

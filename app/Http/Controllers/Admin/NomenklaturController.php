@@ -197,7 +197,7 @@ class NomenklaturController extends Controller
                                                                                             <tr>
                                                                                                 <th>No</th>
                                                                                                 <th>Indikator</th>
-                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                 <th>OPD</th>
                                                                                                 <th>Target</th>
                                                                                                 <th>Satuan</th>
@@ -543,7 +543,7 @@ class NomenklaturController extends Controller
                                                                                             <tr>
                                                                                                 <th>No</th>
                                                                                                 <th>Indikator</th>
-                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                 <th>OPD</th>
                                                                                                 <th>Target</th>
                                                                                                 <th>Satuan</th>
@@ -865,7 +865,7 @@ class NomenklaturController extends Controller
                                                                                             <tr>
                                                                                                 <th>No</th>
                                                                                                 <th>Indikator</th>
-                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                 <th>OPD</th>
                                                                                                 <th>Target</th>
                                                                                                 <th>Satuan</th>
@@ -1245,7 +1245,7 @@ class NomenklaturController extends Controller
                                                                                                                                 <tr>
                                                                                                                                     <th>No</th>
                                                                                                                                     <th>Indikator</th>
-                                                                                                                                    <th>Target Kinerja Awal</th>
+                                                                                                                                    <th>Kondisi Kinerja Awal</th>
                                                                                                                                     <th>Target Anggaran Awal</th>
                                                                                                                                     <th>OPD</th>
                                                                                                                                     <th>Target</th>
@@ -1654,7 +1654,7 @@ class NomenklaturController extends Controller
                                                                                                                                     <tr>
                                                                                                                                         <th>No</th>
                                                                                                                                         <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                         <th>Target Anggaran Awal</th>
                                                                                                                                         <th>OPD</th>
                                                                                                                                         <th>Target</th>
@@ -2037,7 +2037,7 @@ class NomenklaturController extends Controller
                                                                                                                                     <tr>
                                                                                                                                         <th>No</th>
                                                                                                                                         <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                         <th>Target Anggaran Awal</th>
                                                                                                                                         <th>OPD</th>
                                                                                                                                         <th>Target</th>
@@ -4861,7 +4861,7 @@ class NomenklaturController extends Controller
                                                                                                                                     <tr>
                                                                                                                                         <th>No</th>
                                                                                                                                         <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                         <th>Target Anggaran Awal</th>
                                                                                                                                         <th>OPD</th>
                                                                                                                                         <th>Target</th>
@@ -5259,7 +5259,7 @@ class NomenklaturController extends Controller
                                                                                                                                     <tr>
                                                                                                                                         <th>No</th>
                                                                                                                                         <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                         <th>Target Anggaran Awal</th>
                                                                                                                                         <th>OPD</th>
                                                                                                                                         <th>Target</th>
@@ -5645,7 +5645,7 @@ class NomenklaturController extends Controller
                                                                                             <tr>
                                                                                                 <th>No</th>
                                                                                                 <th>Indikator</th>
-                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                 <th>OPD</th>
                                                                                                 <th>Target</th>
                                                                                                 <th>Satuan</th>
@@ -5978,7 +5978,7 @@ class NomenklaturController extends Controller
                                                                                             <tr>
                                                                                                 <th>No</th>
                                                                                                 <th>Indikator</th>
-                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                 <th>OPD</th>
                                                                                                 <th>Target</th>
                                                                                                 <th>Satuan</th>

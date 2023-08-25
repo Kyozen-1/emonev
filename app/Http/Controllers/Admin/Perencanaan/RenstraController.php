@@ -278,7 +278,7 @@ class RenstraController extends Controller
                                                                                                                             <thead>
                                                                                                                                 <tr>
                                                                                                                                     <th>Indikator</th>
-                                                                                                                                    <th>Target Kinerja Awal</th>
+                                                                                                                                    <th>Kondisi Kinerja Awal</th>
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
@@ -393,7 +393,7 @@ class RenstraController extends Controller
                                                                                                                             <thead>
                                                                                                                                 <tr>
                                                                                                                                     <th>Indikator</th>
-                                                                                                                                    <th>Target Kinerja Awal</th>
+                                                                                                                                    <th>Kondisi Kinerja Awal</th>
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
@@ -721,7 +721,7 @@ class RenstraController extends Controller
                                                                                                                             <thead>
                                                                                                                                 <tr>
                                                                                                                                     <th>Indikator</th>
-                                                                                                                                    <th>Target Kinerja Awal</th>
+                                                                                                                                    <th>Kondisi Kinerja Awal</th>
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
@@ -836,7 +836,7 @@ class RenstraController extends Controller
                                                                                                                             <thead>
                                                                                                                                 <tr>
                                                                                                                                     <th>Indikator</th>
-                                                                                                                                    <th>Target Kinerja Awal</th>
+                                                                                                                                    <th>Kondisi Kinerja Awal</th>
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
@@ -1178,7 +1178,7 @@ class RenstraController extends Controller
                                                                                                                             <thead>
                                                                                                                                 <tr>
                                                                                                                                     <th>Indikator</th>
-                                                                                                                                    <th>Target Kinerja Awal</th>
+                                                                                                                                    <th>Kondisi Kinerja Awal</th>
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
@@ -1293,7 +1293,7 @@ class RenstraController extends Controller
                                                                                                                             <thead>
                                                                                                                                 <tr>
                                                                                                                                     <th>Indikator</th>
-                                                                                                                                    <th>Target Kinerja Awal</th>
+                                                                                                                                    <th>Kondisi Kinerja Awal</th>
                                                                                                                                     <th>Target</th>
                                                                                                                                     <th>Realisasi</th>
                                                                                                                                     <th>Tahun</th>
@@ -1627,7 +1627,7 @@ class RenstraController extends Controller
                                                                                                                                                     <tr>
                                                                                                                                                         <th>OPD</th>
                                                                                                                                                         <th>Kode</th>
-                                                                                                                                                        <th>Tujuan PD</th>
+                                                                                                                                                        <th>Sasaran PD</th>
                                                                                                                                                         <th>Indikator</th>
                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                     </tr>
@@ -1673,7 +1673,7 @@ class RenstraController extends Controller
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
                                                                                                                                                                                         <th>Indikator</th>
-                                                                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
@@ -1788,7 +1788,7 @@ class RenstraController extends Controller
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
                                                                                                                                                                                         <th>Indikator</th>
-                                                                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
@@ -2129,7 +2129,7 @@ class RenstraController extends Controller
                                                                                                                                                     <tr>
                                                                                                                                                         <th>OPD</th>
                                                                                                                                                         <th>Kode</th>
-                                                                                                                                                        <th>Tujuan PD</th>
+                                                                                                                                                        <th>Sasaran PD</th>
                                                                                                                                                         <th>Indikator</th>
                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                     </tr>
@@ -2175,7 +2175,7 @@ class RenstraController extends Controller
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
                                                                                                                                                                                         <th>Indikator</th>
-                                                                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
@@ -2290,7 +2290,7 @@ class RenstraController extends Controller
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
                                                                                                                                                                                         <th>Indikator</th>
-                                                                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
@@ -2634,7 +2634,7 @@ class RenstraController extends Controller
                                                                                                                                                     <tr>
                                                                                                                                                         <th>OPD</th>
                                                                                                                                                         <th>Kode</th>
-                                                                                                                                                        <th>Tujuan PD</th>
+                                                                                                                                                        <th>Sasaran PD</th>
                                                                                                                                                         <th>Indikator</th>
                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                     </tr>
@@ -2680,7 +2680,7 @@ class RenstraController extends Controller
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
                                                                                                                                                                                         <th>Indikator</th>
-                                                                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
@@ -2795,7 +2795,7 @@ class RenstraController extends Controller
                                                                                                                                                                                 <thead>
                                                                                                                                                                                     <tr>
                                                                                                                                                                                         <th>Indikator</th>
-                                                                                                                                                                                        <th>Target Kinerja Awal</th>
+                                                                                                                                                                                        <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                         <th>Target</th>
                                                                                                                                                                                         <th>Realisasi</th>
                                                                                                                                                                                         <th>Tahun</th>
@@ -3198,7 +3198,22 @@ class RenstraController extends Controller
                                                                                                                                                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
                                                                                                                                                             foreach($program_indikator_kinerjas as $program_indikator_kinerja)
                                                                                                                                                             {
-                                                                                                                                                                $html .= '<li>'.$program_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                $opd_program_indikator_kinerjas = $program_indikator_kinerja->opd_program_indikator_kinerja;
+                                                                                                                                                                $opd_programs = [];
+                                                                                                                                                                foreach($opd_program_indikator_kinerjas as $item)
+                                                                                                                                                                {
+                                                                                                                                                                    $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                    if($master_opd)
+                                                                                                                                                                    {
+                                                                                                                                                                        $opd_programs[] = $master_opd->nama;
+                                                                                                                                                                    }
+                                                                                                                                                                }
+
+                                                                                                                                                                $html .= '<li>'.$program_indikator_kinerja->deskripsi;
+                                                                                                                                                                foreach (array_unique($opd_programs) as $value) {
+                                                                                                                                                                    $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                }
+                                                                                                                                                                $html .= '</li>';
                                                                                                                                                             }
                                                                                                                                                         $html .= '</ul></td>';
                                                                                                                                                     $html .= '</tr>
@@ -3211,7 +3226,7 @@ class RenstraController extends Controller
                                                                                                                                                                             <th>No</th>
                                                                                                                                                                             <th>Indikator</th>
                                                                                                                                                                             <th>Satuan</th>
-                                                                                                                                                                            <th>Target Kinerja Awal</th>
+                                                                                                                                                                            <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                             <th>Target Anggaran Awal</th>
                                                                                                                                                                             <th>OPD</th>
                                                                                                                                                                             <th>Aksi</th>
@@ -3672,7 +3687,22 @@ class RenstraController extends Controller
                                                                                                                                                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
                                                                                                                                                             foreach($program_indikator_kinerjas as $program_indikator_kinerja)
                                                                                                                                                             {
-                                                                                                                                                                $html .= '<li>'.$program_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                $opd_program_indikator_kinerjas = $program_indikator_kinerja->opd_program_indikator_kinerja;
+                                                                                                                                                                $opd_programs = [];
+                                                                                                                                                                foreach($opd_program_indikator_kinerjas as $item)
+                                                                                                                                                                {
+                                                                                                                                                                    $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                    if($master_opd)
+                                                                                                                                                                    {
+                                                                                                                                                                        $opd_programs[] = $master_opd->nama;
+                                                                                                                                                                    }
+                                                                                                                                                                }
+
+                                                                                                                                                                $html .= '<li>'.$program_indikator_kinerja->deskripsi;
+                                                                                                                                                                foreach (array_unique($opd_programs) as $value) {
+                                                                                                                                                                    $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                }
+                                                                                                                                                                $html .= '</li>';
                                                                                                                                                             }
                                                                                                                                                         $html .= '</ul></td>';
                                                                                                                                                     $html .= '</tr>
@@ -3685,7 +3715,7 @@ class RenstraController extends Controller
                                                                                                                                                                             <th>No</th>
                                                                                                                                                                             <th>Indikator</th>
                                                                                                                                                                             <th>Satuan</th>
-                                                                                                                                                                            <th>Target Kinerja Awal</th>
+                                                                                                                                                                            <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                             <th>Target Anggaran Awal</th>
                                                                                                                                                                             <th>OPD</th>
                                                                                                                                                                             <th>Aksi</th>
@@ -4178,7 +4208,22 @@ class RenstraController extends Controller
                                                                                                                                                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
                                                                                                                                                             foreach($program_indikator_kinerjas as $program_indikator_kinerja)
                                                                                                                                                             {
-                                                                                                                                                                $html .= '<li>'.$program_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                $opd_program_indikator_kinerjas = $program_indikator_kinerja->opd_program_indikator_kinerja;
+                                                                                                                                                                $opd_programs = [];
+                                                                                                                                                                foreach($opd_program_indikator_kinerjas as $item)
+                                                                                                                                                                {
+                                                                                                                                                                    $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                    if($master_opd)
+                                                                                                                                                                    {
+                                                                                                                                                                        $opd_programs[] = $master_opd->nama;
+                                                                                                                                                                    }
+                                                                                                                                                                }
+
+                                                                                                                                                                $html .= '<li>'.$program_indikator_kinerja->deskripsi;
+                                                                                                                                                                foreach (array_unique($opd_programs) as $value) {
+                                                                                                                                                                    $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                }
+                                                                                                                                                                $html .= '</li>';
                                                                                                                                                             }
                                                                                                                                                         $html .= '</ul></td>';
                                                                                                                                                     $html .= '</tr>
@@ -4191,7 +4236,7 @@ class RenstraController extends Controller
                                                                                                                                                                             <th>No</th>
                                                                                                                                                                             <th>Indikator</th>
                                                                                                                                                                             <th>Satuan</th>
-                                                                                                                                                                            <th>Target Kinerja Awal</th>
+                                                                                                                                                                            <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                             <th>Target Anggaran Awal</th>
                                                                                                                                                                             <th>OPD</th>
                                                                                                                                                                             <th>Aksi</th>
@@ -4670,7 +4715,9 @@ class RenstraController extends Controller
                                                                                                                                                             <div class="collapse show" id="program_program_'.$program['id'].'">
                                                                                                                                                                 <table class="table table-condensed table-striped">
                                                                                                                                                                     <tbody>';
-                                                                                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
+                                                                                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                        $q->whereHas('opd_kegiatan_indikator_kinerja');
+                                                                                                                                                                    })->get();
                                                                                                                                                                     $kegiatans = [];
                                                                                                                                                                     foreach ($get_kegiatans as $get_kegiatan) {
                                                                                                                                                                         $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
@@ -4723,7 +4770,21 @@ class RenstraController extends Controller
                                                                                                                                                                             $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
                                                                                                                                                                             foreach($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja)
                                                                                                                                                                             {
-                                                                                                                                                                                $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                                $opd_kegiatan_indikator_kinerjas = $kegiatan_indikator_kinerja->opd_kegiatan_indikator_kinerja;
+                                                                                                                                                                                $opd_kegiatans = [];
+                                                                                                                                                                                foreach($opd_kegiatan_indikator_kinerjas as $item)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                                    if($master_opd)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        $opd_kegiatans[] = $master_opd->nama;
+                                                                                                                                                                                    }
+                                                                                                                                                                                }
+
+                                                                                                                                                                                $html .= '<li>'.$kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                foreach (array_unique($opd_kegiatans) as $value) {
+                                                                                                                                                                                    $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                                }
                                                                                                                                                                             }
                                                                                                                                                                             $html .= '</ul></td>';
                                                                                                                                                                             $html .= '<td width="20%" data-bs-toggle="collapse" data-bs-target="#program_kegiatan_'.$kegiatan['id'].'" class="accordion-toggle"></td>';
@@ -4736,7 +4797,7 @@ class RenstraController extends Controller
                                                                                                                                                                                             <tr>
                                                                                                                                                                                                 <th>No</th>
                                                                                                                                                                                                 <th>Indikator</th>
-                                                                                                                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                                 <th>Target Anggaran Awal</th>
                                                                                                                                                                                                 <th>Aksi</th>
                                                                                                                                                                                             </tr>
@@ -4833,7 +4894,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                                                 if($cek_kegiatan_target_satuan_rp_realisasi)
                                                                                                                                                                                                                                 {
                                                                                                                                                                                                                                     $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                                                    $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                                                                                                                                                    $html .= '<td>Rp.'.number_format((int) $cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                                                 } else {
                                                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                                                     $html .= '<td></td>';
@@ -5216,7 +5277,9 @@ class RenstraController extends Controller
                                                                                                                                                             <div class="collapse show" id="program_program_'.$program['id'].'">
                                                                                                                                                                 <table class="table table-condensed table-striped">
                                                                                                                                                                     <tbody>';
-                                                                                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
+                                                                                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                        $q->whereHas('opd_kegiatan_indikator_kinerja');
+                                                                                                                                                                    })->get();
                                                                                                                                                                     $kegiatans = [];
                                                                                                                                                                     foreach ($get_kegiatans as $get_kegiatan) {
                                                                                                                                                                         $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
@@ -5269,7 +5332,21 @@ class RenstraController extends Controller
                                                                                                                                                                             $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
                                                                                                                                                                             foreach($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja)
                                                                                                                                                                             {
-                                                                                                                                                                                $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                                $opd_kegiatan_indikator_kinerjas = $kegiatan_indikator_kinerja->opd_kegiatan_indikator_kinerja;
+                                                                                                                                                                                $opd_kegiatans = [];
+                                                                                                                                                                                foreach($opd_kegiatan_indikator_kinerjas as $item)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                                    if($master_opd)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        $opd_kegiatans[] = $master_opd->nama;
+                                                                                                                                                                                    }
+                                                                                                                                                                                }
+
+                                                                                                                                                                                $html .= '<li>'.$kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                foreach (array_unique($opd_kegiatans) as $value) {
+                                                                                                                                                                                    $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                                }
                                                                                                                                                                             }
                                                                                                                                                                             $html .= '</ul></td>';
                                                                                                                                                                             $html .= '<td width="20%" data-bs-toggle="collapse" data-bs-target="#program_kegiatan_'.$kegiatan['id'].'" class="accordion-toggle"></td>';
@@ -5282,7 +5359,7 @@ class RenstraController extends Controller
                                                                                                                                                                                             <tr>
                                                                                                                                                                                                 <th>No</th>
                                                                                                                                                                                                 <th>Indikator</th>
-                                                                                                                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                                 <th>Target Anggaran Awal</th>
                                                                                                                                                                                                 <th>Aksi</th>
                                                                                                                                                                                             </tr>
@@ -5379,7 +5456,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                                                 if($cek_kegiatan_target_satuan_rp_realisasi)
                                                                                                                                                                                                                                 {
                                                                                                                                                                                                                                     $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                                                    $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                                                                                                                                                    $html .= '<td>Rp.'.number_format((int) $cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                                                 } else {
                                                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                                                     $html .= '<td></td>';
@@ -5795,7 +5872,9 @@ class RenstraController extends Controller
                                                                                                                                                             <div class="collapse show" id="program_program_'.$program['id'].'">
                                                                                                                                                                 <table class="table table-condensed table-striped">
                                                                                                                                                                     <tbody>';
-                                                                                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
+                                                                                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                        $q->whereHas('opd_kegiatan_indikator_kinerja');
+                                                                                                                                                                    })->get();
                                                                                                                                                                     $kegiatans = [];
                                                                                                                                                                     foreach ($get_kegiatans as $get_kegiatan) {
                                                                                                                                                                         $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
@@ -5848,7 +5927,21 @@ class RenstraController extends Controller
                                                                                                                                                                             $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
                                                                                                                                                                             foreach($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja)
                                                                                                                                                                             {
-                                                                                                                                                                                $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                                $opd_kegiatan_indikator_kinerjas = $kegiatan_indikator_kinerja->opd_kegiatan_indikator_kinerja;
+                                                                                                                                                                                $opd_kegiatans = [];
+                                                                                                                                                                                foreach($opd_kegiatan_indikator_kinerjas as $item)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                                    if($master_opd)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        $opd_kegiatans[] = $master_opd->nama;
+                                                                                                                                                                                    }
+                                                                                                                                                                                }
+
+                                                                                                                                                                                $html .= '<li>'.$kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                foreach (array_unique($opd_kegiatans) as $value) {
+                                                                                                                                                                                    $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                                }
                                                                                                                                                                             }
                                                                                                                                                                             $html .= '</ul></td>';
                                                                                                                                                                             $html .= '<td width="20%" data-bs-toggle="collapse" data-bs-target="#program_kegiatan_'.$kegiatan['id'].'" class="accordion-toggle"></td>';
@@ -5861,7 +5954,7 @@ class RenstraController extends Controller
                                                                                                                                                                                             <tr>
                                                                                                                                                                                                 <th>No</th>
                                                                                                                                                                                                 <th>Indikator</th>
-                                                                                                                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                                 <th>Target Anggaran Awal</th>
                                                                                                                                                                                                 <th>Aksi</th>
                                                                                                                                                                                             </tr>

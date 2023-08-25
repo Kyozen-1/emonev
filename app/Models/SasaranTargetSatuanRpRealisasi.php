@@ -13,4 +13,9 @@ class SasaranTargetSatuanRpRealisasi extends Model
     {
         return $this->belongsTo('App\Models\SasaranIndikatorKinerja', 'sasaran_indikator_kinerja_id');
     }
+
+    public function sasaran_tw_realisasi()
+    {
+        return $this->hasMany('App\Models\SasaranTwRealisasi', 'sasaran_tw_realisasi_renja_id');
+    }
 }

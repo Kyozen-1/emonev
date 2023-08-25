@@ -185,8 +185,36 @@
                             <label for="program_edit_realisasi" class="form-label">Realisasi</label>
                             <input type="text" class="form-control" id="program_edit_realisasi" name="program_edit_realisasi" required>
                         </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="program_edit_realisasi_rp" class="form-label">Realisasi Rp</label>
+                            <input type="text" class="form-control" id="program_edit_realisasi_rp" name="program_edit_realisasi_rp" required>
+                        </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTargetProgramIndikatorKinerjaTargetSatuanRealisasiModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetProgramIndikatorKinerjaTargetSatuanRealisasiModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renja.program.indikator-kinerja.target-satuan-realisasi.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="program_target_satuan_rp_realisasi_id" id="program_target_satuan_rp_realisasi_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="program_edit_target_anggaran_perubahan" class="form-label">Target Anggaran Perubahan</label>
+                            <input type="text" class="form-control" id="program_edit_target_anggaran_perubahan" name="program_edit_target_anggaran_perubahan">
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -211,8 +239,36 @@
                             <label for="kegiatan_edit_realisasi" class="form-label">Realisasi</label>
                             <input type="text" class="form-control" id="kegiatan_edit_realisasi" name="kegiatan_edit_realisasi" required>
                         </div>
+                        <div class="form-group position-relative mb-3">
+                            <label for="kegiatan_edit_realisasi_rp" class="form-label">Realisasi Rp</label>
+                            <input type="text" class="form-control" id="kegiatan_edit_realisasi_rp" name="kegiatan_edit_realisasi_rp" required>
+                        </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTargetKegiatanIndikatorKinerjaTargetSatuanRealisasiModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTargetKegiatanIndikatorKinerjaTargetSatuanRealisasiModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renja.kegiatan.indikator-kinerja.target-satuan-realisasi.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="kegiatan_target_satuan_rp_realisasi_id" id="kegiatan_target_satuan_rp_realisasi_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="kegiatan_edit_target_anggaran_perubahan" class="form-label">Target Anggaran Perubahan</label>
+                            <input type="text" class="form-control" id="kegiatan_edit_target_anggaran_perubahan" name="kegiatan_edit_target_anggaran_perubahan">
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -562,6 +618,7 @@
             var program_target_satuan_rp_realisasi_id = $(this).attr('data-program-target-satuan-rp-realisasi-id');
 
             var realisasi = $('.input-program-tw-realisasi-renja-realisasi.'+tw_id+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).val();
+            var realisasi_rp = $('.input-program-tw-realisasi-renja-realisasi-rp.'+tw_id+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi_id).val();
             return new swal({
                 title: "Apakah Anda Yakin?",
                 icon: "warning",
@@ -579,6 +636,7 @@
                             program_target_satuan_rp_realisasi_id:program_target_satuan_rp_realisasi_id,
                             tw_id:tw_id,
                             realisasi:realisasi,
+                            realisasi_rp : realisasi_rp
                         },
                         dataType: "json",
                         success: function(data)
@@ -614,9 +672,24 @@
             var tw_id = $(this).attr('data-tw-id');
 
             var realisasi = $('.span-program-tw-realisasi-renja.'+tw_id+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi+'.data-program-tw-realisasi-renja-'+program_tw_realisasi_id).text();
+            var realisasi_rp = $('.span-program-tw-realisasi-renja-realisasi-rp.'+tw_id+'.data-program-target-satuan-rp-realisasi-'+program_target_satuan_rp_realisasi+'.data-program-tw-realisasi-renja-'+program_tw_realisasi_id).text();
             $('#program_tw_realisasi_id').val(program_tw_realisasi_id);
             $('#program_edit_realisasi').val(realisasi);
+            $('#program_edit_realisasi_rp').val(realisasi_rp);
             $('#editTargetProgramModal').modal('show');
+        });
+
+        $(document).on('click', '.button-program-edit-target-satuan-rp-realisasi', function(){
+            var program_indikator_kinerja_id = $(this).attr('data-program-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var program_target_satuan_rp_realisasi_id = $(this).attr('data-program-target-satuan-rp-realisasi-id');
+
+            var target_anggaran_perubahan = $(this).attr('data-program-target-satuan-rp-realisasi-target-anggaran-perubahan');
+
+            $('#program_target_satuan_rp_realisasi_id').val(program_target_satuan_rp_realisasi_id);
+            $('#program_edit_target_anggaran_perubahan').val(target_anggaran_perubahan);
+
+            $('#editTargetProgramIndikatorKinerjaTargetSatuanRealisasiModal').modal('show');
         });
         // Renja Program End
 
@@ -654,6 +727,7 @@
             var kegiatan_target_satuan_rp_realisasi_id = $(this).attr('data-kegiatan-target-satuan-rp-realisasi-id');
 
             var realisasi = $('.input-kegiatan-tw-realisasi-renja-realisasi.'+tw_id+'.data-kegiatan-target-satuan-rp-realisasi-'+kegiatan_target_satuan_rp_realisasi_id).val();
+            var realisasi_rp = $('.input-kegiatan-tw-realisasi-renja-realisasi-rp.'+tw_id+'.data-kegiatan-target-satuan-rp-realisasi-'+kegiatan_target_satuan_rp_realisasi_id).val();
 
             return new swal({
                 title: "Apakah Anda Yakin?",
@@ -671,7 +745,8 @@
                             "_token": "{{ csrf_token() }}",
                             kegiatan_target_satuan_rp_realisasi_id:kegiatan_target_satuan_rp_realisasi_id,
                             tw_id:tw_id,
-                            realisasi:realisasi
+                            realisasi:realisasi,
+                            realisasi_rp : realisasi_rp
                         },
                         dataType: "json",
                         success: function(data)
@@ -707,9 +782,24 @@
             var tw_id = $(this).attr('data-tw-id');
 
             var realisasi = $('.span-kegiatan-tw-realisasi-renja.'+tw_id+'.data-kegiatan-target-satuan-rp-realisasi-'+kegiatan_target_satuan_rp_realisasi+'.data-kegiatan-tw-realisasi-renja-'+kegiatan_tw_realisasi_id).text();
+            var realisasi_rp = $('.span-kegiatan-tw-realisasi-renja-realisasi-rp.'+tw_id+'.data-kegiatan-target-satuan-rp-realisasi-'+kegiatan_target_satuan_rp_realisasi+'.data-kegiatan-tw-realisasi-renja-'+kegiatan_tw_realisasi_id).text();
             $('#kegiatan_tw_realisasi_id').val(kegiatan_tw_realisasi_id);
             $('#kegiatan_edit_realisasi').val(realisasi);
+            $('#kegiatan_edit_realisasi_rp').val(realisasi_rp);
             $('#editTargetKegiatanModal').modal('show');
+        });
+
+        $(document).on('click', '.button-kegiatan-edit-target-satuan-rp-realisasi', function(){
+            var kegiatan_indikator_kinerja_id = $(this).attr('data-kegiatan-indikator-kinerja-id');
+            var tahun = $(this).attr('data-tahun');
+            var kegiatan_target_satuan_rp_realisasi_id = $(this).attr('data-kegiatan-target-satuan-rp-realisasi-id');
+
+            var target_anggaran_perubahan = $(this).attr('data-kegiatan-target-satuan-rp-realisasi-target-anggaran-perubahan');
+
+            $('#kegiatan_target_satuan_rp_realisasi_id').val(kegiatan_target_satuan_rp_realisasi_id);
+            $('#kegiatan_edit_target_anggaran_perubahan').val(target_anggaran_perubahan);
+
+            $('#editTargetKegiatanIndikatorKinerjaTargetSatuanRealisasiModal').modal('show');
         });
         // Renja Kegiatan End
 

@@ -74,6 +74,8 @@ class Tc23Controller extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
+        $opd = MasterOpd::find($opd_id);
+
         $tc_23 = '';
         $a = 1;
         $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->whereHas('misi', function($q) use ($opd_id){
@@ -116,15 +118,15 @@ class Tc23Controller extends Controller
         }
 
         foreach ($visis as $visi) {
-            $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q) use ($opd_id){
-                $q->whereHas('sasaran', function($q) use ($opd_id){
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+            $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q) use ($opd){
+                $q->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -157,14 +159,14 @@ class Tc23Controller extends Controller
             }
 
             foreach ($misis as $misi) {
-                $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q) use ($opd_id){
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+                $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -195,7 +197,7 @@ class Tc23Controller extends Controller
                     }
                 }
                 foreach ($tujuans as $tujuan) {
-                    $get_tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])->where('opd_id', $opd_id)->get();
+                    $get_tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])->where('opd_id', $opd->id)->get();
                     foreach ($get_tujuan_pds as $get_tujuan_pd) {
                         $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $get_tujuan_pd->id)->get();
                         foreach ($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja) {
@@ -258,8 +260,8 @@ class Tc23Controller extends Controller
                                             {
                                                 $tc_23 .= '<td>0</td>';
                                             } else {
-                                                $rasio = $tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target;
-                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                $rasio = ($tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target) * 100;
+                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                             }
                                         } else {
                                             $tc_23 .= '<td></td>';
@@ -272,13 +274,13 @@ class Tc23Controller extends Controller
                         }
                     }
 
-                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -308,7 +310,7 @@ class Tc23Controller extends Controller
                     }
                     foreach ($sasarans as $sasaran)
                     {
-                        $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->where('opd_id', $opd_id)->get();
+                        $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->where('opd_id', $opd->id)->get();
                         foreach ($get_sasaran_pds as $get_sasaran_pd) {
                             $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $get_sasaran_pd->id)->get();
                             foreach ($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja) {
@@ -371,8 +373,8 @@ class Tc23Controller extends Controller
                                                 {
                                                     $tc_23 .= '<td>0</td>';
                                                 } else {
-                                                    $rasio = $sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    $rasio = ($sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target) * 100;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                 }
                                             } else {
                                                 $tc_23 .= '<td></td>';
@@ -393,9 +395,9 @@ class Tc23Controller extends Controller
                                     });
                                 });
                             });
-                        })->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                            $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                $q->where('opd_id', $opd_id);
+                        })->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                            $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                $q->where('opd_id', $opd->id);
                             });
                         })->get();
                         $programs = [];
@@ -422,8 +424,8 @@ class Tc23Controller extends Controller
                         foreach($programs as $program)
                         {
                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
-                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                                                $q->where('opd_id', $opd_id);
+                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                                                $q->where('opd_id', $opd->id);
                                                             })->get();
                             foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
                                 $tc_23 .= '<tr>';
@@ -433,8 +435,8 @@ class Tc23Controller extends Controller
                                     $tc_23 .= '<td></td>';
                                     $tc_23 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
                                     foreach ($tahuns as $tahun) {
-                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd_id) {
-                                                                                        $q->where('opd_id', $opd_id);
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd){
+                                                                                        $q->where('opd_id', $opd->id);
                                                                                         $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                                                             $q->where('id', $program_indikator_kinerja->id);
                                                                                         });
@@ -447,8 +449,8 @@ class Tc23Controller extends Controller
                                         }
                                     }
                                     foreach ($tahuns as $tahun) {
-                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd_id){
-                                            $q->where('opd_id', $opd_id);
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd){
+                                            $q->where('opd_id', $opd->id);
                                             $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                 $q->where('id', $program_indikator_kinerja->id);
                                             });
@@ -472,8 +474,8 @@ class Tc23Controller extends Controller
                                         }
                                     }
                                     foreach ($tahuns as $tahun) {
-                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd_id){
-                                            $q->where('opd_id', $opd_id);
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd){
+                                            $q->where('opd_id', $opd->id);
                                             $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                 $q->where('id', $program_indikator_kinerja->id);
                                             });
@@ -492,8 +494,8 @@ class Tc23Controller extends Controller
                                                 {
                                                     $tc_23 .= '<td>0</td>';
                                                 } else {
-                                                    $rasio = (array_sum($realisasi))/$program_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    $rasio = ((array_sum($realisasi))/$program_target_satuan_rp_realisasi->target) * 100;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                 }
                                             } else {
                                                 $tc_23 .= '<td></td>';
@@ -505,9 +507,9 @@ class Tc23Controller extends Controller
                                 $tc_23 .= '</tr>';
                             }
 
-                            $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd_id){
-                                $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd_id){
-                                    $q->where('opd_id', $opd_id);
+                            $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
+                                $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
+                                    $q->where('opd_id', $opd->id);
                                 });
                             })->get();
                             $kegiatans = [];
@@ -534,8 +536,8 @@ class Tc23Controller extends Controller
                             foreach($kegiatans as $kegiatan)
                             {
                                 $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])
-                                                                    ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd_id){
-                                                                        $q->where('opd_id', $opd_id);
+                                                                    ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
+                                                                        $q->where('opd_id', $opd->id);
                                                                     })->get();
                                 foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
                                     $tc_23 .= '<tr>';
@@ -560,8 +562,8 @@ class Tc23Controller extends Controller
                                             $tc_23 .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
                                         }
                                         foreach ($tahuns as $tahun) {
-                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd_id){
-                                                                                            $q->where('opd_id', $opd_id);
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd){
+                                                                                            $q->where('opd_id', $opd->id);
                                                                                             $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
                                                                                                 $q->where('id', $kegiatan_indikator_kinerja->id);
                                                                                             });
@@ -574,8 +576,8 @@ class Tc23Controller extends Controller
                                             }
                                         }
                                         foreach ($tahuns as $tahun) {
-                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd_id){
-                                                $q->where('opd_id', $opd_id);
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd){
+                                                $q->where('opd_id', $opd->id);
                                                 $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
                                                     $q->where('id', $kegiatan_indikator_kinerja->id);
                                                 });
@@ -599,8 +601,8 @@ class Tc23Controller extends Controller
                                             }
                                         }
                                         foreach ($tahuns as $tahun) {
-                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd_id){
-                                                $q->where('opd_id', $opd_id);
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd){
+                                                $q->where('opd_id', $opd->id);
                                                 $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
                                                     $q->where('id', $kegiatan_indikator_kinerja->id);
                                                 });
@@ -617,8 +619,8 @@ class Tc23Controller extends Controller
                                                     }
                                                     if($kegiatan_target_satuan_rp_realisasi->target)
                                                     {
-                                                        $rasio = (array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target;
-                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                        $rasio = ((array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target) * 100;
+                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                     } else {
                                                         $tc_23 .= '<td>0</td>';
                                                     }
@@ -652,6 +654,8 @@ class Tc23Controller extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
+        $opd = MasterOpd::find($opd_id);
+
         $tc_23 = '';
         $a = 1;
         $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->whereHas('misi', function($q) use ($opd_id){
@@ -694,15 +698,15 @@ class Tc23Controller extends Controller
         }
 
         foreach ($visis as $visi) {
-            $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q) use ($opd_id){
-                $q->whereHas('sasaran', function($q) use ($opd_id){
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+            $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q) use ($opd){
+                $q->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -735,14 +739,14 @@ class Tc23Controller extends Controller
             }
 
             foreach ($misis as $misi) {
-                $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q) use ($opd_id){
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+                $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -773,7 +777,7 @@ class Tc23Controller extends Controller
                     }
                 }
                 foreach ($tujuans as $tujuan) {
-                    $get_tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])->where('opd_id', $opd_id)->get();
+                    $get_tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])->where('opd_id', $opd->id)->get();
                     foreach ($get_tujuan_pds as $get_tujuan_pd) {
                         $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $get_tujuan_pd->id)->get();
                         foreach ($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja) {
@@ -836,8 +840,8 @@ class Tc23Controller extends Controller
                                             {
                                                 $tc_23 .= '<td>0</td>';
                                             } else {
-                                                $rasio = $tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target;
-                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                $rasio = ($tujuan_pd_realisasi_renja->realisasi / $tujuan_pd_target_satuan_rp_realisasi->target) * 100;
+                                                $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                             }
                                         } else {
                                             $tc_23 .= '<td></td>';
@@ -850,13 +854,13 @@ class Tc23Controller extends Controller
                         }
                     }
 
-                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -886,7 +890,7 @@ class Tc23Controller extends Controller
                     }
                     foreach ($sasarans as $sasaran)
                     {
-                        $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->where('opd_id', $opd_id)->get();
+                        $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->where('opd_id', $opd->id)->get();
                         foreach ($get_sasaran_pds as $get_sasaran_pd) {
                             $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $get_sasaran_pd->id)->get();
                             foreach ($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja) {
@@ -949,8 +953,8 @@ class Tc23Controller extends Controller
                                                 {
                                                     $tc_23 .= '<td>0</td>';
                                                 } else {
-                                                    $rasio = $sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    $rasio = ($sasaran_pd_realisasi_renja->realisasi / $sasaran_pd_target_satuan_rp_realisasi->target) * 100;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                 }
                                             } else {
                                                 $tc_23 .= '<td></td>';
@@ -971,9 +975,9 @@ class Tc23Controller extends Controller
                                     });
                                 });
                             });
-                        })->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                            $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                $q->where('opd_id', $opd_id);
+                        })->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                            $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                $q->where('opd_id', $opd->id);
                             });
                         })->get();
                         $programs = [];
@@ -1000,8 +1004,8 @@ class Tc23Controller extends Controller
                         foreach($programs as $program)
                         {
                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
-                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                                                $q->where('opd_id', $opd_id);
+                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                                                $q->where('opd_id', $opd->id);
                                                             })->get();
                             foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
                                 $tc_23 .= '<tr>';
@@ -1011,8 +1015,8 @@ class Tc23Controller extends Controller
                                     $tc_23 .= '<td></td>';
                                     $tc_23 .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
                                     foreach ($tahuns as $tahun) {
-                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd_id) {
-                                                                                        $q->where('opd_id', $opd_id);
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd){
+                                                                                        $q->where('opd_id', $opd->id);
                                                                                         $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                                                             $q->where('id', $program_indikator_kinerja->id);
                                                                                         });
@@ -1025,8 +1029,8 @@ class Tc23Controller extends Controller
                                         }
                                     }
                                     foreach ($tahuns as $tahun) {
-                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd_id){
-                                            $q->where('opd_id', $opd_id);
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd){
+                                            $q->where('opd_id', $opd->id);
                                             $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                 $q->where('id', $program_indikator_kinerja->id);
                                             });
@@ -1050,8 +1054,8 @@ class Tc23Controller extends Controller
                                         }
                                     }
                                     foreach ($tahuns as $tahun) {
-                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd_id){
-                                            $q->where('opd_id', $opd_id);
+                                        $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::whereHas('opd_program_indikator_kinerja', function($q) use ($program_indikator_kinerja, $opd){
+                                            $q->where('opd_id', $opd->id);
                                             $q->whereHas('program_indikator_kinerja', function($q) use ($program_indikator_kinerja){
                                                 $q->where('id', $program_indikator_kinerja->id);
                                             });
@@ -1070,8 +1074,8 @@ class Tc23Controller extends Controller
                                                 {
                                                     $tc_23 .= '<td>0</td>';
                                                 } else {
-                                                    $rasio = (array_sum($realisasi))/$program_target_satuan_rp_realisasi->target;
-                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                    $rasio = ((array_sum($realisasi))/$program_target_satuan_rp_realisasi->target) * 100;
+                                                    $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                 }
                                             } else {
                                                 $tc_23 .= '<td></td>';
@@ -1083,9 +1087,9 @@ class Tc23Controller extends Controller
                                 $tc_23 .= '</tr>';
                             }
 
-                            $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd_id){
-                                $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd_id){
-                                    $q->where('opd_id', $opd_id);
+                            $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
+                                $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
+                                    $q->where('opd_id', $opd->id);
                                 });
                             })->get();
                             $kegiatans = [];
@@ -1112,8 +1116,8 @@ class Tc23Controller extends Controller
                             foreach($kegiatans as $kegiatan)
                             {
                                 $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])
-                                                                    ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd_id){
-                                                                        $q->where('opd_id', $opd_id);
+                                                                    ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
+                                                                        $q->where('opd_id', $opd->id);
                                                                     })->get();
                                 foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
                                     $tc_23 .= '<tr>';
@@ -1138,8 +1142,8 @@ class Tc23Controller extends Controller
                                             $tc_23 .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
                                         }
                                         foreach ($tahuns as $tahun) {
-                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd_id){
-                                                                                            $q->where('opd_id', $opd_id);
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd){
+                                                                                            $q->where('opd_id', $opd->id);
                                                                                             $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
                                                                                                 $q->where('id', $kegiatan_indikator_kinerja->id);
                                                                                             });
@@ -1152,8 +1156,8 @@ class Tc23Controller extends Controller
                                             }
                                         }
                                         foreach ($tahuns as $tahun) {
-                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd_id){
-                                                $q->where('opd_id', $opd_id);
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd){
+                                                $q->where('opd_id', $opd->id);
                                                 $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
                                                     $q->where('id', $kegiatan_indikator_kinerja->id);
                                                 });
@@ -1177,8 +1181,8 @@ class Tc23Controller extends Controller
                                             }
                                         }
                                         foreach ($tahuns as $tahun) {
-                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd_id){
-                                                $q->where('opd_id', $opd_id);
+                                            $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja, $opd){
+                                                $q->where('opd_id', $opd->id);
                                                 $q->whereHas('kegiatan_indikator_kinerja', function($q) use ($kegiatan_indikator_kinerja){
                                                     $q->where('id', $kegiatan_indikator_kinerja->id);
                                                 });
@@ -1195,8 +1199,8 @@ class Tc23Controller extends Controller
                                                     }
                                                     if($kegiatan_target_satuan_rp_realisasi->target)
                                                     {
-                                                        $rasio = (array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target;
-                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',').'</td>';
+                                                        $rasio = ((array_sum($realisasi))/$kegiatan_target_satuan_rp_realisasi->target) * 100;
+                                                        $tc_23 .= '<td>'.number_format($rasio, 2, ',', '.').'</td>';
                                                     } else {
                                                         $tc_23 .= '<td>0</td>';
                                                     }

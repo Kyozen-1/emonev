@@ -53,7 +53,6 @@
             <button class="btn btn-outline-primary waves-effect waves-light" id="create" type="button" data-bs-toggle="modal" data-bs-target="#addEditModal">Tambah</button>
         </div>
     </div>
-
     <div class="data-table-rows slim">
         <!-- Table Start -->
         <div class="table-responsive">
@@ -67,7 +66,7 @@
                         <th class="text-muted text-small text-uppercase">Telp</th>
                         <th class="text-muted text-small text-uppercase">Kecamatan</th>
                         <th class="text-muted text-small text-uppercase">Foto Admin</th>
-                        <th class="text-muted text-small text-uppercase">Aksi</th>
+                        <th class="text-muted text-small text-uppercase" width="20%">Aksi</th>
                     </tr>
                 </thead>
             </table>
@@ -119,18 +118,18 @@
                                 <label for="" class="form-label">Alamat</label>
                                 <textarea name="alamat" id="alamat" rows="5" class="form-control" required></textarea>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3" id="form_email">
                                 <label class="form-label">Email</label>
                                 <input name="email" id="email" type="email" class="form-control" required/>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3" id="form_password">
                                 <label class="form-label">Password</label>
                                 <input name="password" id="password" type="password" class="form-control" required/>
                             </div>
                         </div>
                         <div class="col-12 col-md-5">
                             <label for="" class="form-label">Foto Admin</label>
-                            <input type="file" class="dropify" name="foto" data-height="300" data-allowed-file-extensions="png jpg jpeg webp" data-show-errors="true" required>
+                            <input type="file" class="dropify" name="foto" id="foto" data-height="300" data-allowed-file-extensions="png jpg jpeg webp" data-show-errors="true" required>
                         </div>
                     </div>
             </div>
@@ -275,6 +274,8 @@
             $('#opd_form')[0].reset();
             $("[name='opd_id']").val('').trigger('change');
             $("[name='kecamatan_id']").val('').trigger('change');
+            $('#form_password').show();
+            $('#form_email').show();
             $('.dropify-clear').click();
             $('#aksi_button').text('Save');
             $('#aksi_button').prop('disabled', false);
@@ -330,6 +331,48 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: data.success,
+                                showConfirmButton: true
+                            });
+                        }
+
+                        $('#form_result').html(html);
+                    }
+                });
+            }
+
+            if($('#aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('admin.manajemen-akun.opd.update') }}",
+                    method: "POST",
+                    data: new FormData(this),
+                    dataType: "json",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    beforeSend: function(){
+                        $('#aksi_button').text('Mengubah...');
+                        $('#aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            // html = '<div class="alert alert-success">'+ data.success +'</div>';
+                            $('#opd_form')[0].reset();
+                            $('#aksi_button').prop('disabled', false);
+                            $('#aksi_button').text('Save');
+                            $('#opd_table').DataTable().ajax.reload();
+                            $('#addEditModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil di ubah',
                                 showConfirmButton: true
                             });
                         }
@@ -466,6 +509,45 @@
                             }
                         }
                     });
+                }
+            });
+        });
+
+        $(document).on('click', '.edit', function(){
+            var id = $(this).attr('id');
+            var url = "{{ route('admin.manajemen-akun.opd.edit', ['id' =>":id"]) }}"
+            url = url.replace(":id", id);
+            $('#form_result').html('');
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#form_password').hide();
+                    $('#form_email').hide();
+                    $("[name='opd_id']").val(data.result.opd_id).trigger('change');
+                    $('#nama').val(data.result.nama);
+                    $('#no_hp').val(data.result.no_hp);
+                    $("[name='kecamatan_id']").val(data.result.kecamatan_id).trigger('change');
+                    $('#alamat').val(data.result.alamat);
+
+                    var lokasi_img_opd = "{{ asset('images/opd') }}"+'/'+data.result.foto;
+                    var fileDropperFoto = $("#foto").dropify();
+
+                    fileDropperFoto = fileDropperFoto.data('dropify');
+                    fileDropperFoto.resetPreview();
+                    fileDropperFoto.clearElement();
+                    fileDropperFoto.settings['defaultFile'] = lokasi_img_opd;
+                    fileDropperFoto.destroy();
+                    fileDropperFoto.init();
+
+                    $('#hidden_id').val(id);
+                    $('.modal-title').text('Edit Data');
+                    $('#aksi_button').text('Edit');
+                    $('#aksi_button').prop('disabled', false);
+                    $('#aksi_button').val('Edit');
+                    $('#aksi').val('Edit');
+                    $('#addEditModal').modal('show');
                 }
             });
         });

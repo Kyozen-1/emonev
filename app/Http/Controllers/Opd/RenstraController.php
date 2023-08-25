@@ -1969,7 +1969,7 @@ class RenstraController extends Controller
                                                                                                                                                                         <tr>
                                                                                                                                                                             <th width="5%">No</th>
                                                                                                                                                                             <th width="30%">Indikator</th>
-                                                                                                                                                                            <th width="20%">Target Kinerja Awal</th>
+                                                                                                                                                                            <th width="20%">Kondisi Kinerja Awal</th>
                                                                                                                                                                             <th width="10%">Target Kinerja</th>
                                                                                                                                                                             <th width="10%">Satuan</th>
                                                                                                                                                                             <th width="10%">Realisasi Kinerja</th>
@@ -2533,7 +2533,7 @@ class RenstraController extends Controller
                                                                                                                                                                         <tr>
                                                                                                                                                                             <th width="5%">No</th>
                                                                                                                                                                             <th width="30%">Indikator</th>
-                                                                                                                                                                            <th width="20%">Target Kinerja Awal</th>
+                                                                                                                                                                            <th width="20%">Kondisi Kinerja Awal</th>
                                                                                                                                                                             <th width="10%">Target Kinerja</th>
                                                                                                                                                                             <th width="10%">Satuan</th>
                                                                                                                                                                             <th width="10%">Realisasi Kinerja</th>
@@ -3073,7 +3073,7 @@ class RenstraController extends Controller
                                                                                                                                                                         <tr>
                                                                                                                                                                             <th>No</th>
                                                                                                                                                                             <th>Indikator</th>
-                                                                                                                                                                            <th>Target Kinerja Awal</th>
+                                                                                                                                                                            <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                             <th>OPD</th>
                                                                                                                                                                             <th>Target Kinerja</th>
                                                                                                                                                                             <th>Satuan</th>
@@ -3691,7 +3691,7 @@ class RenstraController extends Controller
                                                                                                                                                                         <tr>
                                                                                                                                                                             <th>No</th>
                                                                                                                                                                             <th>Indikator</th>
-                                                                                                                                                                            <th>Target Kinerja Awal</th>
+                                                                                                                                                                            <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                             <th>OPD</th>
                                                                                                                                                                             <th>Target Kinerja</th>
                                                                                                                                                                             <th>Satuan</th>
@@ -4363,7 +4363,7 @@ class RenstraController extends Controller
                                                                                                                                                                                             <tr>
                                                                                                                                                                                                 <th>No</th>
                                                                                                                                                                                                 <th>Indikator</th>
-                                                                                                                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                                 <th>Target Anggaran Awal</th>
                                                                                                                                                                                                 <th>Target Kinerja</th>
                                                                                                                                                                                                 <th>Satuan</th>
@@ -5013,7 +5013,7 @@ class RenstraController extends Controller
                                                                                                                                                                                             <tr>
                                                                                                                                                                                                 <th>No</th>
                                                                                                                                                                                                 <th>Indikator</th>
-                                                                                                                                                                                                <th>Target Kinerja Awal</th>
+                                                                                                                                                                                                <th>Kondisi Kinerja Awal</th>
                                                                                                                                                                                                 <th>Target Anggaran Awal</th>
                                                                                                                                                                                                 <th>Target Kinerja</th>
                                                                                                                                                                                                 <th>Satuan</th>

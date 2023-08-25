@@ -40,6 +40,8 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/manajemen-akun/opd', 'Admin\ManajemenAkun\OpdController@index')->name('admin.manajemen-akun.opd.index');
     Route::get('/admin/manajemen-akun/opd/detail/{id}', 'Admin\ManajemenAkun\OpdController@show');
     Route::post('/admin/manajemen-akun/opd','Admin\ManajemenAkun\OpdController@store')->name('admin.manajemen-akun.opd.store');
+    Route::get('/admin/manajemen-akun/opd/edit/{id}', 'Admin\ManajemenAkun\OpdController@edit')->name('admin.manajemen-akun.opd.edit');
+    Route::post('/admin/manajemen-akun/opd/update','Admin\ManajemenAkun\OpdController@update')->name('admin.manajemen-akun.opd.update');
     Route::post('/admin/manajemen-akun/opd/change-password','Admin\ManajemenAkun\OpdController@change_password')->name('admin.manajemen-akun.opd.change-password');
     Route::post('/admin/manajemen-akun/opd/destroy','Admin\ManajemenAkun\OpdController@destroy')->name('admin.manajemen-akun.opd.destroy');
 
@@ -47,7 +49,9 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/manajemen-akun/bappeda', 'Admin\ManajemenAkun\BappedaController@index')->name('admin.manajemen-akun.bappeda.index');
     Route::get('/admin/manajemen-akun/bappeda/get-akun-tidak-aktif', 'Admin\ManajemenAkun\BappedaController@get_akun_tidak_aktif')->name('admin.manajemen-akun.bappeda.get-akun-tidak-aktif');
     Route::get('/admin/manajemen-akun/bappeda/detail/{id}', 'Admin\ManajemenAkun\BappedaController@show');
+    Route::get('/admin/manajemen-akun/bappeda/edit/{id}', 'Admin\ManajemenAkun\BappedaController@edit')->name('admin.manajemen-akun.bappeda.edit');
     Route::post('/admin/manajemen-akun/bappeda','Admin\ManajemenAkun\BappedaController@store')->name('admin.manajemen-akun.bappeda.store');
+    Route::post('/admin/manajemen-akun/bappeda/update','Admin\ManajemenAkun\BappedaController@update')->name('admin.manajemen-akun.bappeda.update');
     Route::post('/admin/manajemen-akun/bappeda/change-password','Admin\ManajemenAkun\BappedaController@change_password')->name('admin.manajemen-akun.bappeda.change-password');
     Route::get('/admin/manajemen-akun/bappeda/destroy/{id}','Admin\ManajemenAkun\BappedaController@destroy');
     Route::get('/admin/manajemen-akun/bappeda/aktif/{id}','Admin\ManajemenAkun\BappedaController@aktif');
@@ -156,6 +160,26 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/reset', 'Admin\Perencanaan\RkpdController@data_per_opd_reset')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.reset');
     Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/destroy', 'Admin\Perencanaan\RkpdController@data_per_opd_destroy')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.destroy');
 
+    // RPJMD Tujuan
+    Route::prefix('admin')->group(function(){
+        Route::prefix('perencanaan')->group(function(){
+            Route::prefix('rpjmd')->group(function(){
+                Route::prefix('tujuan')->group(function(){
+                    Route::prefix('tw')->group(function(){
+                        Route::post('/tambah', 'Admin\Perencanaan\Rpjmd\TujuanController@tambah')->name('admin.perencanaan.rpjmd.tujuan.tw.tambah');
+                        Route::post('/ubah', 'Admin\Perencanaan\Rpjmd\TujuanController@ubah')->name('admin.perencanaan.rpjmd.tujuan.tw.ubah');
+                    });
+                });
+
+                Route::prefix('sasaran')->group(function(){
+                    Route::prefix('tw')->group(function(){
+                        Route::post('/tambah', 'Admin\Perencanaan\Rpjmd\SasaranController@tambah')->name('admin.perencanaan.rpjmd.sasaran.tw.tambah');
+                        Route::post('/ubah', 'Admin\Perencanaan\Rpjmd\SasaranController@ubah')->name('admin.perencanaan.rpjmd.sasaran.tw.ubah');
+                    });
+                });
+            });
+        });
+    });
 
     // Laporan
     Route::get('/admin/laporan', 'Admin\LaporanController@index')->name('admin.laporan.index');

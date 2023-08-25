@@ -52,10 +52,15 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tw/tambah', 'Opd\Renja\SubKegiatanController@tw_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tw.tambah');
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tw/ubah', 'Opd\Renja\SubKegiatanController@tw_ubah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tw.ubah');
     // Atur TW
+
+    // Renja Program
     Route::post('/opd/renja/program/tw/tambah', 'Opd\Renja\ProgramTwController@tambah')->name('opd.renja.program.tw.tambah');
     Route::post('/opd/renja/program/tw/ubah', 'Opd\Renja\ProgramTwController@ubah')->name('opd.renja.program.tw.ubah');
+    Route::post('/opd/renja/program/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\Renja\ProgramTwController@target_satuan_realisasi_ubah')->name('opd.renja.program.indikator-kinerja.target-satuan-realisasi.ubah');
+    // Renja Kegiatan
     Route::post('/opd/renja/kegiatan/tw/tambah', 'Opd\Renja\KegiatanTwController@tambah')->name('opd.renja.kegiatan.tw.tambah');
     Route::post('/opd/renja/kegiatan/tw/ubah', 'Opd\Renja\KegiatanTwController@ubah')->name('opd.renja.kegiatan.tw.ubah');
+    Route::post('/opd/renja/kegiatan/indikator-kinerja/target-satuan-realisasi/ubah', 'Opd\Renja\KegiatanTwController@target_satuan_realisasi_ubah')->name('opd.renja.kegiatan.indikator-kinerja.target-satuan-realisasi.ubah');
 
     Route::post('/opd/renstra/tujuan-pd/tambah', 'Opd\TujuanPdController@tambah')->name('opd.renstra.tujuan-pd.tambah');
     Route::get('/opd/renstra/tujuan-pd/edit/{id}', 'Opd\TujuanPdController@edit');

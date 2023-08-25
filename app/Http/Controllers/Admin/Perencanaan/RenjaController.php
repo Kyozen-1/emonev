@@ -246,7 +246,7 @@ class RenjaController extends Controller
                                                                                                                         </tr>
                                                                                                                     </thead>
                                                                                                                     <tbody>';
-                                                                                                                    $opds = MasterOpd::all();
+                                                                                                                    $opds = MasterOpd::whereHas('tujuan_pd')->get();
                                                                                                                     foreach ($opds as $opd)
                                                                                                                     {
                                                                                                                         $html .= '<tr>';
@@ -676,7 +676,7 @@ class RenjaController extends Controller
                                                                                                                         </tr>
                                                                                                                     </thead>
                                                                                                                     <tbody>';
-                                                                                                                    $opds = MasterOpd::all();
+                                                                                                                    $opds = MasterOpd::whereHas('tujuan_pd')->get();
                                                                                                                     foreach ($opds as $opd)
                                                                                                                     {
                                                                                                                         $html .= '<tr>';
@@ -1153,13 +1153,13 @@ class RenjaController extends Controller
                                                                                                                                                 <tr>
                                                                                                                                                     <th>OPD</th>
                                                                                                                                                     <th>Kode</th>
-                                                                                                                                                    <th>Tujuan PD</th>
+                                                                                                                                                    <th>Sasaran PD</th>
                                                                                                                                                     <th>Indikator</th>
                                                                                                                                                     <th>Aksi</th>
                                                                                                                                                 </tr>
                                                                                                                                             </thead>
                                                                                                                                             <tbody>';
-                                                                                                                                            $opds = MasterOpd::all();
+                                                                                                                                            $opds = MasterOpd::whereHas('sasaran_pd')->get();
                                                                                                                                             foreach ($opds as $opd)
                                                                                                                                             {
                                                                                                                                                 $html .= '<tr>';
@@ -1633,13 +1633,13 @@ class RenjaController extends Controller
                                                                                                                                                 <tr>
                                                                                                                                                     <th>OPD</th>
                                                                                                                                                     <th>Kode</th>
-                                                                                                                                                    <th>Tujuan PD</th>
+                                                                                                                                                    <th>Sasaran PD</th>
                                                                                                                                                     <th>Indikator</th>
                                                                                                                                                     <th>Aksi</th>
                                                                                                                                                 </tr>
                                                                                                                                             </thead>
                                                                                                                                             <tbody>';
-                                                                                                                                            $opds = MasterOpd::all();
+                                                                                                                                            $opds = MasterOpd::whereHas('sasaran_pd')->get();
                                                                                                                                             foreach ($opds as $opd)
                                                                                                                                             {
                                                                                                                                                 $html .= '<tr>';
@@ -2185,7 +2185,21 @@ class RenjaController extends Controller
                                                                                                                                                                     $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
                                                                                                                                                                     foreach($program_indikator_kinerjas as $program_indikator_kinerja)
                                                                                                                                                                     {
-                                                                                                                                                                        $html .= '<li>'.$program_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                        $opd_program_indikator_kinerjas = $program_indikator_kinerja->opd_program_indikator_kinerja;
+                                                                                                                                                                        $opd_programs = [];
+                                                                                                                                                                        foreach($opd_program_indikator_kinerjas as $item)
+                                                                                                                                                                        {
+                                                                                                                                                                            $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                            if($master_opd)
+                                                                                                                                                                            {
+                                                                                                                                                                                $opd_programs[] = $master_opd->nama;
+                                                                                                                                                                            }
+                                                                                                                                                                        }
+
+                                                                                                                                                                        $html .= '<li>'.$program_indikator_kinerja->deskripsi;
+                                                                                                                                                                        foreach (array_unique($opd_programs) as $value) {
+                                                                                                                                                                            $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                        }
                                                                                                                                                                     }
                                                                                                                                                                 $html .= '</ul></td>';
                                                                                                                                                             $html .='</tr>
@@ -2643,7 +2657,21 @@ class RenjaController extends Controller
                                                                                                                                                                     $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
                                                                                                                                                                     foreach($program_indikator_kinerjas as $program_indikator_kinerja)
                                                                                                                                                                     {
-                                                                                                                                                                        $html .= '<li>'.$program_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                        $opd_program_indikator_kinerjas = $program_indikator_kinerja->opd_program_indikator_kinerja;
+                                                                                                                                                                        $opd_programs = [];
+                                                                                                                                                                        foreach($opd_program_indikator_kinerjas as $item)
+                                                                                                                                                                        {
+                                                                                                                                                                            $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                            if($master_opd)
+                                                                                                                                                                            {
+                                                                                                                                                                                $opd_programs[] = $master_opd->nama;
+                                                                                                                                                                            }
+                                                                                                                                                                        }
+
+                                                                                                                                                                        $html .= '<li>'.$program_indikator_kinerja->deskripsi;
+                                                                                                                                                                        foreach (array_unique($opd_programs) as $value) {
+                                                                                                                                                                            $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                        }
                                                                                                                                                                     }
                                                                                                                                                                 $html .= '</ul></td>';
                                                                                                                                                             $html .='</tr>
@@ -3140,7 +3168,7 @@ class RenjaController extends Controller
                                                                                                                                                                     <div class="collapse show" id="renja_kegiatan_program_'.$program['id'].'">
                                                                                                                                                                         <table class="table table-condensed table-striped">
                                                                                                                                                                             <tbody>';
-                                                                                                                                                                            $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
+                                                                                                                                                                            $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja')->get();
                                                                                                                                                                             $kegiatans = [];
                                                                                                                                                                             foreach ($get_kegiatans as $get_kegiatan) {
                                                                                                                                                                                 $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
@@ -3193,7 +3221,21 @@ class RenjaController extends Controller
                                                                                                                                                                                     $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
                                                                                                                                                                                     foreach($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja)
                                                                                                                                                                                     {
-                                                                                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                                        $opd_kegiatan_indikator_kinerjas = $kegiatan_indikator_kinerja->opd_kegiatan_indikator_kinerja;
+                                                                                                                                                                                        $opd_kegiatans = [];
+                                                                                                                                                                                        foreach($opd_kegiatan_indikator_kinerjas as $item)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                                            if($master_opd)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $opd_kegiatans[] = $master_opd->nama;
+                                                                                                                                                                                            }
+                                                                                                                                                                                        }
+
+                                                                                                                                                                                        $html .= '<li>'.$kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                        foreach (array_unique($opd_kegiatans) as $value) {
+                                                                                                                                                                                            $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                                        }
                                                                                                                                                                                     }
                                                                                                                                                                                     $html .= '</ul></td>';
                                                                                                                                                                                     $html .= '<td width="20%" data-bs-toggle="collapse" data-bs-target="#renja_kegiatan_kegiatan_'.$kegiatan['id'].'" class="accordion-toggle"></td>';
@@ -3303,7 +3345,7 @@ class RenjaController extends Controller
                                                                                                                                                                                                                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                                                                                                                                                                                                                             {
                                                                                                                                                                                                                                                 $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                                                                                                                                                                $html .= '<td>Rp.'.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                                                             } else {
                                                                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                                                                 $html .= '<td></td>';
@@ -3735,7 +3777,7 @@ class RenjaController extends Controller
                                                                                                                                                                             {
                                                                                                                                                                                 $get_kegiatans = $get_kegiatans->where('id', $request->kegiatan);
                                                                                                                                                                             }
-                                                                                                                                                                            $get_kegiatans = $get_kegiatans->get();
+                                                                                                                                                                            $get_kegiatans = $get_kegiatans->whereHas('kegiatan_indikator_kinerja')->get();
                                                                                                                                                                             $kegiatans = [];
                                                                                                                                                                             foreach ($get_kegiatans as $get_kegiatan) {
                                                                                                                                                                                 $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
@@ -3788,7 +3830,21 @@ class RenjaController extends Controller
                                                                                                                                                                                     $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
                                                                                                                                                                                     foreach($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja)
                                                                                                                                                                                     {
-                                                                                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                                        $opd_kegiatan_indikator_kinerjas = $kegiatan_indikator_kinerja->opd_kegiatan_indikator_kinerja;
+                                                                                                                                                                                        $opd_kegiatans = [];
+                                                                                                                                                                                        foreach($opd_kegiatan_indikator_kinerjas as $item)
+                                                                                                                                                                                        {
+                                                                                                                                                                                            $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                                            if($master_opd)
+                                                                                                                                                                                            {
+                                                                                                                                                                                                $opd_kegiatans[] = $master_opd->nama;
+                                                                                                                                                                                            }
+                                                                                                                                                                                        }
+
+                                                                                                                                                                                        $html .= '<li>'.$kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                        foreach (array_unique($opd_kegiatans) as $value) {
+                                                                                                                                                                                            $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                                        }
                                                                                                                                                                                     }
                                                                                                                                                                                     $html .= '</ul></td>';
                                                                                                                                                                                     $html .= '<td width="20%" data-bs-toggle="collapse" data-bs-target="#renja_kegiatan_kegiatan_'.$kegiatan['id'].'" class="accordion-toggle"></td>';
@@ -4354,7 +4410,7 @@ class RenjaController extends Controller
                                                                                                                                                                                                 <div class="collapse accordion-body show" id="renja_sub_kegiatan_kegiatan_'.$kegiatan['id'].'">
                                                                                                                                                                                                     <table class="table table-condensed table-striped">
                                                                                                                                                                                                         <tbody>';
-                                                                                                                                                                                                        $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                                                                                                                                                        $get_sub_kegiatans = SubKegiatan::where('kegiatan_id', $kegiatan['id'])->whereHas('sub_kegiatan_indikator_kinerja')->get();
                                                                                                                                                                                                         $sub_kegiatans = [];
                                                                                                                                                                                                         foreach($get_sub_kegiatans as $get_sub_kegiatan)
                                                                                                                                                                                                         {
@@ -4405,7 +4461,21 @@ class RenjaController extends Controller
                                                                                                                                                                                                                 $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
                                                                                                                                                                                                                 foreach($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja)
                                                                                                                                                                                                                 {
-                                                                                                                                                                                                                    $html .= '<li class="mb-2">'.$sub_kegiatan_indikator_kinerja->deskripsi.'</li>';
+                                                                                                                                                                                                                    $opd_sub_kegiatan_indikator_kinerjas = $sub_kegiatan_indikator_kinerja->opd_sub_kegiatan_indikator_kinerja;
+                                                                                                                                                                                                                    $opd_sub_kegiatans = [];
+                                                                                                                                                                                                                    foreach($opd_sub_kegiatan_indikator_kinerjas as $item)
+                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                        $master_opd = MasterOpd::find($item->opd_id);
+                                                                                                                                                                                                                        if($master_opd)
+                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                            $opd_sub_kegiatans[] = $master_opd->nama;
+                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                    }
+
+                                                                                                                                                                                                                    $html .= '<li>'.$sub_kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                                                    foreach (array_unique($opd_sub_kegiatans) as $value) {
+                                                                                                                                                                                                                        $html .= ' <span class="badge bg-primary text-uppercase">'.$value.'</span>';
+                                                                                                                                                                                                                    }
                                                                                                                                                                                                                 }
                                                                                                                                                                                                                 $html .= '</ul></td>';
                                                                                                                                                                                                                 $html .= '<td width="20%" data-bs-toggle="collapse" data-bs-target="#renja_sub_kegiatan_sub_kegiatan_'.$sub_kegiatan['id'].'" class="accordion-toggle"></td>';

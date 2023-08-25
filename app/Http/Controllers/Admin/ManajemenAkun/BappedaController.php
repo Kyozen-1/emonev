@@ -31,10 +31,12 @@ class BappedaController extends Controller
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
                     $button_show = '<button type="button" name="detail" id="'.$data->id.'" class="detail btn btn-icon waves-effect btn-outline-success" title="Detail Data"><i class="fas fa-eye"></i></button>';
-                    $button_edit = '<button type="button" name="change-password" id="'.$data->id.'"
+                    $button_change_password = '<button type="button" name="change-password" id="'.$data->id.'"
                     class="change-password btn btn-icon waves-effect btn-outline-warning" title="Change Password"><i class="fas fa-lock"></i></button>';
                     $button_delete = '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-icon waves-effect btn-outline-danger" title="Delete Data"><i class="fas fa-trash"></i></button>';
-                    $button = $button_show . ' ' . $button_edit . ' ' . $button_delete;
+                    $button_edit = '<button type="button" name="edit" id="'.$data->id.'"
+                    class="edit btn btn-icon waves-effect btn-outline-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
+                    $button = $button_show . ' ' .$button_edit. ' ' .$button_change_password . ' ' . $button_delete;
                     return $button;
                 })
                 ->editColumn('foto', function($data){
@@ -142,9 +144,49 @@ class BappedaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $errors = Validator::make($request->all(), [
+            'name' => 'required',
+            'no_hp' => 'required'
+        ]);
+
+        if($errors -> fails())
+        {
+            return response()->json(['errors' => $errors->errors()->all()]);
+        }
+
+        if($request->foto)
+        {
+            $errors = Validator::make($request->all(), [
+                'foto' => 'mimes:jpeg,jpg,png|max:1024'
+            ]);
+
+            if($errors -> fails())
+            {
+                return response()->json(['errors' => $errors->errors()->all()]);
+            }
+        }
+
+        $user = User::find($request->hidden_id);
+        $user->name = $request->name;
+        $user->no_hp = $request->no_hp;
+
+        if($request->foto)
+        {
+            File::delete(public_path('images/bappeda/'.$user->foto));
+
+            $fotoExtension = $request->foto->extension();
+            $fotoName =  uniqid().'-'.date("ymd").'.'.$fotoExtension;
+            $foto = Image::make($request->foto);
+            $fotoSize = public_path('images/bappeda'.$fotoName);
+            $foto->save($fotoSize, 100);
+
+            $user->foto = $fotoName;
+        }
+        $user->save();
+
+        return response()->json(['success' => 'Berhasil mengupdate data']);
     }
 
     /**

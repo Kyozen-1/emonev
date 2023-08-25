@@ -114,18 +114,18 @@
                                 <label for="no_hp" class="form-label">No. HP</label>
                                 <input type="number" name="no_hp" id="no_hp" class="form-control" required>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3" id="form_email">
                                 <label class="form-label">Email</label>
                                 <input name="email" id="email" type="email" class="form-control" required/>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3" id="form_password">
                                 <label class="form-label">Password</label>
                                 <input name="password" id="password" type="password" class="form-control" required/>
                             </div>
                         </div>
                         <div class="col-12 col-md-5">
                             <label for="" class="form-label">Foto Admin</label>
-                            <input type="file" class="dropify" name="foto" data-height="300" data-allowed-file-extensions="png jpg jpeg webp" data-show-errors="true" required>
+                            <input type="file" class="dropify" name="foto" id="foto" data-height="300" data-allowed-file-extensions="png jpg jpeg webp" data-show-errors="true" required>
                         </div>
                     </div>
             </div>
@@ -273,6 +273,8 @@
             $('#aksi_button').val('Save');
             $('#aksi').val('Save');
             $('#form_result').html('');
+            $('#form_email').show();
+            $('#form_password').show();
         });
 
         $('#bappeda_form').on('submit', function(e){
@@ -320,6 +322,48 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: data.success,
+                                showConfirmButton: true
+                            });
+                        }
+
+                        $('#form_result').html(html);
+                    }
+                });
+            }
+
+            if($('#aksi').val() == 'Edit')
+            {
+                $.ajax({
+                    url: "{{ route('admin.manajemen-akun.bappeda.update') }}",
+                    method: "POST",
+                    data: new FormData(this),
+                    dataType: "json",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    beforeSend: function(){
+                        $('#aksi_button').text('Mengubah...');
+                        $('#aksi_button').prop('disabled', true);
+                    },
+                    success: function(data)
+                    {
+                        var html = '';
+                        if(data.errors)
+                        {
+                            html = '<div class="alert alert-danger">'+data.errors+'</div>';
+                            $('#aksi_button').text('Save');
+                        }
+                        if(data.success)
+                        {
+                            // html = '<div class="alert alert-success">'+ data.success +'</div>';
+                            $('#bappeda_form')[0].reset();
+                            $('#aksi_button').prop('disabled', false);
+                            $('#aksi_button').text('Save');
+                            $('#bappeda_table').DataTable().ajax.reload();
+                            $('#addEditModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil di ubah',
                                 showConfirmButton: true
                             });
                         }
@@ -497,6 +541,42 @@
                             }
                         }
                     });
+                }
+            });
+        });
+
+        $(document).on('click', '.edit', function(){
+            var id = $(this).attr('id');
+            var url = "{{ route('admin.manajemen-akun.bappeda.edit', ['id' =>":id"]) }}"
+            url = url.replace(":id", id);
+            $('#form_result').html('');
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function(data)
+                {
+                    $('#form_password').hide();
+                    $('#form_email').hide();
+                    $('#name').val(data.result.name);
+                    $('#no_hp').val(data.result.no_hp);
+
+                    var lokasi_img_opd = "{{ asset('images/bappeda') }}"+'/'+data.result.foto;
+                    var fileDropperFoto = $("#foto").dropify();
+
+                    fileDropperFoto = fileDropperFoto.data('dropify');
+                    fileDropperFoto.resetPreview();
+                    fileDropperFoto.clearElement();
+                    fileDropperFoto.settings['defaultFile'] = lokasi_img_opd;
+                    fileDropperFoto.destroy();
+                    fileDropperFoto.init();
+
+                    $('#hidden_id').val(id);
+                    $('.modal-title').text('Edit Data');
+                    $('#aksi_button').text('Edit');
+                    $('#aksi_button').prop('disabled', false);
+                    $('#aksi_button').val('Edit');
+                    $('#aksi').val('Edit');
+                    $('#addEditModal').modal('show');
                 }
             });
         });

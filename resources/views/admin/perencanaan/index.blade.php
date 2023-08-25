@@ -1844,6 +1844,30 @@
             </div>
         </div>
     </div>
+
+    <div id="editRealisasiTujuanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editRealisasiTujuanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Tujuan Tw Realisasi</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.perencanaan.rpjmd.tujuan.tw.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="tujuan_tw_realisasi_id" id="tujuan_tw_realisasi_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="tujuan_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="tujuan_edit_realisasi" name="tujuan_edit_realisasi" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     {{-- Tujuan End --}}
 
     {{-- Sasaran Start --}}
@@ -2078,6 +2102,30 @@
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
                             <button class="btn btn-success waves-effect waves-light" type="button" id="hapus_sasaran_btn">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editRealisasiSasaranModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editRealisasiSasaranModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Sasaran Tw Realisasi</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('admin.perencanaan.rpjmd.sasaran.tw.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="sasaran_tw_realisasi_id" id="sasaran_tw_realisasi_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="sasaran_edit_realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="sasaran_edit_realisasi" name="sasaran_edit_realisasi" required>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -2651,7 +2699,6 @@
                     });
                 }
             });
-
         });
         $(document).on('click', '.visi_detail', function(){
             var id = $(this).attr('id');
@@ -4937,6 +4984,85 @@
             });
         });
 
+        $(document).on('click', '.btn-open-tujuan-tw-realisasi', function(){
+            var value = $(this).val();
+            var tahun = $(this).attr('data-tahun');
+            var tujuan_target_satuan_rp_realisasi_id = $(this).attr('data-tujuan-target-satuan-rp-realisasi-id');
+            $('.btn-open-tujuan-tw-realisasi.'+tahun+'.data-tujuan-target-satuan-rp-realisasi-'+tujuan_target_satuan_rp_realisasi_id).empty();
+            if(value == 'close')
+            {
+                $('.btn-open-tujuan-tw-realisasi.'+tahun+'.data-tujuan-target-satuan-rp-realisasi-'+tujuan_target_satuan_rp_realisasi_id).val('open');
+                $('.btn-open-tujuan-tw-realisasi.'+tahun+'.data-tujuan-target-satuan-rp-realisasi-'+tujuan_target_satuan_rp_realisasi_id).html('<i class="fas fa-chevron-down"></i>');
+            }
+            if(value == 'open')
+            {
+                $('.btn-open-tujuan-tw-realisasi.'+tahun+'.data-tujuan-target-satuan-rp-realisasi-'+tujuan_target_satuan_rp_realisasi_id).val('close');
+                $('.btn-open-tujuan-tw-realisasi.'+tahun+'.data-tujuan-target-satuan-rp-realisasi-'+tujuan_target_satuan_rp_realisasi_id).html('<i class="fas fa-chevron-right"></i>');
+            }
+        });
+
+        $(document).on('click', '.button-add-tujuan-target-satuan-rp-realisasi', function(){
+            var tw_id = $(this).attr('data-tw-id');
+            var tujuan_target_satuan_rp_realisasi_id = $(this).attr('data-tujuan-target-satuan-rp-realisasi-id');
+
+            var realisasi = $('.input-tujuan-tw-realisasi-realisasi.'+tw_id+'.data-tujuan-target-satuan-rp-realisasi-'+tujuan_target_satuan_rp_realisasi_id).val();
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.perencanaan.rpjmd.tujuan.tw.tambah') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            tujuan_target_satuan_rp_realisasi_id:tujuan_target_satuan_rp_realisasi_id,
+                            tw_id:tw_id,
+                            realisasi:realisasi,
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-edit-tujuan-target-satuan-rp-realisasi', function(){
+            var tujuan_tw_realisasi_id = $(this).attr('data-tujuan-tw-realisasi-id');
+            var tujuan_target_satuan_rp_realisasi = $(this).attr('data-tujuan-target-satuan-rp-realisasi-id');
+            var tw_id = $(this).attr('data-tw-id');
+
+            var realisasi = $('.span-tujuan-tw-realisasi.'+tw_id+'.data-tujuan-target-satuan-rp-realisasi-'+tujuan_target_satuan_rp_realisasi+'.data-tujuan-tw-realisasi-'+tujuan_tw_realisasi_id).text();
+            $('#tujuan_tw_realisasi_id').val(tujuan_tw_realisasi_id);
+            $('#tujuan_edit_realisasi').val(realisasi);
+            $('#editRealisasiTujuanModal').modal('show');
+        });
+
         // Filter Data Sasaran
         $('.sasaran_filter_visi').on('change', function(){
             var tahun = $(this).attr('data-tahun');
@@ -5064,6 +5190,85 @@
                     $('#sasaranNavDiv'+tahun).html(data.html);
                 }
             });
+        });
+
+        $(document).on('click', '.btn-open-sasaran-tw-realisasi', function(){
+            var value = $(this).val();
+            var tahun = $(this).attr('data-tahun');
+            var sasaran_target_satuan_rp_realisasi_id = $(this).attr('data-sasaran-target-satuan-rp-realisasi-id');
+            $('.btn-open-sasaran-tw-realisasi.'+tahun+'.data-sasaran-target-satuan-rp-realisasi-'+sasaran_target_satuan_rp_realisasi_id).empty();
+            if(value == 'close')
+            {
+                $('.btn-open-sasaran-tw-realisasi.'+tahun+'.data-sasaran-target-satuan-rp-realisasi-'+sasaran_target_satuan_rp_realisasi_id).val('open');
+                $('.btn-open-sasaran-tw-realisasi.'+tahun+'.data-sasaran-target-satuan-rp-realisasi-'+sasaran_target_satuan_rp_realisasi_id).html('<i class="fas fa-chevron-down"></i>');
+            }
+            if(value == 'open')
+            {
+                $('.btn-open-sasaran-tw-realisasi.'+tahun+'.data-sasaran-target-satuan-rp-realisasi-'+sasaran_target_satuan_rp_realisasi_id).val('close');
+                $('.btn-open-sasaran-tw-realisasi.'+tahun+'.data-sasaran-target-satuan-rp-realisasi-'+sasaran_target_satuan_rp_realisasi_id).html('<i class="fas fa-chevron-right"></i>');
+            }
+        });
+
+        $(document).on('click', '.button-add-sasaran-target-satuan-rp-realisasi', function(){
+            var tw_id = $(this).attr('data-tw-id');
+            var sasaran_target_satuan_rp_realisasi_id = $(this).attr('data-sasaran-target-satuan-rp-realisasi-id');
+
+            var realisasi = $('.input-sasaran-tw-realisasi-realisasi.'+tw_id+'.data-sasaran-target-satuan-rp-realisasi-'+sasaran_target_satuan_rp_realisasi_id).val();
+            return new swal({
+                title: "Apakah Anda Yakin?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.perencanaan.rpjmd.sasaran.tw.tambah') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            sasaran_target_satuan_rp_realisasi_id:sasaran_target_satuan_rp_realisasi_id,
+                            tw_id:tw_id,
+                            realisasi:realisasi,
+                        },
+                        dataType: "json",
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.button-edit-sasaran-target-satuan-rp-realisasi', function(){
+            var sasaran_tw_realisasi_id = $(this).attr('data-sasaran-tw-realisasi-id');
+            var sasaran_target_satuan_rp_realisasi = $(this).attr('data-sasaran-target-satuan-rp-realisasi-id');
+            var tw_id = $(this).attr('data-tw-id');
+
+            var realisasi = $('.span-sasaran-tw-realisasi.'+tw_id+'.data-sasaran-target-satuan-rp-realisasi-'+sasaran_target_satuan_rp_realisasi+'.data-sasaran-tw-realisasi-'+sasaran_tw_realisasi_id).text();
+            $('#sasaran_tw_realisasi_id').val(sasaran_tw_realisasi_id);
+            $('#sasaran_edit_realisasi').val(realisasi);
+            $('#editRealisasiSasaranModal').modal('show');
         });
         // Filter Data Program
         $('.program_filter_visi').on('change', function(){
