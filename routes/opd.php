@@ -112,4 +112,7 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/laporan/e-81', 'Opd\Laporan\E81Controller@e_81')->name('opd.laporan.e-81');
     Route::get('/opd/laporan/e-81/ekspor/pdf/{tahun}', 'Opd\Laporan\E81Controller@e_81_ekspor_pdf')->name('opd.laporan.e-81.ekspor.pdf');
     Route::get('/opd/laporan/e-81/ekspor/excel/{tahun}', 'Opd\Laporan\E81Controller@e_81_ekspor_excel')->name('opd.laporan.e-81.ekspor.excel');
+    Route::post('/opd/laporan/e-81/perubahan', 'Opd\Laporan\E81PerubahanController@e_81_perubahan')->name('opd.laporan.e-81.perubahan');
+    Route::get('/opd/laporan/e-81/perubahan/ekspor/pdf/{tahun}', 'Opd\Laporan\E81PerubahanController@e_81_ekspor_pdf_perubahan')->name('opd.laporan.e-81.ekspor.pdf.perubahan');
+    Route::get('/opd/laporan/e-81/perubahan/ekspor/excel/{tahun}', 'Opd\Laporan\E81PerubahanController@e_81_ekspor_excel_perubahan')->name('opd.laporan.e-81.ekspor.excel.perubahan');
 });

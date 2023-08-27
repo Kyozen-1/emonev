@@ -246,7 +246,9 @@ class RenjaController extends Controller
                                                                                                                         </tr>
                                                                                                                     </thead>
                                                                                                                     <tbody>';
-                                                                                                                    $opds = MasterOpd::whereHas('tujuan_pd')->get();
+                                                                                                                    $opds = MasterOpd::whereHas('tujuan_pd', function($q) use ($tujuan){
+                                                                                                                        $q->where('tujuan_id', $tujuan['id']);
+                                                                                                                    })->get();
                                                                                                                     foreach ($opds as $opd)
                                                                                                                     {
                                                                                                                         $html .= '<tr>';
@@ -676,7 +678,9 @@ class RenjaController extends Controller
                                                                                                                         </tr>
                                                                                                                     </thead>
                                                                                                                     <tbody>';
-                                                                                                                    $opds = MasterOpd::whereHas('tujuan_pd')->get();
+                                                                                                                    $opds = MasterOpd::whereHas('tujuan_pd', function($q) use ($tujuan){
+                                                                                                                        $q->where('tujuan_id', $tujuan['id']);
+                                                                                                                    })->get();
                                                                                                                     foreach ($opds as $opd)
                                                                                                                     {
                                                                                                                         $html .= '<tr>';
@@ -1159,7 +1163,9 @@ class RenjaController extends Controller
                                                                                                                                                 </tr>
                                                                                                                                             </thead>
                                                                                                                                             <tbody>';
-                                                                                                                                            $opds = MasterOpd::whereHas('sasaran_pd')->get();
+                                                                                                                                            $opds = MasterOpd::whereHas('sasaran_pd', function($q) use ($sasaran){
+                                                                                                                                                $q->where('sasaran_id', $sasaran['id']);
+                                                                                                                                            })->get();
                                                                                                                                             foreach ($opds as $opd)
                                                                                                                                             {
                                                                                                                                                 $html .= '<tr>';
@@ -1639,7 +1645,9 @@ class RenjaController extends Controller
                                                                                                                                                 </tr>
                                                                                                                                             </thead>
                                                                                                                                             <tbody>';
-                                                                                                                                            $opds = MasterOpd::whereHas('sasaran_pd')->get();
+                                                                                                                                            $opds = MasterOpd::whereHas('sasaran_pd', function($q) use ($sasaran){
+                                                                                                                                                $q->where('sasaran_id', $sasaran['id']);
+                                                                                                                                            })->get();
                                                                                                                                             foreach ($opds as $opd)
                                                                                                                                             {
                                                                                                                                                 $html .= '<tr>';

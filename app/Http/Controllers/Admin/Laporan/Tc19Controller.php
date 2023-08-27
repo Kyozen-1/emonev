@@ -141,7 +141,7 @@ class Tc19Controller extends Controller
             $get_programs = Program::where('urusan_id', $urusan['id'])->orderBy('kode', 'asc')->get();
             $programs = [];
             foreach ($get_programs as $get_program) {
-                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program)->latest()->first();
+                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
                 if($cek_perubahan_program)
                 {
                     $programs[] = [
@@ -2143,7 +2143,7 @@ class Tc19Controller extends Controller
             $get_programs = Program::where('urusan_id', $urusan['id'])->orderBy('kode', 'asc')->get();
             $programs = [];
             foreach ($get_programs as $get_program) {
-                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program)->latest()->first();
+                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
                 if($cek_perubahan_program)
                 {
                     $programs[] = [
@@ -4137,7 +4137,7 @@ class Tc19Controller extends Controller
             $get_programs = Program::where('urusan_id', $urusan['id'])->orderBy('kode', 'asc')->get();
             $programs = [];
             foreach ($get_programs as $get_program) {
-                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program)->latest()->first();
+                $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
                 if($cek_perubahan_program)
                 {
                     $programs[] = [
