@@ -109,6 +109,7 @@ class ProgramTwController extends Controller
     public function target_satuan_realisasi_ubah(Request $request)
     {
         $program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::find($request->program_target_satuan_rp_realisasi_id);
+        $program_target_satuan_rp_realisasi->target_rp_renja = $request->program_edit_target_rp_renja;
         $program_target_satuan_rp_realisasi->target_anggaran_perubahan = $request->program_edit_target_anggaran_perubahan;
         $program_target_satuan_rp_realisasi->save();
 

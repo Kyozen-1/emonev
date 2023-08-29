@@ -210,6 +210,10 @@
                         @csrf
                         <input type="hidden" name="program_target_satuan_rp_realisasi_id" id="program_target_satuan_rp_realisasi_id">
                         <div class="form-group position-relative mb-3">
+                            <label for="program_edit_target_rp_renja" class="form-label">Target Anggaran Renja</label>
+                            <input type="text" class="form-control" id="program_edit_target_rp_renja" name="program_edit_target_rp_renja">
+                        </div>
+                        <div class="form-group position-relative mb-3">
                             <label for="program_edit_target_anggaran_perubahan" class="form-label">Target Anggaran Perubahan</label>
                             <input type="text" class="form-control" id="program_edit_target_anggaran_perubahan" name="program_edit_target_anggaran_perubahan">
                         </div>
@@ -263,6 +267,10 @@
                     <form action="{{ route('opd.renja.kegiatan.indikator-kinerja.target-satuan-realisasi.ubah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="kegiatan_target_satuan_rp_realisasi_id" id="kegiatan_target_satuan_rp_realisasi_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="kegiatan_edit_target_rp_renja" class="form-label">Target Anggaran Renja</label>
+                            <input type="text" class="form-control" id="kegiatan_edit_target_rp_renja" name="kegiatan_edit_target_rp_renja">
+                        </div>
                         <div class="form-group position-relative mb-3">
                             <label for="kegiatan_edit_target_anggaran_perubahan" class="form-label">Target Anggaran Perubahan</label>
                             <input type="text" class="form-control" id="kegiatan_edit_target_anggaran_perubahan" name="kegiatan_edit_target_anggaran_perubahan">
@@ -684,9 +692,11 @@
             var tahun = $(this).attr('data-tahun');
             var program_target_satuan_rp_realisasi_id = $(this).attr('data-program-target-satuan-rp-realisasi-id');
 
+            var target_rp_renja = $(this).attr('data-program-target-satuan-rp-realisasi-target-rp-renja');
             var target_anggaran_perubahan = $(this).attr('data-program-target-satuan-rp-realisasi-target-anggaran-perubahan');
 
             $('#program_target_satuan_rp_realisasi_id').val(program_target_satuan_rp_realisasi_id);
+            $('#program_edit_target_rp_renja').val(target_rp_renja);
             $('#program_edit_target_anggaran_perubahan').val(target_anggaran_perubahan);
 
             $('#editTargetProgramIndikatorKinerjaTargetSatuanRealisasiModal').modal('show');
@@ -795,9 +805,11 @@
             var kegiatan_target_satuan_rp_realisasi_id = $(this).attr('data-kegiatan-target-satuan-rp-realisasi-id');
 
             var target_anggaran_perubahan = $(this).attr('data-kegiatan-target-satuan-rp-realisasi-target-anggaran-perubahan');
+            var target_rp_renja = $(this).attr('data-kegiatan-target-satuan-rp-realisasi-target-rp-renja');
 
             $('#kegiatan_target_satuan_rp_realisasi_id').val(kegiatan_target_satuan_rp_realisasi_id);
             $('#kegiatan_edit_target_anggaran_perubahan').val(target_anggaran_perubahan);
+            $('#kegiatan_edit_target_rp_renja').val(target_rp_renja);
 
             $('#editTargetKegiatanIndikatorKinerjaTargetSatuanRealisasiModal').modal('show');
         });

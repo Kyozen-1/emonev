@@ -112,6 +112,7 @@ class KegiatanTwController extends Controller
     {
         $kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::find($request->kegiatan_target_satuan_rp_realisasi_id);
         $kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan = $request->kegiatan_edit_target_anggaran_perubahan;
+        $kegiatan_target_satuan_rp_realisasi->target_rp_renja = $request->kegiatan_edit_target_rp_renja;
         $kegiatan_target_satuan_rp_realisasi->save();
 
         Alert::success('Berhasil', 'Berhasil Merubah Data');
