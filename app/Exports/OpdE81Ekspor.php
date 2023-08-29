@@ -269,8 +269,8 @@ class OpdE81Ekspor implements FromView
                                     } else {
                                         $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                     }
-
-                                    $e_81 .= '<td>'.array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
+                                    $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
                                     $e_81 .= '<td>Rp.0, 00</td>';
                                     // Kolom 13 End
 
@@ -399,7 +399,8 @@ class OpdE81Ekspor implements FromView
                                         $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                     }
 
-                                    $e_81 .= '<td>'.array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
+                                    $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
                                     $e_81 .= '<td>Rp.0, 00</td>';
                                     // Kolom 13 End
 
@@ -542,7 +543,7 @@ class OpdE81Ekspor implements FromView
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -767,7 +768,7 @@ class OpdE81Ekspor implements FromView
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -927,7 +928,9 @@ class OpdE81Ekspor implements FromView
                             });
                         })->get();
                         $kegiatans = [];
-                        foreach ($get_kegiatans as $get_kegiatan) {
+
+                        foreach ($get_kegiatans as $get_kegiatan)
+                        {
                             $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
                                                         ->latest()->first();
                             if($cek_perubahan_kegiatan)
@@ -947,6 +950,7 @@ class OpdE81Ekspor implements FromView
                                 ];
                             }
                         }
+
                         foreach($kegiatans as $kegiatan)
                         {
                             $e_81 .= '<tr>';
@@ -1031,7 +1035,7 @@ class OpdE81Ekspor implements FromView
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
@@ -1256,7 +1260,7 @@ class OpdE81Ekspor implements FromView
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';

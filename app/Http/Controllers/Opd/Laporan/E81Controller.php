@@ -541,7 +541,7 @@ class E81Controller extends Controller
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -766,7 +766,7 @@ class E81Controller extends Controller
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -926,7 +926,9 @@ class E81Controller extends Controller
                             });
                         })->get();
                         $kegiatans = [];
-                        foreach ($get_kegiatans as $get_kegiatan) {
+
+                        foreach ($get_kegiatans as $get_kegiatan)
+                        {
                             $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
                                                         ->latest()->first();
                             if($cek_perubahan_kegiatan)
@@ -946,6 +948,7 @@ class E81Controller extends Controller
                                 ];
                             }
                         }
+
                         foreach($kegiatans as $kegiatan)
                         {
                             $e_81 .= '<tr>';
@@ -1030,7 +1033,7 @@ class E81Controller extends Controller
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
@@ -1255,7 +1258,7 @@ class E81Controller extends Controller
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
@@ -2396,7 +2399,7 @@ class E81Controller extends Controller
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -2621,7 +2624,7 @@ class E81Controller extends Controller
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -2781,7 +2784,9 @@ class E81Controller extends Controller
                             });
                         })->get();
                         $kegiatans = [];
-                        foreach ($get_kegiatans as $get_kegiatan) {
+
+                        foreach ($get_kegiatans as $get_kegiatan)
+                        {
                             $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
                                                         ->latest()->first();
                             if($cek_perubahan_kegiatan)
@@ -2801,6 +2806,7 @@ class E81Controller extends Controller
                                 ];
                             }
                         }
+
                         foreach($kegiatans as $kegiatan)
                         {
                             $e_81 .= '<tr>';
@@ -2885,7 +2891,7 @@ class E81Controller extends Controller
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
@@ -3110,7 +3116,7 @@ class E81Controller extends Controller
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
