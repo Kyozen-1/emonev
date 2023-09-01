@@ -407,7 +407,7 @@ class OpdTc24Ekspor implements FromView
                                                                                         })->where('tahun', $tahun)->first();
                                             if($kegiatan_target_satuan_rp_realisasi)
                                             {
-                                                $tc_24 .= '<td>Rp.'.number_format($kegiatan_target_satuan_rp_realisasi->target_rp,2, ',', '.').'</td>';
+                                                $tc_24 .= '<td>Rp.'.number_format((int)$kegiatan_target_satuan_rp_realisasi->target_rp,2, ',', '.').'</td>';
                                             } else {
                                                 $tc_24 .= '<td>Rp. 0, 00</td>';
                                             }
@@ -449,13 +449,13 @@ class OpdTc24Ekspor implements FromView
                                             })->where('tahun', $tahun)->first();
                                             if($kegiatan_target_satuan_rp_realisasi)
                                             {
-                                                $target_rp_kolom_12_6 = $kegiatan_target_satuan_rp_realisasi->target_rp;
+                                                $target_rp_kolom_12_6 = (int)$kegiatan_target_satuan_rp_realisasi->target_rp;
                                                 $realisasi_rp_kolom_12_16 = [];
                                                 foreach ($tws as $tw) {
                                                     $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id',$kegiatan_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
                                                     if($cek_kegiatan_tw_realisasi)
                                                     {
-                                                        $realisasi_rp_kolom_12_16[] = $cek_kegiatan_tw_realisasi->realisasi_rp;
+                                                        $realisasi_rp_kolom_12_16[] = (int)$cek_kegiatan_tw_realisasi->realisasi_rp;
                                                     } else {
                                                         $realisasi_rp_kolom_12_16[] = 0;
                                                     }

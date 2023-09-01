@@ -689,7 +689,12 @@ class E80Controller extends Controller
                                                         $q->where('id', $kegiatan_indikator_kinerja->id);
                                                     });
                                                 })->where('tahun', end($tahuns))->first();
-                                                $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                if($kegiatan_target_satuan_rp_realisasi)
+                                                {
+                                                    $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                } else {
+                                                    $e_80 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                }
                                                 $e_80 .= '<td>Rp. '.number_format(array_sum($target_rp_kolom_6), 2, ',', '.').'</td>';
                                                 // Kolom 6 End
                                                 // Kolom 7 - 11 Start
@@ -818,7 +823,12 @@ class E80Controller extends Controller
                                                         $q->where('id', $kegiatan_indikator_kinerja->id);
                                                     });
                                                 })->where('tahun', end($tahuns))->first();
-                                                $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                if($kegiatan_target_satuan_rp_realisasi)
+                                                {
+                                                    $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                } else {
+                                                    $e_80 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                }
                                                 $e_80 .= '<td>Rp. '.number_format(array_sum($target_rp_kolom_6), 2, ',', '.').'</td>';
                                                 // Kolom 6 End
                                                 // Kolom 7 - 11 Start
@@ -1563,7 +1573,12 @@ class E80Controller extends Controller
                                                         $q->where('id', $kegiatan_indikator_kinerja->id);
                                                     });
                                                 })->where('tahun', end($tahuns))->first();
-                                                $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                if($kegiatan_target_satuan_rp_realisasi)
+                                                {
+                                                    $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                } else {
+                                                    $e_80 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                }
                                                 $e_80 .= '<td>Rp. '.number_format(array_sum($target_rp_kolom_6), 2, ',', '.').'</td>';
                                                 // Kolom 6 End
                                                 // Kolom 7 - 11 Start
@@ -1692,7 +1707,12 @@ class E80Controller extends Controller
                                                         $q->where('id', $kegiatan_indikator_kinerja->id);
                                                     });
                                                 })->where('tahun', end($tahuns))->first();
-                                                $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                if($kegiatan_target_satuan_rp_realisasi)
+                                                {
+                                                    $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                } else {
+                                                    $e_80 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                }
                                                 $e_80 .= '<td>Rp. '.number_format(array_sum($target_rp_kolom_6), 2, ',', '.').'</td>';
                                                 // Kolom 6 End
                                                 // Kolom 7 - 11 Start
@@ -1804,6 +1824,6 @@ class E80Controller extends Controller
             'e_80' => $e_80,
         ]);
 
-        return $pdf->setPaper('b2', 'landscape')->stream('Laporan E-80.pdf');
+        return $pdf->setPaper('a0', 'landscape')->stream('Laporan E-80.pdf');
     }
 }

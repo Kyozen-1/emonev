@@ -159,8 +159,19 @@ class SubKegiatanController extends Controller
         }
         $get_opd = OpdSubKegiatanIndikatorKinerja::where('sub_kegiatan_indikator_kinerja_id', $request->sub_kegiatan_indikator_kinerja_id)
                     ->where('opd_id', Auth::user()->opd->opd_id)->first();
+        if(!$get_opd)
+        {
+            $opd_sub_kegiatan = new OpdSubKegiatanIndikatorKinerja;
+            $opd_sub_kegiatan->sub_kegiatan_indikator_kinerja_id = $request->sub_kegiatan_indikator_kinerja_id;
+            $opd_sub_kegiatan->opd_id = Auth::user()->opd->opd_id;
+            $opd_sub_kegiatan->save();
+
+            $opd_sub_kegiatan_id = $opd_sub_kegiatan->id;
+        } else {
+            $opd_sub_kegiatan_id = $get_opd->id;
+        }
         $sub_kegiatan_target_satuan_rp_realisasi = new SubKegiatanTargetSatuanRpRealisasi;
-        $sub_kegiatan_target_satuan_rp_realisasi->opd_sub_kegiatan_indikator_kinerja_id = $get_opd->id;
+        $sub_kegiatan_target_satuan_rp_realisasi->opd_sub_kegiatan_indikator_kinerja_id = $opd_sub_kegiatan_id;
         $sub_kegiatan_target_satuan_rp_realisasi->target = $request->target;
         $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal = $request->target_anggaran_renja_awal;
         $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan = $request->target_anggaran_renja_perubahan;

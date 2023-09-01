@@ -449,7 +449,6 @@ class E81PerubahanController extends Controller
                             }
                             $i_a++;
                         }
-                    $e_81 .= '</tr>';
 
                     $get_programs = Program::whereHas('program_indikator_kinerja', function($q){
                         $q->whereHas('opd_program_indikator_kinerja', function($q){
@@ -1008,7 +1007,12 @@ class E81PerubahanController extends Controller
                                                     $q->where('id', $kegiatan_indikator_kinerja->id);
                                                 });
                                             })->where('tahun', end($tahuns))->first();
-                                            $e_81 .= '<td>'.$last_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            if($last_kegiatan_target_satuan_rp_realisasi)
+                                            {
+                                                $e_81 .= '<td>'.$last_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            } else {
+                                                $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            }
                                             $e_81 .= '<td>Rp. '.number_format(array_sum($kegiatan_target_satuan_rp_realisasi_target_rp), 2, ',', '.').'</td>';
                                             // Kolom 5 End
 
@@ -1233,7 +1237,12 @@ class E81PerubahanController extends Controller
                                                     $q->where('id', $kegiatan_indikator_kinerja->id);
                                                 });
                                             })->where('tahun', end($tahuns))->first();
-                                            $e_81 .= '<td>'.$last_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            if($last_kegiatan_target_satuan_rp_realisasi)
+                                            {
+                                                $e_81 .= '<td>'.$last_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            } else {
+                                                $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            }
                                             $e_81 .= '<td>Rp. '.number_format(array_sum($kegiatan_target_satuan_rp_realisasi_target_rp), 2, ',', '.').'</td>';
                                             // Kolom 5 End
 
@@ -2324,7 +2333,6 @@ class E81PerubahanController extends Controller
                             }
                             $i_a++;
                         }
-                    $e_81 .= '</tr>';
 
                     $get_programs = Program::whereHas('program_indikator_kinerja', function($q){
                         $q->whereHas('opd_program_indikator_kinerja', function($q){
@@ -2883,7 +2891,12 @@ class E81PerubahanController extends Controller
                                                     $q->where('id', $kegiatan_indikator_kinerja->id);
                                                 });
                                             })->where('tahun', end($tahuns))->first();
-                                            $e_81 .= '<td>'.$last_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            if($last_kegiatan_target_satuan_rp_realisasi)
+                                            {
+                                                $e_81 .= '<td>'.$last_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            } else {
+                                                $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            }
                                             $e_81 .= '<td>Rp. '.number_format(array_sum($kegiatan_target_satuan_rp_realisasi_target_rp), 2, ',', '.').'</td>';
                                             // Kolom 5 End
 
@@ -3108,7 +3121,12 @@ class E81PerubahanController extends Controller
                                                     $q->where('id', $kegiatan_indikator_kinerja->id);
                                                 });
                                             })->where('tahun', end($tahuns))->first();
-                                            $e_81 .= '<td>'.$last_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            if($last_kegiatan_target_satuan_rp_realisasi)
+                                            {
+                                                $e_81 .= '<td>'.$last_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            } else {
+                                                $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                            }
                                             $e_81 .= '<td>Rp. '.number_format(array_sum($kegiatan_target_satuan_rp_realisasi_target_rp), 2, ',', '.').'</td>';
                                             // Kolom 5 End
 

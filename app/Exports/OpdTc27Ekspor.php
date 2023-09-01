@@ -102,7 +102,7 @@ class OpdTc27Ekspor implements FromView
 
         $tc_27 = '';
         foreach ($tujuans as $tujuan) {
-            $get_tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])->get();
+            $get_tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])->where('opd_id', Auth::user()->opd->opd_id)->get();
             foreach ($get_tujuan_pds as $get_tujuan_pd) {
                 $tc_27 .= '<tr>';
                     $tc_27 .= '<td>'.$get_tujuan_pd->deskripsi.'</td>';
@@ -497,7 +497,7 @@ class OpdTc27Ekspor implements FromView
                                                 {
                                                     $kegiatan_target_rp[] = $kegiatan_target_satuan_rp_realisasi->target_rp;
                                                     $tc_27 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                    $tc_27 .= '<td>Rp.'.number_format($kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                    $tc_27 .= '<td>Rp.'.number_format((int)$kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                     if($indikator_d == $len_d - 1)
                                                     {
                                                         $tc_27 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
