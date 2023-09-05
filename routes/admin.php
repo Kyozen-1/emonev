@@ -416,6 +416,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::prefix('admin')->group(function(){
         route::prefix('normalisasi')->group(function(){
             Route::get('/memberikan-id-tahun-periode', 'Admin\NormalisasiController@memberikan_id_tahun_periode');
+            Route::get('/memberikan-opd-id-program-rpjmd', 'Admin\NormalisasiController@memberikan_opd_id_program_rpjmd');
         });
     });
 });

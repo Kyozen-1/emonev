@@ -13,6 +13,8 @@ use App\Models\Misi;
 use App\Models\Tujuan;
 use App\Models\Sasaran;
 use App\Models\TahunPeriode;
+use App\Models\ProgramRpjmd;
+use App\Models\OpdProgramIndikatorKinerja;
 
 class NormalisasiController extends Controller
 {
@@ -76,5 +78,14 @@ class NormalisasiController extends Controller
         }
 
         return 'Berhasil normalisasi memberikan periode id';
+    }
+
+    public function memberikan_opd_id_program_rpjmd()
+    {
+        // $program_rpjmds = ProgramRpjmd::whereHas('program', function($q){
+
+        // })
+
+        // return $get_opd_id;
     }
 }

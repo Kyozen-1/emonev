@@ -285,7 +285,11 @@ class SasaranPdController extends Controller
                     $q->where('opd_id', Auth::user()->opd->opd_id);
                 });
             });
-        })->doesntHave('sasaran_pd_program_rpjmd')->get();
+        })->whereDoesntHave('sasaran_pd_program_rpjmd', function($q){
+            $q->whereHas('sasaran_pd', function($q){
+                $q->where('opd_id', Auth::user()->opd->opd_id);
+            });
+        })->get();
 
         $programs = [];
 
