@@ -78,16 +78,16 @@ class Tc23Controller extends Controller
 
         $tc_23 = '';
         $a = 1;
-        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->whereHas('misi', function($q) use ($opd_id){
-            $q->whereHas('tujuan', function($q) use ($opd_id){
-                $q->whereHas('sasaran', function($q) use ($opd_id){
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+        $get_visis = Visi::whereHas('misi', function($q) use ($opd){
+            $q->whereHas('tujuan', function($q) use ($opd){
+                $q->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -96,7 +96,7 @@ class Tc23Controller extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -658,16 +658,16 @@ class Tc23Controller extends Controller
 
         $tc_23 = '';
         $a = 1;
-        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->whereHas('misi', function($q) use ($opd_id){
-            $q->whereHas('tujuan', function($q) use ($opd_id){
-                $q->whereHas('sasaran', function($q) use ($opd_id){
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+        $get_visis = Visi::whereHas('misi', function($q) use ($opd){
+            $q->whereHas('tujuan', function($q) use ($opd){
+                $q->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -676,7 +676,7 @@ class Tc23Controller extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $visis = [];
         foreach ($get_visis as $get_visi) {

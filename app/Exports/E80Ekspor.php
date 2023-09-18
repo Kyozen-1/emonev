@@ -79,7 +79,7 @@ class E80Ekspor implements FromView
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_tujuans = Tujuan::where('tahun_periode_id', $get_periode->id)->whereHas('sasaran', function($q) use ($opd){
+        $get_tujuans = Tujuan::whereHas('sasaran', function($q) use ($opd){
             $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
                 $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
                     $q->whereHas('program_rpjmd', function($q) use ($opd){
@@ -93,7 +93,7 @@ class E80Ekspor implements FromView
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $tujuans = [];
 
@@ -173,7 +173,12 @@ class E80Ekspor implements FromView
                                     // Kolom 6 Start
                                     $last_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
                                     ->where('tahun', end($tahuns))->first();
-                                    $e_80 .= '<td>'.$last_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    if($last_sasaran_pd_target_satuan_rp_realisasi)
+                                    {
+                                        $e_80 .= '<td>'.$last_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    } else {
+                                        $e_80 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    }
                                     $e_80 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 6 End
                                     // Kolom 7 - 11 Start
@@ -252,7 +257,12 @@ class E80Ekspor implements FromView
                                     // Kolom 6 Start
                                     $last_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
                                     ->where('tahun', end($tahuns))->first();
-                                    $e_80 .= '<td>'.$last_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    if($last_sasaran_pd_target_satuan_rp_realisasi)
+                                    {
+                                        $e_80 .= '<td>'.$last_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    } else {
+                                        $e_80 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    }
                                     $e_80 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 6 End
                                     // Kolom 7 - 11 Start
@@ -694,7 +704,12 @@ class E80Ekspor implements FromView
                                                         $q->where('id', $kegiatan_indikator_kinerja->id);
                                                     });
                                                 })->where('tahun', end($tahuns))->first();
-                                                $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                if($kegiatan_target_satuan_rp_realisasi)
+                                                {
+                                                    $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                } else {
+                                                    $e_80 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                }
                                                 $e_80 .= '<td>Rp. '.number_format(array_sum($target_rp_kolom_6), 2, ',', '.').'</td>';
                                                 // Kolom 6 End
                                                 // Kolom 7 - 11 Start
@@ -826,7 +841,7 @@ class E80Ekspor implements FromView
                                                 if($kegiatan_target_satuan_rp_realisasi)
                                                 {
                                                     $e_80 .= '<td>'.$kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                } else{
+                                                } else {
                                                     $e_80 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 }
                                                 $e_80 .= '<td>Rp. '.number_format(array_sum($target_rp_kolom_6), 2, ',', '.').'</td>';

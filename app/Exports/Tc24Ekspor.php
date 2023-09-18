@@ -85,16 +85,16 @@ class Tc24Ekspor implements FromView
         $opd = MasterOpd::find($opd_id);
 
         $a = 1;
-        $get_visis = Visi::where('tahun_periode_id', $get_periode->id)->whereHas('misi', function($q) use ($opd_id){
-            $q->whereHas('tujuan', function($q) use ($opd_id){
-                $q->whereHas('sasaran', function($q) use ($opd_id){
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd_id){
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd_id){
-                            $q->whereHas('program_rpjmd', function($q) use ($opd_id){
-                                $q->whereHas('program', function($q) use ($opd_id){
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd_id){
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd_id){
-                                            $q->where('opd_id', $opd_id);
+        $get_visis = Visi::whereHas('misi', function($q) use ($opd){
+            $q->whereHas('tujuan', function($q) use ($opd){
+                $q->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                            $q->where('opd_id', $opd->id);
                                         });
                                     });
                                 });
@@ -103,7 +103,7 @@ class Tc24Ekspor implements FromView
                     });
                 });
             });
-        })->get();
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $visis = [];
         foreach ($get_visis as $get_visi) {
@@ -126,14 +126,14 @@ class Tc24Ekspor implements FromView
 
         foreach ($visis as $visi)
         {
-            $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q) use ($opd) {
-                $q->whereHas('sasaran', function($q) use ($opd) {
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd) {
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd) {
-                            $q->whereHas('program_rpjmd', function($q) use ($opd) {
-                                $q->whereHas('program', function($q) use ($opd) {
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd) {
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd) {
+            $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q) use ($opd){
+                $q->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
                                             $q->where('opd_id', $opd->id);
                                         });
                                     });
@@ -168,13 +168,13 @@ class Tc24Ekspor implements FromView
 
             foreach ($misis as $misi)
             {
-                $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q) use ($opd) {
-                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd) {
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd) {
-                            $q->whereHas('program_rpjmd', function($q) use ($opd) {
-                                $q->whereHas('program', function($q) use ($opd) {
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd) {
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd) {
+                $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q) use ($opd){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
                                             $q->where('opd_id', $opd->id);
                                         });
                                     });
@@ -209,12 +209,12 @@ class Tc24Ekspor implements FromView
 
                 foreach ($tujuans as $tujuan)
                 {
-                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q) use ($opd) {
-                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd) {
-                            $q->whereHas('program_rpjmd', function($q) use ($opd) {
-                                $q->whereHas('program', function($q) use ($opd) {
-                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd) {
-                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd) {
+                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                            $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                $q->whereHas('program', function($q) use ($opd){
+                                    $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
                                             $q->where('opd_id', $opd->id);
                                         });
                                     });
@@ -254,8 +254,8 @@ class Tc24Ekspor implements FromView
                                     });
                                 });
                             });
-                            })->whereHas('program_indikator_kinerja', function($q) use ($opd) {
-                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd) {
+                            })->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
                                     $q->where('opd_id', $opd->id);
                                 });
                         })->get();
@@ -285,7 +285,7 @@ class Tc24Ekspor implements FromView
                         foreach($programs as $program)
                         {
                             $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
-                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd) {
+                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
                                                                 $q->where('opd_id', $opd->id);
                                                             })->get();
                             foreach ($program_indikator_kinerjas as $program_indikator_kinerja)
@@ -372,8 +372,8 @@ class Tc24Ekspor implements FromView
                                 $tc_24 .= '</tr>';
                             }
 
-                            $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd) {
-                                $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd) {
+                            $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
+                                $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
                                     $q->where('opd_id', $opd->id);
                                 });
                             })->get();
@@ -401,7 +401,7 @@ class Tc24Ekspor implements FromView
                             foreach($kegiatans as $kegiatan)
                             {
                                 $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])
-                                                                    ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd) {
+                                                                    ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
                                                                         $q->where('opd_id', $opd->id);
                                                                     })->get();
                                 foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja)
@@ -417,7 +417,7 @@ class Tc24Ekspor implements FromView
                                                                                         })->where('tahun', $tahun)->first();
                                             if($kegiatan_target_satuan_rp_realisasi)
                                             {
-                                                $tc_24 .= '<td>Rp.'.number_format($kegiatan_target_satuan_rp_realisasi->target_rp,2, ',', '.').'</td>';
+                                                $tc_24 .= '<td>Rp.'.number_format((int)$kegiatan_target_satuan_rp_realisasi->target_rp,2, ',', '.').'</td>';
                                             } else {
                                                 $tc_24 .= '<td>Rp. 0, 00</td>';
                                             }
@@ -459,13 +459,13 @@ class Tc24Ekspor implements FromView
                                             })->where('tahun', $tahun)->first();
                                             if($kegiatan_target_satuan_rp_realisasi)
                                             {
-                                                $target_rp_kolom_12_6 = $kegiatan_target_satuan_rp_realisasi->target_rp;
+                                                $target_rp_kolom_12_6 = (int)$kegiatan_target_satuan_rp_realisasi->target_rp;
                                                 $realisasi_rp_kolom_12_16 = [];
                                                 foreach ($tws as $tw) {
                                                     $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id',$kegiatan_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
                                                     if($cek_kegiatan_tw_realisasi)
                                                     {
-                                                        $realisasi_rp_kolom_12_16[] = $cek_kegiatan_tw_realisasi->realisasi_rp;
+                                                        $realisasi_rp_kolom_12_16[] = (int)$cek_kegiatan_tw_realisasi->realisasi_rp;
                                                     } else {
                                                         $realisasi_rp_kolom_12_16[] = 0;
                                                     }
@@ -486,7 +486,7 @@ class Tc24Ekspor implements FromView
                                 }
 
                                 $sub_kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])
-                                                                    ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd) {
+                                                                    ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
                                                                         $q->where('opd_id', $opd->id);
                                                                     })->get();
                                 foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
