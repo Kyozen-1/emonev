@@ -181,7 +181,13 @@ class E81Ekspor implements FromView
                                     $last_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
                                     ->where('tahun', end($tahuns))->first();
 
-                                    $e_81 .= '<td>'.$last_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    if($last_sasaran_pd_target_satuan_rp_realisasi)
+                                    {
+                                        $e_81 .= '<td>'.$last_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    } else {
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    }
+
                                     $e_81 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 5 End
                                     // Kolom 6 Start
@@ -231,17 +237,23 @@ class E81Ekspor implements FromView
                                     $e_81 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 8 - 11 End
                                     // Kolom 12 Start
-                                    $sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)
+                                    if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                    {
+                                        $sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)
                                                                     ->whereHas('sasaran_pd_target_satuan_rp_realisasi', function($q) use ($tahun){
                                                                         $q->where('tahun', $tahun);
                                                                     })->first();
-                                    if($sasaran_pd_realisasi_renja)
-                                    {
-                                        $e_81 .= '<td>'.$sasaran_pd_realisasi_renja->realisasi.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                        $e_81 .= '<td>Rp. 0,00</td>';
+                                        if($sasaran_pd_realisasi_renja)
+                                        {
+                                            $e_81 .= '<td>'.$sasaran_pd_realisasi_renja->realisasi.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                            $e_81 .= '<td>Rp. 0,00</td>';
+                                        } else {
+                                            $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                            $e_81 .= '<td>Rp. 0, 00</td>';
+                                        }
                                     } else {
-                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                        $e_81 .= '<td>Rp. 0, 00</td>';
+                                        $e_81 .= '<td></td>';
+                                        $e_81 .= '<td></td>';
                                     }
                                     // Kolom 12 Start
                                     // Kolom 13 Start
@@ -264,13 +276,18 @@ class E81Ekspor implements FromView
                                         $sasaran_pd_realisasi_kolom_13_6 = [];
                                     }
 
-                                    $cek_sasaran_pd_realisasi_renja_kolom_13_12 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)
+                                    if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                    {
+                                        $cek_sasaran_pd_realisasi_renja_kolom_13_12 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)
                                                                     ->whereHas('sasaran_pd_target_satuan_rp_realisasi', function($q) use ($tahun){
                                                                         $q->where('tahun', $tahun);
                                                                     })->first();
-                                    if($cek_sasaran_pd_realisasi_renja_kolom_13_12)
-                                    {
-                                        $sasaran_pd_realisasi_renja_kolom_13_12 = $cek_sasaran_pd_realisasi_renja_kolom_13_12->realisasi;
+                                        if($cek_sasaran_pd_realisasi_renja_kolom_13_12)
+                                        {
+                                            $sasaran_pd_realisasi_renja_kolom_13_12 = $cek_sasaran_pd_realisasi_renja_kolom_13_12->realisasi;
+                                        } else {
+                                            $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
+                                        }
                                     } else {
                                         $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                     }
@@ -310,7 +327,13 @@ class E81Ekspor implements FromView
                                     $last_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)
                                     ->where('tahun', end($tahuns))->first();
 
-                                    $e_81 .= '<td>'.$last_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    if($last_sasaran_pd_target_satuan_rp_realisasi)
+                                    {
+                                        $e_81 .= '<td>'.$last_sasaran_pd_target_satuan_rp_realisasi->target.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    } else {
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                    }
+
                                     $e_81 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 5 End
                                     // Kolom 6 Start
@@ -360,17 +383,23 @@ class E81Ekspor implements FromView
                                     $e_81 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 8 - 11 End
                                     // Kolom 12 Start
-                                    $sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)
+                                    if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                    {
+                                        $sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)
                                                                     ->whereHas('sasaran_pd_target_satuan_rp_realisasi', function($q) use ($tahun){
                                                                         $q->where('tahun', $tahun);
                                                                     })->first();
-                                    if($sasaran_pd_realisasi_renja)
-                                    {
-                                        $e_81 .= '<td>'.$sasaran_pd_realisasi_renja->realisasi.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                        $e_81 .= '<td>Rp. 0,00</td>';
+                                        if($sasaran_pd_realisasi_renja)
+                                        {
+                                            $e_81 .= '<td>'.$sasaran_pd_realisasi_renja->realisasi.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                            $e_81 .= '<td>Rp. 0,00</td>';
+                                        } else {
+                                            $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                            $e_81 .= '<td>Rp. 0, 00</td>';
+                                        }
                                     } else {
-                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                        $e_81 .= '<td>Rp. 0, 00</td>';
+                                        $e_81 .= '<td></td>';
+                                        $e_81 .= '<td></td>';
                                     }
                                     // Kolom 12 Start
                                     // Kolom 13 Start
@@ -393,17 +422,21 @@ class E81Ekspor implements FromView
                                         $sasaran_pd_realisasi_kolom_13_6 = [];
                                     }
 
-                                    $cek_sasaran_pd_realisasi_renja_kolom_13_12 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)
+                                    if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                    {
+                                        $cek_sasaran_pd_realisasi_renja_kolom_13_12 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)
                                                                     ->whereHas('sasaran_pd_target_satuan_rp_realisasi', function($q) use ($tahun){
                                                                         $q->where('tahun', $tahun);
                                                                     })->first();
-                                    if($cek_sasaran_pd_realisasi_renja_kolom_13_12)
-                                    {
-                                        $sasaran_pd_realisasi_renja_kolom_13_12 = $cek_sasaran_pd_realisasi_renja_kolom_13_12->realisasi;
+                                        if($cek_sasaran_pd_realisasi_renja_kolom_13_12)
+                                        {
+                                            $sasaran_pd_realisasi_renja_kolom_13_12 = $cek_sasaran_pd_realisasi_renja_kolom_13_12->realisasi;
+                                        } else {
+                                            $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
+                                        }
                                     } else {
                                         $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                     }
-
                                     $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
                                     $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
                                     $e_81 .= '<td>Rp.0, 00</td>';
