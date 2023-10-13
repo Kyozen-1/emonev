@@ -3,6 +3,10 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/dashboard', 'Admin\DashboardController@index')->name('admin.dashboard.index');
     Route::post('/admin/dashboard/change', 'Admin\DashboardController@change')->name('admin.dashboard.change');
     Route::get('/normalisasi-opd', 'Admin\DashboardController@normalisasi_opd');
+    Route::prefix('grafik')->group(function(){
+        Route::get('/tujuan-pd', 'Admin\DashboardController@grafik_tujuan_pd')->name('admin.dashboard.tujuan-pd');
+        Route::get('/sasaran-pd', 'Admin\DashboardController@grafik_sasaran_pd')->name('admin.dashboard.sasaran-pd');
+    });
 
     //Kecamatan
     Route::get('/admin/kecamatan', 'Admin\KecamatanController@index')->name('admin.kecamatan.index');

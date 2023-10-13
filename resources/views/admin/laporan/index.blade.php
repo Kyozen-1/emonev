@@ -123,7 +123,7 @@
                         <div class="text-center mb-3">
                             <h1>Tabel T-C.14</h1>
                             <h1>Program Pembangunan Daerah yang disertai Pagu Indikatif</h1>
-                            <h1>{{ Auth::user()->kabupaten->nama }}</h1>
+                            <h1>{{ Auth::user()->kabupaten_id?Auth::user()->kabupaten->nama ? '' }}</h1>
                         </div>
                         <div class="text-left">
                             {{-- <label for="" class="control-label">(*) = Program Prioritas, (**) = Program Pendukung</label> --}}

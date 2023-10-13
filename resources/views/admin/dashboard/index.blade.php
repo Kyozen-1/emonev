@@ -580,6 +580,204 @@
                 </div>
             </div> --}}
             {{-- Pendapatan, Pembiayaan, dan Belanja End --}}
+            <div class="card mb-5">
+                <div class="card-body">
+                    <div class="mb-3 cta-3 text-primary">Selamat Datang Sistem Pengendalian dan Evaluasi Kabupaten Madiun</div>
+                    <p class="mb-0">Tahun Periode Aktif: {{$getTahunPeriode->tahun_awal}} - {{$getTahunPeriode->tahun_akhir}}</p>
+                </div>
+            </div>
+            <div class="mb-5">
+                <div class="row g-2">
+                    <div class="col-12 col-md-3">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                    <div class="col-12 col-xl d-flex">
+                                        <div class="d-flex align-items-center lh-1-25">OPD</div>
+                                    </div>
+                                    <div class="col-12 col-xl-auto">
+                                        <div class="cta-2 text-primary">{{$countOpd}}</div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                        <div class="col-12 col-xl d-flex">
+                                            <div class="d-flex align-items-center lh-1-25">Urusan</div>
+                                        </div>
+                                        <div class="col-12 col-xl-auto">
+                                            <div class="cta-2 text-primary">{{$countUrusan}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                    <div class="col-12 col-xl d-flex">
+                                        <div class="d-flex align-items-center lh-1-25">Program</div>
+                                    </div>
+                                    <div class="col-12 col-xl-auto">
+                                        <div class="cta-2 text-primary">{{$countProgram}}</div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                    <div class="col-12 col-xl d-flex">
+                                        <div class="d-flex align-items-center lh-1-25">Kegiatan</div>
+                                    </div>
+                                    <div class="col-12 col-xl-auto">
+                                        <div class="cta-2 text-primary">{{$countKegiatan}}</div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                    <div class="col-12 col-xl d-flex">
+                                        <div class="d-flex align-items-center lh-1-25">Sub Kegiatan</div>
+                                    </div>
+                                    <div class="col-12 col-xl-auto">
+                                        <div class="cta-2 text-primary">{{$countSubKegiatan}}</div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                    <div class="col-12 col-xl d-flex">
+                                        <div class="d-flex align-items-center lh-1-25">Tujuan</div>
+                                    </div>
+                                    <div class="col-12 col-xl-auto">
+                                        <div class="cta-2 text-primary">{{$countTujuan}}</div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                    <div class="col-12 col-xl d-flex">
+                                        <div class="d-flex align-items-center lh-1-25">Sasaran</div>
+                                    </div>
+                                    <div class="col-12 col-xl-auto">
+                                        <div class="cta-2 text-primary">{{$countSasaran}}</div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-5">
+                <div class="row g-2">
+                    <div class="col-12 col-md-4">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                        <div class="col-12 col-xl d-flex">
+                                            <div class="d-flex align-items-center lh-1-25">Target Anggaran</div>
+                                        </div>
+                                        <div class="col-12 col-xl-auto">
+                                            <div class="cta-2 text-primary">Rp. {{number_format($targetAnggaran, 2, ',', '.')}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                        <div class="col-12 col-xl d-flex">
+                                            <div class="d-flex align-items-center lh-1-25">Target Anggaran Perubahan</div>
+                                        </div>
+                                        <div class="col-12 col-xl-auto">
+                                            <div class="cta-2 text-primary">Rp. {{number_format($targetAnggaranPerubahan, 2, ',', '.')}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card sh-11 hover-scale-up cursor-pointer">
+                            <div class="h-100 row g-0 card-body align-items-center py-3">
+                                <div class="col">
+                                    <div class="row gx-2 d-flex align-content-center">
+                                    <div class="col-12 col-xl d-flex">
+                                        <div class="d-flex align-items-center lh-1-25">Realiasi</div>
+                                    </div>
+                                    <div class="col-12 col-xl-auto">
+                                        <div class="cta-2 text-primary">Rp. {{number_format($targetRealisasi, 2, ',', '.')}}</div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-3 cta-3 text-primary">Grafik Tujuan PD</div>
+                                <div id="grafik_tujuan_pd"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-3 cta-3 text-primary">Grafik Sasaran PD</div>
+                                <div id="grafik_sasaran_pd"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- Content End -->
     </div>
@@ -595,37 +793,84 @@
                 format:'yyyy-mm-dd',
                 autoclose:true
             });
-            var grafik_misi = {
-                series: [67, 33],
-                chart: {
-                    type: 'donut',
-                    toolbar: {
-                        show: false
-                    }
-                },
-                tooltip: {
-                    shared: true,
-                    intersect: false,
-                    style: {
-                        fontSize: '2rem',
-                    },
-                },
-                labels: ['Sudah Tercapai', 'Belum Tercapai'],
-                responsive: [{
-                    breakpoint: 480,
-                    options: {
-                        chart: {
-                            width: 320
-                        },
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }]
-            };
 
-            var chart_grafik_misi = new ApexCharts(document.querySelector("#grafik_misi"), grafik_misi);
-            chart_grafik_misi.render();
+            $.ajax({
+                url: "{{route('admin.dashboard.tujuan-pd')}}",
+                dataType: "json",
+                success: function(data)
+                {
+                    var grafik_tujuan_pd = {
+                        series: data.jumlah,
+                        chart: {
+                            type: 'donut',
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        tooltip: {
+                            shared: true,
+                            intersect: false,
+                            style: {
+                                fontSize: '2rem',
+                            },
+                        },
+                        labels: data.nama,
+                        responsive: [{
+                            breakpoint: 480,
+                            options: {
+                                chart: {
+                                    width: 320
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }]
+                    };
+
+                    var chart_grafik_tujuan_pd = new ApexCharts(document.querySelector("#grafik_tujuan_pd"), grafik_tujuan_pd);
+                    chart_grafik_tujuan_pd.render();
+                }
+            });
+
+            $.ajax({
+                url: "{{route('admin.dashboard.sasaran-pd')}}",
+                dataType: "json",
+                success: function(data)
+                {
+                    var grafik_sasaran_pd = {
+                        series: data.jumlah,
+                        chart: {
+                            type: 'donut',
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        tooltip: {
+                            shared: true,
+                            intersect: false,
+                            style: {
+                                fontSize: '2rem',
+                            },
+                        },
+                        labels: data.nama,
+                        responsive: [{
+                            breakpoint: 480,
+                            options: {
+                                chart: {
+                                    width: 320
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }]
+                    };
+
+                    var chart_grafik_sasaran_pd = new ApexCharts(document.querySelector("#grafik_sasaran_pd"), grafik_sasaran_pd);
+                    chart_grafik_sasaran_pd.render();
+                }
+            });
 
             var grafik_anggaran = {
                 series: [80, 20],

@@ -170,7 +170,10 @@ class SubKegiatanController extends Controller
         } else {
             $opd_sub_kegiatan_id = $get_opd->id;
         }
+        $last_sub_kegiatan = SubKegiatanTargetSatuanRpRealisasi::orderBy('id', 'desc')->first();
+
         $sub_kegiatan_target_satuan_rp_realisasi = new SubKegiatanTargetSatuanRpRealisasi;
+        $sub_kegiatan_target_satuan_rp_realisasi->id = $last_sub_kegiatan->id + 1;
         $sub_kegiatan_target_satuan_rp_realisasi->opd_sub_kegiatan_indikator_kinerja_id = $opd_sub_kegiatan_id;
         $sub_kegiatan_target_satuan_rp_realisasi->target = $request->target;
         $sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal = $request->target_anggaran_renja_awal;
