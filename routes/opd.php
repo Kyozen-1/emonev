@@ -43,6 +43,8 @@ Route::group(['middleware' => 'auth:opd'], function(){
 
 
     // Renja Sub Kegiatan
+    Route::post('/opd/renja/sub-kegiatan/get-data', 'Opd\Renja\SubKegiatanController@get_data')->name('opd.renja.sub-kegiatan.get-data');
+    Route::post('/opd/renja/sub-kegiatan/tambah', 'Opd\Renja\SubKegiatanController@tambah')->name('opd.renja.sub-kegiatan.tambah');
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/tambah', 'Opd\Renja\SubKegiatanController@indikator_kinerja_tambah')->name('opd.renja.sub-kegiatan.indikator-kinerja.tambah');
     Route::post('/opd/renja/sub-kegiatan/indikator-kinerja/hapus', 'Opd\Renja\SubKegiatanController@indikator_kinerja_hapus')->name('opd.renja.sub-kegiatan.indikator-kinerja.hapus');
     Route::get('/opd/renja/sub-kegiatan/indikator-kinerja/edit/{id}', 'Opd\Renja\SubKegiatanController@indikator_kinerja_edit');

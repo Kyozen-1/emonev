@@ -66,6 +66,48 @@ use App\Models\SubKegiatanTargetSatuanRpRealisasi;
 
 class SubKegiatanController extends Controller
 {
+    public function get_data(Request $request)
+    {
+        $getSubKegiatans = SubKegiatan::where('kegiatan_id', $request->kegiatan_id)->get();
+        $subKegiatan = [];
+        foreach ($getSubKegiatans as $getSubKegiatan) {
+            $cekSubKegiatan = SubKegiatan::where('id', $getSubKegiatan->id)->whereHas('sub_kegiatan_indikator_kinerja', function($q){
+                $q->whereHas('opd_sub_kegiatan_indikator_kinerja', function($q){
+                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                });
+            })->first();
+
+            if(!$cekSubKegiatan)
+            {
+                $subKegiatan[] = [
+                    'id' => $getSubKegiatan->id,
+                    'deskripsi' => $getSubKegiatan->deskripsi
+                ];
+            }
+        }
+        return response()->json($subKegiatan);
+    }
+
+    public function tambah(Request $request)
+    {
+        $sub_kegiatan_id = $request->sub_kegiatan_id;
+        for ($i=0; $i < count($sub_kegiatan_id); $i++) {
+            $sub_kegiatan_indikator_kinerja = new SubKegiatanIndikatorKinerja;
+            $sub_kegiatan_indikator_kinerja->sub_kegiatan_id = $sub_kegiatan_id[$i];
+            $sub_kegiatan_indikator_kinerja->deskripsi = 'Silahkan Edit';
+            $sub_kegiatan_indikator_kinerja->satuan = 'Silahkan Edit';
+            $sub_kegiatan_indikator_kinerja->save();
+
+            $opd_sub_kegiatan_indikator_kinerja = new OpdSubKegiatanIndikatorKinerja;
+            $opd_sub_kegiatan_indikator_kinerja->sub_kegiatan_indikator_kinerja_id = $sub_kegiatan_indikator_kinerja->id;
+            $opd_sub_kegiatan_indikator_kinerja->opd_id = Auth::user()->opd->opd_id;
+            $opd_sub_kegiatan_indikator_kinerja->save();
+        }
+
+        Alert::success('Berhasil', 'Berhasil menambahkan Sub Kegiatan');
+        return redirect()->route('opd.renja.index');
+    }
+
     public function indikator_kinerja_tambah(Request $request)
     {
         $errors = Validator::make($request->all(), [

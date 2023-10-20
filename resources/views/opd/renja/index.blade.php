@@ -286,6 +286,30 @@
     {{-- Modal Kegiatan End --}}
 
     {{-- Modal Sub Kegiatan Start --}}
+    <div id="tambahSubKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tambahSubKegiatanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Tambah Sub Kegiatan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('opd.renja.sub-kegiatan.tambah') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-3 position-relative form-group">
+                            <label class="d-block form-label">Sub Kegiatan</label>
+                            <select name="sub_kegiatan_id[]" id="select_sub_kegiatan" class="form-control" required multiple>
+                            </select>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Tambah Sub Kegiatan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="indikatorKinerjaSubKegiatanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="indikatorKinerjaSubKegiatanModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -434,6 +458,9 @@
             });
 
             // new Tagify(document.querySelector('#indikator_kinerja_sub_kegiatan_deskripsi'));
+            $('#select_sub_kegiatan').select2({
+                dropdownParent: $("#tambahSubKegiatanModal")
+            });
         });
 
         // Renja Tujuan Start
@@ -816,6 +843,27 @@
         // Renja Kegiatan End
 
         // Renja Sub Kegiatan Start
+        $(document).on('click', '.btn-tambah-opd-renja-sub-kegiatan', function(){
+            var kegiatan_id = $(this).attr('data-kegiatan-id');
+            $.ajax({
+                url: "{{ route('opd.renja.sub-kegiatan.get-data') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    kegiatan_id:kegiatan_id
+                },
+                success: function(response){
+                    $('#select_sub_kegiatan').empty();
+                    $('#select_sub_kegiatan').prop('disabled', false);
+                    $('#select_sub_kegiatan').append('<option value="">--- Pilih Sub Kegiatan ---</option>');
+                    $.each(response, function(key, value){
+                        $('#select_sub_kegiatan').append(new Option(value.deskripsi, value.id));
+                    });
+                }
+            });
+            $('#tambahSubKegiatanModal').modal('show');
+        });
+
         $('#renja_sub_kegiatan_tab_button').click(function(){
             $.ajax({
                 url: "{{ route('opd.renja.get-sub-kegiatan') }}",
