@@ -241,6 +241,7 @@ class PerencanaanController extends Controller
                                                                         <td width="20%">
                                                                             <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-misi" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Detail Misi"><i class="fas fa-eye"></i></button>
                                                                             <button class="btn btn-icon btn-warning waves-effect waves-light edit-misi" data-misi-id="'.$misi['id'].'" data-tahun="semua" data-visi-id="'.$visi['id'].'" type="button" title="Edit Misi"><i class="fas fa-edit"></i></button>
+                                                                            <button class="btn btn-icon waves-effect btn-danger waves-light delete-misi " type="button" data-misi-id="'.$misi['id'].'" title="Delete Data"><i class="fas fa-trash"></i></button>
                                                                         </td>
                                                                     </tr>';
                                                             $a++;

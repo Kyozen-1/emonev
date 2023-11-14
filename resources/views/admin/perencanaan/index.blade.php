@@ -2819,6 +2819,61 @@
                 }
             });
         });
+
+        $(document).on('click', '.visi_delete', function(){
+            var id = $(this).attr("id");
+
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus?, Ini akan menghapus semua data!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.visi.destroy') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            id:id
+                        },
+                        beforeSend: function()
+                        {
+                            return new swal({
+                                title: "Checking...",
+                                text: "Harap Menunggu",
+                                imageUrl: "{{ asset('/images/preloader.gif') }}",
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
         // Visi End
 
         // Misi Start
@@ -3012,6 +3067,61 @@
                     $('#misi_aksi_button').val('Edit');
                     $('#misi_aksi').val('Edit');
                     $('#addEditMisiModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-misi', function(){
+            var id = $(this).attr('data-misi-id');
+
+            return new swal({
+                title: "Apakah Anda Yakin Menghapus?, Ini akan menghapus semua data!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1976D2",
+                confirmButtonText: "Ya"
+            }).then((result)=>{
+                if(result.value)
+                {
+                    $.ajax({
+                        url: "{{ route('admin.misi.destroy') }}",
+                        method: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            id:id
+                        },
+                        beforeSend: function()
+                        {
+                            return new swal({
+                                title: "Checking...",
+                                text: "Harap Menunggu",
+                                imageUrl: "{{ asset('/images/preloader.gif') }}",
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function(data)
+                        {
+                            if(data.errors)
+                            {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: data.errors,
+                                    showConfirmButton: true
+                                });
+                            }
+                            if(data.success)
+                            {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.success,
+                                    showConfirmButton: true
+                                }).then(function() {
+                                    window.location.href = "{{ route('admin.perencanaan.index') }}";
+                                });
+                            }
+                        }
+                    });
                 }
             });
         });

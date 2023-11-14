@@ -65,6 +65,11 @@ use App\Models\OpdSubKegiatanIndikatorKinerja;
 use App\Models\SubKegiatanTargetSatuanRpRealisasi;
 use App\Models\SubKegiatanTwRealisasi;
 use App\Models\OpdKegiatanIndikatorKinerja;
+use App\Models\SasaranTargetSatuanRpRealisasi;
+use App\Models\SasaranTwRealisasi;
+use App\Models\TujuanIndikatorKinerja;
+use App\Models\TujuanTargetSatuanRpRealisasi;
+use App\Models\TujuanTwRealisasi;
 
 class MisiController extends Controller
 {
@@ -586,8 +591,123 @@ class MisiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        DB::transaction(function () use ($request){
+            $getTujuans = Tujuan::where('misi_id', $request->id)->get();
+            foreach ($getTujuans as $getTujuan) {
+                $getSasarans = Sasaran::where('tujuan_id', $getTujuan->id)->get();
+                foreach ($getSasarans as $getSasaran) {
+
+                    $getSasaranIndikatorKinerjas = SasaranIndikatorKinerja::where('sasaran_id', $getSasaran->id)->get();
+                    foreach ($getSasaranIndikatorKinerjas as $getSasaranIndikatorKinerja) {
+                        $getPivotSasaranIndikatorProgramRpjmds = PivotSasaranIndikatorProgramRpjmd::where('sasaran_indikator_kinerja_id', $getSasaranIndikatorKinerja->id)->get();
+                        foreach ($getPivotSasaranIndikatorProgramRpjmds as $getPivotSasaranIndikatorProgramRpjmd) {
+                            PivotSasaranIndikatorProgramRpjmd::find($getPivotSasaranIndikatorProgramRpjmd->id)->delete();
+                        }
+
+                        $getSasaranTargetSatuanRpRealisasis = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $getSasaranIndikatorKinerja->id)->get();
+                        foreach ($getSasaranTargetSatuanRpRealisasis as $getSasaranTargetSatuanRpRealisasi) {
+                            $getSasaranTwRealisasis = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $getSasaranTargetSatuanRpRealisasi->id)->get();
+                            foreach ($getSasaranTwRealisasis as $getSasaranTwRealisasi) {
+                                SasaranTwRealisasi::find($getSasaranTwRealisasi->id)->delete();
+                            }
+
+                            SasaranTargetSatuanRpRealisasi::find($getSasaranTargetSatuanRpRealisasi->id)->delete();
+                        }
+
+                        SasaranIndikatorKinerja::find($getSasaranIndikatorKinerja->id)->delete();
+                    }
+
+                    $getSasaranPds = SasaranPd::where('sasaran_id', $getSasaran->id)->get();
+                    foreach ($getSasaranPds as $getSasaranPd) {
+                        $getSasaranPdProgramRpjmds = SasaranPdProgramRpjmd::where('sasaran_pd_id', $getSasaranPd->id)->get();
+                        foreach ($getSasaranPdProgramRpjmds as $getSasaranPdProgramRpjmd) {
+                            SasaranPdProgramRpjmd::find($getSasaranPdProgramRpjmd->id)->delete();
+                        }
+
+                        $getSasaranPdIndikatorKinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $getSasaranPd->id)->get();
+                        foreach ($getSasaranPdIndikatorKinerjas as $getSasaranPdIndikatorKinerja) {
+                            $getSasaranPdTargetSatuanRpRealisasis = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $getSasaranPdIndikatorKinerja->id)->get();
+                            foreach ($getSasaranPdTargetSatuanRpRealisasis as $getSasaranPdTargetSatuanRpRealisasi) {
+                                $getSasaranPdRealisasiRenjas = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id', $getSasaranPdTargetSatuanRpRealisasi->id)->get();
+                                foreach ($getSasaranPdRealisasiRenjas as $getSasaranPdRealisasiRenja) {
+                                    SasaranPdRealisasiRenja::find($getSasaranPdRealisasiRenja->id)->delete();
+                                }
+
+                                SasaranPdTargetSatuanRpRealisasi::find($getSasaranPdTargetSatuanRpRealisasi->id)->delete();
+                            }
+
+                            SasaranPdIndikatorKinerja::find($getSasaranPdIndikatorKinerja->id)->delete();
+                        }
+
+                        $getPivotPerubahanSasaranPds = PivotPerubahanSasaranPd::where('sasaran_pd_id', $getSasaranPd->id)->get();
+                        foreach ($getPivotPerubahanSasaranPds as $getPivotPerubahanSasaranPd) {
+                            PivotPerubahanSasaranPd::find($getPivotPerubahanSasaranPd->id)->delete();
+                        }
+
+                        SasaranPd::find($getSasaranPd->id)->delete();
+                    }
+
+                    $getPivotPerubahanSasarans = PivotPerubahanSasaran::where('sasaran_id', $getSasaran->id)->get();
+                    foreach ($getPivotPerubahanSasarans as $getPivotPerubahanSasaran) {
+                        PivotPerubahanSasaran::find($getPivotPerubahanSasaran->id)->delete();
+                    }
+
+                    Sasaran::find($getSasaran->id)->delete();
+                }
+
+                $getTujuanIndikatorKinerjas = TujuanIndikatorKinerja::where('tujuan_id', $getTujuan->id)->get();
+                foreach ($getTujuanIndikatorKinerjas as $getTujuanIndikatorKinerja) {
+                    $getTujuanTargetSatuanRpRealisasis = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $getTujuanIndikatorKinerja->id)->get();
+                    foreach ($getTujuanTargetSatuanRpRealisasis as $getTujuanTargetSatuanRpRealisasi) {
+                        $getTujuanTwRealisasis = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $getTujuanTargetSatuanRpRealisasi->id)->get();
+                        foreach ($getTujuanTwRealisasis as $getTujuanTwRealisasi) {
+                            TujuanTwRealisasi::find($getTujuanTwRealisasi->id)->delete();
+                        }
+
+                        TujuanTargetSatuanRpRealisasi::find($getTujuanTargetSatuanRpRealisasi->id)->delete();
+                    }
+
+                    TujuanIndikatorKinerja::find($getTujuanIndikatorKinerja->id)->delete();
+                }
+
+                $getTujuanPds = TujuanPd::where('tujuan_id', $getTujuan->id)->get();
+                foreach ($getTujuanPds as $getTujuanPd) {
+                    $getTujuanPdIndikatorKinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $getTujuanPd->id)->get();
+                    foreach ($getTujuanPdIndikatorKinerjas as $getTujuanPdIndikatorKinerja) {
+
+                        $getTujuanPdTargetSatuanRpRealisasis = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $getTujuanPdIndikatorKinerja->id)->get();
+                        foreach ($getTujuanPdTargetSatuanRpRealisasis as $getTujuanPdTargetSatuanRpRealisasi) {
+                            $getTujuanPdRealisasiRenjas = TujuanPdRealisasiRenja::where('tujuan_pd_target_satuan_rp_realisasi_id', $getTujuanPdTargetSatuanRpRealisasi->id)->get();
+                            foreach ($getTujuanPdRealisasiRenjas as $getTujuanPdRealisasiRenja) {
+                                TujuanPdRealisasiRenja::find($getTujuanPdRealisasiRenja->id)->delete();
+                            }
+                            TujuanPdTargetSatuanRpRealisasi::find($getTujuanPdTargetSatuanRpRealisasi->id)->delete();
+                        }
+                        TujuanPdIndikatorKinerja::find($getTujuanPdIndikatorKinerja->id)->delete();
+                    }
+                    $getPivotPerubahanTujuanPds = PivotPerubahanTujuanPd::where('tujuan_pd_id', $getTujuanPd->id)->get();
+                    foreach ($getPivotPerubahanTujuanPds as $getPivotPerubahanTujuanPd) {
+                        PivotPerubahanTujuanPd::find($getPivotPerubahanTujuanPd->id)->delete();
+                    }
+                    TujuanPd::find($getTujuanPd->id)->delete();
+                }
+
+                $getPivotPerubahanTujuans = PivotPerubahanTujuan::where('tujuan_id', $getTujuan->id)->get();
+                foreach ($getPivotPerubahanTujuans as $getPivotPerubahanTujuan) {
+                    PivotPerubahanTujuan::find($getPivotPerubahanTujuan->id)->delete();
+                }
+                Tujuan::find($getTujuan->id)->delete();
+            }
+
+            $getPivotPerubahanMisis = PivotPerubahanMisi::where('misi_id', $request->id)->get();
+            foreach ($getPivotPerubahanMisis as $getPivotPerubahanMisi) {
+                PivotPerubahanMisi::find($getPivotPerubahanMisi->id)->delete();
+            }
+            Misi::find($request->id)->delete();
+        });
+
+        return response()->json(['success' => 'Berhasil menghapus']);
     }
 }

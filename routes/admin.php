@@ -315,7 +315,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/visi','Admin\VisiController@store')->name('admin.visi.store');
     Route::get('/admin/visi/edit/{id}','Admin\VisiController@edit');
     Route::post('/admin/visi/update','Admin\VisiController@update')->name('admin.visi.update');
-    Route::get('/admin/visi/destroy/{id}','Admin\VisiController@destroy');
+    Route::post('/admin/visi/destroy','Admin\VisiController@destroy')->name('admin.visi.destroy');
 
     //Misi
     Route::get('/admin/misi', 'Admin\MisiController@index')->name('admin.misi.index');
@@ -323,7 +323,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/misi','Admin\MisiController@store')->name('admin.misi.store');
     Route::get('/admin/misi/edit/{id}/{tahun}','Admin\MisiController@edit');
     Route::post('/admin/misi/update','Admin\MisiController@update')->name('admin.misi.update');
-    Route::get('/admin/misi/destroy/{id}','Admin\MisiController@destroy');
+    Route::post('/admin/misi/destroy','Admin\MisiController@destroy')->name('admin.misi.destroy');
 
     //Tujuan
     Route::get('/admin/tujuan', 'Admin\TujuanController@index')->name('admin.tujuan.index');
