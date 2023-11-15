@@ -23,4 +23,9 @@ class Urusan extends Model
     {
         return $this->hasMany('App\Models\RkpdTahunPembangunanUrusan', 'urusan_id');
     }
+
+    public function tahun_periode()
+    {
+        return $this->belongsTo('App\Models\TahunPeriode', 'tahun_periode_id');
+    }
 }

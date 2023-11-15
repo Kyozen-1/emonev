@@ -25,19 +25,29 @@ class TahunPeriodeController extends Controller
     {
         if(request()->ajax())
         {
-            $data = TahunPeriode::latest()->get();
+            $data = TahunPeriode::where('is_delete', '0')->latest()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('aksi', function($data){
                     $button_edit = '<button type="button" name="edit" id="'.$data->id.'"
-                    class="edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
-                    $button = $button_edit;
+                        class="edit btn btn-icon waves-effect btn-warning" title="Edit Data"><i class="fas fa-edit"></i></button>';
+                    $button_delete = '<button type="button" name="delete" id="'.$data->id.'"
+                        class="delete btn btn-icon waves-effect btn-danger" title="Hapus Data"><i class="fas fa-trash"></i></button>';
+                    $button = $button_edit .' '. $button_delete;
                     return $button;
                 })
                 ->addColumn('tahun_periode', function($data){
                     return $data->tahun_awal .' - '.$data->tahun_akhir;
                 })
-                ->rawColumns(['aksi', 'tahun_periode'])
+                ->addColumn('status_hubungan', function($data){
+                    if($data->urusan)
+                    {
+                        return '<span class="text-success">Ada Hubungan Data</span>';
+                    } else {
+                        return '<span class="text-danger">Tidak Ada Hubungan Data</span>';
+                    }
+                })
+                ->rawColumns(['aksi', 'tahun_periode', 'status_hubungan'])
                 ->make(true);
         }
         return view('admin.tahun-periode.index');
@@ -148,6 +158,24 @@ class TahunPeriodeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $tahunPeriode = TahunPeriode::find($id);
+            if(!$tahunPeriode)
+            {
+                return response()->json(['errors' => 'Tahun Periode Tidak ditemukan']);
+            }
+
+            if($tahunPeriode->status == 'Aktif')
+            {
+                return response()->json(['errors' => 'Tahun Periode Masih Aktif']);
+            }
+
+            $tahunPeriode->is_delete = '1';
+            $tahunPeriode->save();
+
+            return response()->json(['success' => 'Berhasil menghapus data']);
+        } catch (\Throwable $th) {
+            return response()->json(['errors' => $th]);
+        }
     }
 }

@@ -58,8 +58,9 @@
                 <thead>
                     <tr>
                         <th class="text-muted text-small text-uppercase" width="15%">No</th>
-                        <th class="text-muted text-small text-uppercase" width="40%">Jangka Tahun</th>
-                        <th class="text-muted text-small text-uppercase" width="30%">Status</th>
+                        <th class="text-muted text-small text-uppercase" width="35%">Jangka Tahun</th>
+                        <th class="text-muted text-small text-uppercase" width="20%">Status</th>
+                        <th class="text-muted text-small text-uppercase" width="15%">Status Hubungan</th>
                         <th class="text-muted text-small text-uppercase" width="15%">Aksi</th>
                     </tr>
                 </thead>
@@ -133,6 +134,10 @@
                     {
                         data: 'status',
                         name: 'status'
+                    },
+                    {
+                        data: 'status_hubungan',
+                        name: 'status_hubungan'
                     },
                     {
                         data: 'aksi',
@@ -343,7 +348,7 @@
                             if(data.errors)
                             {
                                 Swal.fire({
-                                    icon: 'errors',
+                                    icon: 'error',
                                     title: data.errors,
                                     showConfirmButton: true
                                 });
