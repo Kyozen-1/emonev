@@ -599,7 +599,12 @@ class Tc14Controller extends Controller
                                                             // Kolom 5 - 14 End
                                                             // Kolom 15 - 16 Start
                                                             $program_target_satuan_rp_realisasi_kolom_15 = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)->where('tahun', end($tahuns))->first();
-                                                            $tc_14 .= '<td>'.$program_target_satuan_rp_realisasi_kolom_15->target.'/'.$program_indikator_kinerja->satuan.'</td>';
+                                                            if($program_target_satuan_rp_realisasi_kolom_15)
+                                                            {
+                                                                $tc_14 .= '<td>'.$program_target_satuan_rp_realisasi_kolom_15->target.'/'.$program_indikator_kinerja->satuan.'</td>';
+                                                            } else {
+                                                                $tc_14 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                            }
                                                             $tc_14 .= '<td>Rp. '.number_format(array_sum($target_rp_kolom_16), 2, ',', '.').'</td>';
                                                             // Kolom 15 - 16 End
                                                             $tc_14 .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
@@ -670,7 +675,12 @@ class Tc14Controller extends Controller
                                                             // Kolom 5 - 14 End
                                                             // Kolom 15 - 16 Start
                                                             $program_target_satuan_rp_realisasi_kolom_15 = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)->where('tahun', end($tahuns))->first();
-                                                            $tc_14 .= '<td>'.$program_target_satuan_rp_realisasi_kolom_15->target.'/'.$program_indikator_kinerja->satuan.'</td>';
+                                                            if($program_target_satuan_rp_realisasi_kolom_15)
+                                                            {
+                                                                $tc_14 .= '<td>'.$program_target_satuan_rp_realisasi_kolom_15->target.'/'.$program_indikator_kinerja->satuan.'</td>';
+                                                            } else {
+                                                                $tc_14 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
+                                                            }
                                                             $tc_14 .= '<td>Rp. '.number_format(array_sum($target_rp_kolom_16), 2, ',', '.').'</td>';
                                                             // Kolom 15 - 16 End
                                                             $tc_14 .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';

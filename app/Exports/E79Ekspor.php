@@ -74,7 +74,9 @@ class E79Ekspor implements FromView
 
     public function view(): View
     {
-        $jarak_tahun = $get_periode->tahun_akhir - $get_periode->tahun_awal;
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
         $tahuns = [];
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
@@ -106,7 +108,6 @@ class E79Ekspor implements FromView
         $get_opd = [];
         $a = 1;
         $tws = MasterTw::all();
-        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         foreach ($sasarans as $sasaran) {
             $e_79 .= '<tr>';
                 $e_79 .= '<td>'.$a++.'</td>';
@@ -2052,7 +2053,6 @@ class E79Ekspor implements FromView
                                                     }
                                                     $f++;
                                                 }
-                                            $e_79 .= '</tr>';
                                         }
                                         $e++;
                                     }
@@ -2667,7 +2667,7 @@ class E79Ekspor implements FromView
                                                                 if($cek_program_tw_realisasi)
                                                                 {
                                                                     $e_79 .= '<td>'.$cek_program_tw_realisasi->realisasi.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                                                    $e_79 .= '<td>Rp. '.number_format($cek_program_tw_realisasi->realisasi_rp, 2, ',', '.').'</td>';
+                                                                    $e_79 .= '<td>Rp. '.number_format((int)$cek_program_tw_realisasi->realisasi_rp, 2, ',', '.').'</td>';
                                                                 } else {
                                                                     $e_79 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                                                     $e_79 .= '<td>Rp. 0,00</td>';
@@ -3946,7 +3946,6 @@ class E79Ekspor implements FromView
                                                     }
                                                     $f++;
                                                 }
-                                            $e_79 .= '</tr>';
                                         }
                                         $e++;
                                     }

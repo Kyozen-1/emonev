@@ -61,6 +61,7 @@ use App\Models\OpdKegiatanIndikatorKinerja;
 use App\Models\ProgramTwRealisasi;
 use App\Models\KegiatanTwRealisasi;
 use App\Models\SubKegiatanTwRealisasi;
+use App\Models\MasterTw;
 
 class Tc19Ekspor implements FromView
 {
@@ -78,6 +79,14 @@ class Tc19Ekspor implements FromView
         $tahun_awal = $this->tahun;
         // TC 19 Start
         $tc_19 = '';
+
+        $jarak_tahun = $get_periode->tahun_akhir - $get_periode->tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
+        $tws = MasterTw::all();
 
         $get_urusans = Urusan::where('tahun_periode_id', $get_periode->id)->orderBy('kode', 'asc')->get();
         $urusans = [];
@@ -1193,7 +1202,7 @@ class Tc19Ekspor implements FromView
                                                 if($cek_kegiatan_target_satuan_rp_realisasi)
                                                 {
                                                     $tc_19 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                    $tc_19 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                    $tc_19 .= '<td>Rp. '.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                 } else {
                                                     $tc_19 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                     $tc_19 .= '<td>Rp. 0,00</td>';
@@ -1239,7 +1248,7 @@ class Tc19Ekspor implements FromView
 
                                                     if($realisasi_target_rp_kolom_9_7 != 0)
                                                     {
-                                                        $realisasi_target_rp_kolom_9 = (array_sum($kegiatan_tw_realisasi_realisasi_rp_kolom_9_8) / $realisasi_target_rp_kolom_9_7) * 100;
+                                                        $realisasi_target_rp_kolom_9 = (array_sum($kegiatan_tw_realisasi_realisasi_rp_kolom_9_8) / (int)$realisasi_target_rp_kolom_9_7) * 100;
                                                     } else {
                                                         $realisasi_target_rp_kolom_9 = 0;
                                                     }
@@ -2054,7 +2063,6 @@ class Tc19Ekspor implements FromView
                                         }
                                         $e++;
                                     }
-                                $tc_19 .= '</tr>';
                             }
                             $d++;
                         }

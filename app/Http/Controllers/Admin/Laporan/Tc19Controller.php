@@ -3206,7 +3206,7 @@ class Tc19Controller extends Controller
                                                 if($cek_kegiatan_target_satuan_rp_realisasi)
                                                 {
                                                     $tc_19 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                    $tc_19 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                    $tc_19 .= '<td>Rp. '.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                 } else {
                                                     $tc_19 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                     $tc_19 .= '<td>Rp. 0,00</td>';
@@ -3252,7 +3252,7 @@ class Tc19Controller extends Controller
 
                                                     if($realisasi_target_rp_kolom_9_7 != 0)
                                                     {
-                                                        $realisasi_target_rp_kolom_9 = (array_sum($kegiatan_tw_realisasi_realisasi_rp_kolom_9_8) / $realisasi_target_rp_kolom_9_7) * 100;
+                                                        $realisasi_target_rp_kolom_9 = (array_sum($kegiatan_tw_realisasi_realisasi_rp_kolom_9_8) / (int)$realisasi_target_rp_kolom_9_7) * 100;
                                                     } else {
                                                         $realisasi_target_rp_kolom_9 = 0;
                                                     }
