@@ -123,7 +123,7 @@
                         <div class="text-center mb-3">
                             <h1>Tabel T-C.14</h1>
                             <h1>Program Pembangunan Daerah yang disertai Pagu Indikatif</h1>
-                            <h1>{{ Auth::user()->kabupaten_id?Auth::user()->kabupaten->nama ? '' }}</h1>
+                            <h1>{{ Auth::user()->kabupaten_id?Auth::user()->kabupaten->nama : '' }}</h1>
                         </div>
                         <div class="text-left">
                             {{-- <label for="" class="control-label">(*) = Program Prioritas, (**) = Program Pendukung</label> --}}
@@ -226,7 +226,7 @@
                                             <div class="text-center">
                                                 <h1>Tabel T-C.19</h1>
                                                 <h1>Evaluasi Hasil Pelaksanaan Perencanaan Daerah sampai dengan Tahun {{$tahun}} Berjalan</h1>
-                                                <h1>{{ Auth::user()->kabupaten->nama }}</h1>
+                                                <h1>{{ Auth::user()->kabupaten_id?Auth::user()->kabupaten->nama : '' }}</h1>
                                             </div>
                                             <table class="table table-striped table-bordered text-center">
                                                 <thead>
@@ -325,7 +325,7 @@
                                             <div class="text-center">
                                                 <h1>Tabel E.79</h1>
                                                 <h3>Evaluasi terhadap Hasil RKPD</h3>
-                                                <h3>{{ Auth::user()->kabupaten->nama }}</h3>
+                                                <h1>{{ Auth::user()->kabupaten_id?Auth::user()->kabupaten->nama : '' }}</h1>
                                                 <h3>Tahun {{ $tahun }}</h3>
                                             </div>
                                             <table class="table table-striped table-bordered text-center">
@@ -426,7 +426,7 @@
                             <div class="text-center">
                                 <h1>Tabel E.78</h1>
                                 <h3>Evaluasi Terhadap Hasil RPJMD</h3>
-                                <h3>{{ Auth::user()->kabupaten->nama }}</h3>
+                                <h1>{{ Auth::user()->kabupaten_id?Auth::user()->kabupaten->nama : '' }}</h1>
                             </div>
                             <table class="table table-striped table-bordered text-center">
                                 <thead>
@@ -1381,7 +1381,7 @@
                 opd_id: opd_id
             },
             success: function(data){
-                $('.tbodyE81').html(data.e_81);
+                $('#tbodyE81'+tahun).html(data.e_81);
             }
         });
     });
@@ -1398,7 +1398,7 @@
                 tahun: tahun
             },
             success: function(data){
-                $('#tbodyE81'+tahun_awal).html(data.e_81);
+                $('#tbodyE81'+tahun).html(data.e_81);
             }
         });
     });

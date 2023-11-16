@@ -255,11 +255,11 @@ class E81Controller extends Controller
 
                                     if($cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6)
                                     {
-                                        $cek_sasaran_pd_tw_realisasi_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)->first();
+                                        $cek_sasaran_pd_tw_realisasi_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6->id)->first();
                                         $sasaran_pd_realisasi_kolom_13_6 = [];
                                         if($cek_sasaran_pd_tw_realisasi_kolom_13_6)
                                         {
-                                            $sasaran_pd_tw_realisasies_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)->get();
+                                            $sasaran_pd_tw_realisasies_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6->id)->get();
                                             foreach ($sasaran_pd_tw_realisasies_kolom_13_6 as $sasaran_pd_tw_realisasi_kolom_13_6) {
                                                 $sasaran_pd_realisasi_kolom_13_6[] = $sasaran_pd_tw_realisasi_kolom_13_6->realisasi;
                                             }
@@ -401,11 +401,11 @@ class E81Controller extends Controller
 
                                     if($cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6)
                                     {
-                                        $cek_sasaran_pd_tw_realisasi_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)->first();
+                                        $cek_sasaran_pd_tw_realisasi_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6->id)->first();
                                         $sasaran_pd_realisasi_kolom_13_6 = [];
                                         if($cek_sasaran_pd_tw_realisasi_kolom_13_6)
                                         {
-                                            $sasaran_pd_tw_realisasies_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)->get();
+                                            $sasaran_pd_tw_realisasies_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6->id)->get();
                                             foreach ($sasaran_pd_tw_realisasies_kolom_13_6 as $sasaran_pd_tw_realisasi_kolom_13_6) {
                                                 $sasaran_pd_realisasi_kolom_13_6[] = $sasaran_pd_tw_realisasi_kolom_13_6->realisasi;
                                             }

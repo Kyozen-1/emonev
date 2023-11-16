@@ -61,6 +61,8 @@ use App\Models\OpdKegiatanIndikatorKinerja;
 use App\Models\ProgramTwRealisasi;
 use App\Models\KegiatanTwRealisasi;
 use App\Models\SubKegiatanTwRealisasi;
+use App\Models\TujuanTwRealisasi;
+use App\Models\SasaranTwRealisasi;
 
 class E78Ekspor implements FromView
 {
