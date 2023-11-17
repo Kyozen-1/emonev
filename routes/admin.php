@@ -226,6 +226,10 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/laporan/e-81/ekspor/pdf/{opd_id}/{tahun}', 'Admin\Laporan\E81Controller@e_81_ekspor_pdf');
     Route::get('/admin/laporan/e-81/ekspor/excel/{opd_id}/{tahun}', 'Admin\Laporan\E81Controller@e_81_ekspor_excel');
 
+    Route::post('/admin/laporan/e-81-perubahan', 'Admin\Laporan\E81ControllerPerubahan@laporan_e_81_perubahan')->name('admin.laporan.e-81-perubahan');
+    Route::get('/admin/laporan/e-81/perubahan/ekspor/pdf/{opd_id}/{tahun}', 'Admin\Laporan\E81ControllerPerubahan@e_81_perubahan_ekspor_pdf');
+    Route::get('/admin/laporan/e-81/perubahan/ekspor/excel/{opd_id}/{tahun}', 'Admin\Laporan\E81ControllerPerubahan@e_81_perubahan_ekspor_excel');
+
     //Urusan
     Route::get('/admin/urusan', 'Admin\UrusanController@index')->name('admin.urusan.index');
     Route::get('/admin/urusan/get-urusan/{tahun}', 'Admin\UrusanController@get_urusan');

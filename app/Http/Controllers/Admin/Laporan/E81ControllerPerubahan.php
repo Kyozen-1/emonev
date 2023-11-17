@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin\Laporan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Excel;
+use PDF;
+use App\Exports\E81PerubahanEkspor;
 use App\Models\TahunPeriode;
 use App\Models\Visi;
 use App\Models\PivotPerubahanVisi;
@@ -56,13 +59,10 @@ use App\Models\SubKegiatanIndikatorKinerja;
 use App\Models\OpdSubKegiatanIndikatorKinerja;
 use App\Models\SubKegiatanTargetSatuanRpRealisasi;
 use App\Models\SubKegiatanTwRealisasi;
-use Excel;
-use PDF;
-use App\Exports\E81Ekspor;
 
-class E81Controller extends Controller
+class E81ControllerPerubahan extends Controller
 {
-    public function laporan_e_81(Request $request)
+    public function laporan_e_81_perubahan(Request $request)
     {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
@@ -76,10 +76,8 @@ class E81Controller extends Controller
         $e_81 = '';
         $tws = MasterTw::all();
         $tahun = $request->tahun;
-        $opd_id = $request->opd_id;
+        $opd = MasterOpd::find($request->opd_id);
         $a = 1;
-
-        $opd = MasterOpd::find($opd_id);
 
         $get_tujuans = Tujuan::whereHas('sasaran', function($q) use ($opd){
             $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
@@ -119,19 +117,20 @@ class E81Controller extends Controller
 
         foreach ($tujuans as $tujuan)
         {
-            $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
-                $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
-                    $q->whereHas('program_rpjmd', function($q) use ($opd){
-                        $q->whereHas('program', function($q) use ($opd){
-                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
-                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                                    $q->where('opd_id', $opd->id);
+            $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])
+                            ->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                                $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                                    $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                        $q->whereHas('program', function($q) use ($opd){
+                                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                                    $q->where('opd_id', $opd->id);
+                                                });
+                                            });
+                                        });
+                                    });
                                 });
-                            });
-                        });
-                    });
-                });
-            })->get();
+                            })->get();
 
             $sasarans = [];
             foreach ($get_sasarans as $get_sasaran) {
@@ -153,6 +152,7 @@ class E81Controller extends Controller
                     ];
                 }
             }
+
             foreach ($sasarans as $sasaran)
             {
                 $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->where('opd_id', $opd->id)->get();
@@ -181,7 +181,6 @@ class E81Controller extends Controller
                                     } else {
                                         $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
                                     }
-
                                     $e_81 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 5 End
                                     // Kolom 6 Start
@@ -246,8 +245,8 @@ class E81Controller extends Controller
                                             $e_81 .= '<td>Rp. 0, 00</td>';
                                         }
                                     } else {
-                                        $e_81 .= '<td></td>';
-                                        $e_81 .= '<td></td>';
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp. 0, 00</td>';
                                     }
                                     // Kolom 12 Start
                                     // Kolom 13 Start
@@ -282,12 +281,14 @@ class E81Controller extends Controller
                                         } else {
                                             $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                         }
+                                        $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
+                                        $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp.0, 00</td>';
                                     } else {
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp.0, 00</td>';
                                         $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                     }
-                                    $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
-                                    $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                    $e_81 .= '<td>Rp.0, 00</td>';
                                     // Kolom 13 End
 
                                     // Kolom 14 Start
@@ -327,7 +328,6 @@ class E81Controller extends Controller
                                     } else {
                                         $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
                                     }
-
                                     $e_81 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 5 End
                                     // Kolom 6 Start
@@ -392,8 +392,8 @@ class E81Controller extends Controller
                                             $e_81 .= '<td>Rp. 0, 00</td>';
                                         }
                                     } else {
-                                        $e_81 .= '<td></td>';
-                                        $e_81 .= '<td></td>';
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp. 0, 00</td>';
                                     }
                                     // Kolom 12 Start
                                     // Kolom 13 Start
@@ -428,12 +428,14 @@ class E81Controller extends Controller
                                         } else {
                                             $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                         }
+                                        $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
+                                        $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp.0, 00</td>';
                                     } else {
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp.0, 00</td>';
                                         $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                     }
-                                    $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
-                                    $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                    $e_81 .= '<td>Rp.0, 00</td>';
                                     // Kolom 13 End
 
                                     // Kolom 14 Start
@@ -461,7 +463,7 @@ class E81Controller extends Controller
 
                     $get_programs = Program::whereHas('program_indikator_kinerja', function($q) use ($opd){
                         $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                            $q->where('opd_id', $opd->nama);
+                            $q->where('opd_id', $opd->id);
                         });
                     })->whereHas('program_rpjmd', function($q) use ($get_sasaran_pd){
                         $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($get_sasaran_pd){
@@ -497,9 +499,10 @@ class E81Controller extends Controller
                             $e_81 .= '<td></td>';
                             $e_81 .= '<td style="text-align:left">'.$program['deskripsi'].'</td>';
 
-                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                                $q->where('opd_id', $opd->nama);
-                            })->get();
+                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
+                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                                                $q->where('opd_id', $opd->id);
+                                                            })->get();
                             $b = 1;
                             foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
                                 if($b == 1)
@@ -574,7 +577,7 @@ class E81Controller extends Controller
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -799,7 +802,7 @@ class E81Controller extends Controller
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -953,15 +956,14 @@ class E81Controller extends Controller
                                 $b++;
                             }
 
-                        $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
-                            $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
-                                $q->where('opd_id', $opd->id);
-                            });
-                        })->get();
+                        $get_kegiatans = Kegiatan::where('program_id', $program['id'])
+                                            ->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
+                                                $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
+                                                    $q->where('opd_id', $opd->id);
+                                                });
+                                            })->get();
                         $kegiatans = [];
-
-                        foreach ($get_kegiatans as $get_kegiatan)
-                        {
+                        foreach ($get_kegiatans as $get_kegiatan) {
                             $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
                                                         ->latest()->first();
                             if($cek_perubahan_kegiatan)
@@ -981,7 +983,6 @@ class E81Controller extends Controller
                                 ];
                             }
                         }
-
                         foreach($kegiatans as $kegiatan)
                         {
                             $e_81 .= '<tr>';
@@ -989,9 +990,10 @@ class E81Controller extends Controller
                                 $e_81 .= '<td></td>';
                                 $e_81 .= '<td style="text-align:left">'.$kegiatan['deskripsi'].'</td>';
 
-                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
-                                    $q->where('opd_id', $opd->id);
-                                })->get();
+                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])
+                                                                ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
+                                                                    $q->where('opd_id', $opd->id);
+                                                                })->get();
                                 $c = 1;
                                 foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
                                     if($c == 1)
@@ -1071,7 +1073,7 @@ class E81Controller extends Controller
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
@@ -1301,7 +1303,7 @@ class E81Controller extends Controller
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
@@ -1569,7 +1571,7 @@ class E81Controller extends Controller
                                                 if($cek_sub_kegiatan_target_satuan_rp_realisasi)
                                                 {
                                                     $e_81 .= '<td>'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target.'/'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
-                                                    $e_81 .= '<td>Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                    $e_81 .= '<td>Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                                 } else {
                                                     $e_81 .= '<td>0/'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
                                                     $e_81 .= '<td>Rp. 0,00</td>';
@@ -1797,7 +1799,7 @@ class E81Controller extends Controller
                                                 if($cek_sub_kegiatan_target_satuan_rp_realisasi)
                                                 {
                                                     $e_81 .= '<td>'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target.'/'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
-                                                    $e_81 .= '<td>Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                    $e_81 .= '<td>Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                                 } else {
                                                     $e_81 .= '<td>0/'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
                                                     $e_81 .= '<td>Rp. 0,00</td>';
@@ -1957,10 +1959,11 @@ class E81Controller extends Controller
             }
         }
 
-        return response()->json(['e_81' => $e_81]);
+        return response()->json(['e_81_perubahan' => $e_81]);
     }
 
-    public function e_81_ekspor_pdf($opd_id, $tahun){
+    public function e_81_perubahan_ekspor_pdf($opd_id, $tahun)
+    {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
         $tahun_akhir = $get_periode->tahun_akhir;
@@ -1972,25 +1975,25 @@ class E81Controller extends Controller
 
         $e_81 = '';
         $tws = MasterTw::all();
+        $tahun = $tahun;
+        $opd = MasterOpd::find($opd_id);
         $a = 1;
 
-        $opd = MasterOpd::find($opd_id);
-
         $get_tujuans = Tujuan::whereHas('sasaran', function($q) use ($opd){
-                            $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
-                                $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
-                                    $q->whereHas('program_rpjmd', function($q) use ($opd){
-                                        $q->whereHas('program', function($q) use ($opd){
-                                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
-                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                                                    $q->where('opd_id', $opd->id);
-                                                });
-                                            });
-                                        });
-                                    });
+            $q->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                    $q->whereHas('program_rpjmd', function($q) use ($opd){
+                        $q->whereHas('program', function($q) use ($opd){
+                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                    $q->where('opd_id', $opd->id);
                                 });
                             });
-                        })->where('tahun_periode_id', $get_periode->id)->get();
+                        });
+                    });
+                });
+            });
+        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $tujuans = [];
 
@@ -2014,19 +2017,20 @@ class E81Controller extends Controller
 
         foreach ($tujuans as $tujuan)
         {
-            $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
-                $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
-                    $q->whereHas('program_rpjmd', function($q) use ($opd){
-                        $q->whereHas('program', function($q) use ($opd){
-                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
-                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                                    $q->where('opd_id', $opd->id);
+            $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])
+                            ->whereHas('sasaran_indikator_kinerja', function($q) use ($opd){
+                                $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($opd){
+                                    $q->whereHas('program_rpjmd', function($q) use ($opd){
+                                        $q->whereHas('program', function($q) use ($opd){
+                                            $q->whereHas('program_indikator_kinerja', function($q) use ($opd){
+                                                $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                                    $q->where('opd_id', $opd->id);
+                                                });
+                                            });
+                                        });
+                                    });
                                 });
-                            });
-                        });
-                    });
-                });
-            })->get();
+                            })->get();
 
             $sasarans = [];
             foreach ($get_sasarans as $get_sasaran) {
@@ -2048,6 +2052,7 @@ class E81Controller extends Controller
                     ];
                 }
             }
+
             foreach ($sasarans as $sasaran)
             {
                 $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->where('opd_id', $opd->id)->get();
@@ -2076,7 +2081,6 @@ class E81Controller extends Controller
                                     } else {
                                         $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
                                     }
-
                                     $e_81 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 5 End
                                     // Kolom 6 Start
@@ -2141,8 +2145,8 @@ class E81Controller extends Controller
                                             $e_81 .= '<td>Rp. 0, 00</td>';
                                         }
                                     } else {
-                                        $e_81 .= '<td></td>';
-                                        $e_81 .= '<td></td>';
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp. 0, 00</td>';
                                     }
                                     // Kolom 12 Start
                                     // Kolom 13 Start
@@ -2150,11 +2154,11 @@ class E81Controller extends Controller
 
                                     if($cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6)
                                     {
-                                        $cek_sasaran_pd_tw_realisasi_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)->first();
+                                        $cek_sasaran_pd_tw_realisasi_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6->id)->first();
                                         $sasaran_pd_realisasi_kolom_13_6 = [];
                                         if($cek_sasaran_pd_tw_realisasi_kolom_13_6)
                                         {
-                                            $sasaran_pd_tw_realisasies_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)->get();
+                                            $sasaran_pd_tw_realisasies_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6->id)->get();
                                             foreach ($sasaran_pd_tw_realisasies_kolom_13_6 as $sasaran_pd_tw_realisasi_kolom_13_6) {
                                                 $sasaran_pd_realisasi_kolom_13_6[] = $sasaran_pd_tw_realisasi_kolom_13_6->realisasi;
                                             }
@@ -2177,12 +2181,14 @@ class E81Controller extends Controller
                                         } else {
                                             $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                         }
+                                        $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
+                                        $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp.0, 00</td>';
                                     } else {
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp.0, 00</td>';
                                         $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                     }
-                                    $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
-                                    $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                    $e_81 .= '<td>Rp.0, 00</td>';
                                     // Kolom 13 End
 
                                     // Kolom 14 Start
@@ -2222,7 +2228,6 @@ class E81Controller extends Controller
                                     } else {
                                         $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
                                     }
-
                                     $e_81 .= '<td>Rp. 0, 00</td>';
                                     // Kolom 5 End
                                     // Kolom 6 Start
@@ -2287,8 +2292,8 @@ class E81Controller extends Controller
                                             $e_81 .= '<td>Rp. 0, 00</td>';
                                         }
                                     } else {
-                                        $e_81 .= '<td></td>';
-                                        $e_81 .= '<td></td>';
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp. 0, 00</td>';
                                     }
                                     // Kolom 12 Start
                                     // Kolom 13 Start
@@ -2296,11 +2301,11 @@ class E81Controller extends Controller
 
                                     if($cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6)
                                     {
-                                        $cek_sasaran_pd_tw_realisasi_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)->first();
+                                        $cek_sasaran_pd_tw_realisasi_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6->id)->first();
                                         $sasaran_pd_realisasi_kolom_13_6 = [];
                                         if($cek_sasaran_pd_tw_realisasi_kolom_13_6)
                                         {
-                                            $sasaran_pd_tw_realisasies_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi->id)->get();
+                                            $sasaran_pd_tw_realisasies_kolom_13_6 = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id',$cek_sasaran_pd_target_satuan_rp_realisasi_kolom_13_6->id)->get();
                                             foreach ($sasaran_pd_tw_realisasies_kolom_13_6 as $sasaran_pd_tw_realisasi_kolom_13_6) {
                                                 $sasaran_pd_realisasi_kolom_13_6[] = $sasaran_pd_tw_realisasi_kolom_13_6->realisasi;
                                             }
@@ -2323,12 +2328,14 @@ class E81Controller extends Controller
                                         } else {
                                             $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                         }
+                                        $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
+                                        $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp.0, 00</td>';
                                     } else {
+                                        $e_81 .= '<td>0/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
+                                        $e_81 .= '<td>Rp.0, 00</td>';
                                         $sasaran_pd_realisasi_renja_kolom_13_12 = 0;
                                     }
-                                    $kolom_13 = array_sum($sasaran_pd_realisasi_kolom_13_6) + $sasaran_pd_realisasi_renja_kolom_13_12;
-                                    $e_81 .= '<td>'.$kolom_13.'/'.$sasaran_pd_indikator_kinerja->satuan.'</td>';
-                                    $e_81 .= '<td>Rp.0, 00</td>';
                                     // Kolom 13 End
 
                                     // Kolom 14 Start
@@ -2356,7 +2363,7 @@ class E81Controller extends Controller
 
                     $get_programs = Program::whereHas('program_indikator_kinerja', function($q) use ($opd){
                         $q->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                            $q->where('opd_id', $opd->nama);
+                            $q->where('opd_id', $opd->id);
                         });
                     })->whereHas('program_rpjmd', function($q) use ($get_sasaran_pd){
                         $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($get_sasaran_pd){
@@ -2392,9 +2399,10 @@ class E81Controller extends Controller
                             $e_81 .= '<td></td>';
                             $e_81 .= '<td style="text-align:left">'.$program['deskripsi'].'</td>';
 
-                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
-                                $q->where('opd_id', $opd->nama);
-                            })->get();
+                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
+                                                            ->whereHas('opd_program_indikator_kinerja', function($q) use ($opd){
+                                                                $q->where('opd_id', $opd->id);
+                                                            })->get();
                             $b = 1;
                             foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
                                 if($b == 1)
@@ -2469,7 +2477,7 @@ class E81Controller extends Controller
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -2694,7 +2702,7 @@ class E81Controller extends Controller
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
-                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                            $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -2848,15 +2856,14 @@ class E81Controller extends Controller
                                 $b++;
                             }
 
-                        $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
-                            $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
-                                $q->where('opd_id', $opd->id);
-                            });
-                        })->get();
+                        $get_kegiatans = Kegiatan::where('program_id', $program['id'])
+                                            ->whereHas('kegiatan_indikator_kinerja', function($q) use ($opd){
+                                                $q->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
+                                                    $q->where('opd_id', $opd->id);
+                                                });
+                                            })->get();
                         $kegiatans = [];
-
-                        foreach ($get_kegiatans as $get_kegiatan)
-                        {
+                        foreach ($get_kegiatans as $get_kegiatan) {
                             $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
                                                         ->latest()->first();
                             if($cek_perubahan_kegiatan)
@@ -2876,7 +2883,6 @@ class E81Controller extends Controller
                                 ];
                             }
                         }
-
                         foreach($kegiatans as $kegiatan)
                         {
                             $e_81 .= '<tr>';
@@ -2884,9 +2890,10 @@ class E81Controller extends Controller
                                 $e_81 .= '<td></td>';
                                 $e_81 .= '<td style="text-align:left">'.$kegiatan['deskripsi'].'</td>';
 
-                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
-                                    $q->where('opd_id', $opd->id);
-                                })->get();
+                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])
+                                                                ->whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($opd){
+                                                                    $q->where('opd_id', $opd->id);
+                                                                })->get();
                                 $c = 1;
                                 foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
                                     if($c == 1)
@@ -2966,7 +2973,7 @@ class E81Controller extends Controller
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
@@ -3196,7 +3203,7 @@ class E81Controller extends Controller
                                             if($cek_kegiatan_target_satuan_rp_realisasi)
                                             {
                                                 $e_81 .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'/'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                                $e_81 .= '<td>Rp. '.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                             } else {
                                                 $e_81 .= '<td>0/'.$kegiatan_indikator_kinerja->satuan.'</td>';
                                                 $e_81 .= '<td>Rp. 0,00</td>';
@@ -3464,7 +3471,7 @@ class E81Controller extends Controller
                                                 if($cek_sub_kegiatan_target_satuan_rp_realisasi)
                                                 {
                                                     $e_81 .= '<td>'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target.'/'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
-                                                    $e_81 .= '<td>Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                    $e_81 .= '<td>Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                                 } else {
                                                     $e_81 .= '<td>0/'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
                                                     $e_81 .= '<td>Rp. 0,00</td>';
@@ -3692,7 +3699,7 @@ class E81Controller extends Controller
                                                 if($cek_sub_kegiatan_target_satuan_rp_realisasi)
                                                 {
                                                     $e_81 .= '<td>'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target.'/'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
-                                                    $e_81 .= '<td>Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                    $e_81 .= '<td>Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan, 2, ',', '.').'</td>';
                                                 } else {
                                                     $e_81 .= '<td>0/'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
                                                     $e_81 .= '<td>Rp. 0,00</td>';
@@ -3852,16 +3859,16 @@ class E81Controller extends Controller
             }
         }
 
-        $pdf = PDF::loadView('admin.laporan.e-81', [
+        $pdf = PDF::loadView('admin.laporan.e-81-perubahan', [
             'e_81' => $e_81,
             'tahun' => $tahun
         ]);
 
-        return $pdf->setPaper('b2', 'landscape')->stream('Laporan E-81.pdf');
+        return $pdf->setPaper('b2', 'landscape')->stream('Laporan E-81 Perubahan.pdf');
     }
 
-    public function e_81_ekspor_excel($opd_id, $tahun)
+    public function e_81_perubahan_ekspor_excel($opd_id, $tahun)
     {
-        return Excel::download(new E81Ekspor($opd_id, $tahun), 'Laporan E-81.xlsx');
+        return Excel::download(new E81PerubahanEkspor($tahun, $opd_id), 'Laporan E-81Perubahan.xlsx');
     }
 }

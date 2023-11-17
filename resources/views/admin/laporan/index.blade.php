@@ -97,6 +97,9 @@
             <li class="nav-item" role="presentation">
                 <a class="nav-link" data-bs-toggle="tab" href="#e_81" role="tab" aria-selected="false">E 81</a>
             </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#e_81_perubahan" role="tab" aria-selected="false">E 81 Perubahan</a>
+            </li>
         </ul>
 
         <div class="card mb-5">
@@ -1075,6 +1078,132 @@
                         </div>
                     </div>
                     {{-- E 81 End --}}
+
+                    {{-- E 81 Perubahan Start --}}
+                    <div class="tab-pane fade" id="e_81_perubahan" role="tabpanel">
+                        <div class="border-0 pb-0">
+                            <ul class="nav nav-pills responsive-tabs" role="tablist">
+                                @foreach ($tahuns as $tahun)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link {{$loop->first ? 'active' : ''}} navE81Perubahan" data-bs-toggle="tab" data-bs-target="#e_81_perubahan_{{$tahun}}" role="tab" aria-selected="true" type="button" data-tahun="{{$tahun}}">
+                                            {{$tahun}}
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                @foreach ($tahuns as $tahun)
+                                    <div class="tab-pane fade {{$loop->first ? 'active show' : ''}}" id="e_81_perubahan_{{$tahun}}" role="tabpanel">
+                                        <div class="row mb-5">
+                                            <div class="col-6">
+                                                <h2 class="small-title">Filter By Opd</h2>
+                                                <select id="e_81_perubahan_opd_id_{{$tahun}}" class="form-control e_81_perubahan_opd_id" data-tahun="{{$tahun}}">
+                                                    @foreach ($opds as $id => $nama)
+                                                        <option value="{{$id}}" @if($id == 16) selected @endif>{{$nama}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-6" style="text-align: right">
+                                                <h2 class="small-title">Ekspor Data</h2>
+                                                <div class="d-flex justify-content-between">
+                                                    <div></div>
+                                                    <button
+                                                        class="btn btn-icon btn-icon-only btn-sm btn-background-alternate mt-n2 shadow"
+                                                        type="button"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                        aria-haspopup="true"
+                                                    >
+                                                        <i data-acorn-icon="download" data-acorn-size="15"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end shadow">
+                                                        <a class="dropdown-item e_81_perubahan_ekspor_pdf" data-tahun="{{$tahun}}">PDF</a>
+                                                        <a class="dropdown-item e_81_perubahan_ekspor_excel" data-tahun="{{$tahun}}">Excel</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- <h5 class="card-title">{{$tahun}}</h5> --}}
+                                        <div class="table-responsive">
+                                            <div class="text-center">
+                                                <h1>Tabel E.81 Perubahan</h1>
+                                                <h3>Evaluasi Terhadap Hasil Renja Perangkat Daerah Lingkup </h3>
+                                                <h3>Renstra Perangkat Daerah</h3>
+                                                <h3>Periode Pelaksanaan {{ $tahun }}</h3>
+                                            </div>
+                                            <table class="table table-striped table-bordered text-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th rowspan="2">No</th>
+                                                        <th rowspan="2">Sasaran</th>
+                                                        <th rowspan="2">Program / Kegiatan</th>
+                                                        <th rowspan="2">Indikator Kinerja Program (outcome)/ Kegiatan (output)</th>
+                                                        <th rowspan="2" colspan="2">Target Renstra Perangkat Daerah pada Tahun {{$tahun}} (Akhir Periode Renstra Perangkat Daerah) </th>
+                                                        <th rowspan="2" colspan="2">Realisasi Capaian Kinerja Renstra Perangkat Daerah sampai dengan Renja Perangkat Daerah Tahun Lalu (n-2)</th>
+                                                        <th rowspan="2" colspan="2">Target Kinerja dan Anggaran Renja Perangkat Daerah Tahun berjalan (Tahun n-1) yang dievaluasi</th>
+                                                        <th colspan="8">Realisasi Kinerja Pada Triwulan</th>
+                                                        <th rowspan="2" colspan="2">Realisasi Capaian Kinerja dan Anggaran Renja Perangkat Daerah yang dievaluasi </th>
+                                                        <th rowspan="2" colspan="2">Realisasi Kinerja dan Anggaran Renstra Perangkat Daerah s/d tahun {{$tahun}} (Akhir Tahun Pelaksanaan Renja Perangkat Daerah Tahun {{$tahun}}) </th>
+                                                        <th rowspan="2" colspan="2">Tingkat Capaian Kinerja Dan Realisasi Anggaran Renstra Perangkat Daerah s/d tahun {{$tahun}} (%)</th>
+                                                        <th rowspan="2">Unit Perangkat Daerah Penanggung Jawab</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="2">I</th>
+                                                        <th colspan="2">II</th>
+                                                        <th colspan="2">III</th>
+                                                        <th colspan="2">IV</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th rowspan="2">1</th>
+                                                        <th rowspan="2">2</th>
+                                                        <th rowspan="2">3</th>
+                                                        <th rowspan="2">4</th>
+                                                        <th colspan="2">5</th>
+                                                        <th colspan="2">6</th>
+                                                        <th colspan="2">7</th>
+                                                        <th colspan="2">8</th>
+                                                        <th colspan="2">9</th>
+                                                        <th colspan="2">10</th>
+                                                        <th colspan="2">11</th>
+                                                        <th colspan="2">12</th>
+                                                        <th colspan="2">13 = 6 + 12</th>
+                                                        <th colspan="2">14=13/5 x100%</th>
+                                                        <th rowspan="2">15</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                        <th>K</th>
+                                                        <th>Rp</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodyE81Perubahan{{$tahun}}" style="text-align: left"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    {{-- E 81 Perubahan End --}}
                 </div>
             </div>
         </div>
@@ -1106,6 +1235,7 @@
         $('#tc_24_opd_id').select2();
         $('#tc_27_opd_id').select2();
         $('.e_81_opd_id').select2();
+        $('.e_81_perubahan_opd_id').select2();
         $.ajax({
             url: "{{ route('admin.laporan.tc-14') }}",
             dataType:"json",
@@ -1200,6 +1330,19 @@
             },
             success: function(data){
                 $('#tbodyE81'+tahun_awal).html(data.e_81);
+            }
+        });
+
+        $.ajax({
+            url: "{{ route('admin.laporan.e-81-perubahan') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                opd_id:16,
+                tahun: tahun_awal
+            },
+            success: function(data){
+                $('#tbodyE81Perubahan'+tahun_awal).html(data.e_81_perubahan);
             }
         });
     });
@@ -1417,6 +1560,58 @@
         var opd_id = $('#e_81_opd_id_'+tahun).val();
         var a = document.createElement('a');
         a.href = "{{ url('/admin/laporan/e-81/ekspor/excel') }}"+'/'+opd_id+'/'+tahun;
+        document.body.appendChild(a);
+        a.click();
+    });
+
+    $('.navE81Perubahan').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $('#e_81_perubahan_opd_id_'+tahun).val();
+        $.ajax({
+            url: "{{ route('admin.laporan.e-81-perubahan') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                tahun:tahun,
+                opd_id: opd_id
+            },
+            success: function(data){
+                $('#tbodyE81Perubahan'+tahun).html(data.e_81_perubahan);
+            }
+        });
+    });
+
+    $('.e_81_perubahan_opd_id').change(function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $('#e_81_perubahan_opd_id_'+tahun).val();
+        $.ajax({
+            url: "{{ route('admin.laporan.e-81-perubahan') }}",
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                opd_id:opd_id,
+                tahun: tahun
+            },
+            success: function(data){
+                $('#tbodyE81Perubahan'+tahun).html(data.e_81_perubahan);
+            }
+        });
+    });
+
+    $('.e_81_perubahan_ekspor_pdf').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $('#e_81_perubahan_opd_id_'+tahun).val();
+        var a = document.createElement('a');
+        a.href = "{{ url('/admin/laporan/e-81/perubahan/ekspor/pdf') }}"+'/'+opd_id+'/'+tahun;
+        document.body.appendChild(a);
+        a.click();
+    });
+
+    $('.e_81_perubahan_ekspor_excel').click(function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $('#e_81_perubahan_opd_id_'+tahun).val();
+        var a = document.createElement('a');
+        a.href = "{{ url('/admin/laporan/e-81/perubahan/ekspor/excel') }}"+'/'+opd_id+'/'+tahun;
         document.body.appendChild(a);
         a.click();
     });
