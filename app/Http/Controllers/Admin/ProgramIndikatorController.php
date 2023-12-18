@@ -958,680 +958,373 @@ class ProgramIndikatorController extends Controller
 
         if($request->nav_nomenklatur_program_tahun == 'semua')
         {
-            $get_urusans = new Urusan;
-            if($request->program_filter_urusan)
-            {
-                $get_urusans = $get_urusans->where('id', $request->program_filter_urusan);
-            }
-            $get_urusans = $get_urusans->orderBy('kode', 'asc')->get();
-            $urusans = [];
-            foreach ($get_urusans as $get_urusan) {
-                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
-                if($cek_perubahan_urusan)
-                {
-                    $urusans[] = [
-                        'id' => $cek_perubahan_urusan->urusan_id,
-                        'kode' => $cek_perubahan_urusan->kode,
-                        'deskripsi' => $cek_perubahan_urusan->deskripsi,
-                        'tahun_perubahan' => $cek_perubahan_urusan->tahun_perubahan,
-                    ];
-                } else {
-                    $urusans[] = [
-                        'id' => $get_urusan->id,
-                        'kode' => $get_urusan->kode,
-                        'deskripsi' => $get_urusan->deskripsi,
-                        'tahun_perubahan' => $get_urusan->tahun_perubahan,
-                    ];
-                }
-            }
-
-            $html = '<div class="data-table-rows slim">
-                        <div class="data-table-responsive-wrapper">
-                            <table class="table table-condensed table-striped">
-                                <thead>
-                                    <tr>
-                                        <th width="5%">Kode</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="35%">Indikator Kinerja</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>';
-                                foreach ($urusans as $urusan) {
-                                    $get_programs = Program::where('urusan_id', $urusan['id']);
-                                    if($request->program_filter_program)
+            $getProgram = Program::find($request->program_program_id);
+            $program = [
+                'id' => $getProgram->id,
+                'kode' => $getProgram->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
+            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
+            $no_program_indikator_kinerja = 1;
+            $html = '';
+            foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                    $html .= '<td>'.$no_program_indikator_kinerja++.'</td>';
+                    $html .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
+                    $html .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                    $a = 1;
+                    $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)
+                                                        ->get();
+                    foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
+                        if($a == 1)
+                        {
+                            $html .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
+                            $b = 1;
+                            foreach ($tahuns as $tahun) {
+                                if($b == 1)
+                                {
+                                    $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->first();
+                                    if($cek_program_target_satuan_rp_realisasi)
                                     {
-                                        $get_programs = $get_programs->where('id', $request->program_filter_program);
+                                        $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
+                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                        $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td>'.$tahun.'</td>';
+                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                    </button>
+                                                    </td>';
+                                        $html .='</tr>';
+                                    } else {
+                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td>'.$tahun.'</td>';
+                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                        </button>
+                                                    </td>';
+                                        $html .='</tr>';
                                     }
-                                    $get_programs = $get_programs->get();
-                                    $programs = [];
-                                    foreach ($get_programs as $get_program) {
-                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                        if($cek_perubahan_program)
+                                } else {
+                                    $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->first();
+                                    if($cek_program_target_satuan_rp_realisasi)
+                                    {
+                                        $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
+                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                        $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td>'.$tahun.'</td>';
+                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                    </button>
+                                                    </td>';
+                                        $html .='</tr>';
+                                    } else {
+                                        $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td>'.$tahun.'</td>';
+                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                        </button>
+                                                    </td>';
+                                        $html .='</tr>';
+                                    }
+                                }
+                                $b++;
+                            }
+                        } else {
+                            $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
+                                $b = 1;
+                                foreach ($tahuns as $tahun) {
+                                    if($b == 1)
+                                    {
+                                        $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->first();
+                                        if($cek_program_target_satuan_rp_realisasi)
                                         {
-                                            $programs[] = [
-                                                'id' => $cek_perubahan_program->program_id,
-                                                'kode' => $cek_perubahan_program->kode,
-                                                'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                'status_aturan' => $cek_perubahan_program->status_aturan,
-                                            ];
+                                            $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
+                                            $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                            $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$tahun.'</td>';
+                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                        </button>
+                                                        </td>';
+                                            $html .='</tr>';
                                         } else {
-                                            $programs[] = [
-                                                'id' => $get_program->id,
-                                                'kode' => $get_program->kode,
-                                                'deskripsi' => $get_program->deskripsi,
-                                                'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                'status_aturan' => $get_program->status_aturan,
-                                            ];
+                                            $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                            $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                            $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$tahun.'</td>';
+                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                            </button>
+                                                        </td>';
+                                            $html .='</tr>';
+                                        }
+                                    } else {
+                                        $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->first();
+                                        if($cek_program_target_satuan_rp_realisasi)
+                                        {
+                                            $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
+                                            $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                            $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$tahun.'</td>';
+                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                        </button>
+                                                        </td>';
+                                            $html .='</tr>';
+                                        } else {
+                                            $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                            $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                            $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$tahun.'</td>';
+                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                            </button>
+                                                        </td>';
+                                            $html .='</tr>';
                                         }
                                     }
-                                    $html .= '<tr style="background: #bbbbbb;">
-                                                <td data-bs-toggle="collapse" data-bs-target="#program_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                    '.strtoupper($urusan['kode']).'
-                                                </td>
-                                                <td data-bs-toggle="collapse" data-bs-target="#program_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                    '.strtoupper($urusan['deskripsi']).'
-                                                    <br>
-                                                    <span class="badge bg-primary text-uppercase program-tagging">'.$urusan['kode'].' Urusan</span>
-                                                </td>
-                                                <td data-bs-toggle="collapse" data-bs-target="#program_urusan'.$urusan['id'].'" class="accordion-toggle">
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-primary waves-effect waves-light mr-2 program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program" data-urusan-id="'.$urusan['id'].'"><i class="fas fa-plus"></i></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="4" class="hiddenRow">
-                                                    <div class="collapse show" id="program_urusan'.$urusan['id'].'">
-                                                        <table class="table table-striped table-condesed">
-                                                            <tbody>';
-                                                            foreach ($programs as $program) {
-                                                                $html .= '<tr>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="5%">'.$urusan['kode'].'.'.$program['kode'].'</td>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="40%">
-                                                                                '.$program['deskripsi'];
-                                                                                $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->where('status_program', 'Prioritas')->first();
-                                                                                if($cek_program_rjmd)
-                                                                                {
-                                                                                    $html .= '<i class="fas fa-star text-primary" title="Program Prioritas">';
-                                                                                }
-                                                                                $html .= '<br>
-                                                                                <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
-                                                                                <span class="badge bg-warning text-uppercase program-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                            </td>';
-                                                                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
-                                                                            $html .= '<td width="35%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$program_indikator_kinerja->deskripsi.'<br>';
-                                                                                            $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
-                                                                                                foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
-                                                                                                    $html .= '<span class="badge bg-dark text-uppercase">'.$opd_program_indikator_kinerja->opd->nama.'</span>';
-                                                                                                }
-                                                                                            $html .='</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-program-indikator-kinerja mr-1" data-id="'.$program_indikator_kinerja->id.'" title="Edit Indikator Kinerja Program"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-opd-program-indikator-kinerja mr-1" data-id="'.$program_indikator_kinerja->id.'" title="Edit OPD"><i class="fas fa-user"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-program-indikator-kinerja" type="button" title="Hapus Indikator" data-program-id="'.$program['id'].'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .='</tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-
-                                                                            $html .='<td width="20%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="semua" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Hapus Program"><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="program_program'.$program['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>No</th>
-                                                                                                <th>Indikator</th>
-                                                                                                <th>Target Kinerja Awal</th>
-                                                                                                <th>OPD</th>
-                                                                                                <th>Target</th>
-                                                                                                <th>Satuan</th>
-                                                                                                <th>Target RP</th>
-                                                                                                <th>Realisasi</th>
-                                                                                                <th>Realisasi RP</th>
-                                                                                                <th>Tahun</th>
-                                                                                                <th>Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
-                                                                                        $no_program_indikator_kinerja = 1;
-                                                                                        foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_program_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $a = 1;
-                                                                                                $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)
-                                                                                                                                    ->get();
-                                                                                                foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
-                                                                                                    if($a == 1)
-                                                                                                    {
-                                                                                                        $html .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
-                                                                                                        $b = 1;
-                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                            if($b == 1)
-                                                                                                            {
-                                                                                                                $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
-                                                                                                                                                            ->where('tahun', $tahun)
-                                                                                                                                                            ->first();
-                                                                                                                if($cek_program_target_satuan_rp_realisasi)
-                                                                                                                {
-                                                                                                                    $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                    $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                                </td>';
-                                                                                                                    $html .='</tr>';
-                                                                                                                } else {
-                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                    $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                    </button>
-                                                                                                                                </td>';
-                                                                                                                    $html .='</>';
-                                                                                                                }
-                                                                                                            } else {
-                                                                                                                $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
-                                                                                                                                                            ->where('tahun', $tahun)
-                                                                                                                                                            ->first();
-                                                                                                                if($cek_program_target_satuan_rp_realisasi)
-                                                                                                                {
-                                                                                                                    $html .= '<tr>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                    $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                                </td>';
-                                                                                                                    $html .='</tr>';
-                                                                                                                } else {
-                                                                                                                    $html .= '<tr>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                    $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                    </button>
-                                                                                                                                </td>';
-                                                                                                                    $html .='</tr>';
-                                                                                                                }
-                                                                                                            }
-                                                                                                            $b++;
-                                                                                                        }
-                                                                                                    } else {
-                                                                                                        $html .= '<tr>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
-                                                                                                            $b = 1;
-                                                                                                            foreach ($tahuns as $tahun) {
-                                                                                                                if($b == 1)
-                                                                                                                {
-                                                                                                                    $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
-                                                                                                                                                            ->where('tahun', $tahun)
-                                                                                                                                                            ->first();
-                                                                                                                    if($cek_program_target_satuan_rp_realisasi)
-                                                                                                                    {
-                                                                                                                        $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'">
-                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                    </button>
-                                                                                                                                    </td>';
-                                                                                                                        $html .='</tr>';
-                                                                                                                    } else {
-                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                        </button>
-                                                                                                                                    </td>';
-                                                                                                                        $html .='</tr>';
-                                                                                                                    }
-                                                                                                                } else {
-                                                                                                                    $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
-                                                                                                                                                            ->where('tahun', $tahun)
-                                                                                                                                                            ->first();
-                                                                                                                    if($cek_program_target_satuan_rp_realisasi)
-                                                                                                                    {
-                                                                                                                        $html .= '<tr>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'">
-                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                    </button>
-                                                                                                                                    </td>';
-                                                                                                                        $html .='</tr>';
-                                                                                                                    } else {
-                                                                                                                        $html .= '<tr>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                        </button>
-                                                                                                                                    </td>';
-                                                                                                                        $html .='</tr>';
-                                                                                                                    }
-                                                                                                                }
-                                                                                                                $b++;
-                                                                                                            }
-                                                                                                    }
-                                                                                                    $a++;
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                            }
-                                                            $html .= '</tbody>
-                                                        </table>
-                                                    </div>
-                                                </td>
-                                            </tr>';
+                                    $b++;
                                 }
-                                $html .= '</tbody>
-                            </table>
-                        </div>
-                    </div>';
+                        }
+                        $a++;
+                    }
+            }
 
             return response()->json(['success' => 'Berhasil merubah target','html' => $html]);
         } else {
-            $get_urusans = new Urusan;
-            if($request->program_filter_urusan)
-            {
-                $get_urusans = $get_urusans->where('id', $request->program_filter_urusan);
-            }
-            $get_urusans = $get_urusans->orderBy('kode', 'asc')->get();
-            $urusans = [];
-            foreach ($get_urusans as $get_urusan) {
-                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
-                if($cek_perubahan_urusan)
-                {
-                    $urusans[] = [
-                        'id' => $cek_perubahan_urusan->urusan_id,
-                        'kode' => $cek_perubahan_urusan->kode,
-                        'deskripsi' => $cek_perubahan_urusan->deskripsi,
-                        'tahun_perubahan' => $cek_perubahan_urusan->tahun_perubahan,
-                    ];
-                } else {
-                    $urusans[] = [
-                        'id' => $get_urusan->id,
-                        'kode' => $get_urusan->kode,
-                        'deskripsi' => $get_urusan->deskripsi,
-                        'tahun_perubahan' => $get_urusan->tahun_perubahan,
-                    ];
-                }
-            }
-
-            $html = '<div class="data-table-rows slim">
-                        <div class="data-table-responsive-wrapper">
-                            <table class="table table-condensed table-striped">
-                                <thead>
-                                    <tr>
-                                        <th width="5%">Kode</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="35%">Indikator Kinerja</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>';
-                                foreach ($urusans as $urusan) {
-                                    $get_programs = Program::where('urusan_id', $urusan['id']);
-                                    if($request->program_filter_program)
+            $getProgram = Program::find($request->program_program_id);
+            $program = [
+                'id' => $getProgram->id,
+                'kode' => $getProgram->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
+            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
+            $no_program_indikator_kinerja = 1;
+            $html = '';
+            foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
+                $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                    $html .= '<td>'.$no_program_indikator_kinerja++.'</td>';
+                    $html .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
+                    $html .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                    $a = 1;
+                    $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)
+                                                        ->get();
+                    foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
+                        if($a == 1)
+                        {
+                            $html .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
+                            $b = 1;
+                            foreach ($tahuns as $tahun) {
+                                if($b == 1)
+                                {
+                                    $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->first();
+                                    if($cek_program_target_satuan_rp_realisasi)
                                     {
-                                        $get_programs = $get_programs->where('id', $request->program_filter_program);
+                                        $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
+                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                        $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td>'.$tahun.'</td>';
+                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                    </button>
+                                                    </td>';
+                                        $html .='</tr>';
+                                    } else {
+                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td>'.$tahun.'</td>';
+                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                        </button>
+                                                    </td>';
+                                        $html .='</tr>';
                                     }
-                                    $get_programs = $get_programs->where('tahun_perubahan', $request->nav_nomenklatur_program_tahun);
-                                    $get_programs = $get_programs->get();
-                                    $programs = [];
-                                    foreach ($get_programs as $get_program) {
-                                        $programs[] = [
-                                            'id' => $get_program->id,
-                                            'kode' => $get_program->kode,
-                                            'deskripsi' => $get_program->deskripsi,
-                                            'tahun_perubahan' => $get_program->tahun_perubahan,
-                                            'status_aturan' => $get_program->status_aturan,
-                                        ];
+                                } else {
+                                    $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->first();
+                                    if($cek_program_target_satuan_rp_realisasi)
+                                    {
+                                        $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
+                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                        $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td>'.$tahun.'</td>';
+                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                    </button>
+                                                    </td>';
+                                        $html .='</tr>';
+                                    } else {
+                                        $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td></td>';
+                                        $html .= '<td>'.$tahun.'</td>';
+                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                        </button>
+                                                    </td>';
+                                        $html .='</tr>';
                                     }
-                                    $html .= '<tr style="background: #bbbbbb;">
-                                                <td data-bs-toggle="collapse" data-bs-target="#program_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                    '.strtoupper($urusan['kode']).'
-                                                </td>
-                                                <td data-bs-toggle="collapse" data-bs-target="#program_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                    '.strtoupper($urusan['deskripsi']).'
-                                                    <br>
-                                                    <span class="badge bg-primary text-uppercase program-tagging">'.$urusan['kode'].' Urusan</span>
-                                                </td>
-                                                <td data-bs-toggle="collapse" data-bs-target="#program_urusan'.$urusan['id'].'" class="accordion-toggle">
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-primary waves-effect waves-light mr-2 program_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditProgramModal" title="Tambah Data Program" data-urusan-id="'.$urusan['id'].'"><i class="fas fa-plus"></i></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="4" class="hiddenRow">
-                                                    <div class="collapse show" id="program_urusan'.$urusan['id'].'">
-                                                        <table class="table table-striped table-condesed">
-                                                            <tbody>';
-                                                            foreach ($programs as $program) {
-                                                                $html .= '<tr>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="5%">'.$urusan['kode'].'.'.$program['kode'].'</td>
-                                                                            <td data-bs-toggle="collapse" data-bs-target="#program_program'.$program['id'].'" class="accordion-toggle" width="40%">
-                                                                                '.$program['deskripsi'];
-                                                                                $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->where('status_program', 'Prioritas')->first();
-                                                                                if($cek_program_rjmd)
-                                                                                {
-                                                                                    $html .= '<i class="fas fa-star text-primary" title="Program Prioritas">';
-                                                                                }
-                                                                                $html .= '<br>
-                                                                                <span class="badge bg-primary text-uppercase program-tagging">Urusan '.$urusan['kode'].'</span>
-                                                                                <span class="badge bg-warning text-uppercase program-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                            </td>';
-                                                                            $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
-                                                                            $html .= '<td width="35%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$program_indikator_kinerja->deskripsi.'<br>';
-                                                                                            $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)->get();
-                                                                                                foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
-                                                                                                    $html .= '<span class="badge bg-dark text-uppercase">'.$opd_program_indikator_kinerja->opd->nama.'</span>';
-                                                                                                }
-                                                                                            $html .='</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-program-indikator-kinerja mr-1" data-id="'.$program_indikator_kinerja->id.'" title="Edit Indikator Kinerja Program"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-opd-program-indikator-kinerja mr-1" data-id="'.$program_indikator_kinerja->id.'" title="Edit OPD"><i class="fas fa-user"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-program-indikator-kinerja" type="button" title="Hapus Indikator" data-program-id="'.$program['id'].'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .='</tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-
-                                                                            $html .='<td width="20%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Detail Program"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-program" data-program-id="'.$program['id'].'" data-urusan-id="'.$urusan['id'].'" data-tahun="semua" type="button" title="Edit Program"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-program-indikator-kinerja" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Tambah Indikator Kinerja Program"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-program" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Hapus Program"><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="program_program'.$program['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>No</th>
-                                                                                                <th>Indikator</th>
-                                                                                                <th>Target Kinerja Awal</th>
-                                                                                                <th>OPD</th>
-                                                                                                <th>Target</th>
-                                                                                                <th>Satuan</th>
-                                                                                                <th>Target RP</th>
-                                                                                                <th>Realisasi</th>
-                                                                                                <th>Realisasi RP</th>
-                                                                                                <th>Tahun</th>
-                                                                                                <th>Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])->get();
-                                                                                        $no_program_indikator_kinerja = 1;
-                                                                                        foreach ($program_indikator_kinerjas as $program_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_program_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$program_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$program_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $a = 1;
-                                                                                                $opd_program_indikator_kinerjas = OpdProgramIndikatorKinerja::where('program_indikator_kinerja_id', $program_indikator_kinerja->id)
-                                                                                                                                    ->get();
-                                                                                                foreach ($opd_program_indikator_kinerjas as $opd_program_indikator_kinerja) {
-                                                                                                    if($a == 1)
-                                                                                                    {
-                                                                                                        $html .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
-                                                                                                        $b = 1;
-                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                            if($b == 1)
-                                                                                                            {
-                                                                                                                $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
-                                                                                                                                                            ->where('tahun', $tahun)
-                                                                                                                                                            ->first();
-                                                                                                                if($cek_program_target_satuan_rp_realisasi)
-                                                                                                                {
-                                                                                                                    $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                    $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                                </td>';
-                                                                                                                    $html .='</tr>';
-                                                                                                                } else {
-                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                    $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                    </button>
-                                                                                                                                </td>';
-                                                                                                                    $html .='</>';
-                                                                                                                }
-                                                                                                            } else {
-                                                                                                                $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
-                                                                                                                                                            ->where('tahun', $tahun)
-                                                                                                                                                            ->first();
-                                                                                                                if($cek_program_target_satuan_rp_realisasi)
-                                                                                                                {
-                                                                                                                    $html .= '<tr>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                    $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                                </td>';
-                                                                                                                    $html .='</tr>';
-                                                                                                                } else {
-                                                                                                                    $html .= '<tr>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                    $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                    $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td></td>';
-                                                                                                                    $html .= '<td>'.$tahun.'</td>';
-                                                                                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                    </button>
-                                                                                                                                </td>';
-                                                                                                                    $html .='</tr>';
-                                                                                                                }
-                                                                                                            }
-                                                                                                            $b++;
-                                                                                                        }
-                                                                                                    } else {
-                                                                                                        $html .= '<tr>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td></td>';
-                                                                                                            $html .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
-                                                                                                            $b = 1;
-                                                                                                            foreach ($tahuns as $tahun) {
-                                                                                                                if($b == 1)
-                                                                                                                {
-                                                                                                                    $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
-                                                                                                                                                            ->where('tahun', $tahun)
-                                                                                                                                                            ->first();
-                                                                                                                    if($cek_program_target_satuan_rp_realisasi)
-                                                                                                                    {
-                                                                                                                        $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'">
-                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                    </button>
-                                                                                                                                    </td>';
-                                                                                                                        $html .='</tr>';
-                                                                                                                    } else {
-                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                        </button>
-                                                                                                                                    </td>';
-                                                                                                                        $html .='</tr>';
-                                                                                                                    }
-                                                                                                                } else {
-                                                                                                                    $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
-                                                                                                                                                            ->where('tahun', $tahun)
-                                                                                                                                                            ->first();
-                                                                                                                    if($cek_program_target_satuan_rp_realisasi)
-                                                                                                                    {
-                                                                                                                        $html .= '<tr>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'">
-                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                    </button>
-                                                                                                                                    </td>';
-                                                                                                                        $html .='</tr>';
-                                                                                                                    } else {
-                                                                                                                        $html .= '<tr>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                        $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                        $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td></td>';
-                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                        </button>
-                                                                                                                                    </td>';
-                                                                                                                        $html .='</tr>';
-                                                                                                                    }
-                                                                                                                }
-                                                                                                                $b++;
-                                                                                                            }
-                                                                                                    }
-                                                                                                    $a++;
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                            }
-                                                            $html .= '</tbody>
-                                                        </table>
-                                                    </div>
-                                                </td>
-                                            </tr>';
                                 }
-                                $html .= '</tbody>
-                            </table>
-                        </div>
-                    </div>';
+                                $b++;
+                            }
+                        } else {
+                            $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td>'.$opd_program_indikator_kinerja->opd->nama.'</td>';
+                                $b = 1;
+                                foreach ($tahuns as $tahun) {
+                                    if($b == 1)
+                                    {
+                                        $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->first();
+                                        if($cek_program_target_satuan_rp_realisasi)
+                                        {
+                                            $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
+                                            $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                            $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$tahun.'</td>';
+                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                        </button>
+                                                        </td>';
+                                            $html .='</tr>';
+                                        } else {
+                                            $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                            $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                            $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$tahun.'</td>';
+                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                            </button>
+                                                        </td>';
+                                            $html .='</tr>';
+                                        }
+                                    } else {
+                                        $cek_program_target_satuan_rp_realisasi = ProgramTargetSatuanRpRealisasi::where('opd_program_indikator_kinerja_id', $opd_program_indikator_kinerja->id)
+                                                                                ->where('tahun', $tahun)
+                                                                                ->first();
+                                        if($cek_program_target_satuan_rp_realisasi)
+                                        {
+                                            $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td> <span class="program-span-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'">'.$cek_program_target_satuan_rp_realisasi->target.'</span></td>';
+                                            $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                            $html .= '<td> <span class="program-span-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'" data-target-rp="'.$cek_program_target_satuan_rp_realisasi->target_rp.'">Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</span></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$tahun.'</td>';
+                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-program-edit-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-target-satuan-rp-realisasi="'.$cek_program_target_satuan_rp_realisasi->id.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                        </button>
+                                                        </td>';
+                                            $html .='</tr>';
+                                        } else {
+                                            $html .= '<tr class="trProgramIndikatorKinerjaTargetSatuanRp'.$program_indikator_kinerja['id'].'">';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td><input type="number" step="any" class="form-control program-add-target '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                            $html .= '<td> '.$program_indikator_kinerja->satuan.'</td>';
+                                            $html .= '<td><input type="number" step="any" class="form-control program-add-target-rp '.$tahun.' data-opd-program-indikator-kinerja-'.$opd_program_indikator_kinerja->id.'"></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td></td>';
+                                            $html .= '<td>'.$tahun.'</td>';
+                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-program-target-satuan-rp-realisasi" type="button" data-opd-program-indikator-kinerja-id="'.$opd_program_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-program-indikator-kinerja-id="'.$program_indikator_kinerja['id'].'" data-program-program-id="'.$program['id'].'">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                            </button>
+                                                        </td>';
+                                            $html .='</tr>';
+                                        }
+                                    }
+                                    $b++;
+                                }
+                        }
+                        $a++;
+                    }
+            }
 
             return response()->json(['success' => 'Berhasil merubah target','html' => $html]);
         }

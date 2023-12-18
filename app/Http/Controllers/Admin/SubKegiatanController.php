@@ -25,6 +25,7 @@ use App\Models\SubKegiatan;
 use App\Models\PivotPerubahanSubKegiatan;
 use App\Models\PivotSubKegiatanIndikator;
 use App\Models\SubKegiatanIndikatorKinerja;
+use App\Models\OpdSubKegiatanIndikatorKinerja;
 
 class SubKegiatanController extends Controller
 {
@@ -505,7 +506,79 @@ class SubKegiatanController extends Controller
         }
         $pivot_perubahan_sub_kegiatan->save();
 
-        return response()->json(['success' => 'Berhasil Merubah Sub Kegiatan']);
+        $getSubKegiatan = SubKegiatan::find($request->sub_kegiatan_hidden_id);
+        $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $getSubKegiatan->id)
+                                        ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+        if($cek_perubahan_sub_kegiatan)
+        {
+            $sub_kegiatan = [
+                'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
+                'kegiatan_id' => $cek_perubahan_sub_kegiatan->kegiatan_id,
+                'kode' => $cek_perubahan_sub_kegiatan->kode,
+                'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi,
+                'tahun_perubahan' => $cek_perubahan_sub_kegiatan->tahun_perubahan,
+                'status_aturan' => $cek_perubahan_sub_kegiatan->status_aturan
+            ];
+        } else {
+            $sub_kegiatan = [
+                'id' => $getSubKegiatan->id,
+                'kegiatan_id' => $getSubKegiatan->kegiatan_id,
+                'kode' => $getSubKegiatan->kode,
+                'deskripsi' => $getSubKegiatan->deskripsi,
+                'tahun_perubahan' => $getSubKegiatan->tahun_perubahan,
+                'status_aturan' => $getSubKegiatan->status_aturan
+            ];
+        }
+
+        $getKegiatan = Kegiatan::find($getSubKegiatan->kegiatan_id);
+        $kegiatan = [
+            'id' => $getKegiatan->id,
+            'kode' => $getKegiatan->kode,
+            'deskripsi' => $getKegiatan->deskripsi,
+        ];
+
+        $getProgram = Program::find($getKegiatan->program_id);
+        $program = [
+            'id' => $getProgram->id,
+            'kode' => $getProgram->kode,
+            'deskripsi' => $getProgram->deskripsi,
+        ];
+
+        $getUrusan = Urusan::find($getProgram->urusan_id);
+        $urusan = [
+            'id' => $getUrusan->id,
+            'kode' => $getUrusan->kode,
+            'deskripsi' => $getUrusan->deskripsi,
+        ];
+
+        $html = '<td width="15%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_sub_kegiatan'.$sub_kegiatan['id'].'" class="accordion-toggle">
+                    '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'
+                </td>
+                <td width="40%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_sub_kegiatan'.$sub_kegiatan['id'].'" class="accordion-toggle">
+                    '.$sub_kegiatan['deskripsi'].'
+                    <br>
+                    <span class="badge bg-primary text-uppercase sub-kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
+                    <span class="badge bg-warning text-uppercase sub-kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
+                    <span class="badge bg-danger text-uppercase sub-kegiatan-tagging">Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</span>
+                    <span class="badge bg-info text-uppercase sub-kegiatan-tagging">Sub Kegiatan '.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</span>
+                </td>
+                <td width="25%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_sub_kegiatan'.$sub_kegiatan['id'].'" class="accordion-toggle"><ul>';
+                $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
+                foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                    $html .= '<li class="mb-2">'.$sub_kegiatan_indikator_kinerja->deskripsi.'<br>';
+                    $opd_sub_kegiatan_indikator_kinerjas = OpdSubKegiatanIndikatorKinerja::where('sub_kegiatan_indikator_kinerja_id', $sub_kegiatan_indikator_kinerja->id)->get();
+                    foreach ($opd_sub_kegiatan_indikator_kinerjas as $opd_sub_kegiatan_indikator_kinerja) {
+                        $html .= '<span class="badge bg-muted text-uppercase sub-kegiatan-tagging">'.$opd_sub_kegiatan_indikator_kinerja->opd->nama.'</span>';
+                    }
+                    $html .= '</li>';
+                }
+                $html .= '</ul></td>
+                <td width="20%">
+                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Sub Kegiatan"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-sub-kegiatan" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Edit Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                </td>';
+
+        return response()->json(['success' => 'Berhasil Merubah Sub Kegiatan', 'html' => $html, 'sub_kegiatan_id' => $request->sub_kegiatan_hidden_id]);
     }
 
     public function impor(Request $request)

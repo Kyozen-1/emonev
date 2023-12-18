@@ -754,7 +754,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-5">
+            {{-- <div class="mb-5">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -777,6 +777,70 @@
                         </div>
                     </div>
                 </div>
+            </div> --}}
+
+            <div class="mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-3 cta-3 text-primary">Grafik Jumlah Tujuan PD Yang Ditambahkan Oleh OPD</div>
+                                <div id="grafik_tujuan_pd_bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-3 cta-3 text-primary">Grafik Jumlah Sasaran PD Yang Ditambahkan Oleh OPD</div>
+                                <div id="grafik_sasaran_pd_bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-3 cta-3 text-primary">Grafik Program</div>
+                                <div id="grafik_program"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-3 cta-3 text-primary">Grafik Kegiatan</div>
+                                <div id="grafik_kegiatan"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-3 cta-3 text-primary">Grafik Sub Kegiatan</div>
+                                <div id="grafik_sub_kegiatan"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Content End -->
@@ -794,56 +858,217 @@
                 autoclose:true
             });
 
+            // $.ajax({
+            //     url: "{{route('admin.dashboard.tujuan-pd')}}",
+            //     dataType: "json",
+            //     success: function(data)
+            //     {
+            //         var grafik_tujuan_pd = {
+            //             series: data.jumlah,
+            //             chart: {
+            //                 type: 'donut',
+            //                 toolbar: {
+            //                     show: false
+            //                 }
+            //             },
+            //             tooltip: {
+            //                 shared: true,
+            //                 intersect: false,
+            //                 style: {
+            //                     fontSize: '2rem',
+            //                 },
+            //             },
+            //             labels: data.nama,
+            //             responsive: [{
+            //                 breakpoint: 480,
+            //                 options: {
+            //                     chart: {
+            //                         width: 320
+            //                     },
+            //                     legend: {
+            //                         position: 'bottom'
+            //                     }
+            //                 }
+            //             }]
+            //         };
+
+            //         var chart_grafik_tujuan_pd = new ApexCharts(document.querySelector("#grafik_tujuan_pd"), grafik_tujuan_pd);
+            //         chart_grafik_tujuan_pd.render();
+            //     }
+            // });
+
+            // $.ajax({
+            //     url: "{{route('admin.dashboard.sasaran-pd')}}",
+            //     dataType: "json",
+            //     success: function(data)
+            //     {
+            //         var grafik_sasaran_pd = {
+            //             series: data.jumlah,
+            //             chart: {
+            //                 type: 'donut',
+            //                 toolbar: {
+            //                     show: false
+            //                 }
+            //             },
+            //             tooltip: {
+            //                 shared: true,
+            //                 intersect: false,
+            //                 style: {
+            //                     fontSize: '2rem',
+            //                 },
+            //             },
+            //             labels: data.nama,
+            //             responsive: [{
+            //                 breakpoint: 480,
+            //                 options: {
+            //                     chart: {
+            //                         width: 320
+            //                     },
+            //                     legend: {
+            //                         position: 'bottom'
+            //                     }
+            //                 }
+            //             }]
+            //         };
+
+            //         var chart_grafik_sasaran_pd = new ApexCharts(document.querySelector("#grafik_sasaran_pd"), grafik_sasaran_pd);
+            //         chart_grafik_sasaran_pd.render();
+            //     }
+            // });
+
             $.ajax({
-                url: "{{route('admin.dashboard.tujuan-pd')}}",
+                url: "{{route('admin.dashboard.tujuan-pd-bar')}}",
                 dataType: "json",
                 success: function(data)
                 {
-                    var grafik_tujuan_pd = {
-                        series: data.jumlah,
+                    var grafik_tujuan_pd_bar = {
+                        series: [{
+                            data: data.jumlah
+                        }],
                         chart: {
-                            type: 'donut',
+                            type: 'bar',
+                            height: 1000,
                             toolbar: {
                                 show: false
                             }
                         },
-                        tooltip: {
-                            shared: true,
-                            intersect: false,
-                            style: {
-                                fontSize: '2rem',
-                            },
-                        },
-                        labels: data.nama,
-                        responsive: [{
-                            breakpoint: 480,
-                            options: {
-                                chart: {
-                                    width: 320
-                                },
-                                legend: {
-                                    position: 'bottom'
-                                }
+                        plotOptions: {
+                            bar: {
+                                borderRadius: 1,
+                                horizontal: true,
                             }
-                        }]
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        xaxis: {
+                            categories: data.nama,
+                        },
+                        tooltip: {
+                            y: {
+                                formatter: function (val) {
+                                return val + " Tujuan PD"
+                                }
+                            },
+                            style: {
+                                fontSize: '1rem',
+                            },
+                        }
                     };
 
-                    var chart_grafik_tujuan_pd = new ApexCharts(document.querySelector("#grafik_tujuan_pd"), grafik_tujuan_pd);
-                    chart_grafik_tujuan_pd.render();
+                    var chart_grafik_tujuan_pd_bar = new ApexCharts(document.querySelector("#grafik_tujuan_pd_bar"), grafik_tujuan_pd_bar);
+                    chart_grafik_tujuan_pd_bar.render();
                 }
             });
 
             $.ajax({
-                url: "{{route('admin.dashboard.sasaran-pd')}}",
+                url: "{{route('admin.dashboard.sasaran-pd-bar')}}",
                 dataType: "json",
                 success: function(data)
                 {
-                    var grafik_sasaran_pd = {
-                        series: data.jumlah,
+                    var grafik_sasaran_pd_bar = {
+                        series: [{
+                            data: data.jumlah
+                        }],
                         chart: {
-                            type: 'donut',
+                            type: 'bar',
+                            height: 1000,
                             toolbar: {
                                 show: false
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                borderRadius: 1,
+                                horizontal: true,
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        xaxis: {
+                            categories: data.nama,
+                        },
+                        tooltip: {
+                            y: {
+                                formatter: function (val) {
+                                return val + " Sasaran PD"
+                                }
+                            },
+                            style: {
+                                fontSize: '1rem',
+                            },
+                        }
+                    };
+
+                    var chart_grafik_sasaran_pd_bar = new ApexCharts(document.querySelector("#grafik_sasaran_pd_bar"), grafik_sasaran_pd_bar);
+                    chart_grafik_sasaran_pd_bar.render();
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('admin.dashboard.grafik-program') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    var grafik_program = {
+                        series: [
+                        {
+                            name: 'Tercapai',
+                            data: data.data_program
+                        }],
+                        chart: {
+                            height: 2500,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: true,
+                            }
+                        },
+                        yaxis: {
+                            title: {
+                                text: 'Nama OPD'
+                            }
+                        },
+                        colors: ['#00E396'],
+                        dataLabels: {
+                            formatter: function(val, opt) {
+                                const goals =
+                                opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
+                                    .goals
+
+                                if (goals && goals.length) {
+                                return `${val} / ${goals[0].value}`
+                                }
+                                return val
+                            },
+                            style: {
+                                fontSize: '24px',
+                                colors: ['#fff']
                             }
                         },
                         tooltip: {
@@ -853,22 +1078,152 @@
                                 fontSize: '2rem',
                             },
                         },
-                        labels: data.nama,
-                        responsive: [{
-                            breakpoint: 480,
-                            options: {
-                                chart: {
-                                    width: 320
-                                },
-                                legend: {
-                                    position: 'bottom'
-                                }
+                        legend: {
+                            show: true,
+                            showForSingleSeries: true,
+                            customLegendItems: ['Realisasi', 'Rencana'],
+                            markers: {
+                                fillColors: ['#00E396', '#775DD0']
                             }
-                        }]
+                        }
                     };
 
-                    var chart_grafik_sasaran_pd = new ApexCharts(document.querySelector("#grafik_sasaran_pd"), grafik_sasaran_pd);
-                    chart_grafik_sasaran_pd.render();
+                    var chart_grafik_program = new ApexCharts(document.querySelector("#grafik_program"), grafik_program);
+                    chart_grafik_program.render();
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('admin.dashboard.grafik-kegiatan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    var grafik_kegiatan = {
+                        series: [
+                        {
+                            name: 'Tercapai',
+                            data: data.data_kegiatan
+                        }],
+                        chart: {
+                            height: 2500,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: true,
+                            }
+                        },
+                        yaxis: {
+                            title: {
+                                text: 'Nama OPD'
+                            }
+                        },
+                        colors: ['#00E396'],
+                        dataLabels: {
+                            formatter: function(val, opt) {
+                                const goals =
+                                opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
+                                    .goals
+
+                                if (goals && goals.length) {
+                                return `${val} / ${goals[0].value}`
+                                }
+                                return val
+                            },
+                            style: {
+                                fontSize: '24px',
+                                colors: ['#fff']
+                            }
+                        },
+                        tooltip: {
+                            shared: true,
+                            intersect: false,
+                            style: {
+                                fontSize: '2rem',
+                            },
+                        },
+                        legend: {
+                            show: true,
+                            showForSingleSeries: true,
+                            customLegendItems: ['Realisasi', 'Rencana'],
+                            markers: {
+                                fillColors: ['#00E396', '#775DD0']
+                            }
+                        }
+                    };
+
+                    var chart_grafik_kegiatan = new ApexCharts(document.querySelector("#grafik_kegiatan"), grafik_kegiatan);
+                    chart_grafik_kegiatan.render();
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('admin.dashboard.grafik-sub-kegiatan') }}",
+                dataType: "json",
+                success: function(data)
+                {
+                    var grafik_sub_kegiatan = {
+                        series: [
+                        {
+                            name: 'Tercapai',
+                            data: data.data_sub_kegiatan
+                        }],
+                        chart: {
+                            height: 2500,
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: true,
+                            }
+                        },
+                        yaxis: {
+                            title: {
+                                text: 'Nama OPD'
+                            }
+                        },
+                        colors: ['#00E396'],
+                        dataLabels: {
+                            formatter: function(val, opt) {
+                                const goals =
+                                opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
+                                    .goals
+
+                                if (goals && goals.length) {
+                                return `${val} / ${goals[0].value}`
+                                }
+                                return val
+                            },
+                            style: {
+                                fontSize: '24px',
+                                colors: ['#fff']
+                            }
+                        },
+                        tooltip: {
+                            shared: true,
+                            intersect: false,
+                            style: {
+                                fontSize: '2rem',
+                            },
+                        },
+                        legend: {
+                            show: true,
+                            showForSingleSeries: true,
+                            customLegendItems: ['Realisasi', 'Rencana'],
+                            markers: {
+                                fillColors: ['#00E396', '#775DD0']
+                            }
+                        }
+                    };
+
+                    var chart_grafik_sub_kegiatan = new ApexCharts(document.querySelector("#grafik_sub_kegiatan"), grafik_sub_kegiatan);
+                    chart_grafik_sub_kegiatan.render();
                 }
             });
 

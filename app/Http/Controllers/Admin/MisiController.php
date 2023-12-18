@@ -192,129 +192,79 @@ class MisiController extends Controller
             $misi->save();
         }
 
-        $get_visis = Visi::all();
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        $getVisi = Visi::find($request->misi_visi_id);
+        $visi = [
+            'id' => $getVisi->id,
+            'kode' => $getVisi->kode,
+            'deskripsi' => $getVisi->deskripsi
+        ];
+
+        $get_misis = Misi::where('visi_id', $visi['id'])->get();
+        $misis = [];
+        foreach($get_misis as $get_misi)
+        {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $misis[] = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $misis[] = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan,
                 ];
             }
         }
-        $html = '<div class="data-table-rows slim" id="misi_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="75%">Deskripsi</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
+
+        $html = '<td colspan="3" class="hiddenRow">
+                    <div class="collapse show" id="misi_visi'.$visi['id'].'">
+                        <table class="table table-striped">
                             <tbody>';
-                            foreach ($visis as $visi) {
-                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                if($request->misi_filter_visi == 'aman')
-                                {
-                                    $get_misis = $get_misis->where(function($q){
-                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                    });
-                                }
-                                if($request->misi_filter_visi == 'mandiri')
-                                {
-                                    $get_misis = $get_misis->where('kode', 3);
-                                }
-                                if($request->misi_filter_visi == 'sejahtera')
-                                {
-                                    $get_misis = $get_misis->where('kode', 4);
-                                }
-                                if($request->misi_filter_visi == 'berahlak')
-                                {
-                                    $get_misis = $get_misis->where('kode', 5);
-                                }
-                                if($request->misi_filter_misi)
-                                {
-                                    $get_misis = $get_misis->where('id', $request->misi_filter_misi);
-                                }
-                                $get_misis = $get_misis->get();
-                                $misis = [];
-                                foreach($get_misis as $get_misi)
-                                {
-                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                            ->where('tahun_perubahan', $request->tahun)
-                                                            ->latest()
-                                                            ->first();
-                                    if($cek_perubahan_misi)
-                                    {
-                                        $misis[] = [
-                                            'id' => $cek_perubahan_misi->misi_id,
-                                            'kode' => $cek_perubahan_misi->kode,
-                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                        ];
-                                    } else {
-                                        $misis[] = [
-                                            'id' => $get_misi->id,
-                                            'kode' => $get_misi->kode,
-                                            'deskripsi' => $get_misi->deskripsi,
-                                            'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                        ];
-                                    }
-                                }
-                                $html .= '<tr style="background: #bbbbbb;">
-                                            <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                            <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                                '.strtoupper($visi['deskripsi']).'
-                                                <br>
-                                                <span class="badge bg-primary text-uppercase misi-tagging">Visi</span>
+                            $a = 1;
+                            foreach ($misis as $misi) {
+                                $html .= '<tr id="trMisi'.$misi['id'].'">
+                                            <td width="5%">'.$misi['kode'].'</td>
+                                            <td width="75%">
+                                                '.$misi['deskripsi'].'
+                                                <br>';
+                                                if($a == 1 || $a == 2)
+                                                {
+                                                    $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Aman]</span>';
+                                                }
+                                                if($a == 3)
+                                                {
+                                                    $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Mandiri]</span>';
+                                                }
+                                                if($a == 4)
+                                                {
+                                                    $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Sejahtera]</span>';
+                                                }
+                                                if($a == 5)
+                                                {
+                                                    $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Berahlak]</span>';
+                                                }
+                                                $html .= ' <span class="badge bg-warning text-uppercase misi-tagging">Misi '.$misi['kode'].'</span>
                                             </td>
-                                            <td>
-                                                <button class="btn btn-primary waves-effect waves-light mr-2 misi_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditMisiModal" title="Tambah Data Misi" data-visi-id="'.$visi['id'].'"><i class="fas fa-plus"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" class="hiddenRow">
-                                                <div class="collapse show" id="misi_visi'.$visi['id'].'">
-                                                    <table class="table table-striped">
-                                                        <tbody>';
-                                                        $a = 1;
-                                                        foreach ($misis as $misi) {
-                                                            $html .= '<tr>
-                                                                        <td width="5%">'.$misi['kode'].'</td>
-                                                                        <td width="75%">
-                                                                            '.$misi['deskripsi'].'
-                                                                            <br>';
-                                                                            $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi '.$request->visi.'</span>';
-                                                                            $html .= ' <span class="badge bg-warning text-uppercase misi-tagging">Misi '.$misi['kode'].'</span>
-                                                                        </td>
-                                                                        <td width="20%">
-                                                                            <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-misi" data-misi-id="'.$misi['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Detail Misi"><i class="fas fa-eye"></i></button>
-                                                                            <button class="btn btn-icon btn-warning waves-effect waves-light edit-misi" data-misi-id="'.$misi['id'].'" data-visi-id="'.$visi['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Misi"><i class="fas fa-edit"></i></button>
-                                                                        </td>
-                                                                    </tr>';
-                                                            $a++;
-                                                        }
-                                                        $html .= '</tbody>
-                                                    </table>
-                                                </div>
+                                            <td width="20%">
+                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-misi" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Detail Misi"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-icon btn-warning waves-effect waves-light edit-misi" data-misi-id="'.$misi['id'].'" data-tahun="semua" data-visi-id="'.$visi['id'].'" type="button" title="Edit Misi"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-icon waves-effect btn-danger waves-light delete-misi " type="button" data-misi-id="'.$misi['id'].'" title="Delete Data"><i class="fas fa-trash"></i></button>
                                             </td>
                                         </tr>';
+                                $a++;
                             }
                             $html .= '</tbody>
                         </table>
                     </div>
-                </div>';
+        </td>';
 
         return response()->json(['success' => 'Berhasil menambahkan misi','html' => $html]);
     }
@@ -458,129 +408,47 @@ class MisiController extends Controller
         $pivot_perubahan->kabupaten_id = 62;
         $pivot_perubahan->save();
 
-        $get_visis = Visi::all();
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        $get_misis = Misi::where('id', $request->misi_hidden_id)->get();
+        foreach($get_misis as $get_misi)
+        {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan,
                 ];
             }
         }
-        $html = '<div class="data-table-rows slim" id="misi_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="75%">Deskripsi</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                if($request->misi_filter_visi == 'aman')
-                                {
-                                    $get_misis = $get_misis->where(function($q){
-                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                    });
-                                }
-                                if($request->misi_filter_visi == 'mandiri')
-                                {
-                                    $get_misis = $get_misis->where('kode', 3);
-                                }
-                                if($request->misi_filter_visi == 'sejahtera')
-                                {
-                                    $get_misis = $get_misis->where('kode', 4);
-                                }
-                                if($request->misi_filter_visi == 'berahlak')
-                                {
-                                    $get_misis = $get_misis->where('kode', 5);
-                                }
-                                if($request->misi_filter_misi)
-                                {
-                                    $get_misis = $get_misis->where('id', $request->misi_filter_misi);
-                                }
-                                $get_misis = $get_misis->get();
-                                $misis = [];
-                                foreach($get_misis as $get_misi)
-                                {
-                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                            ->where('tahun_perubahan', $request->tahun)
-                                                            ->latest()
-                                                            ->first();
-                                    if($cek_perubahan_misi)
-                                    {
-                                        $misis[] = [
-                                            'id' => $cek_perubahan_misi->misi_id,
-                                            'kode' => $cek_perubahan_misi->kode,
-                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                        ];
-                                    } else {
-                                        $misis[] = [
-                                            'id' => $get_misi->id,
-                                            'kode' => $get_misi->kode,
-                                            'deskripsi' => $get_misi->deskripsi,
-                                            'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                        ];
-                                    }
-                                }
-                                $html .= '<tr style="background: #bbbbbb;">
-                                            <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                            <td data-bs-toggle="collapse" data-bs-target="#misi_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                                '.strtoupper($visi['deskripsi']).'
-                                                <br>
-                                                <span class="badge bg-primary text-uppercase misi-tagging">Visi</span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-primary waves-effect waves-light mr-2 misi_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditMisiModal" title="Tambah Data Misi" data-visi-id="'.$visi['id'].'"><i class="fas fa-plus"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" class="hiddenRow">
-                                                <div class="collapse show" id="misi_visi'.$visi['id'].'">
-                                                    <table class="table table-striped">
-                                                        <tbody>';
-                                                        $a = 1;
-                                                        foreach ($misis as $misi) {
-                                                            $html .= '<tr>
-                                                                        <td width="5%">'.$misi['kode'].'</td>
-                                                                        <td width="75%">
-                                                                            '.$misi['deskripsi'].'
-                                                                            <br>';
-                                                                            $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi '.$request->visi.'</span>';
-                                                                            $html .= ' <span class="badge bg-warning text-uppercase misi-tagging">Misi '.$misi['kode'].'</span>
-                                                                        </td>
-                                                                        <td width="20%">
-                                                                            <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-misi" data-misi-id="'.$misi['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Detail Misi"><i class="fas fa-eye"></i></button>
-                                                                            <button class="btn btn-icon btn-warning waves-effect waves-light edit-misi" data-misi-id="'.$misi['id'].'" data-visi-id="'.$visi['id'].'" data-tahun="'.$request->tahun.'" type="button" title="Edit Misi"><i class="fas fa-edit"></i></button>
-                                                                        </td>
-                                                                    </tr>';
-                                                            $a++;
-                                                        }
-                                                        $html .= '</tbody>
-                                                    </table>
-                                                </div>
-                                            </td>
-                                        </tr>';
-                            }
-                            $html .= '</tbody>
-                        </table>
-                    </div>
-                </div>';
+
+        $getVisi = Visi::find($request->misi_visi_id);
+        $visi = [
+            'id' => $getVisi->id,
+            'kode' => $getVisi->kode,
+            'deskripsi' => $getVisi->deskripsi
+        ];
+
+        $html = '<td width="5%">'.$misi['kode'].'</td>
+                <td width="75%">
+                    '.$misi['deskripsi'];
+                    $html .= ' <span class="badge bg-warning text-uppercase misi-tagging">Misi '.$misi['kode'].'</span>
+                </td>
+                <td width="20%">
+                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-misi" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Detail Misi"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-icon btn-warning waves-effect waves-light edit-misi" data-misi-id="'.$misi['id'].'" data-tahun="semua" data-visi-id="'.$visi['id'].'" type="button" title="Edit Misi"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-icon waves-effect btn-danger waves-light delete-misi " type="button" data-misi-id="'.$misi['id'].'" title="Delete Data"><i class="fas fa-trash"></i></button>
+                </td>';
 
         return response()->json(['success' => 'Berhasil menambahkan misi','html' => $html]);
     }
@@ -593,6 +461,7 @@ class MisiController extends Controller
      */
     public function destroy(Request $request)
     {
+        $idVisi = Misi::find($request->id)->visi_id;
         DB::transaction(function () use ($request){
             $getTujuans = Tujuan::where('misi_id', $request->id)->get();
             foreach ($getTujuans as $getTujuan) {
@@ -708,6 +577,80 @@ class MisiController extends Controller
             Misi::find($request->id)->delete();
         });
 
-        return response()->json(['success' => 'Berhasil menghapus']);
+        $getVisi = Visi::find($idVisi);
+        $visi = [
+            'id' => $getVisi->id,
+            'kode' => $getVisi->kode,
+            'deskripsi' => $getVisi->deskripsi
+        ];
+
+        $get_misis = Misi::where('visi_id', $visi['id'])->get();
+        $misis = [];
+        foreach($get_misis as $get_misi)
+        {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
+            {
+                $misis[] = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
+                ];
+            } else {
+                $misis[] = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan,
+                ];
+            }
+        }
+
+        $html = '<td colspan="3" class="hiddenRow">
+                    <div class="collapse show" id="misi_visi'.$visi['id'].'">
+                        <table class="table table-striped">
+                            <tbody>';
+                            $a = 1;
+                            foreach ($misis as $misi) {
+                                $html .= '<tr id="trMisi'.$misi['id'].'">
+                                            <td width="5%">'.$misi['kode'].'</td>
+                                            <td width="75%">
+                                                '.$misi['deskripsi'].'
+                                                <br>';
+                                                if($a == 1 || $a == 2)
+                                                {
+                                                    $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Aman]</span>';
+                                                }
+                                                if($a == 3)
+                                                {
+                                                    $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Mandiri]</span>';
+                                                }
+                                                if($a == 4)
+                                                {
+                                                    $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Sejahtera]</span>';
+                                                }
+                                                if($a == 5)
+                                                {
+                                                    $html .= '<span class="badge bg-primary text-uppercase misi-tagging">Visi [Berahlak]</span>';
+                                                }
+                                                $html .= ' <span class="badge bg-warning text-uppercase misi-tagging">Misi '.$misi['kode'].'</span>
+                                            </td>
+                                            <td width="20%">
+                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-misi" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Detail Misi"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-icon btn-warning waves-effect waves-light edit-misi" data-misi-id="'.$misi['id'].'" data-tahun="semua" data-visi-id="'.$visi['id'].'" type="button" title="Edit Misi"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-icon waves-effect btn-danger waves-light delete-misi " type="button" data-misi-id="'.$misi['id'].'" title="Delete Data"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>';
+                                $a++;
+                            }
+                            $html .= '</tbody>
+                        </table>
+                    </div>
+        </td>';
+
+        return response()->json(['success' => 'Berhasil menghapus', 'html' => $html, 'visi_id' => $idVisi]);
     }
 }

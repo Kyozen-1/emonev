@@ -67,6 +67,7 @@ use App\Models\SubKegiatanTwRealisasi;
 use App\Models\TujuanIndikatorKinerja;
 use App\Models\TujuanTargetSatuanRpRealisasi;
 use App\Models\SasaranTargetSatuanRpRealisasi;
+use App\Models\SasaranTwRealisasi;
 
 class SasaranController extends Controller
 {
@@ -281,6 +282,7 @@ class SasaranController extends Controller
             $pivot->kabupaten_id = 62;
             $pivot->tahun_perubahan = $request->sasaran_tahun_perubahan;
             $pivot->save();
+            $idSasaran = $pivot->sasaran_id;
         } else {
             $sasaran = new Sasaran;
             $sasaran->tujuan_id = $request->sasaran_tujuan_id;
@@ -289,6 +291,7 @@ class SasaranController extends Controller
             $sasaran->kabupaten_id = 62;
             $sasaran->tahun_perubahan = $request->sasaran_tahun_perubahan;
             $sasaran->save();
+            $idSasaran = $sasaran->id;
         }
 
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
@@ -299,367 +302,386 @@ class SasaranController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
-            if($request->nav_rpjmd_sasaran_tahun != 'semua')
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+        $getSasaran = Sasaran::find($idSasaran);
+
+        $get_tujuans = Tujuan::where('id', $getSasaran->tujuan_id)->get();
+
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_tujuan)
             {
-                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-            }
-            $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condensed">
-                                                <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id']);
-                                                    if($request->sasaran_filter_visi == 'aman')
+        $get_misis = Misi::where('id', $getSasaran->tujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
+            {
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
+                ];
+            } else {
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
+                ];
+            }
+        }
+
+        $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+        $sasarans = [];
+
+        foreach ($get_sasarans as $get_sasaran)
+        {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi,
+                    'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                ];
+            }
+        }
+
+        foreach ($sasarans as $sasaran)
+        {
+            $html .= '<tr>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
+                            '.$sasaran['deskripsi'].'
+                            <br>';
+                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>';
+                            $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                            <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                            <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                        </td>';
+                        $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                        // $html .= '<td width="30%"><ul>';
+                        //     foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                        //     {
+                        //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
+                        //     }
+                        // $html .= '</ul></td>';
+                        $html .= '<td width="28%"><table>
+                                    <tbody>';
+                                        foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                            $html .= '<tr>';
+                                                $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                $html .= '<td width="25%">
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                                </td>';
+                                            $html .= '</tr>';
+                                        }
+                                    $html .= '</tbody>
+                                </table></td>';
+                        $html .='<td width="22%">
+                            <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="hiddenRow">
+                            <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="30%">Indikator</th>
+                                            <th width="17%">Kondisi Kinerja Awal</th>
+                                            <th width="12%">Target</th>
+                                            <th width="12%">Satuan</th>
+                                            <th width="12%">Tahun</th>
+                                            <th width="12%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodySasaranSasaran'.$sasaran['id'].'">';
+                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                    $no_sasaran_indikator_kinerja = 1;
+                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                        $html .= '<tr id="trSasaranIndikatorKinerja'.$sasaran_indikator_kinerja->id.'">';
+                                            $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                            $b = 1;
+                                            foreach ($tahuns as $tahun) {
+                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                    ->where('tahun', $tahun)->first();
+                                                if($cek_sasaran_target_satuan_rp_realisasi)
+                                                {
+                                                    if($b == 1)
                                                     {
-                                                        $get_misis = $get_misis->where(function($q){
-                                                            $q->where('kode', 1)->orWhere('kode', 2);
-                                                        });
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'mandiri')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 3);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'sejahtera')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 4);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'berahlak')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 5);
-                                                    }
-                                                    if($request->sasaran_filter_misi)
-                                                    {
-                                                        $get_misis = $get_misis->where('id', $request->sasaran_filter_misi);
-                                                    }
-                                                    $get_misis = $get_misis->get();
-                                                    $misis = [];
-                                                    foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id);
-                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                        {
-                                                            $cek_perubahan_misi = $cek_perubahan_misi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                        }
-                                                        $cek_perubahan_misi = $cek_perubahan_misi->latest()->first();
-                                                        if($cek_perubahan_misi)
-                                                        {
-                                                            $misis[] = [
-                                                                'id' => $cek_perubahan_misi->misi_id,
-                                                                'kode' => $cek_perubahan_misi->kode,
-                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                                            ];
-                                                        } else {
-                                                            $misis[] = [
-                                                                'id' => $get_misi->id,
-                                                                'kode' => $get_misi->kode,
-                                                                'deskripsi' => $get_misi->deskripsi,
-                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                                            ];
-                                                        }
-                                                    }
-                                                    $a = 1;
-                                                    foreach ($misis as $misi) {
-                                                        $html .= '<tr style="background: #c04141;">
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                                        '.strtoupper($misi['deskripsi']).'
-                                                                        <br>';
-                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
-                                                                    </td>
-                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped table-condensed">
-                                                                                <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                                    if($request->sasaran_filter_tujuan)
+                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                        </button>
+                                                                        <button type="button"
+                                                                            class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            data-tahun="'.$tahun.'"
+                                                                            data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            value="close"
+                                                                            data-bs-toggle="collapse"
+                                                                            data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            class="accordion-toggle">
+                                                                                <i class="fas fa-chevron-right"></i>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
                                                                                     {
-                                                                                        $get_tujuans = $get_tujuans->where('id', $request->sasaran_filter_tujuan);
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    $get_tujuans = $get_tujuans->get();
-                                                                                    $tujuans = [];
-                                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                        {
-                                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan',$request->nav_rpjmd_sasaran_tahun);
-                                                                                        }
-                                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $get_tujuan->id,
-                                                                                                'kode' => $get_tujuan->kode,
-                                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        }
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                            </button>
+                                                                            <button type="button"
+                                                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                data-tahun="'.$tahun.'"
+                                                                                data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                value="close"
+                                                                                data-bs-toggle="collapse"
+                                                                                data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                class="accordion-toggle">
+                                                                                    <i class="fas fa-chevron-right"></i>
+                                                                            </button>
+                                                                        </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
+                                                                                    {
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
-                                                                                                        '.strtoupper($tujuan['deskripsi']).'
-                                                                                                        <br>';
-                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                    </td>
-                                                                                                    <td width ="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
-                                                                                                                    if($request->sasaran_filter_sasaran)
-                                                                                                                    {
-                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->sasaran_filter_sasaran);
-                                                                                                                    }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
-                                                                                                                    $sasarans = [];
-                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
-                                                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                                                        {
-                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                                                                                        }
-                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
-                                                                                                                        if($cek_perubahan_sasaran)
-                                                                                                                        {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        } else {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $get_sasaran->id,
-                                                                                                                                'kode' => $get_sasaran->kode,
-                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    foreach ($sasarans as $sasaran) {
-                                                                                                                        $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
-                                                                                                                                        '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="28%"><table>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                        $html .= '<tr>';
-                                                                                                                                                            $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                            $html .= '<td width="25%">
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                                                                                            </td>';
-                                                                                                                                                        $html .= '</tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table></td>';
-                                                                                                                                    $html .='<td width="22%">
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%">No</th>
-                                                                                                                                                        <th width="30%">Indikator</th>
-                                                                                                                                                        <th width="17%">Target Kinerja Awal</th>
-                                                                                                                                                        <th width="12%">Target</th>
-                                                                                                                                                        <th width="12%">Satuan</th>
-                                                                                                                                                        <th width="12%">Tahun</th>
-                                                                                                                                                        <th width="12%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
-                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                        $b = 1;
-                                                                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                        </button>
-                                                                                                                                                                                    </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            } else {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>';
-                                                                                                                    }
-                                                                                                                $html .= '</tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>';
-                                                    $a++;
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
                                                     }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                            }
-                            $html .='</tbody>
-                        </table>
-                    </div>
-                </div>';
+                                                    $b++;
+                                                } else {
+                                                    if($b == 1)
+                                                    {
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    }
+                                                    $b++;
+                                                }
+                                            }
+                                    }
+                                    $html .= '</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>';
+        }
+
         return response()->json(['success' => 'Berhasil menambahkan sasaran','html' => $html]);
     }
 
@@ -943,367 +965,385 @@ class SasaranController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
-            if($request->nav_rpjmd_sasaran_tahun != 'semua')
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+        $getSasaran = Sasaran::find($request->sasaran_hidden_id);
+
+        $get_tujuans = Tujuan::where('id', $getSasaran->tujuan_id)->get();
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_tujuan)
             {
-                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-            }
-            $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condensed">
-                                                <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id']);
-                                                    if($request->sasaran_filter_visi == 'aman')
+        $get_misis = Misi::where('id', $getSasaran->tujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
+            {
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
+                ];
+            } else {
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
+                ];
+            }
+        }
+
+        $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+        $sasarans = [];
+
+        foreach ($get_sasarans as $get_sasaran)
+        {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi,
+                    'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                ];
+            }
+        }
+
+        foreach ($sasarans as $sasaran)
+        {
+            $html .= '<tr>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
+                            '.$sasaran['deskripsi'].'
+                            <br>';
+                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>';
+                            $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                            <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                            <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                        </td>';
+                        $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                        // $html .= '<td width="30%"><ul>';
+                        //     foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                        //     {
+                        //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
+                        //     }
+                        // $html .= '</ul></td>';
+                        $html .= '<td width="28%"><table>
+                                    <tbody>';
+                                        foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                            $html .= '<tr>';
+                                                $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                $html .= '<td width="25%">
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                                </td>';
+                                            $html .= '</tr>';
+                                        }
+                                    $html .= '</tbody>
+                                </table></td>';
+                        $html .='<td width="22%">
+                            <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="hiddenRow">
+                            <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="30%">Indikator</th>
+                                            <th width="17%">Kondisi Kinerja Awal</th>
+                                            <th width="12%">Target</th>
+                                            <th width="12%">Satuan</th>
+                                            <th width="12%">Tahun</th>
+                                            <th width="12%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodySasaranSasaran'.$sasaran['id'].'">';
+                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                    $no_sasaran_indikator_kinerja = 1;
+                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                        $html .= '<tr id="trSasaranIndikatorKinerja'.$sasaran_indikator_kinerja->id.'">';
+                                            $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                            $b = 1;
+                                            foreach ($tahuns as $tahun) {
+                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                    ->where('tahun', $tahun)->first();
+                                                if($cek_sasaran_target_satuan_rp_realisasi)
+                                                {
+                                                    if($b == 1)
                                                     {
-                                                        $get_misis = $get_misis->where(function($q){
-                                                            $q->where('kode', 1)->orWhere('kode', 2);
-                                                        });
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'mandiri')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 3);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'sejahtera')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 4);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'berahlak')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 5);
-                                                    }
-                                                    if($request->sasaran_filter_misi)
-                                                    {
-                                                        $get_misis = $get_misis->where('id', $request->sasaran_filter_misi);
-                                                    }
-                                                    $get_misis = $get_misis->get();
-                                                    $misis = [];
-                                                    foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id);
-                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                        {
-                                                            $cek_perubahan_misi = $cek_perubahan_misi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                        }
-                                                        $cek_perubahan_misi = $cek_perubahan_misi->latest()->first();
-                                                        if($cek_perubahan_misi)
-                                                        {
-                                                            $misis[] = [
-                                                                'id' => $cek_perubahan_misi->misi_id,
-                                                                'kode' => $cek_perubahan_misi->kode,
-                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                                            ];
-                                                        } else {
-                                                            $misis[] = [
-                                                                'id' => $get_misi->id,
-                                                                'kode' => $get_misi->kode,
-                                                                'deskripsi' => $get_misi->deskripsi,
-                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                                            ];
-                                                        }
-                                                    }
-                                                    $a = 1;
-                                                    foreach ($misis as $misi) {
-                                                        $html .= '<tr style="background: #c04141;">
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                                        '.strtoupper($misi['deskripsi']).'
-                                                                        <br>';
-                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
-                                                                    </td>
-                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped table-condensed">
-                                                                                <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                                    if($request->sasaran_filter_tujuan)
+                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                        </button>
+                                                                        <button type="button"
+                                                                            class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            data-tahun="'.$tahun.'"
+                                                                            data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            value="close"
+                                                                            data-bs-toggle="collapse"
+                                                                            data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            class="accordion-toggle">
+                                                                                <i class="fas fa-chevron-right"></i>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
                                                                                     {
-                                                                                        $get_tujuans = $get_tujuans->where('id', $request->sasaran_filter_tujuan);
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    $get_tujuans = $get_tujuans->get();
-                                                                                    $tujuans = [];
-                                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                        {
-                                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan',$request->nav_rpjmd_sasaran_tahun);
-                                                                                        }
-                                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $get_tujuan->id,
-                                                                                                'kode' => $get_tujuan->kode,
-                                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        }
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                            </button>
+                                                                            <button type="button"
+                                                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                data-tahun="'.$tahun.'"
+                                                                                data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                value="close"
+                                                                                data-bs-toggle="collapse"
+                                                                                data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                class="accordion-toggle">
+                                                                                    <i class="fas fa-chevron-right"></i>
+                                                                            </button>
+                                                                        </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
+                                                                                    {
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
-                                                                                                        '.strtoupper($tujuan['deskripsi']).'
-                                                                                                        <br>';
-                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                    </td>
-                                                                                                    <td width ="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
-                                                                                                                    if($request->sasaran_filter_sasaran)
-                                                                                                                    {
-                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->sasaran_filter_sasaran);
-                                                                                                                    }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
-                                                                                                                    $sasarans = [];
-                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
-                                                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                                                        {
-                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                                                                                        }
-                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
-                                                                                                                        if($cek_perubahan_sasaran)
-                                                                                                                        {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        } else {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $get_sasaran->id,
-                                                                                                                                'kode' => $get_sasaran->kode,
-                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    foreach ($sasarans as $sasaran) {
-                                                                                                                        $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
-                                                                                                                                        '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="28%"><table>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                        $html .= '<tr>';
-                                                                                                                                                            $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                            $html .= '<td width="25%">
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                                                                                            </td>';
-                                                                                                                                                        $html .= '</tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table></td>';
-                                                                                                                                    $html .='<td width="22%">
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%">No</th>
-                                                                                                                                                        <th width="30%">Indikator</th>
-                                                                                                                                                        <th width="17%">Target Kinerja Awal</th>
-                                                                                                                                                        <th width="12%">Target</th>
-                                                                                                                                                        <th width="12%">Satuan</th>
-                                                                                                                                                        <th width="12%">Tahun</th>
-                                                                                                                                                        <th width="12%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
-                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                        $b = 1;
-                                                                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                        </button>
-                                                                                                                                                                                    </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            } else {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>';
-                                                                                                                    }
-                                                                                                                $html .= '</tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>';
-                                                    $a++;
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
                                                     }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                            }
-                            $html .='</tbody>
-                        </table>
-                    </div>
-                </div>';
+                                                    $b++;
+                                                } else {
+                                                    if($b == 1)
+                                                    {
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    }
+                                                    $b++;
+                                                }
+                                            }
+                                    }
+                                    $html .= '</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>';
+        }
+
         return response()->json(['success' => 'Berhasil merubah sasaran','html' => $html]);
     }
 
@@ -1356,368 +1396,386 @@ class SasaranController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
-            if($request->nav_rpjmd_sasaran_tahun != 'semua')
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+        $getSasaran = Sasaran::find($indikator_kinerja->sasaran_id);
+
+        $get_tujuans = Tujuan::where('id', $getSasaran->tujuan_id)->get();
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_tujuan)
             {
-                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-            }
-            $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condensed">
-                                                <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id']);
-                                                    if($request->sasaran_filter_visi == 'aman')
+        $get_misis = Misi::where('id', $getSasaran->tujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
+            {
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
+                ];
+            } else {
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
+                ];
+            }
+        }
+
+        $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+        $sasarans = [];
+
+        foreach ($get_sasarans as $get_sasaran)
+        {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi,
+                    'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                ];
+            }
+        }
+
+        foreach ($sasarans as $sasaran)
+        {
+            $html .= '<tr>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
+                            '.$sasaran['deskripsi'].'
+                            <br>';
+                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>';
+                            $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                            <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                            <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                        </td>';
+                        $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                        // $html .= '<td width="30%"><ul>';
+                        //     foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                        //     {
+                        //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
+                        //     }
+                        // $html .= '</ul></td>';
+                        $html .= '<td width="28%"><table>
+                                    <tbody>';
+                                        foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                            $html .= '<tr>';
+                                                $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                $html .= '<td width="25%">
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                                </td>';
+                                            $html .= '</tr>';
+                                        }
+                                    $html .= '</tbody>
+                                </table></td>';
+                        $html .='<td width="22%">
+                            <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="hiddenRow">
+                            <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="30%">Indikator</th>
+                                            <th width="17%">Kondisi Kinerja Awal</th>
+                                            <th width="12%">Target</th>
+                                            <th width="12%">Satuan</th>
+                                            <th width="12%">Tahun</th>
+                                            <th width="12%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodySasaranSasaran'.$sasaran['id'].'">';
+                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                    $no_sasaran_indikator_kinerja = 1;
+                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                        $html .= '<tr id="trSasaranIndikatorKinerja'.$sasaran_indikator_kinerja->id.'">';
+                                            $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                            $b = 1;
+                                            foreach ($tahuns as $tahun) {
+                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                    ->where('tahun', $tahun)->first();
+                                                if($cek_sasaran_target_satuan_rp_realisasi)
+                                                {
+                                                    if($b == 1)
                                                     {
-                                                        $get_misis = $get_misis->where(function($q){
-                                                            $q->where('kode', 1)->orWhere('kode', 2);
-                                                        });
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'mandiri')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 3);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'sejahtera')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 4);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'berahlak')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 5);
-                                                    }
-                                                    if($request->sasaran_filter_misi)
-                                                    {
-                                                        $get_misis = $get_misis->where('id', $request->sasaran_filter_misi);
-                                                    }
-                                                    $get_misis = $get_misis->get();
-                                                    $misis = [];
-                                                    foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id);
-                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                        {
-                                                            $cek_perubahan_misi = $cek_perubahan_misi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                        }
-                                                        $cek_perubahan_misi = $cek_perubahan_misi->latest()->first();
-                                                        if($cek_perubahan_misi)
-                                                        {
-                                                            $misis[] = [
-                                                                'id' => $cek_perubahan_misi->misi_id,
-                                                                'kode' => $cek_perubahan_misi->kode,
-                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                                            ];
-                                                        } else {
-                                                            $misis[] = [
-                                                                'id' => $get_misi->id,
-                                                                'kode' => $get_misi->kode,
-                                                                'deskripsi' => $get_misi->deskripsi,
-                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                                            ];
-                                                        }
-                                                    }
-                                                    $a = 1;
-                                                    foreach ($misis as $misi) {
-                                                        $html .= '<tr style="background: #c04141;">
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                                        '.strtoupper($misi['deskripsi']).'
-                                                                        <br>';
-                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
-                                                                    </td>
-                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped table-condensed">
-                                                                                <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                                    if($request->sasaran_filter_tujuan)
+                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                        </button>
+                                                                        <button type="button"
+                                                                            class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            data-tahun="'.$tahun.'"
+                                                                            data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            value="close"
+                                                                            data-bs-toggle="collapse"
+                                                                            data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            class="accordion-toggle">
+                                                                                <i class="fas fa-chevron-right"></i>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
                                                                                     {
-                                                                                        $get_tujuans = $get_tujuans->where('id', $request->sasaran_filter_tujuan);
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    $get_tujuans = $get_tujuans->get();
-                                                                                    $tujuans = [];
-                                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                        {
-                                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan',$request->nav_rpjmd_sasaran_tahun);
-                                                                                        }
-                                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $get_tujuan->id,
-                                                                                                'kode' => $get_tujuan->kode,
-                                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        }
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                            </button>
+                                                                            <button type="button"
+                                                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                data-tahun="'.$tahun.'"
+                                                                                data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                value="close"
+                                                                                data-bs-toggle="collapse"
+                                                                                data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                class="accordion-toggle">
+                                                                                    <i class="fas fa-chevron-right"></i>
+                                                                            </button>
+                                                                        </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
+                                                                                    {
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
-                                                                                                        '.strtoupper($tujuan['deskripsi']).'
-                                                                                                        <br>';
-                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                    </td>
-                                                                                                    <td width ="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
-                                                                                                                    if($request->sasaran_filter_sasaran)
-                                                                                                                    {
-                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->sasaran_filter_sasaran);
-                                                                                                                    }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
-                                                                                                                    $sasarans = [];
-                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
-                                                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                                                        {
-                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                                                                                        }
-                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
-                                                                                                                        if($cek_perubahan_sasaran)
-                                                                                                                        {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        } else {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $get_sasaran->id,
-                                                                                                                                'kode' => $get_sasaran->kode,
-                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    foreach ($sasarans as $sasaran) {
-                                                                                                                        $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
-                                                                                                                                        '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="28%"><table>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                        $html .= '<tr>';
-                                                                                                                                                            $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                            $html .= '<td width="25%">
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                                                                                            </td>';
-                                                                                                                                                        $html .= '</tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table></td>';
-                                                                                                                                    $html .='<td width="22%">
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%">No</th>
-                                                                                                                                                        <th width="30%">Indikator</th>
-                                                                                                                                                        <th width="17%">Target Kinerja Awal</th>
-                                                                                                                                                        <th width="12%">Target</th>
-                                                                                                                                                        <th width="12%">Satuan</th>
-                                                                                                                                                        <th width="12%">Tahun</th>
-                                                                                                                                                        <th width="12%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
-                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                        $b = 1;
-                                                                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                        </button>
-                                                                                                                                                                                    </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            } else {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>';
-                                                                                                                    }
-                                                                                                                $html .= '</tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>';
-                                                    $a++;
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
                                                     }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                            }
-                            $html .='</tbody>
-                        </table>
-                    </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil menambah indikator sasaran','html' => $html]);
+                                                    $b++;
+                                                } else {
+                                                    if($b == 1)
+                                                    {
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    }
+                                                    $b++;
+                                                }
+                                            }
+                                    }
+                                    $html .= '</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>';
+        }
+
+        return response()->json(['success' => 'Berhasil menambah indikator sasaran','html' => $html, 'tujuan_id' => $tujuan['id']]);
     }
 
     public function indikator_kinerja_edit($id)
@@ -1755,372 +1813,390 @@ class SasaranController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
-            if($request->nav_rpjmd_sasaran_tahun != 'semua')
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+        $getSasaran = Sasaran::find($indikator_kinerja->sasaran_id);
+
+        $get_tujuans = Tujuan::where('id', $getSasaran->tujuan_id)->get();
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_tujuan)
             {
-                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-            }
-            $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condensed">
-                                                <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id']);
-                                                    if($request->sasaran_filter_visi == 'aman')
+        $get_misis = Misi::where('id', $getSasaran->tujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
+            {
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
+                ];
+            } else {
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
+                ];
+            }
+        }
+
+        $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+        $sasarans = [];
+
+        foreach ($get_sasarans as $get_sasaran)
+        {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi,
+                    'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                ];
+            }
+        }
+
+        foreach ($sasarans as $sasaran)
+        {
+            $html .= '<tr>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
+                            '.$sasaran['deskripsi'].'
+                            <br>';
+                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>';
+                            $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                            <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                            <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                        </td>';
+                        $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                        // $html .= '<td width="30%"><ul>';
+                        //     foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                        //     {
+                        //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
+                        //     }
+                        // $html .= '</ul></td>';
+                        $html .= '<td width="28%"><table>
+                                    <tbody>';
+                                        foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                            $html .= '<tr>';
+                                                $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                $html .= '<td width="25%">
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                                </td>';
+                                            $html .= '</tr>';
+                                        }
+                                    $html .= '</tbody>
+                                </table></td>';
+                        $html .='<td width="22%">
+                            <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="hiddenRow">
+                            <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="30%">Indikator</th>
+                                            <th width="17%">Kondisi Kinerja Awal</th>
+                                            <th width="12%">Target</th>
+                                            <th width="12%">Satuan</th>
+                                            <th width="12%">Tahun</th>
+                                            <th width="12%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodySasaranSasaran'.$sasaran['id'].'">';
+                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                    $no_sasaran_indikator_kinerja = 1;
+                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                        $html .= '<tr id="trSasaranIndikatorKinerja'.$sasaran_indikator_kinerja->id.'">';
+                                            $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                            $b = 1;
+                                            foreach ($tahuns as $tahun) {
+                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                    ->where('tahun', $tahun)->first();
+                                                if($cek_sasaran_target_satuan_rp_realisasi)
+                                                {
+                                                    if($b == 1)
                                                     {
-                                                        $get_misis = $get_misis->where(function($q){
-                                                            $q->where('kode', 1)->orWhere('kode', 2);
-                                                        });
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'mandiri')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 3);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'sejahtera')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 4);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'berahlak')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 5);
-                                                    }
-                                                    if($request->sasaran_filter_misi)
-                                                    {
-                                                        $get_misis = $get_misis->where('id', $request->sasaran_filter_misi);
-                                                    }
-                                                    $get_misis = $get_misis->get();
-                                                    $misis = [];
-                                                    foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id);
-                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                        {
-                                                            $cek_perubahan_misi = $cek_perubahan_misi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                        }
-                                                        $cek_perubahan_misi = $cek_perubahan_misi->latest()->first();
-                                                        if($cek_perubahan_misi)
-                                                        {
-                                                            $misis[] = [
-                                                                'id' => $cek_perubahan_misi->misi_id,
-                                                                'kode' => $cek_perubahan_misi->kode,
-                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                                            ];
-                                                        } else {
-                                                            $misis[] = [
-                                                                'id' => $get_misi->id,
-                                                                'kode' => $get_misi->kode,
-                                                                'deskripsi' => $get_misi->deskripsi,
-                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                                            ];
-                                                        }
-                                                    }
-                                                    $a = 1;
-                                                    foreach ($misis as $misi) {
-                                                        $html .= '<tr style="background: #c04141;">
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                                        '.strtoupper($misi['deskripsi']).'
-                                                                        <br>';
-                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
-                                                                    </td>
-                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped table-condensed">
-                                                                                <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                                    if($request->sasaran_filter_tujuan)
+                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                        </button>
+                                                                        <button type="button"
+                                                                            class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            data-tahun="'.$tahun.'"
+                                                                            data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            value="close"
+                                                                            data-bs-toggle="collapse"
+                                                                            data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            class="accordion-toggle">
+                                                                                <i class="fas fa-chevron-right"></i>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
                                                                                     {
-                                                                                        $get_tujuans = $get_tujuans->where('id', $request->sasaran_filter_tujuan);
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    $get_tujuans = $get_tujuans->get();
-                                                                                    $tujuans = [];
-                                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                        {
-                                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan',$request->nav_rpjmd_sasaran_tahun);
-                                                                                        }
-                                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $get_tujuan->id,
-                                                                                                'kode' => $get_tujuan->kode,
-                                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        }
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                            </button>
+                                                                            <button type="button"
+                                                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                data-tahun="'.$tahun.'"
+                                                                                data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                value="close"
+                                                                                data-bs-toggle="collapse"
+                                                                                data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                class="accordion-toggle">
+                                                                                    <i class="fas fa-chevron-right"></i>
+                                                                            </button>
+                                                                        </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
+                                                                                    {
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
-                                                                                                        '.strtoupper($tujuan['deskripsi']).'
-                                                                                                        <br>';
-                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                    </td>
-                                                                                                    <td width ="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
-                                                                                                                    if($request->sasaran_filter_sasaran)
-                                                                                                                    {
-                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->sasaran_filter_sasaran);
-                                                                                                                    }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
-                                                                                                                    $sasarans = [];
-                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
-                                                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                                                        {
-                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                                                                                        }
-                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
-                                                                                                                        if($cek_perubahan_sasaran)
-                                                                                                                        {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        } else {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $get_sasaran->id,
-                                                                                                                                'kode' => $get_sasaran->kode,
-                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    foreach ($sasarans as $sasaran) {
-                                                                                                                        $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
-                                                                                                                                        '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="28%"><table>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                        $html .= '<tr>';
-                                                                                                                                                            $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                            $html .= '<td width="25%">
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                                                                                            </td>';
-                                                                                                                                                        $html .= '</tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table></td>';
-                                                                                                                                    $html .='<td width="22%">
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%">No</th>
-                                                                                                                                                        <th width="30%">Indikator</th>
-                                                                                                                                                        <th width="17%">Target Kinerja Awal</th>
-                                                                                                                                                        <th width="12%">Target</th>
-                                                                                                                                                        <th width="12%">Satuan</th>
-                                                                                                                                                        <th width="12%">Tahun</th>
-                                                                                                                                                        <th width="12%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
-                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                        $b = 1;
-                                                                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                        </button>
-                                                                                                                                                                                    </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            } else {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>';
-                                                                                                                    }
-                                                                                                                $html .= '</tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>';
-                                                    $a++;
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
                                                     }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                            }
-                            $html .='</tbody>
-                        </table>
-                    </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html]);
+                                                    $b++;
+                                                } else {
+                                                    if($b == 1)
+                                                    {
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    }
+                                                    $b++;
+                                                }
+                                            }
+                                    }
+                                    $html .= '</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>';
+        }
+        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html, 'tujuan_id' => $tujuan['id']]);
     }
 
     public function indikator_kinerja_hapus(Request $request)
     {
+        $idSasaran = SasaranIndikatorKinerja::find($request->sasaran_indikator_kinerja_id)->sasaran_id;
         $sasaran_target_satuan_rp_realisasies = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $request->sasaran_indikator_kinerja_id)->get();
         foreach ($sasaran_target_satuan_rp_realisasies as $sasaran_target_satuan_rp_realisasi) {
             SasaranTargetSatuanRpRealisasi::find($sasaran_target_satuan_rp_realisasi->id)->delete();
@@ -2135,368 +2211,386 @@ class SasaranController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
-            if($request->nav_rpjmd_sasaran_tahun != 'semua')
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+        $getSasaran = Sasaran::find($idSasaran);
+
+        $get_tujuans = Tujuan::where('id', $getSasaran->tujuan_id)->get();
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_tujuan)
             {
-                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-            }
-            $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condensed">
-                                                <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id']);
-                                                    if($request->sasaran_filter_visi == 'aman')
+        $get_misis = Misi::where('id', $getSasaran->tujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
+            {
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
+                ];
+            } else {
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
+                ];
+            }
+        }
+
+        $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+        $sasarans = [];
+
+        foreach ($get_sasarans as $get_sasaran)
+        {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi,
+                    'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                ];
+            }
+        }
+
+        foreach ($sasarans as $sasaran)
+        {
+            $html .= '<tr>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
+                            '.$sasaran['deskripsi'].'
+                            <br>';
+                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>';
+                            $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                            <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                            <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                        </td>';
+                        $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                        // $html .= '<td width="30%"><ul>';
+                        //     foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                        //     {
+                        //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
+                        //     }
+                        // $html .= '</ul></td>';
+                        $html .= '<td width="28%"><table>
+                                    <tbody>';
+                                        foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                            $html .= '<tr>';
+                                                $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                $html .= '<td width="25%">
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                                </td>';
+                                            $html .= '</tr>';
+                                        }
+                                    $html .= '</tbody>
+                                </table></td>';
+                        $html .='<td width="22%">
+                            <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="hiddenRow">
+                            <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="30%">Indikator</th>
+                                            <th width="17%">Kondisi Kinerja Awal</th>
+                                            <th width="12%">Target</th>
+                                            <th width="12%">Satuan</th>
+                                            <th width="12%">Tahun</th>
+                                            <th width="12%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodySasaranSasaran'.$sasaran['id'].'">';
+                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                    $no_sasaran_indikator_kinerja = 1;
+                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                        $html .= '<tr id="trSasaranIndikatorKinerja'.$sasaran_indikator_kinerja->id.'">';
+                                            $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                            $b = 1;
+                                            foreach ($tahuns as $tahun) {
+                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                    ->where('tahun', $tahun)->first();
+                                                if($cek_sasaran_target_satuan_rp_realisasi)
+                                                {
+                                                    if($b == 1)
                                                     {
-                                                        $get_misis = $get_misis->where(function($q){
-                                                            $q->where('kode', 1)->orWhere('kode', 2);
-                                                        });
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'mandiri')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 3);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'sejahtera')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 4);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'berahlak')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 5);
-                                                    }
-                                                    if($request->sasaran_filter_misi)
-                                                    {
-                                                        $get_misis = $get_misis->where('id', $request->sasaran_filter_misi);
-                                                    }
-                                                    $get_misis = $get_misis->get();
-                                                    $misis = [];
-                                                    foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id);
-                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                        {
-                                                            $cek_perubahan_misi = $cek_perubahan_misi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                        }
-                                                        $cek_perubahan_misi = $cek_perubahan_misi->latest()->first();
-                                                        if($cek_perubahan_misi)
-                                                        {
-                                                            $misis[] = [
-                                                                'id' => $cek_perubahan_misi->misi_id,
-                                                                'kode' => $cek_perubahan_misi->kode,
-                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                                            ];
-                                                        } else {
-                                                            $misis[] = [
-                                                                'id' => $get_misi->id,
-                                                                'kode' => $get_misi->kode,
-                                                                'deskripsi' => $get_misi->deskripsi,
-                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                                            ];
-                                                        }
-                                                    }
-                                                    $a = 1;
-                                                    foreach ($misis as $misi) {
-                                                        $html .= '<tr style="background: #c04141;">
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                                        '.strtoupper($misi['deskripsi']).'
-                                                                        <br>';
-                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
-                                                                    </td>
-                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped table-condensed">
-                                                                                <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                                    if($request->sasaran_filter_tujuan)
+                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                        </button>
+                                                                        <button type="button"
+                                                                            class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            data-tahun="'.$tahun.'"
+                                                                            data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            value="close"
+                                                                            data-bs-toggle="collapse"
+                                                                            data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            class="accordion-toggle">
+                                                                                <i class="fas fa-chevron-right"></i>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
                                                                                     {
-                                                                                        $get_tujuans = $get_tujuans->where('id', $request->sasaran_filter_tujuan);
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    $get_tujuans = $get_tujuans->get();
-                                                                                    $tujuans = [];
-                                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                        {
-                                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan',$request->nav_rpjmd_sasaran_tahun);
-                                                                                        }
-                                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $get_tujuan->id,
-                                                                                                'kode' => $get_tujuan->kode,
-                                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        }
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                            </button>
+                                                                            <button type="button"
+                                                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                data-tahun="'.$tahun.'"
+                                                                                data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                value="close"
+                                                                                data-bs-toggle="collapse"
+                                                                                data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                class="accordion-toggle">
+                                                                                    <i class="fas fa-chevron-right"></i>
+                                                                            </button>
+                                                                        </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
+                                                                                    {
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
-                                                                                                        '.strtoupper($tujuan['deskripsi']).'
-                                                                                                        <br>';
-                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                    </td>
-                                                                                                    <td width ="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
-                                                                                                                    if($request->sasaran_filter_sasaran)
-                                                                                                                    {
-                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->sasaran_filter_sasaran);
-                                                                                                                    }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
-                                                                                                                    $sasarans = [];
-                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
-                                                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                                                        {
-                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                                                                                        }
-                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
-                                                                                                                        if($cek_perubahan_sasaran)
-                                                                                                                        {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        } else {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $get_sasaran->id,
-                                                                                                                                'kode' => $get_sasaran->kode,
-                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    foreach ($sasarans as $sasaran) {
-                                                                                                                        $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
-                                                                                                                                        '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="28%"><table>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                        $html .= '<tr>';
-                                                                                                                                                            $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                            $html .= '<td width="25%">
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                                                                                            </td>';
-                                                                                                                                                        $html .= '</tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table></td>';
-                                                                                                                                    $html .='<td width="22%">
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%">No</th>
-                                                                                                                                                        <th width="30%">Indikator</th>
-                                                                                                                                                        <th width="17%">Target Kinerja Awal</th>
-                                                                                                                                                        <th width="12%">Target</th>
-                                                                                                                                                        <th width="12%">Satuan</th>
-                                                                                                                                                        <th width="12%">Tahun</th>
-                                                                                                                                                        <th width="12%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
-                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                        $b = 1;
-                                                                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                        </button>
-                                                                                                                                                                                    </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            } else {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>';
-                                                                                                                    }
-                                                                                                                $html .= '</tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>';
-                                                    $a++;
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
                                                     }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                            }
-                            $html .='</tbody>
-                        </table>
-                    </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html]);
+                                                    $b++;
+                                                } else {
+                                                    if($b == 1)
+                                                    {
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    }
+                                                    $b++;
+                                                }
+                                            }
+                                    }
+                                    $html .= '</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>';
+        }
+
+        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html, 'tujuan_id' => $tujuan['id']]);
     }
 
     public function store_sasaran_target_satuan_rp_realisasi(Request $request)
@@ -2526,368 +2620,282 @@ class SasaranController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
+        $tws = MasterTw::all();
+        // Table Of Content
+        $getSasaranIndikatorKinerja = SasaranIndikatorKinerja::find($request->sasaran_indikator_kinerja_id);
+        $get_sasarans = Sasaran::where('id', $getSasaranIndikatorKinerja->sasaran_id);
+        $get_sasarans = $get_sasarans->get();
+
+        foreach ($get_sasarans as $get_sasaran) {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
             if($request->nav_rpjmd_sasaran_tahun != 'semua')
             {
-                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
+                $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
             }
-            $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
-            if($cek_perubahan_visi)
+            $cek_perubahan_sasaran = $cek_perubahan_sasaran->orderBy('created_at', 'desc');
+            $cek_perubahan_sasaran = $cek_perubahan_sasaran->first();
+            if($cek_perubahan_sasaran)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $sasaran = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $sasaran = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi,
+                    'tahun_perubahan' => $get_sasaran->tahun_perubahan,
                 ];
             }
         }
+        $html = '';
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condensed">
-                                                <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id']);
-                                                    if($request->sasaran_filter_visi == 'aman')
-                                                    {
-                                                        $get_misis = $get_misis->where(function($q){
-                                                            $q->where('kode', 1)->orWhere('kode', 2);
-                                                        });
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'mandiri')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 3);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'sejahtera')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 4);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'berahlak')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 5);
-                                                    }
-                                                    if($request->sasaran_filter_misi)
-                                                    {
-                                                        $get_misis = $get_misis->where('id', $request->sasaran_filter_misi);
-                                                    }
-                                                    $get_misis = $get_misis->get();
-                                                    $misis = [];
-                                                    foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id);
-                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
+        $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+        $no_sasaran_indikator_kinerja = 1;
+        foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+            $html .= '<tr id="trSasaranIndikatorKinerja'.$sasaran_indikator_kinerja->id.'">';
+                $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                $b = 1;
+                foreach ($tahuns as $tahun) {
+                    $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                        ->where('tahun', $tahun)->first();
+                    if($cek_sasaran_target_satuan_rp_realisasi)
+                    {
+                        if($b == 1)
+                        {
+                            $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                data-tahun="'.$tahun.'"
+                                                data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                value="close"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                class="accordion-toggle">
+                                                    <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>
+                            <tr>
+                                <td colspan="10" class="hiddenRow">
+                                    <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                        <table class="table table-striped table-condesed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Target Kinerja</th>
+                                                    <th>Satuan</th>
+                                                    <th>Tahun</th>
+                                                    <th>TW</th>
+                                                    <th>Realisasi Kinerja</th>
+                                                    <th width="10%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                $html .= '<tr>';
+                                                    $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                    $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $d = 1;
+                                                    foreach ($tws as $tw) {
+                                                        if($d == 1)
                                                         {
-                                                            $cek_perubahan_misi = $cek_perubahan_misi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                        }
-                                                        $cek_perubahan_misi = $cek_perubahan_misi->latest()->first();
-                                                        if($cek_perubahan_misi)
-                                                        {
-                                                            $misis[] = [
-                                                                'id' => $cek_perubahan_misi->misi_id,
-                                                                'kode' => $cek_perubahan_misi->kode,
-                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                                            ];
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_sasaran_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
                                                         } else {
-                                                            $misis[] = [
-                                                                'id' => $get_misi->id,
-                                                                'kode' => $get_misi->kode,
-                                                                'deskripsi' => $get_misi->deskripsi,
-                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                                            ];
+                                                            $html .= '<tr>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_sasaran_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
                                                         }
+                                                        $d++;
                                                     }
-                                                    $a = 1;
-                                                    foreach ($misis as $misi) {
-                                                        $html .= '<tr style="background: #c04141;">
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                                        '.strtoupper($misi['deskripsi']).'
-                                                                        <br>';
-                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
-                                                                    </td>
-                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped table-condensed">
-                                                                                <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                                    if($request->sasaran_filter_tujuan)
-                                                                                    {
-                                                                                        $get_tujuans = $get_tujuans->where('id', $request->sasaran_filter_tujuan);
-                                                                                    }
-                                                                                    $get_tujuans = $get_tujuans->get();
-                                                                                    $tujuans = [];
-                                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                        {
-                                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan',$request->nav_rpjmd_sasaran_tahun);
-                                                                                        }
-                                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $get_tujuan->id,
-                                                                                                'kode' => $get_tujuan->kode,
-                                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        }
-                                                                                    }
-                                                                                    foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
-                                                                                                        '.strtoupper($tujuan['deskripsi']).'
-                                                                                                        <br>';
-                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                    </td>
-                                                                                                    <td width ="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
-                                                                                                                    if($request->sasaran_filter_sasaran)
-                                                                                                                    {
-                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->sasaran_filter_sasaran);
-                                                                                                                    }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
-                                                                                                                    $sasarans = [];
-                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
-                                                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                                                        {
-                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                                                                                        }
-                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
-                                                                                                                        if($cek_perubahan_sasaran)
-                                                                                                                        {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        } else {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $get_sasaran->id,
-                                                                                                                                'kode' => $get_sasaran->kode,
-                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    foreach ($sasarans as $sasaran) {
-                                                                                                                        $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
-                                                                                                                                        '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="28%"><table>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                        $html .= '<tr>';
-                                                                                                                                                            $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                            $html .= '<td width="25%">
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                                                                                            </td>';
-                                                                                                                                                        $html .= '</tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table></td>';
-                                                                                                                                    $html .='<td width="22%">
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%">No</th>
-                                                                                                                                                        <th width="30%">Indikator</th>
-                                                                                                                                                        <th width="17%">Target Kinerja Awal</th>
-                                                                                                                                                        <th width="12%">Target</th>
-                                                                                                                                                        <th width="12%">Satuan</th>
-                                                                                                                                                        <th width="12%">Tahun</th>
-                                                                                                                                                        <th width="12%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
-                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                        $b = 1;
-                                                                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                        </button>
-                                                                                                                                                                                    </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            } else {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>';
-                                                                                                                    }
-                                                                                                                $html .= '</tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>';
-                                                    $a++;
+                                                $html .= '</tr>';
+                                            $html .='</tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                </button>
+                                                <button type="button"
+                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                    data-tahun="'.$tahun.'"
+                                                    data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                    value="close"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                    class="accordion-toggle">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </td>';
+                            $html .='</tr>
+                            <tr>
+                                <td colspan="10" class="hiddenRow">
+                                    <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                        <table class="table table-striped table-condesed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Target Kinerja</th>
+                                                    <th>Satuan</th>
+                                                    <th>Tahun</th>
+                                                    <th>TW</th>
+                                                    <th>Realisasi Kinerja</th>
+                                                    <th width="10%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                $html .= '<tr>';
+                                                    $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                    $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $d = 1;
+                                                    foreach ($tws as $tw) {
+                                                        if($d == 1)
+                                                        {
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_sasaran_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        } else {
+                                                            $html .= '<tr>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_sasaran_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        }
+                                                        $d++;
                                                     }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                            }
-                            $html .='</tbody>
-                        </table>
-                    </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html]);
+                                                $html .= '</tr>';
+                                            $html .='</tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>';
+                        }
+                        $b++;
+                    } else {
+                        if($b == 1)
+                        {
+                                $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>';
+                        }
+                        $b++;
+                    }
+                }
+        }
+
+        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html,'sasaran_id' => $sasaran['id']]);
     }
 
     public function update_sasaran_target_satuan_rp_realisasi(Request $request)
@@ -2913,373 +2921,288 @@ class SasaranController extends Controller
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
         }
+        $tws = MasterTw::all();
+        // Table Of Content
+        $getSasaranIndikatorKinerja = SasaranIndikatorKinerja::find($request->sasaran_indikator_kinerja_id);
+        $get_sasarans = Sasaran::where('id', $getSasaranIndikatorKinerja->sasaran_id);
+        $get_sasarans = $get_sasarans->get();
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
+        foreach ($get_sasarans as $get_sasaran) {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
             if($request->nav_rpjmd_sasaran_tahun != 'semua')
             {
-                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
+                $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
             }
-            $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
-            if($cek_perubahan_visi)
+            $cek_perubahan_sasaran = $cek_perubahan_sasaran->orderBy('created_at', 'desc');
+            $cek_perubahan_sasaran = $cek_perubahan_sasaran->first();
+            if($cek_perubahan_sasaran)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $sasaran = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $sasaran = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi,
+                    'tahun_perubahan' => $get_sasaran->tahun_perubahan,
                 ];
             }
         }
+        $html = '';
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condensed">
-                                                <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id']);
-                                                    if($request->sasaran_filter_visi == 'aman')
-                                                    {
-                                                        $get_misis = $get_misis->where(function($q){
-                                                            $q->where('kode', 1)->orWhere('kode', 2);
-                                                        });
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'mandiri')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 3);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'sejahtera')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 4);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'berahlak')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 5);
-                                                    }
-                                                    if($request->sasaran_filter_misi)
-                                                    {
-                                                        $get_misis = $get_misis->where('id', $request->sasaran_filter_misi);
-                                                    }
-                                                    $get_misis = $get_misis->get();
-                                                    $misis = [];
-                                                    foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id);
-                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
+        $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+        $no_sasaran_indikator_kinerja = 1;
+        foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+            $html .= '<tr id="trSasaranIndikatorKinerja'.$sasaran_indikator_kinerja->id.'">';
+                $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                $b = 1;
+                foreach ($tahuns as $tahun) {
+                    $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                        ->where('tahun', $tahun)->first();
+                    if($cek_sasaran_target_satuan_rp_realisasi)
+                    {
+                        if($b == 1)
+                        {
+                            $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                data-tahun="'.$tahun.'"
+                                                data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                value="close"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                class="accordion-toggle">
+                                                    <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>
+                            <tr>
+                                <td colspan="10" class="hiddenRow">
+                                    <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                        <table class="table table-striped table-condesed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Target Kinerja</th>
+                                                    <th>Satuan</th>
+                                                    <th>Tahun</th>
+                                                    <th>TW</th>
+                                                    <th>Realisasi Kinerja</th>
+                                                    <th width="10%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                $html .= '<tr>';
+                                                    $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                    $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $d = 1;
+                                                    foreach ($tws as $tw) {
+                                                        if($d == 1)
                                                         {
-                                                            $cek_perubahan_misi = $cek_perubahan_misi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                        }
-                                                        $cek_perubahan_misi = $cek_perubahan_misi->latest()->first();
-                                                        if($cek_perubahan_misi)
-                                                        {
-                                                            $misis[] = [
-                                                                'id' => $cek_perubahan_misi->misi_id,
-                                                                'kode' => $cek_perubahan_misi->kode,
-                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                                            ];
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_sasaran_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
                                                         } else {
-                                                            $misis[] = [
-                                                                'id' => $get_misi->id,
-                                                                'kode' => $get_misi->kode,
-                                                                'deskripsi' => $get_misi->deskripsi,
-                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                                            ];
+                                                            $html .= '<tr>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_sasaran_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
                                                         }
+                                                        $d++;
                                                     }
-                                                    $a = 1;
-                                                    foreach ($misis as $misi) {
-                                                        $html .= '<tr style="background: #c04141;">
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                                        '.strtoupper($misi['deskripsi']).'
-                                                                        <br>';
-                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
-                                                                    </td>
-                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped table-condensed">
-                                                                                <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                                    if($request->sasaran_filter_tujuan)
-                                                                                    {
-                                                                                        $get_tujuans = $get_tujuans->where('id', $request->sasaran_filter_tujuan);
-                                                                                    }
-                                                                                    $get_tujuans = $get_tujuans->get();
-                                                                                    $tujuans = [];
-                                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                        {
-                                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan',$request->nav_rpjmd_sasaran_tahun);
-                                                                                        }
-                                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $get_tujuan->id,
-                                                                                                'kode' => $get_tujuan->kode,
-                                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        }
-                                                                                    }
-                                                                                    foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
-                                                                                                        '.strtoupper($tujuan['deskripsi']).'
-                                                                                                        <br>';
-                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                    </td>
-                                                                                                    <td width ="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
-                                                                                                                    if($request->sasaran_filter_sasaran)
-                                                                                                                    {
-                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->sasaran_filter_sasaran);
-                                                                                                                    }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
-                                                                                                                    $sasarans = [];
-                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
-                                                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                                                        {
-                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                                                                                        }
-                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
-                                                                                                                        if($cek_perubahan_sasaran)
-                                                                                                                        {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        } else {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $get_sasaran->id,
-                                                                                                                                'kode' => $get_sasaran->kode,
-                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    foreach ($sasarans as $sasaran) {
-                                                                                                                        $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
-                                                                                                                                        '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="28%"><table>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                        $html .= '<tr>';
-                                                                                                                                                            $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                            $html .= '<td width="25%">
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                                                                                            </td>';
-                                                                                                                                                        $html .= '</tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table></td>';
-                                                                                                                                    $html .='<td width="22%">
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%">No</th>
-                                                                                                                                                        <th width="30%">Indikator</th>
-                                                                                                                                                        <th width="17%">Target Kinerja Awal</th>
-                                                                                                                                                        <th width="12%">Target</th>
-                                                                                                                                                        <th width="12%">Satuan</th>
-                                                                                                                                                        <th width="12%">Tahun</th>
-                                                                                                                                                        <th width="12%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
-                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                        $b = 1;
-                                                                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                        </button>
-                                                                                                                                                                                    </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            } else {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>';
-                                                                                                                    }
-                                                                                                                $html .= '</tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>';
-                                                    $a++;
+                                                $html .= '</tr>';
+                                            $html .='</tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                </button>
+                                                <button type="button"
+                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                    data-tahun="'.$tahun.'"
+                                                    data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                    value="close"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                    class="accordion-toggle">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </td>';
+                            $html .='</tr>
+                            <tr>
+                                <td colspan="10" class="hiddenRow">
+                                    <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                        <table class="table table-striped table-condesed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Target Kinerja</th>
+                                                    <th>Satuan</th>
+                                                    <th>Tahun</th>
+                                                    <th>TW</th>
+                                                    <th>Realisasi Kinerja</th>
+                                                    <th width="10%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                $html .= '<tr>';
+                                                    $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                    $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $d = 1;
+                                                    foreach ($tws as $tw) {
+                                                        if($d == 1)
+                                                        {
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_sasaran_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        } else {
+                                                            $html .= '<tr>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_sasaran_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        }
+                                                        $d++;
                                                     }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                            }
-                            $html .='</tbody>
-                        </table>
-                    </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html]);
+                                                $html .= '</tr>';
+                                            $html .='</tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>';
+                        }
+                        $b++;
+                    } else {
+                        if($b == 1)
+                        {
+                                $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>';
+                        }
+                        $b++;
+                    }
+                }
+        }
+
+        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html, 'sasaran_id' => $sasaran['id']]);
     }
 
     public function sasaran_hapus(Request $request)
     {
+        $idTujuan = Sasaran::find($request->hapus_sasaran_id)->tujuan_id;
+        $idMisi = Sasaran::find($request->hapus_sasaran_id)->tujuan->misi_id;
         if($request->hapus_sasaran_tahun == 'semua')
         {
             $pivot_perubahan_sasarans = PivotPerubahanSasaran::where('sasaran_id', $request->hapus_sasaran_id)->get();
@@ -3391,367 +3314,384 @@ class SasaranController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id);
-            if($request->nav_rpjmd_sasaran_tahun != 'semua')
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+
+        $get_tujuans = Tujuan::where('id', $idTujuan)->get();
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_tujuan)
             {
-                $cek_perubahan_visi = $cek_perubahan_visi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-            }
-            $cek_perubahan_visi = $cek_perubahan_visi->latest()->first();
-            if($cek_perubahan_visi)
-            {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="sasaran_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($visis as $visi) {
-                                $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="sasaran_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condensed">
-                                                <tbody>';
-                                                    $get_misis = Misi::where('visi_id', $visi['id']);
-                                                    if($request->sasaran_filter_visi == 'aman')
+        $get_misis = Misi::where('id', $idMisi)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
+            {
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
+                ];
+            } else {
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
+                ];
+            }
+        }
+
+        $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->get();
+        $sasarans = [];
+
+        foreach ($get_sasarans as $get_sasaran)
+        {
+            $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->latest()->first();
+
+            if($cek_perubahan_sasaran)
+            {
+                $sasarans[] = [
+                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'kode' => $cek_perubahan_sasaran->kode,
+                    'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                ];
+            } else {
+                $sasarans[] = [
+                    'id' => $get_sasaran->id,
+                    'kode' => $get_sasaran->kode,
+                    'deskripsi' => $get_sasaran->deskripsi,
+                    'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                ];
+            }
+        }
+
+        foreach ($sasarans as $sasaran)
+        {
+            $html .= '<tr>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                        <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
+                            '.$sasaran['deskripsi'].'
+                            <br>';
+                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi</span>';
+                            $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
+                            <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                            <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                        </td>';
+                        $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                        // $html .= '<td width="30%"><ul>';
+                        //     foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                        //     {
+                        //         $html .= '<li class="mb-2">'.$sasaran_indikator_kinerja->deskripsi.' <button type="button" class="btn-close btn-hapus-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"></button></li>';
+                        //     }
+                        // $html .= '</ul></td>';
+                        $html .= '<td width="28%"><table>
+                                    <tbody>';
+                                        foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                            $html .= '<tr>';
+                                                $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                                $html .= '<td width="25%">
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                                </td>';
+                                            $html .= '</tr>';
+                                        }
+                                    $html .= '</tbody>
+                                </table></td>';
+                        $html .='<td width="22%">
+                            <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                            <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="hiddenRow">
+                            <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
+                                <table class="table table-striped table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="30%">Indikator</th>
+                                            <th width="17%">Kondisi Kinerja Awal</th>
+                                            <th width="12%">Target</th>
+                                            <th width="12%">Satuan</th>
+                                            <th width="12%">Tahun</th>
+                                            <th width="12%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodySasaranSasaran'.$sasaran['id'].'">';
+                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
+                                    $no_sasaran_indikator_kinerja = 1;
+                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
+                                        $html .= '<tr id="trSasaranIndikatorKinerja'.$sasaran_indikator_kinerja->id.'">';
+                                            $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
+                                            $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                            $b = 1;
+                                            foreach ($tahuns as $tahun) {
+                                                $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
+                                                                                                    ->where('tahun', $tahun)->first();
+                                                if($cek_sasaran_target_satuan_rp_realisasi)
+                                                {
+                                                    if($b == 1)
                                                     {
-                                                        $get_misis = $get_misis->where(function($q){
-                                                            $q->where('kode', 1)->orWhere('kode', 2);
-                                                        });
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'mandiri')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 3);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'sejahtera')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 4);
-                                                    }
-                                                    if($request->sasaran_filter_visi == 'berahlak')
-                                                    {
-                                                        $get_misis = $get_misis->where('kode', 5);
-                                                    }
-                                                    if($request->sasaran_filter_misi)
-                                                    {
-                                                        $get_misis = $get_misis->where('id', $request->sasaran_filter_misi);
-                                                    }
-                                                    $get_misis = $get_misis->get();
-                                                    $misis = [];
-                                                    foreach ($get_misis as $get_misi) {
-                                                        $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id);
-                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                        {
-                                                            $cek_perubahan_misi = $cek_perubahan_misi->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                        }
-                                                        $cek_perubahan_misi = $cek_perubahan_misi->latest()->first();
-                                                        if($cek_perubahan_misi)
-                                                        {
-                                                            $misis[] = [
-                                                                'id' => $cek_perubahan_misi->misi_id,
-                                                                'kode' => $cek_perubahan_misi->kode,
-                                                                'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                                'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
-                                                            ];
-                                                        } else {
-                                                            $misis[] = [
-                                                                'id' => $get_misi->id,
-                                                                'kode' => $get_misi->kode,
-                                                                'deskripsi' => $get_misi->deskripsi,
-                                                                'tahun_perubahan' => $get_misi->tahun_perubahan,
-                                                            ];
-                                                        }
-                                                    }
-                                                    $a = 1;
-                                                    foreach ($misis as $misi) {
-                                                        $html .= '<tr style="background: #c04141;">
-                                                                    <td width="5%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                                    <td width="45%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                                        '.strtoupper($misi['deskripsi']).'
-                                                                        <br>';
-                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">'.$misi['kode'].' Misi</span>
-                                                                    </td>
-                                                                    <td width="30%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                    <td width="20%" data-bs-toggle="collapse" data-bs-target="#sasaran_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="4" class="hiddenRow">
-                                                                        <div class="collapse show" id="sasaran_misi'.$misi['id'].'">
-                                                                            <table class="table table-striped table-condensed">
-                                                                                <tbody>';
-                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                                    if($request->sasaran_filter_tujuan)
+                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                        </button>
+                                                                        <button type="button"
+                                                                            class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            data-tahun="'.$tahun.'"
+                                                                            data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            value="close"
+                                                                            data-bs-toggle="collapse"
+                                                                            data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                            class="accordion-toggle">
+                                                                                <i class="fas fa-chevron-right"></i>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
                                                                                     {
-                                                                                        $get_tujuans = $get_tujuans->where('id', $request->sasaran_filter_tujuan);
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    $get_tujuans = $get_tujuans->get();
-                                                                                    $tujuans = [];
-                                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                        {
-                                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan',$request->nav_rpjmd_sasaran_tahun);
-                                                                                        }
-                                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->latest()->first();
-                                                                                        if($cek_perubahan_tujuan)
-                                                                                        {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        } else {
-                                                                                            $tujuans[] = [
-                                                                                                'id' => $get_tujuan->id,
-                                                                                                'kode' => $get_tujuan->kode,
-                                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                                            ];
-                                                                                        }
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                            </button>
+                                                                            <button type="button"
+                                                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-sasaran-tw-realisasi '.$tahun.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                data-tahun="'.$tahun.'"
+                                                                                data-sasaran-target-satuan-rp-realisasi-id="'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                value="close"
+                                                                                data-bs-toggle="collapse"
+                                                                                data-bs-target="#sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'"
+                                                                                class="accordion-toggle">
+                                                                                    <i class="fas fa-chevron-right"></i>
+                                                                            </button>
+                                                                        </td>';
+                                                        $html .='</tr>
+                                                        <tr>
+                                                            <td colspan="10" class="hiddenRow">
+                                                                <div class="collapse accordion-body" id="sasaran_indikator_'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
+                                                                    <table class="table table-striped table-condesed">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Target Kinerja</th>
+                                                                                <th>Satuan</th>
+                                                                                <th>Tahun</th>
+                                                                                <th>TW</th>
+                                                                                <th>Realisasi Kinerja</th>
+                                                                                <th width="10%">Aksi</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tbodySasaranTwRealisasi'.$cek_sasaran_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                            $html .= '<tr>';
+                                                                                $html .= '<td>'.$cek_sasaran_target_satuan_rp_realisasi->target.'</td>';
+                                                                                $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                $d = 1;
+                                                                                foreach ($tws as $tw) {
+                                                                                    if($d == 1)
+                                                                                    {
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
+                                                                                    } else {
+                                                                                        $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                            $cek_sasaran_tw_realisasi = SasaranTwRealisasi::where('sasaran_target_satuan_rp_realisasi_id', $cek_sasaran_target_satuan_rp_realisasi->id)
+                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                            if($cek_sasaran_tw_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td><span class="span-sasaran-tw-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.' data-sasaran-tw-realisasi-'.$cek_sasaran_tw_realisasi->id.'">'.$cek_sasaran_tw_realisasi->realisasi.'</span></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-sasaran-tw-realisasi-id="'.$cek_sasaran_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            } else {
+                                                                                                $html .= '<td><input type="number" class="form-control input-sasaran-tw-realisasi-realisasi '.$tw->id.' data-sasaran-target-satuan-rp-realisasi-'.$cek_sasaran_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                                $html .= '<td>
+                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-sasaran-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-sasaran-target-satuan-rp-realisasi-id = "'.$cek_sasaran_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                            </button>
+                                                                                                        </td>';
+                                                                                            }
+                                                                                        $html .= '</tr>';
                                                                                     }
-                                                                                    foreach ($tujuans as $tujuan) {
-                                                                                        $html .= '<tr style="background: #41c0c0">
-                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                                                    <td width="75%" data-bs-toggle="collapse" data-bs-target="#sasaran_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
-                                                                                                        '.strtoupper($tujuan['deskripsi']).'
-                                                                                                        <br>';
-                                                                                                        $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi '.$request->visi.'</span>';
-                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                    </td>
-                                                                                                    <td width ="20%">
-                                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 sasaran_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditSasaranModal" title="Tambah Data Sasaran" data-tujuan-id="'.$tujuan['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                        <div class="collapse show" id="sasaran_tujuan'.$tujuan['id'].'">
-                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                <tbody>';
-                                                                                                                    $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id']);
-                                                                                                                    if($request->sasaran_filter_sasaran)
-                                                                                                                    {
-                                                                                                                        $get_sasarans = $get_sasarans->where('id', $request->sasaran_filter_sasaran);
-                                                                                                                    }
-                                                                                                                    $get_sasarans = $get_sasarans->get();
-                                                                                                                    $sasarans = [];
-                                                                                                                    foreach ($get_sasarans as $get_sasaran) {
-                                                                                                                        $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id);
-                                                                                                                        if($request->nav_rpjmd_sasaran_tahun != 'semua')
-                                                                                                                        {
-                                                                                                                            $cek_perubahan_sasaran = $cek_perubahan_sasaran->where('tahun_perubahan', $request->nav_rpjmd_sasaran_tahun);
-                                                                                                                        }
-                                                                                                                        $cek_perubahan_sasaran = $cek_perubahan_sasaran->latest()->first();
-                                                                                                                        if($cek_perubahan_sasaran)
-                                                                                                                        {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $cek_perubahan_sasaran->sasaran_id,
-                                                                                                                                'kode' => $cek_perubahan_sasaran->kode,
-                                                                                                                                'deskripsi' => $cek_perubahan_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        } else {
-                                                                                                                            $sasarans[] = [
-                                                                                                                                'id' => $get_sasaran->id,
-                                                                                                                                'kode' => $get_sasaran->kode,
-                                                                                                                                'deskripsi' => $get_sasaran->deskripsi,
-                                                                                                                                'tahun_perubahan' => $get_sasaran->tahun_perubahan,
-                                                                                                                            ];
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                    foreach ($sasarans as $sasaran) {
-                                                                                                                        $html .= '<tr>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
-                                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sasaran_indikator'.$sasaran['id'].'" class="accordion-toggle" width="45%">
-                                                                                                                                        '.$sasaran['deskripsi'].'
-                                                                                                                                        <br>';
-                                                                                                                                        if($a == 1 || $a == 2)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Aman]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 3)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Mandiri]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 4)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Sejahtera]</span>';
-                                                                                                                                        }
-                                                                                                                                        if($a == 5)
-                                                                                                                                        {
-                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase sasaran-tagging">Visi [Berahlak]</span>';
-                                                                                                                                        }
-                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase sasaran-tagging">Misi '.$misi['kode'].'</span>
-                                                                                                                                        <span class="badge bg-secondary text-uppercase sasaran-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                                                                                        <span class="badge bg-danger text-uppercase sasaran-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
-                                                                                                                                    </td>';
-                                                                                                                                    $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                    $html .= '<td width="28%"><table>
-                                                                                                                                                <tbody>';
-                                                                                                                                                    foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                        $html .= '<tr>';
-                                                                                                                                                            $html .= '<td width="75%">'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                            $html .= '<td width="25%">
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sasaran-indikator-kinerja mr-1" data-id="'.$sasaran_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sasaran-indikator-kinerja" type="button" title="Hapus Indikator" data-sasaran-id="'.$sasaran['id'].'" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                                                                                            </td>';
-                                                                                                                                                        $html .= '</tr>';
-                                                                                                                                                    }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table></td>';
-                                                                                                                                    $html .='<td width="22%">
-                                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Detail Sasaran"><i class="fas fa-eye"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-misi-id="'.$misi['id'].'" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Edit Sasaran"><i class="fas fa-edit"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sasaran-indikator-kinerja" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Tambah Sasaran Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-sasaran" data-sasaran-id="'.$sasaran['id'].'" data-tahun="semua" type="button" title="Hapus Sasaran "><i class="fas fa-trash"></i></button>
-                                                                                                                                    </td>
-                                                                                                                                </tr>
-                                                                                                                                <tr>
-                                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                                        <div class="collapse accordion-body" id="sasaran_indikator'.$sasaran['id'].'">
-                                                                                                                                            <table class="table table-striped table-condensed">
-                                                                                                                                                <thead>
-                                                                                                                                                    <tr>
-                                                                                                                                                        <th width="5%">No</th>
-                                                                                                                                                        <th width="30%">Indikator</th>
-                                                                                                                                                        <th width="17%">Target Kinerja Awal</th>
-                                                                                                                                                        <th width="12%">Target</th>
-                                                                                                                                                        <th width="12%">Satuan</th>
-                                                                                                                                                        <th width="12%">Tahun</th>
-                                                                                                                                                        <th width="12%">Aksi</th>
-                                                                                                                                                    </tr>
-                                                                                                                                                </thead>
-                                                                                                                                                <tbody>';
-                                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->get();
-                                                                                                                                                $no_sasaran_indikator_kinerja = 1;
-                                                                                                                                                foreach ($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja) {
-                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                        $html .= '<td>'.$no_sasaran_indikator_kinerja++.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                                        $b = 1;
-                                                                                                                                                        foreach ($tahuns as $tahun) {
-                                                                                                                                                            $cek_sasaran_target_satuan_rp_realisasi = SasaranTargetSatuanRpRealisasi::where('sasaran_indikator_kinerja_id', $sasaran_indikator_kinerja->id)
-                                                                                                                                                                                                                ->where('tahun', $tahun)->first();
-                                                                                                                                                            if($cek_sasaran_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                    $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><span class="sasaran-span-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'">'.$cek_sasaran_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-sasaran-edit-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-sasaran-target-satuan-rp-realisasi="'.$cek_sasaran_target_satuan_rp_realisasi->id.'">
-                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                                                                        </button>
-                                                                                                                                                                                    </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            } else {
-                                                                                                                                                                if($b == 1)
-                                                                                                                                                                {
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<tr>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td></td>';
-                                                                                                                                                                        $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
-                                                                                                                                                                        $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                        $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                        $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                                                                                    </button>
-                                                                                                                                                                                </td>';
-                                                                                                                                                                    $html .='</tr>';
-                                                                                                                                                                }
-                                                                                                                                                                $b++;
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                }
-                                                                                                                                                $html .= '</tbody>
-                                                                                                                                            </table>
-                                                                                                                                        </div>
-                                                                                                                                    </td>
-                                                                                                                                </tr>';
-                                                                                                                    }
-                                                                                                                $html .= '</tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </td>
-                                                                                                </tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>';
-                                                    $a++;
+                                                                                    $d++;
+                                                                                }
+                                                                            $html .= '</tr>';
+                                                                        $html .='</tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>';
                                                     }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                            }
-                            $html .='</tbody>
-                        </table>
-                    </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html]);
+                                                    $b++;
+                                                } else {
+                                                    if($b == 1)
+                                                    {
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    } else {
+                                                        $html .= '<tr>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td></td>';
+                                                            $html .= '<td><input type="number" class="form-control sasaran-add-target '.$tahun.' data-sasaran-indikator-kinerja-'.$sasaran_indikator_kinerja->id.'"></td>';
+                                                            $html .= '<td>'.$sasaran_indikator_kinerja->satuan.'</td>';
+                                                            $html .= '<td>'.$tahun.'</td>';
+                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-sasaran-target-satuan-rp-realisasi" type="button" data-sasaran-indikator-kinerja-id="'.$sasaran_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                        </button>
+                                                                    </td>';
+                                                        $html .='</tr>';
+                                                    }
+                                                    $b++;
+                                                }
+                                            }
+                                    }
+                                    $html .= '</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>';
+        }
+
+        return response()->json(['success' => 'Berhasil merubah indikator sasaran','html' => $html, 'tujuan_id' => $tujuan['id']]);
     }
 }

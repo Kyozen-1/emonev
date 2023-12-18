@@ -937,6 +937,8 @@
                 <div class="modal-body">
                     <form class="form-horizontal" method="POST" enctype="multipart/form-data" id="program_edit_form">
                         @csrf
+                        <input type="hidden" name="program_program_id" id="program_program_id">
+                        <input type="hidden" name="program_indikator_kinerja_id" id="program_indikator_kinerja_id">
                         <input type="hidden" name="program_target_satuan_rp_realisasi" id="program_target_satuan_rp_realisasi">
                         <div class="form-group position-relative">
                             <label for="program_edit_target" class="form-label">Target</label>
@@ -965,6 +967,7 @@
                 <div class="modal-body">
                     <form class="form-horizontal" id="form_hapus_opd_indikator_program" method="POST">
                         @csrf
+                        <input type="hidden" name="hapus_opd_indikator_program_program_id" id="hapus_opd_indikator_program_program_id">
                         <div id="div_edit_opd_indikator_program" class="mb-3"></div>
                         <div class="form-group" style="text-align: right">
                             <button class="btn btn-secondary waves-effect waves-light">Jalankan Proses Hapus</button>
@@ -973,6 +976,7 @@
                     <hr>
                     <form class="form-horizontal" id="form_tambah_opd_indikator_program" method="POST">
                         @csrf
+                        <input type="hidden" name="tambah_opd_indikator_program_program_id" id="tambah_opd_indikator_program_program_id">
                         <input type="hidden" name="tambah_opd_indikator_program_program_indikator_kinerja_id" id="tambah_opd_indikator_program_program_indikator_kinerja_id">
                         <div class="form-group position-relative mb-3">
                             <label for="" class="form-label">Tambah OPD</label>
@@ -1012,7 +1016,7 @@
                             </select>
                         </div>
                         <div class="position-relative form-group" style="text-align: right">
-                            <button class="btn btn-success waves-effect waves-light" type="button" id="hapus_program_btn">Simpan</button>
+                            <button class="btn btn-success waves-effect waves-light" type="button" id="hapus_program_btn">Hapus</button>
                         </div>
                     </form>
                 </div>
@@ -1711,7 +1715,9 @@
                             title: data.success,
                             showConfirmButton: true
                         });
-                        $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                        $('#trUrusanProgram'+program_urusan_id).empty();
+                        $('#trUrusanProgram'+program_urusan_id).html(data.html);
+                        // $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
                         $('#addEditProgramModal').modal('hide');
                     }
                     $('#program_form_result').html(html);
@@ -1757,7 +1763,9 @@
                             title: data.success,
                             showConfirmButton: true
                         });
-                        $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                        $('#trProgram'+program_hidden_id).empty();
+                        $('#trProgram'+program_hidden_id).html(data.html);
+                        // $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
                         $('#addEditProgramModal').modal('hide');
                     }
                     $('#program_form_result').html(html);
@@ -1876,7 +1884,9 @@
                                 title: data.success,
                                 showConfirmButton: true
                             });
-                            $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                            // $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                            $('#trProgram'+program_id).empty();
+                            $('#trProgram'+program_id).html(data.html);
                         }
                     }
                 });
@@ -1945,6 +1955,8 @@
     });
 
     $(document).on('click', '.button-program-edit-target-satuan-rp-realisasi', function(){
+        var program_program_id = $(this).attr('data-program-program-id');
+        var program_indikator_kinerja_id = $(this).attr('data-program-indikator-kinerja-id');
         var opd_program_indikator_kinerja_id = $(this).attr('data-opd-program-indikator-kinerja-id');
         var tahun = $(this).attr('data-tahun');
         var program_target_satuan_rp_realisasi = $(this).attr('data-program-target-satuan-rp-realisasi');
@@ -1954,6 +1966,8 @@
         $('#program_target_satuan_rp_realisasi').val(program_target_satuan_rp_realisasi);
         $('#program_edit_target').val(target);
         $('#program_edit_target_rp').val(target_rp);
+        $('#program_indikator_kinerja_id').val(program_indikator_kinerja_id);
+        $('#program_program_id').val(program_program_id);
 
         $('#editTargetProgramModal').modal('show');
     });
@@ -1977,11 +1991,14 @@
 
     $(document).on('click', '.btn-edit-opd-program-indikator-kinerja', function(){
         var id = $(this).attr('data-id');
+        var program_id = $(this).attr('data-program-id');
         $.ajax({
             url : "{{ url('/admin/program/indikator-kinerja/edit/opd') }}" + '/' + id,
             dataType: "json",
             success: function(data)
             {
+                $('#hapus_opd_indikator_program_program_id').val(program_id);
+                $('#tambah_opd_indikator_program_program_id').val(program_id);
                 $('#tambah_opd_indikator_program_program_indikator_kinerja_id').val(id);
                 $('#div_edit_opd_indikator_program').html(data.html);
                 $('#editOpdIndikatorProgramModal').modal('show');
@@ -2016,6 +2033,7 @@
                         nav_nomenklatur_program_tahun:nav_nomenklatur_program_tahun,
                         program_filter_urusan:program_filter_urusan,
                         program_filter_program:program_filter_program,
+                        hapus_opd_indikator_program_program_id: $('#hapus_opd_indikator_program_program_id').val()
                     },
                     beforeSend: function()
                     {
@@ -2044,7 +2062,9 @@
                                 title: data.success,
                                 showConfirmButton: true
                             });
-                            $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                            $('#trProgram'+data.program_id).empty();
+                            $('#trProgram'+data.program_id).html(data.html);
+                            // $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
                             $('#editOpdIndikatorProgramModal').modal('hide');
                         }
                     }
@@ -2080,6 +2100,7 @@
                         nav_nomenklatur_program_tahun:nav_nomenklatur_program_tahun,
                         program_filter_urusan:program_filter_urusan,
                         program_filter_program:program_filter_program,
+                        tambah_opd_indikator_program_program_id: $('#tambah_opd_indikator_program_program_id').val()
                     },
                     beforeSend: function()
                     {
@@ -2108,7 +2129,9 @@
                                 title: data.success,
                                 showConfirmButton: true
                             });
-                            $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                            $('#trProgram'+data.program_id).empty();
+                            $('#trProgram'+data.program_id).html(data.html);
+                            // $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
                             $('#editOpdIndikatorProgramModal').modal('hide');
                         }
                     }
@@ -2169,7 +2192,9 @@
                         showConfirmButton: true
                     });
                 }
-                $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                // $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                $('#trUrusanProgram'+data.urusan_id).empty();
+                $('#trUrusanProgram'+data.urusan_id).html(data.html);
                 $('#hapusProgramModal').modal('hide');
             }
         });
@@ -2228,7 +2253,9 @@
                         showConfirmButton: true
                     });
                 }
-                $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                $('#trProgram'+indikator_kinerja_program_program_id).empty();
+                $('#trProgram'+indikator_kinerja_program_program_id).html(data.html);
+                // $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
                 $('#indikatorKinerjaProgramModal').modal('hide');
             }
         });
@@ -2285,19 +2312,24 @@
                         showConfirmButton: true
                     });
                 }
-                $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                $('#trProgram'+data.program_id).empty();
+                $('#trProgram'+data.program_id).html(data.html);
+                // $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
                 $('#editIndikatorProgramModal').modal('hide');
             }
         });
     });
 
     $('#btn_program_edit').click(function(){
+        var program_program_id = $('#program_program_id').val();
+        var program_indikator_kinerja_id = $('#program_indikator_kinerja_id').val();
         var program_target_satuan_rp_realisasi = $('#program_target_satuan_rp_realisasi').val();
         var program_edit_target = $('#program_edit_target').val();
         var program_edit_target_rp = $('#program_edit_target_rp').val();
         var nav_nomenklatur_program_tahun = $('.navNomenklaturProgram.active').attr('data-tahun');
         var program_filter_urusan = $('#program_filter_urusan_'+nav_nomenklatur_program_tahun).val();
         var program_filter_program = $('#program_filter_program_'+nav_nomenklatur_program_tahun).val();
+
 
         $.ajax({
             url: "{{ route('admin.program.indikator.target-satuan-rp-realisasi_update') }}",
@@ -2310,6 +2342,8 @@
                 nav_nomenklatur_program_tahun: nav_nomenklatur_program_tahun,
                 program_filter_urusan : program_filter_urusan,
                 program_filter_program : program_filter_program,
+                program_indikator_kinerja_id : program_indikator_kinerja_id,
+                program_program_id : program_program_id
             },
             beforeSend: function()
             {
@@ -2338,7 +2372,8 @@
                         showConfirmButton: true
                     });
                 }
-                $('#programDiv'+nav_nomenklatur_program_tahun).html(data.html);
+                $('#tbodyProgramIndikatorKinerja'+program_program_id).empty();
+                $('#tbodyProgramIndikatorKinerja'+program_program_id).html(data.html);
                 $('#editTargetProgramModal').modal('hide');
             }
         });
@@ -2430,7 +2465,9 @@
                             title: data.success,
                             showConfirmButton: true
                         });
-                        $('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
+                        $('#trProgramKegiatan'+kegiatan_program_id).empty();
+                        $('#trProgramKegiatan'+kegiatan_program_id).html(data.html);
+                        //$('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
                         $('#addEditKegiatanModal').modal('hide');
                     }
 
@@ -2478,7 +2515,9 @@
                             title: data.success,
                             showConfirmButton: true
                         });
-                        $('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
+                        $('#trKegiatan'+kegiatan_hidden_id).empty();
+                        $('#trKegiatan'+kegiatan_hidden_id).html(data.html);
+                        // $('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
                         $('#addEditKegiatanModal').modal('hide');
                     }
 
@@ -2644,7 +2683,9 @@
                         showConfirmButton: true
                     });
                 }
-                $('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
+                // $('#kegiatanDiv'+nav_nomenklatur_kegiatan_tahun).html(data.html);
+                $('#trProgramKegiatan'+data.program_id).empty();
+                $('#trProgramKegiatan'+data.program_id).html(data.html);
                 $('#hapusKegiatanModal').modal('hide');
             }
         });
@@ -2749,13 +2790,23 @@
                     }
                     if(data.success)
                     {
+                        // Swal.fire({
+                        //     icon: 'success',
+                        //     title: data.success,
+                        //     showConfirmButton: true
+                        // }).then(function() {
+                        //     window.location.href = "{{ route('admin.nomenklatur.index') }}";
+                        // });
+
                         Swal.fire({
                             icon: 'success',
                             title: data.success,
                             showConfirmButton: true
-                        }).then(function() {
-                            window.location.href = "{{ route('admin.nomenklatur.index') }}";
                         });
+
+                        $('#trSubKegiatan'+data.sub_kegiatan_id).empty();
+                        $('#trSubKegiatan'+data.sub_kegiatan_id).html(data.html);
+                        $('#addEditSubKegiatanModal').modal('hide');
                     }
 
                     $('#sub_kegiatan_form_result').html(html);

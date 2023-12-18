@@ -229,407 +229,297 @@ class KegiatanController extends Controller
         }
         if($request->nav_nomenklatur_kegiatan_tahun == 'semua')
         {
-            $get_urusans = new Urusan;
-            if($request->kegiatan_filter_urusan)
-            {
-                $get_urusans = $get_urusans->where('id', $request->kegiatan_filter_urusan);
-            }
-            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
-            $urusans = [];
-            foreach ($get_urusans as $get_urusan) {
-                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
-                if($cek_perubahan_urusan)
-                {
-                    $urusans[] = [
-                        'id' => $cek_perubahan_urusan->urusan_id,
-                        'kode' => $cek_perubahan_urusan->kode,
-                        'deskripsi' => $cek_perubahan_urusan->deskripsi,
-                        'tahun_perubahan' => $cek_perubahan_urusan->tahun_perubahan,
-                    ];
-                } else {
-                    $urusans[] = [
-                        'id' => $get_urusan->id,
-                        'kode' => $get_urusan->kode,
-                        'deskripsi' => $get_urusan->deskripsi,
-                        'tahun_perubahan' => $get_urusan->tahun_perubahan,
-                    ];
-                }
-            }
+            $getProgram = Program::find($request->kegiatan_program_id);
+            $program = [
+                'id' => $getProgram->id,
+                'kode' => $getProgram->kode,
+                'deskripsi' => $getProgram->deskripsi,
+            ];
 
-            $html = '<div class="data-table-rows slim">
-                        <div class="data-table-responsive-wrapper">
+            $getUrusan = Urusan::find($getProgram->urusan_id);
+            $urusan = [
+                'id' => $getUrusan->id,
+                'kode' => $getUrusan->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
+
+            $html = '<td colspan="12" class="hiddenRow">
+                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
                             <table class="table table-striped table-condesed">
-                                <thead>
-                                    <tr>
-                                        <th width="15%">Kode</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="25%">Indikator Kinerja</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
                                 <tbody>';
-                                    foreach ($urusans as $urusan) {
-                                        $get_programs = Program::where('urusan_id', $urusan['id']);
-                                        if($request->kegiatan_filter_program)
+                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->orderBy('kode', 'asc')->get();
+                                    $kegiatans = [];
+                                    foreach ($get_kegiatans as $get_kegiatan) {
+                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
+                                                                    ->orderBy('id', 'desc')->first();
+                                        if($cek_perubahan_kegiatan)
                                         {
-                                            $get_programs = $get_programs->where('id', $request->kegiatan_filter_program);
+                                            $kegiatans[] = [
+                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                'program_id' => $cek_perubahan_kegiatan->program_id,
+                                                'kode' => $cek_perubahan_kegiatan->kode,
+                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                                                'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
+                                                'status_aturan' => $cek_perubahan_kegiatan->status_aturan
+                                            ];
+                                        } else {
+                                            $kegiatans[] = [
+                                                'id' => $get_kegiatan->id,
+                                                'program_id' => $get_kegiatan->program_id,
+                                                'kode' => $get_kegiatan->kode,
+                                                'deskripsi' => $get_kegiatan->deskripsi,
+                                                'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
+                                                'status_aturan' => $get_kegiatan->status_aturan
+                                            ];
                                         }
-                                        $get_programs = $get_programs->get();
-                                        $programs = [];
-                                        foreach ($get_programs as $get_program) {
-                                            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                            if($cek_perubahan_program)
-                                            {
-                                                $programs[] = [
-                                                    'id' => $cek_perubahan_program->program_id,
-                                                    'kode' => $cek_perubahan_program->kode,
-                                                    'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                    'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                    'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                ];
-                                            } else {
-                                                $programs[] = [
-                                                    'id' => $get_program->id,
-                                                    'kode' => $get_program->kode,
-                                                    'deskripsi' => $get_program->deskripsi,
-                                                    'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                    'status_aturan' => $get_program->status_aturan,
-                                                ];
-                                            }
-                                        }
-
-                                        $html .= '<tr style="background: #bbbbbb;">
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['kode']).'
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['deskripsi']).'
+                                    }
+                                    foreach ($kegiatans as $kegiatan) {
+                                        $html .= '<tr id="trKegiatan'.$kegiatan['id'].'">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
+                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
+                                                        '.$kegiatan['deskripsi'].'
                                                         <br>
                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
+                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
+                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
+                                                    </td>';
+                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
+                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
+                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
+                                                                if($opd_kegiatan_indikator_kinerja)
+                                                                {
+                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
+                                                                }
+                                                        $html .= '</li>';
+                                                    }
+                                                    $html .='</ul></td>
+                                                    <td width="20%">
+                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
                                                     </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle"></td>
-                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="4" class="hiddenRow">
-                                                        <div class="collapse show" id="kegiatan_urusan'.$urusan['id'].'">
+                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
                                                             <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>No</th>
+                                                                        <th>Indikator</th>
+                                                                        <th>Kondisi Kinerja Awal</th>
+                                                                        <th>Target Anggaran Awal</th>
+                                                                        <th>OPD</th>
+                                                                        <th>Target</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Target Anggaran</th>
+                                                                        <th>Realisasi</th>
+                                                                        <th>Realisasi Anggaran</th>
+                                                                        <th>Tahun</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <tbody>';
-                                                                    foreach ($programs as $program) {
-                                                                        $html .= '<tr style="background: #c04141;">
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
-                                                                                        '.strtoupper($program['deskripsi']);
-                                                                                        $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
-                                                                                        if($cek_program_rjmd)
+                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                $no_kegiatan_indikator_kinerja = 1;
+                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
+                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
+                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                                                        $html .= '<td>Rp.'.number_format((int)$kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                        $a = 1;
+                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
+                                                                                                            ->get();
+                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
+                                                                            if($a == 1)
+                                                                            {
+                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
+                                                                                $b = 1;
+                                                                                foreach ($tahuns as $tahun) {
+                                                                                    if($b == 1)
+                                                                                    {
+                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
                                                                                         {
-                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
+                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
+                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                            if($cek_kegiatan_tw_realisasi)
+                                                                                            {
+                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                $kegiatan_realisasi = [];
+                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
+                                                                                                }
+                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            }
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        } else {
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</>';
                                                                                         }
-                                                                                        $html .='<br>
-                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
-                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
-                                                                                    <td width="20%">
-                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="12" class="hiddenRow">
-                                                                                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>';
-                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id']);
-                                                                                                    if($request->kegiatan_filter_kegiatan)
-                                                                                                    {
-                                                                                                        $get_kegiatans = $get_kegiatans->where('id', $request->kegiatan_filter_kegiatan);
+                                                                                    } else {
+                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                        {
+                                                                                            $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                            $html .= '<td>Rp.'.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                            if($cek_kegiatan_tw_realisasi)
+                                                                                            {
+                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                $kegiatan_realisasi = [];
+                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
+                                                                                                }
+                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            }
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        } else {
+                                                                                            $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        }
+                                                                                    }
+                                                                                    $b++;
+                                                                                }
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
+                                                                                    $b = 1;
+                                                                                    foreach ($tahuns as $tahun) {
+                                                                                        if($b == 1)
+                                                                                        {
+                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                                if($cek_kegiatan_tw_realisasi)
+                                                                                                {
+                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                    $kegiatan_realisasi = [];
+                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                                                                     }
-                                                                                                    $get_kegiatans = $get_kegiatans->get();
-
-                                                                                                    $kegiatans = [];
-                                                                                                    foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
-                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->first();
-                                                                                                        if($cek_perubahan_kegiatan)
-                                                                                                        {
-                                                                                                            $kegiatans[] = [
-                                                                                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
-                                                                                                                'program_id' => $cek_perubahan_kegiatan->program_id,
-                                                                                                                'kode' => $cek_perubahan_kegiatan->kode,
-                                                                                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
-                                                                                                                'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
-                                                                                                                'status_aturan' => $cek_perubahan_kegiatan->status_aturan
-                                                                                                            ];
-                                                                                                        } else {
-                                                                                                            $kegiatans[] = [
-                                                                                                                'id' => $get_kegiatan->id,
-                                                                                                                'program_id' => $get_kegiatan->program_id,
-                                                                                                                'kode' => $get_kegiatan->kode,
-                                                                                                                'deskripsi' => $get_kegiatan->deskripsi,
-                                                                                                                'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
-                                                                                                                'status_aturan' => $get_kegiatan->status_aturan
-                                                                                                            ];
-                                                                                                        }
+                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                } else {
+                                                                                                    $html .= '<td></td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                }
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            }
+                                                                                        } else {
+                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                            {
+                                                                                                $html .= '<tr>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                                if($cek_kegiatan_tw_realisasi)
+                                                                                                {
+                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                    $kegiatan_realisasi = [];
+                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                                                                     }
-                                                                                                    foreach ($kegiatans as $kegiatan) {
-                                                                                                        $html .= '<tr>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
-                                                                                                                        '.$kegiatan['deskripsi'].'
-                                                                                                                        <br>
-                                                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
-                                                                                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>';
-                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
-                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
-                                                                                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
-                                                                                                                                if($opd_kegiatan_indikator_kinerja)
-                                                                                                                                {
-                                                                                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
-                                                                                                                                }
-                                                                                                                        $html .= '</li>';
-                                                                                                                    }
-                                                                                                                    $html .='</ul></td>
-                                                                                                                    <td width="20%">
-                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
-                                                                                                                    </td>
-                                                                                                                </tr>
-                                                                                                                <tr>
-                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
-                                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                                <thead>
-                                                                                                                                    <tr>
-                                                                                                                                        <th>No</th>
-                                                                                                                                        <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
-                                                                                                                                        <th>Target Anggaran Awal</th>
-                                                                                                                                        <th>OPD</th>
-                                                                                                                                        <th>Target</th>
-                                                                                                                                        <th>Satuan</th>
-                                                                                                                                        <th>Target Anggaran</th>
-                                                                                                                                        <th>Realisasi</th>
-                                                                                                                                        <th>Realisasi Anggaran</th>
-                                                                                                                                        <th>Tahun</th>
-                                                                                                                                    </tr>
-                                                                                                                                </thead>
-                                                                                                                                <tbody>';
-                                                                                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                                $no_kegiatan_indikator_kinerja = 1;
-                                                                                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                                    $html .= '<tr>';
-                                                                                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                        $html .= '<td>Rp.'.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
-                                                                                                                                        $a = 1;
-                                                                                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
-                                                                                                                                                                            ->get();
-                                                                                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
-                                                                                                                                            if($a == 1)
-                                                                                                                                            {
-                                                                                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                $b = 1;
-                                                                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                                                                    if($b == 1)
-                                                                                                                                                    {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</>';
-                                                                                                                                                        }
-                                                                                                                                                    } else {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        }
-                                                                                                                                                    }
-                                                                                                                                                    $b++;
-                                                                                                                                                }
-                                                                                                                                            } else {
-                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($tahuns as $tahun) {
-                                                                                                                                                        if($b == 1)
-                                                                                                                                                        {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        } else {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                        $b++;
-                                                                                                                                                    }
-                                                                                                                                            }
-                                                                                                                                            $a++;
-                                                                                                                                        }
-                                                                                                                                }
-                                                                                                                                $html .= '</tbody>
-                                                                                                                            </table>
-                                                                                                                        </div>
-                                                                                                                    </td>
-                                                                                                                </tr>';
-                                                                                                    }
-                                                                                                $html .= '</tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>';
-                                                                    }
-                                                                $html .='</tbody>
+                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                } else {
+                                                                                                    $html .= '<td></td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                }
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            } else {
+                                                                                                $html .= '<tr>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            }
+                                                                                        }
+                                                                                        $b++;
+                                                                                    }
+                                                                            }
+                                                                            $a++;
+                                                                        }
+                                                                }
+                                                                $html .= '</tbody>
                                                             </table>
                                                         </div>
                                                     </td>
@@ -638,396 +528,301 @@ class KegiatanController extends Controller
                                 $html .= '</tbody>
                             </table>
                         </div>
-                    </div>';
+            </td>';
 
             return response()->json(['success' => 'Berhasil menambahkan kegiatan','html' => $html]);
         } else {
-            $get_urusans = new Urusan;
-            if($request->kegiatan_filter_urusan)
-            {
-                $get_urusans = $get_urusans->where('id', $request->kegiatan_filter_urusan);
-            }
-            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
-            $urusans = [];
-            foreach ($get_urusans as $get_urusan) {
-                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
-                if($cek_perubahan_urusan)
-                {
-                    $urusans[] = [
-                        'id' => $cek_perubahan_urusan->urusan_id,
-                        'kode' => $cek_perubahan_urusan->kode,
-                        'deskripsi' => $cek_perubahan_urusan->deskripsi,
-                        'tahun_perubahan' => $cek_perubahan_urusan->tahun_perubahan,
-                    ];
-                } else {
-                    $urusans[] = [
-                        'id' => $get_urusan->id,
-                        'kode' => $get_urusan->kode,
-                        'deskripsi' => $get_urusan->deskripsi,
-                        'tahun_perubahan' => $get_urusan->tahun_perubahan,
-                    ];
-                }
-            }
+            $getProgram = Program::find($request->kegiatan_program_id);
+            $program = [
+                'id' => $getProgram->id,
+                'kode' => $getProgram->kode,
+                'deskripsi' => $getProgram->deskripsi,
+            ];
 
-            $html = '<div class="data-table-rows slim">
-                        <div class="data-table-responsive-wrapper">
+            $getUrusan = Urusan::find($getProgram->urusan_id);
+            $urusan = [
+                'id' => $getUrusan->id,
+                'kode' => $getUrusan->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
+
+            $html = '<td colspan="12" class="hiddenRow">
+                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
                             <table class="table table-striped table-condesed">
-                                <thead>
-                                    <tr>
-                                        <th width="15%">Kode</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="25%">Tahun Perubahan</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
                                 <tbody>';
-                                    foreach ($urusans as $urusan) {
-                                        $get_programs = Program::where('urusan_id', $urusan['id']);
-                                        if($request->kegiatan_filter_program)
+                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->orderBy('kode', 'asc')->get();
+                                    $kegiatans = [];
+                                    foreach ($get_kegiatans as $get_kegiatan) {
+                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
+                                                                    ->orderBy('id', 'desc')->first();
+                                        if($cek_perubahan_kegiatan)
                                         {
-                                            $get_programs = $get_programs->where('id', $request->kegiatan_filter_program);
+                                            $kegiatans[] = [
+                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                'program_id' => $cek_perubahan_kegiatan->program_id,
+                                                'kode' => $cek_perubahan_kegiatan->kode,
+                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                                                'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
+                                                'status_aturan' => $cek_perubahan_kegiatan->status_aturan
+                                            ];
+                                        } else {
+                                            $kegiatans[] = [
+                                                'id' => $get_kegiatan->id,
+                                                'program_id' => $get_kegiatan->program_id,
+                                                'kode' => $get_kegiatan->kode,
+                                                'deskripsi' => $get_kegiatan->deskripsi,
+                                                'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
+                                                'status_aturan' => $get_kegiatan->status_aturan
+                                            ];
                                         }
-                                        $get_programs = $get_programs->get();
-                                        $programs = [];
-                                        foreach ($get_programs as $get_program) {
-                                            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                            if($cek_perubahan_program)
-                                            {
-                                                $programs[] = [
-                                                    'id' => $cek_perubahan_program->program_id,
-                                                    'kode' => $cek_perubahan_program->kode,
-                                                    'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                    'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                    'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                ];
-                                            } else {
-                                                $programs[] = [
-                                                    'id' => $get_program->id,
-                                                    'kode' => $get_program->kode,
-                                                    'deskripsi' => $get_program->deskripsi,
-                                                    'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                    'status_aturan' => $get_program->status_aturan,
-                                                ];
-                                            }
-                                        }
-
-                                        $html .= '<tr style="background: #bbbbbb;">
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['kode']).'
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['deskripsi']).'
+                                    }
+                                    foreach ($kegiatans as $kegiatan) {
+                                        $html .= '<tr id="trKegiatan'.$kegiatan['id'].'">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
+                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
+                                                        '.$kegiatan['deskripsi'].'
                                                         <br>
                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
+                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
+                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
+                                                    </td>';
+                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
+                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
+                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
+                                                                if($opd_kegiatan_indikator_kinerja)
+                                                                {
+                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
+                                                                }
+                                                        $html .= '</li>';
+                                                    }
+                                                    $html .='</ul></td>
+                                                    <td width="20%">
+                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
                                                     </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle"></td>
-                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="4" class="hiddenRow">
-                                                        <div class="collapse show" id="kegiatan_urusan'.$urusan['id'].'">
+                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
                                                             <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>No</th>
+                                                                        <th>Indikator</th>
+                                                                        <th>Kondisi Kinerja Awal</th>
+                                                                        <th>Target Anggaran Awal</th>
+                                                                        <th>OPD</th>
+                                                                        <th>Target</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Target Anggaran</th>
+                                                                        <th>Realisasi</th>
+                                                                        <th>Realisasi Anggaran</th>
+                                                                        <th>Tahun</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <tbody>';
-                                                                    foreach ($programs as $program) {
-                                                                        $html .= '<tr style="background: #c04141;">
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
-                                                                                        '.strtoupper($program['deskripsi']);
-                                                                                        $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
-                                                                                        if($cek_program_rjmd)
+                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                $no_kegiatan_indikator_kinerja = 1;
+                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
+                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
+                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                                                        $html .= '<td>Rp.'.number_format((int)$kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                        $a = 1;
+                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
+                                                                                                            ->get();
+                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
+                                                                            if($a == 1)
+                                                                            {
+                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
+                                                                                $b = 1;
+                                                                                foreach ($tahuns as $tahun) {
+                                                                                    if($b == 1)
+                                                                                    {
+                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
                                                                                         {
-                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
-                                                                                        }
-                                                                                        $html .='<br>
-                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
-                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
-                                                                                    <td width="20%">
-                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="12" class="hiddenRow">
-                                                                                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>';
-                                                                                                $get_kegiatans = Kegiatan::where('program_id', $program['id']);
-                                                                                                if($request->kegiatan_filter_kegiatan)
-                                                                                                {
-                                                                                                    $get_kegiatans = $get_kegiatans->where('id', $request->kegiatan_filter_kegiatan);
+                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
+                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                            if($cek_kegiatan_tw_realisasi)
+                                                                                            {
+                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                $kegiatan_realisasi = [];
+                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                                                                 }
-                                                                                                $get_kegiatans = $get_kegiatans->get();
-                                                                                                    $kegiatans = [];
-                                                                                                    foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                        $kegiatans[] = [
-                                                                                                            'id' => $get_kegiatan->id,
-                                                                                                            'program_id' => $get_kegiatan->program_id,
-                                                                                                            'kode' => $get_kegiatan->kode,
-                                                                                                            'deskripsi' => $get_kegiatan->deskripsi,
-                                                                                                            'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
-                                                                                                            'status_aturan' => $get_kegiatan->status_aturan
-                                                                                                        ];
+                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            }
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        } else {
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</>';
+                                                                                        }
+                                                                                    } else {
+                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                        {
+                                                                                            $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                            $html .= '<td>Rp.'.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                            if($cek_kegiatan_tw_realisasi)
+                                                                                            {
+                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                $kegiatan_realisasi = [];
+                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
+                                                                                                }
+                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            }
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        } else {
+                                                                                            $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        }
+                                                                                    }
+                                                                                    $b++;
+                                                                                }
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
+                                                                                    $b = 1;
+                                                                                    foreach ($tahuns as $tahun) {
+                                                                                        if($b == 1)
+                                                                                        {
+                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                                if($cek_kegiatan_tw_realisasi)
+                                                                                                {
+                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                    $kegiatan_realisasi = [];
+                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                                                                     }
-                                                                                                    foreach ($kegiatans as $kegiatan) {
-                                                                                                        $html .= '<tr>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
-                                                                                                                        '.$kegiatan['deskripsi'].'
-                                                                                                                        <br>
-                                                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
-                                                                                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>';
-                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
-                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
-                                                                                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
-                                                                                                                                if($opd_kegiatan_indikator_kinerja)
-                                                                                                                                {
-                                                                                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
-                                                                                                                                }
-                                                                                                                        $html .= '</li>';
-                                                                                                                    }
-                                                                                                                    $html .='</ul></td>
-                                                                                                                    <td width="20%">
-                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
-                                                                                                                    </td>
-                                                                                                                </tr>
-                                                                                                                <tr>
-                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
-                                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                                <thead>
-                                                                                                                                    <tr>
-                                                                                                                                        <th>No</th>
-                                                                                                                                        <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
-                                                                                                                                        <th>Target Anggaran Awal</th>
-                                                                                                                                        <th>OPD</th>
-                                                                                                                                        <th>Target</th>
-                                                                                                                                        <th>Satuan</th>
-                                                                                                                                        <th>Target Anggaran</th>
-                                                                                                                                        <th>Realisasi</th>
-                                                                                                                                        <th>Realisasi Anggaran</th>
-                                                                                                                                        <th>Tahun</th>
-                                                                                                                                    </tr>
-                                                                                                                                </thead>
-                                                                                                                                <tbody>';
-                                                                                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                                $no_kegiatan_indikator_kinerja = 1;
-                                                                                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                                    $html .= '<tr>';
-                                                                                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                        $html .= '<td>Rp.'.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
-                                                                                                                                        $a = 1;
-                                                                                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
-                                                                                                                                                                            ->get();
-                                                                                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
-                                                                                                                                            if($a == 1)
-                                                                                                                                            {
-                                                                                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                $b = 1;
-                                                                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                                                                    if($b == 1)
-                                                                                                                                                    {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</>';
-                                                                                                                                                        }
-                                                                                                                                                    } else {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        }
-                                                                                                                                                    }
-                                                                                                                                                    $b++;
-                                                                                                                                                }
-                                                                                                                                            } else {
-                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($tahuns as $tahun) {
-                                                                                                                                                        if($b == 1)
-                                                                                                                                                        {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        } else {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                        $b++;
-                                                                                                                                                    }
-                                                                                                                                            }
-                                                                                                                                            $a++;
-                                                                                                                                        }
-                                                                                                                                }
-                                                                                                                                $html .= '</tbody>
-                                                                                                                            </table>
-                                                                                                                        </div>
-                                                                                                                    </td>
-                                                                                                                </tr>';
+                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                } else {
+                                                                                                    $html .= '<td></td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                }
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            }
+                                                                                        } else {
+                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                            {
+                                                                                                $html .= '<tr>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                                if($cek_kegiatan_tw_realisasi)
+                                                                                                {
+                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                    $kegiatan_realisasi = [];
+                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                                                                     }
-                                                                                                $html .= '</tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>';
-                                                                    }
-                                                                $html .='</tbody>
+                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                } else {
+                                                                                                    $html .= '<td></td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                }
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            } else {
+                                                                                                $html .= '<tr>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            }
+                                                                                        }
+                                                                                        $b++;
+                                                                                    }
+                                                                            }
+                                                                            $a++;
+                                                                        }
+                                                                }
+                                                                $html .= '</tbody>
                                                             </table>
                                                         </div>
                                                     </td>
@@ -1036,7 +831,7 @@ class KegiatanController extends Controller
                                 $html .= '</tbody>
                             </table>
                         </div>
-                    </div>';
+            </td>';
 
             return response()->json(['success' => 'Berhasil menambahkan kegiatan','html' => $html]);
         }
@@ -1409,816 +1204,143 @@ class KegiatanController extends Controller
         }
         if($request->nav_nomenklatur_kegiatan_tahun == 'semua')
         {
-            $get_urusans = new Urusan;
-            if($request->kegiatan_filter_urusan)
-            {
-                $get_urusans = $get_urusans->where('id', $request->kegiatan_filter_urusan);
-            }
-            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
-            $urusans = [];
-            foreach ($get_urusans as $get_urusan) {
-                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
-                if($cek_perubahan_urusan)
+            $get_kegiatans = Kegiatan::where('id', $request->kegiatan_hidden_id)->get();
+            $kegiatan = [];
+            foreach ($get_kegiatans as $get_kegiatan) {
+                $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
+                                            ->orderBy('id', 'desc')->first();
+                if($cek_perubahan_kegiatan)
                 {
-                    $urusans[] = [
-                        'id' => $cek_perubahan_urusan->urusan_id,
-                        'kode' => $cek_perubahan_urusan->kode,
-                        'deskripsi' => $cek_perubahan_urusan->deskripsi,
-                        'tahun_perubahan' => $cek_perubahan_urusan->tahun_perubahan,
+                    $kegiatan = [
+                        'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                        'program_id' => $cek_perubahan_kegiatan->program_id,
+                        'kode' => $cek_perubahan_kegiatan->kode,
+                        'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                        'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
+                        'status_aturan' => $cek_perubahan_kegiatan->status_aturan
                     ];
                 } else {
-                    $urusans[] = [
-                        'id' => $get_urusan->id,
-                        'kode' => $get_urusan->kode,
-                        'deskripsi' => $get_urusan->deskripsi,
-                        'tahun_perubahan' => $get_urusan->tahun_perubahan,
+                    $kegiatans = [
+                        'id' => $get_kegiatan->id,
+                        'program_id' => $get_kegiatan->program_id,
+                        'kode' => $get_kegiatan->kode,
+                        'deskripsi' => $get_kegiatan->deskripsi,
+                        'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
+                        'status_aturan' => $get_kegiatan->status_aturan
                     ];
                 }
             }
 
-            $html = '<div class="data-table-rows slim">
-                        <div class="data-table-responsive-wrapper">
-                            <table class="table table-striped table-condesed">
-                                <thead>
-                                    <tr>
-                                        <th width="15%">Kode</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="25%">Indikator Kinerja</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>';
-                                    foreach ($urusans as $urusan) {
-                                        $get_programs = Program::where('urusan_id', $urusan['id']);
-                                        if($request->kegiatan_filter_program)
-                                        {
-                                            $get_programs = $get_programs->where('id', $request->kegiatan_filter_program);
-                                        }
-                                        $get_programs = $get_programs->get();
-                                        $programs = [];
-                                        foreach ($get_programs as $get_program) {
-                                            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                            if($cek_perubahan_program)
-                                            {
-                                                $programs[] = [
-                                                    'id' => $cek_perubahan_program->program_id,
-                                                    'kode' => $cek_perubahan_program->kode,
-                                                    'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                    'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                    'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                ];
-                                            } else {
-                                                $programs[] = [
-                                                    'id' => $get_program->id,
-                                                    'kode' => $get_program->kode,
-                                                    'deskripsi' => $get_program->deskripsi,
-                                                    'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                    'status_aturan' => $get_program->status_aturan,
-                                                ];
-                                            }
-                                        }
+            $getProgram = Program::find($request->kegiatan_program_id);
+            $program = [
+                'id' => $getProgram->id,
+                'kode' => $getProgram->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
 
-                                        $html .= '<tr style="background: #bbbbbb;">
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['kode']).'
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['deskripsi']).'
-                                                        <br>
-                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle"></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="4" class="hiddenRow">
-                                                        <div class="collapse show" id="kegiatan_urusan'.$urusan['id'].'">
-                                                            <table class="table table-striped table-condesed">
-                                                                <tbody>';
-                                                                    foreach ($programs as $program) {
-                                                                        $html .= '<tr style="background: #c04141;">
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
-                                                                                        '.strtoupper($program['deskripsi']);
-                                                                                        $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
-                                                                                        if($cek_program_rjmd)
-                                                                                        {
-                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
-                                                                                        }
-                                                                                        $html .='<br>
-                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
-                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
-                                                                                    <td width="20%">
-                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="12" class="hiddenRow">
-                                                                                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>';
-                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id']);
-                                                                                                    if($request->kegiatan_filter_kegiatan)
-                                                                                                    {
-                                                                                                        $get_kegiatans = $get_kegiatans->where('id', $request->kegiatan_filter_kegiatan);
-                                                                                                    }
-                                                                                                    $get_kegiatans = $get_kegiatans->get();
+            $getUrusan = Urusan::find($getProgram->urusan_id);
+            $urusan = [
+                'id' => $getUrusan->id,
+                'kode' => $getUrusan->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
 
-                                                                                                    $kegiatans = [];
-                                                                                                    foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
-                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->first();
-                                                                                                        if($cek_perubahan_kegiatan)
-                                                                                                        {
-                                                                                                            $kegiatans[] = [
-                                                                                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
-                                                                                                                'program_id' => $cek_perubahan_kegiatan->program_id,
-                                                                                                                'kode' => $cek_perubahan_kegiatan->kode,
-                                                                                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
-                                                                                                                'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
-                                                                                                                'status_aturan' => $cek_perubahan_kegiatan->status_aturan
-                                                                                                            ];
-                                                                                                        } else {
-                                                                                                            $kegiatans[] = [
-                                                                                                                'id' => $get_kegiatan->id,
-                                                                                                                'program_id' => $get_kegiatan->program_id,
-                                                                                                                'kode' => $get_kegiatan->kode,
-                                                                                                                'deskripsi' => $get_kegiatan->deskripsi,
-                                                                                                                'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
-                                                                                                                'status_aturan' => $get_kegiatan->status_aturan
-                                                                                                            ];
-                                                                                                        }
-                                                                                                    }
-                                                                                                    foreach ($kegiatans as $kegiatan) {
-                                                                                                        $html .= '<tr>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
-                                                                                                                        '.$kegiatan['deskripsi'].'
-                                                                                                                        <br>
-                                                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
-                                                                                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>';
-                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
-                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
-                                                                                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
-                                                                                                                                if($opd_kegiatan_indikator_kinerja)
-                                                                                                                                {
-                                                                                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
-                                                                                                                                }
-                                                                                                                        $html .= '</li>';
-                                                                                                                    }
-                                                                                                                    $html .='</ul></td>
-                                                                                                                    <td width="20%">
-                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
-                                                                                                                    </td>
-                                                                                                                </tr>
-                                                                                                                <tr>
-                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
-                                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                                <thead>
-                                                                                                                                    <tr>
-                                                                                                                                        <th>No</th>
-                                                                                                                                        <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
-                                                                                                                                        <th>Target Anggaran Awal</th>
-                                                                                                                                        <th>OPD</th>
-                                                                                                                                        <th>Target</th>
-                                                                                                                                        <th>Satuan</th>
-                                                                                                                                        <th>Target Anggaran</th>
-                                                                                                                                        <th>Realisasi</th>
-                                                                                                                                        <th>Realisasi Anggaran</th>
-                                                                                                                                        <th>Tahun</th>
-                                                                                                                                    </tr>
-                                                                                                                                </thead>
-                                                                                                                                <tbody>';
-                                                                                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                                $no_kegiatan_indikator_kinerja = 1;
-                                                                                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                                    $html .= '<tr>';
-                                                                                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                        $html .= '<td>Rp.'.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
-                                                                                                                                        $a = 1;
-                                                                                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
-                                                                                                                                                                            ->get();
-                                                                                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
-                                                                                                                                            if($a == 1)
-                                                                                                                                            {
-                                                                                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                $b = 1;
-                                                                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                                                                    if($b == 1)
-                                                                                                                                                    {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</>';
-                                                                                                                                                        }
-                                                                                                                                                    } else {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        }
-                                                                                                                                                    }
-                                                                                                                                                    $b++;
-                                                                                                                                                }
-                                                                                                                                            } else {
-                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($tahuns as $tahun) {
-                                                                                                                                                        if($b == 1)
-                                                                                                                                                        {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        } else {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                        $b++;
-                                                                                                                                                    }
-                                                                                                                                            }
-                                                                                                                                            $a++;
-                                                                                                                                        }
-                                                                                                                                }
-                                                                                                                                $html .= '</tbody>
-                                                                                                                            </table>
-                                                                                                                        </div>
-                                                                                                                    </td>
-                                                                                                                </tr>';
-                                                                                                    }
-                                                                                                $html .= '</tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>';
-                                                                    }
-                                                                $html .='</tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>';
-                                    }
-                                $html .= '</tbody>
-                            </table>
-                        </div>
-                    </div>';
+            $html = '<td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
+            <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
+                '.$kegiatan['deskripsi'].'
+                <br>
+                <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
+                <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
+                <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
+            </td>';
+            $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+            $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
+            foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
+                        $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
+                        if($opd_kegiatan_indikator_kinerja)
+                        {
+                            $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
+                        }
+                $html .= '</li>';
+            }
+            $html .='</ul></td>
+            <td width="20%">
+                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
+            </td>';
 
-            return response()->json(['success' => 'Berhasil menghapus kegiatan','html' => $html]);
+            return response()->json(['success' => 'Berhasil mengubah kegiatan','html' => $html]);
         } else {
-            $get_urusans = new Urusan;
-            if($request->kegiatan_filter_urusan)
-            {
-                $get_urusans = $get_urusans->where('id', $request->kegiatan_filter_urusan);
-            }
-            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
-            $urusans = [];
-            foreach ($get_urusans as $get_urusan) {
-                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
-                if($cek_perubahan_urusan)
+            $get_kegiatans = Kegiatan::where('id', $request->kegiatan_hidden_id)->get();
+            $kegiatan = [];
+            foreach ($get_kegiatans as $get_kegiatan) {
+                $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
+                                            ->orderBy('id', 'desc')->first();
+                if($cek_perubahan_kegiatan)
                 {
-                    $urusans[] = [
-                        'id' => $cek_perubahan_urusan->urusan_id,
-                        'kode' => $cek_perubahan_urusan->kode,
-                        'deskripsi' => $cek_perubahan_urusan->deskripsi,
-                        'tahun_perubahan' => $cek_perubahan_urusan->tahun_perubahan,
+                    $kegiatan = [
+                        'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                        'program_id' => $cek_perubahan_kegiatan->program_id,
+                        'kode' => $cek_perubahan_kegiatan->kode,
+                        'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                        'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
+                        'status_aturan' => $cek_perubahan_kegiatan->status_aturan
                     ];
                 } else {
-                    $urusans[] = [
-                        'id' => $get_urusan->id,
-                        'kode' => $get_urusan->kode,
-                        'deskripsi' => $get_urusan->deskripsi,
-                        'tahun_perubahan' => $get_urusan->tahun_perubahan,
+                    $kegiatan = [
+                        'id' => $get_kegiatan->id,
+                        'program_id' => $get_kegiatan->program_id,
+                        'kode' => $get_kegiatan->kode,
+                        'deskripsi' => $get_kegiatan->deskripsi,
+                        'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
+                        'status_aturan' => $get_kegiatan->status_aturan
                     ];
                 }
             }
 
-            $html = '<div class="data-table-rows slim">
-                        <div class="data-table-responsive-wrapper">
-                            <table class="table table-striped table-condesed">
-                                <thead>
-                                    <tr>
-                                        <th width="15%">Kode</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="25%">Tahun Perubahan</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>';
-                                    foreach ($urusans as $urusan) {
-                                        $get_programs = Program::where('urusan_id', $urusan['id']);
-                                        if($request->kegiatan_filter_program)
-                                        {
-                                            $get_programs = $get_programs->where('id', $request->kegiatan_filter_program);
-                                        }
-                                        $get_programs = $get_programs->get();
-                                        $programs = [];
-                                        foreach ($get_programs as $get_program) {
-                                            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                            if($cek_perubahan_program)
-                                            {
-                                                $programs[] = [
-                                                    'id' => $cek_perubahan_program->program_id,
-                                                    'kode' => $cek_perubahan_program->kode,
-                                                    'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                    'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                    'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                ];
-                                            } else {
-                                                $programs[] = [
-                                                    'id' => $get_program->id,
-                                                    'kode' => $get_program->kode,
-                                                    'deskripsi' => $get_program->deskripsi,
-                                                    'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                    'status_aturan' => $get_program->status_aturan,
-                                                ];
-                                            }
-                                        }
+            $getProgram = Program::find($request->kegiatan_program_id);
+            $program = [
+                'id' => $getProgram->id,
+                'kode' => $getProgram->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
 
-                                        $html .= '<tr style="background: #bbbbbb;">
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['kode']).'
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['deskripsi']).'
-                                                        <br>
-                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle"></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="4" class="hiddenRow">
-                                                        <div class="collapse show" id="kegiatan_urusan'.$urusan['id'].'">
-                                                            <table class="table table-striped table-condesed">
-                                                                <tbody>';
-                                                                    foreach ($programs as $program) {
-                                                                        $html .= '<tr style="background: #c04141;">
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
-                                                                                        '.strtoupper($program['deskripsi']);
-                                                                                        $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
-                                                                                        if($cek_program_rjmd)
-                                                                                        {
-                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
-                                                                                        }
-                                                                                        $html .='<br>
-                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
-                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
-                                                                                    <td width="20%">
-                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="12" class="hiddenRow">
-                                                                                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>';
-                                                                                                $get_kegiatans = Kegiatan::where('program_id', $program['id']);
-                                                                                                if($request->kegiatan_filter_kegiatan)
-                                                                                                {
-                                                                                                    $get_kegiatans = $get_kegiatans->where('id', $request->kegiatan_filter_kegiatan);
-                                                                                                }
-                                                                                                $get_kegiatans = $get_kegiatans->get();
-                                                                                                    $kegiatans = [];
-                                                                                                    foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                        $kegiatans[] = [
-                                                                                                            'id' => $get_kegiatan->id,
-                                                                                                            'program_id' => $get_kegiatan->program_id,
-                                                                                                            'kode' => $get_kegiatan->kode,
-                                                                                                            'deskripsi' => $get_kegiatan->deskripsi,
-                                                                                                            'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
-                                                                                                            'status_aturan' => $get_kegiatan->status_aturan
-                                                                                                        ];
-                                                                                                    }
-                                                                                                    foreach ($kegiatans as $kegiatan) {
-                                                                                                        $html .= '<tr>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
-                                                                                                                        '.$kegiatan['deskripsi'].'
-                                                                                                                        <br>
-                                                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
-                                                                                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>';
-                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
-                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
-                                                                                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
-                                                                                                                                if($opd_kegiatan_indikator_kinerja)
-                                                                                                                                {
-                                                                                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
-                                                                                                                                }
-                                                                                                                        $html .= '</li>';
-                                                                                                                    }
-                                                                                                                    $html .='</ul></td>
-                                                                                                                    <td width="20%">
-                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
-                                                                                                                    </td>
-                                                                                                                </tr>
-                                                                                                                <tr>
-                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
-                                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                                <thead>
-                                                                                                                                    <tr>
-                                                                                                                                        <th>No</th>
-                                                                                                                                        <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
-                                                                                                                                        <th>Target Anggaran Awal</th>
-                                                                                                                                        <th>OPD</th>
-                                                                                                                                        <th>Target</th>
-                                                                                                                                        <th>Satuan</th>
-                                                                                                                                        <th>Target Anggaran</th>
-                                                                                                                                        <th>Realisasi</th>
-                                                                                                                                        <th>Realisasi Anggaran</th>
-                                                                                                                                        <th>Tahun</th>
-                                                                                                                                    </tr>
-                                                                                                                                </thead>
-                                                                                                                                <tbody>';
-                                                                                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                                $no_kegiatan_indikator_kinerja = 1;
-                                                                                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                                    $html .= '<tr>';
-                                                                                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                        $html .= '<td>Rp.'.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
-                                                                                                                                        $a = 1;
-                                                                                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
-                                                                                                                                                                            ->get();
-                                                                                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
-                                                                                                                                            if($a == 1)
-                                                                                                                                            {
-                                                                                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                $b = 1;
-                                                                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                                                                    if($b == 1)
-                                                                                                                                                    {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</>';
-                                                                                                                                                        }
-                                                                                                                                                    } else {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        }
-                                                                                                                                                    }
-                                                                                                                                                    $b++;
-                                                                                                                                                }
-                                                                                                                                            } else {
-                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($tahuns as $tahun) {
-                                                                                                                                                        if($b == 1)
-                                                                                                                                                        {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        } else {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                        $b++;
-                                                                                                                                                    }
-                                                                                                                                            }
-                                                                                                                                            $a++;
-                                                                                                                                        }
-                                                                                                                                }
-                                                                                                                                $html .= '</tbody>
-                                                                                                                            </table>
-                                                                                                                        </div>
-                                                                                                                    </td>
-                                                                                                                </tr>';
-                                                                                                    }
-                                                                                                $html .= '</tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>';
-                                                                    }
-                                                                $html .='</tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>';
-                                    }
-                                $html .= '</tbody>
-                            </table>
-                        </div>
-                    </div>';
+            $getUrusan = Urusan::find($getProgram->urusan_id);
+            $urusan = [
+                'id' => $getUrusan->id,
+                'kode' => $getUrusan->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
 
-            return response()->json(['success' => 'Berhasil menghapus kegiatan','html' => $html]);
+            $html = '<td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
+            <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
+                '.$kegiatan['deskripsi'].'
+                <br>
+                <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
+                <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
+                <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
+            </td>';
+            $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+            $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
+            foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
+                        $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
+                        if($opd_kegiatan_indikator_kinerja)
+                        {
+                            $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
+                        }
+                $html .= '</li>';
+            }
+            $html .='</ul></td>
+            <td width="20%">
+                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
+            </td>';
+
+            return response()->json(['success' => 'Berhasil mengubah kegiatan','html' => $html]);
         }
     }
 
@@ -2270,6 +1392,7 @@ class KegiatanController extends Controller
 
     public function hapus(Request $request)
     {
+        $idProgram = Kegiatan::find($request->hapus_kegiatan_id)->program_id;
         if($request->hapus_kegiatan_tahun == 'semua')
         {
             $get_perubahan_kegiatans = PivotPerubahanKegiatan::where('kegiatan_id', $request->hapus_kegiatan_id)->get();
@@ -2424,805 +1547,298 @@ class KegiatanController extends Controller
         }
         if($request->nav_nomenklatur_kegiatan_tahun == 'semua')
         {
-            $get_urusans = new Urusan;
-            if($request->kegiatan_filter_urusan)
-            {
-                $get_urusans = $get_urusans->where('id', $request->kegiatan_filter_urusan);
-            }
-            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
-            $urusans = [];
-            foreach ($get_urusans as $get_urusan) {
-                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
-                if($cek_perubahan_urusan)
-                {
-                    $urusans[] = [
-                        'id' => $cek_perubahan_urusan->urusan_id,
-                        'kode' => $cek_perubahan_urusan->kode,
-                        'deskripsi' => $cek_perubahan_urusan->deskripsi,
-                        'tahun_perubahan' => $cek_perubahan_urusan->tahun_perubahan,
-                    ];
-                } else {
-                    $urusans[] = [
-                        'id' => $get_urusan->id,
-                        'kode' => $get_urusan->kode,
-                        'deskripsi' => $get_urusan->deskripsi,
-                        'tahun_perubahan' => $get_urusan->tahun_perubahan,
-                    ];
-                }
-            }
 
-            $html = '<div class="data-table-rows slim">
-                        <div class="data-table-responsive-wrapper">
+            $getProgram = Program::find($idProgram);
+            $program = [
+                'id' => $getProgram->id,
+                'kode' => $getProgram->kode,
+                'deskripsi' => $getProgram->deskripsi,
+            ];
+
+            $getUrusan = Urusan::find($getProgram->urusan_id);
+            $urusan = [
+                'id' => $getUrusan->id,
+                'kode' => $getUrusan->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
+
+            $html = '<td colspan="12" class="hiddenRow">
+                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
                             <table class="table table-striped table-condesed">
-                                <thead>
-                                    <tr>
-                                        <th width="15%">Kode</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="25%">Indikator Kinerja</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
                                 <tbody>';
-                                    foreach ($urusans as $urusan) {
-                                        $get_programs = Program::where('urusan_id', $urusan['id']);
-                                        if($request->kegiatan_filter_program)
+                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->orderBy('kode', 'asc')->get();
+                                    $kegiatans = [];
+                                    foreach ($get_kegiatans as $get_kegiatan) {
+                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
+                                                                    ->orderBy('id', 'desc')->first();
+                                        if($cek_perubahan_kegiatan)
                                         {
-                                            $get_programs = $get_programs->where('id', $request->kegiatan_filter_program);
+                                            $kegiatans[] = [
+                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                'program_id' => $cek_perubahan_kegiatan->program_id,
+                                                'kode' => $cek_perubahan_kegiatan->kode,
+                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                                                'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
+                                                'status_aturan' => $cek_perubahan_kegiatan->status_aturan
+                                            ];
+                                        } else {
+                                            $kegiatans[] = [
+                                                'id' => $get_kegiatan->id,
+                                                'program_id' => $get_kegiatan->program_id,
+                                                'kode' => $get_kegiatan->kode,
+                                                'deskripsi' => $get_kegiatan->deskripsi,
+                                                'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
+                                                'status_aturan' => $get_kegiatan->status_aturan
+                                            ];
                                         }
-                                        $get_programs = $get_programs->get();
-                                        $programs = [];
-                                        foreach ($get_programs as $get_program) {
-                                            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                            if($cek_perubahan_program)
-                                            {
-                                                $programs[] = [
-                                                    'id' => $cek_perubahan_program->program_id,
-                                                    'kode' => $cek_perubahan_program->kode,
-                                                    'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                    'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                    'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                ];
-                                            } else {
-                                                $programs[] = [
-                                                    'id' => $get_program->id,
-                                                    'kode' => $get_program->kode,
-                                                    'deskripsi' => $get_program->deskripsi,
-                                                    'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                    'status_aturan' => $get_program->status_aturan,
-                                                ];
-                                            }
-                                        }
-
-                                        $html .= '<tr style="background: #bbbbbb;">
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['kode']).'
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['deskripsi']).'
-                                                        <br>
-                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle"></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="4" class="hiddenRow">
-                                                        <div class="collapse show" id="kegiatan_urusan'.$urusan['id'].'">
-                                                            <table class="table table-striped table-condesed">
-                                                                <tbody>';
-                                                                    foreach ($programs as $program) {
-                                                                        $html .= '<tr style="background: #c04141;">
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
-                                                                                        '.strtoupper($program['deskripsi']);
-                                                                                        $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
-                                                                                        if($cek_program_rjmd)
-                                                                                        {
-                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
-                                                                                        }
-                                                                                        $html .='<br>
-                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
-                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
-                                                                                    <td width="20%">
-                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="12" class="hiddenRow">
-                                                                                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>';
-                                                                                                    $get_kegiatans = Kegiatan::where('program_id', $program['id']);
-                                                                                                    if($request->kegiatan_filter_kegiatan)
-                                                                                                    {
-                                                                                                        $get_kegiatans = $get_kegiatans->where('id', $request->kegiatan_filter_kegiatan);
-                                                                                                    }
-                                                                                                    $get_kegiatans = $get_kegiatans->get();
-
-                                                                                                    $kegiatans = [];
-                                                                                                    foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
-                                                                                                                                    ->orderBy('tahun_perubahan', 'desc')->first();
-                                                                                                        if($cek_perubahan_kegiatan)
-                                                                                                        {
-                                                                                                            $kegiatans[] = [
-                                                                                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
-                                                                                                                'program_id' => $cek_perubahan_kegiatan->program_id,
-                                                                                                                'kode' => $cek_perubahan_kegiatan->kode,
-                                                                                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
-                                                                                                                'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
-                                                                                                                'status_aturan' => $cek_perubahan_kegiatan->status_aturan
-                                                                                                            ];
-                                                                                                        } else {
-                                                                                                            $kegiatans[] = [
-                                                                                                                'id' => $get_kegiatan->id,
-                                                                                                                'program_id' => $get_kegiatan->program_id,
-                                                                                                                'kode' => $get_kegiatan->kode,
-                                                                                                                'deskripsi' => $get_kegiatan->deskripsi,
-                                                                                                                'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
-                                                                                                                'status_aturan' => $get_kegiatan->status_aturan
-                                                                                                            ];
-                                                                                                        }
-                                                                                                    }
-                                                                                                    foreach ($kegiatans as $kegiatan) {
-                                                                                                        $html .= '<tr>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
-                                                                                                                        '.$kegiatan['deskripsi'].'
-                                                                                                                        <br>
-                                                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
-                                                                                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>';
-                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
-                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
-                                                                                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
-                                                                                                                                if($opd_kegiatan_indikator_kinerja)
-                                                                                                                                {
-                                                                                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
-                                                                                                                                }
-                                                                                                                        $html .= '</li>';
-                                                                                                                    }
-                                                                                                                    $html .='</ul></td>
-                                                                                                                    <td width="20%">
-                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
-                                                                                                                    </td>
-                                                                                                                </tr>
-                                                                                                                <tr>
-                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
-                                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                                <thead>
-                                                                                                                                    <tr>
-                                                                                                                                        <th>No</th>
-                                                                                                                                        <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
-                                                                                                                                        <th>Target Anggaran Awal</th>
-                                                                                                                                        <th>OPD</th>
-                                                                                                                                        <th>Target</th>
-                                                                                                                                        <th>Satuan</th>
-                                                                                                                                        <th>Target Anggaran</th>
-                                                                                                                                        <th>Realisasi</th>
-                                                                                                                                        <th>Realisasi Anggaran</th>
-                                                                                                                                        <th>Tahun</th>
-                                                                                                                                    </tr>
-                                                                                                                                </thead>
-                                                                                                                                <tbody>';
-                                                                                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                                $no_kegiatan_indikator_kinerja = 1;
-                                                                                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                                    $html .= '<tr>';
-                                                                                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                        $html .= '<td>Rp.'.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
-                                                                                                                                        $a = 1;
-                                                                                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
-                                                                                                                                                                            ->get();
-                                                                                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
-                                                                                                                                            if($a == 1)
-                                                                                                                                            {
-                                                                                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                $b = 1;
-                                                                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                                                                    if($b == 1)
-                                                                                                                                                    {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</>';
-                                                                                                                                                        }
-                                                                                                                                                    } else {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        }
-                                                                                                                                                    }
-                                                                                                                                                    $b++;
-                                                                                                                                                }
-                                                                                                                                            } else {
-                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($tahuns as $tahun) {
-                                                                                                                                                        if($b == 1)
-                                                                                                                                                        {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        } else {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                        $b++;
-                                                                                                                                                    }
-                                                                                                                                            }
-                                                                                                                                            $a++;
-                                                                                                                                        }
-                                                                                                                                }
-                                                                                                                                $html .= '</tbody>
-                                                                                                                            </table>
-                                                                                                                        </div>
-                                                                                                                    </td>
-                                                                                                                </tr>';
-                                                                                                    }
-                                                                                                $html .= '</tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>';
-                                                                    }
-                                                                $html .='</tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>';
                                     }
-                                $html .= '</tbody>
-                            </table>
-                        </div>
-                    </div>';
-
-            return response()->json(['success' => 'Berhasil menghapus kegiatan','html' => $html]);
-        } else {
-            $get_urusans = new Urusan;
-            if($request->kegiatan_filter_urusan)
-            {
-                $get_urusans = $get_urusans->where('id', $request->kegiatan_filter_urusan);
-            }
-            $get_urusans = $get_urusans->orderBy('kode','asc')->get();
-            $urusans = [];
-            foreach ($get_urusans as $get_urusan) {
-                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $get_urusan->id)->latest()->first();
-                if($cek_perubahan_urusan)
-                {
-                    $urusans[] = [
-                        'id' => $cek_perubahan_urusan->urusan_id,
-                        'kode' => $cek_perubahan_urusan->kode,
-                        'deskripsi' => $cek_perubahan_urusan->deskripsi,
-                        'tahun_perubahan' => $cek_perubahan_urusan->tahun_perubahan,
-                    ];
-                } else {
-                    $urusans[] = [
-                        'id' => $get_urusan->id,
-                        'kode' => $get_urusan->kode,
-                        'deskripsi' => $get_urusan->deskripsi,
-                        'tahun_perubahan' => $get_urusan->tahun_perubahan,
-                    ];
-                }
-            }
-
-            $html = '<div class="data-table-rows slim">
-                        <div class="data-table-responsive-wrapper">
-                            <table class="table table-striped table-condesed">
-                                <thead>
-                                    <tr>
-                                        <th width="15%">Kode</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="25%">Tahun Perubahan</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>';
-                                    foreach ($urusans as $urusan) {
-                                        $get_programs = Program::where('urusan_id', $urusan['id']);
-                                        if($request->kegiatan_filter_program)
-                                        {
-                                            $get_programs = $get_programs->where('id', $request->kegiatan_filter_program);
-                                        }
-                                        $get_programs = $get_programs->get();
-                                        $programs = [];
-                                        foreach ($get_programs as $get_program) {
-                                            $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->orderBy('tahun_perubahan', 'desc')->latest()->first();
-                                            if($cek_perubahan_program)
-                                            {
-                                                $programs[] = [
-                                                    'id' => $cek_perubahan_program->program_id,
-                                                    'kode' => $cek_perubahan_program->kode,
-                                                    'deskripsi' => $cek_perubahan_program->deskripsi,
-                                                    'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan,
-                                                    'status_aturan' => $cek_perubahan_program->status_aturan,
-                                                ];
-                                            } else {
-                                                $programs[] = [
-                                                    'id' => $get_program->id,
-                                                    'kode' => $get_program->kode,
-                                                    'deskripsi' => $get_program->deskripsi,
-                                                    'tahun_perubahan' => $get_program->tahun_perubahan,
-                                                    'status_aturan' => $get_program->status_aturan,
-                                                ];
-                                            }
-                                        }
-
-                                        $html .= '<tr style="background: #bbbbbb;">
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['kode']).'
-                                                    </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle text-white">
-                                                        '.strtoupper($urusan['deskripsi']).'
+                                    foreach ($kegiatans as $kegiatan) {
+                                        $html .= '<tr id="trKegiatan'.$kegiatan['id'].'">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
+                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
+                                                        '.$kegiatan['deskripsi'].'
                                                         <br>
                                                         <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
+                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
+                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
+                                                    </td>';
+                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
+                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
+                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
+                                                                if($opd_kegiatan_indikator_kinerja)
+                                                                {
+                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
+                                                                }
+                                                        $html .= '</li>';
+                                                    }
+                                                    $html .='</ul></td>
+                                                    <td width="20%">
+                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
                                                     </td>
-                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_urusan'.$urusan['id'].'" class="accordion-toggle"></td>
-                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="4" class="hiddenRow">
-                                                        <div class="collapse show" id="kegiatan_urusan'.$urusan['id'].'">
+                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
                                                             <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>No</th>
+                                                                        <th>Indikator</th>
+                                                                        <th>Kondisi Kinerja Awal</th>
+                                                                        <th>Target Anggaran Awal</th>
+                                                                        <th>OPD</th>
+                                                                        <th>Target</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Target Anggaran</th>
+                                                                        <th>Realisasi</th>
+                                                                        <th>Realisasi Anggaran</th>
+                                                                        <th>Tahun</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <tbody>';
-                                                                    foreach ($programs as $program) {
-                                                                        $html .= '<tr style="background: #c04141;">
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="15%">'.strtoupper($urusan['kode']).'.'.strtoupper($program['kode']).'</td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle text-white" width="40%">
-                                                                                        '.strtoupper($program['deskripsi']);
-                                                                                        $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->first();
-                                                                                        if($cek_program_rjmd)
+                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                $no_kegiatan_indikator_kinerja = 1;
+                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
+                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
+                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                                                        $html .= '<td>Rp.'.number_format((int)$kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                        $a = 1;
+                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
+                                                                                                            ->get();
+                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
+                                                                            if($a == 1)
+                                                                            {
+                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
+                                                                                $b = 1;
+                                                                                foreach ($tahuns as $tahun) {
+                                                                                    if($b == 1)
+                                                                                    {
+                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
                                                                                         {
-                                                                                            $html .= '<i class="fas fa-star text-primary" title="Program RPJMD">';
-                                                                                        }
-                                                                                        $html .='<br>
-                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">Urusan '.$urusan['kode'].'</span>
-                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">Program '.$urusan['kode'].'.'.$program['kode'].'</span>
-                                                                                    </td>
-                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_program'.$program['id'].'" class="accordion-toggle" width="25%"></td>
-                                                                                    <td width="20%">
-                                                                                        <button class="btn btn-primary waves-effect waves-light mr-2 kegiatan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditKegiatanModal" title="Tambah Data Kegiatan" data-program-id="'.$program['id'].'"><i class="fas fa-plus"></i></button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="12" class="hiddenRow">
-                                                                                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
-                                                                                            <table class="table table-striped table-condesed">
-                                                                                                <tbody>';
-                                                                                                $get_kegiatans = Kegiatan::where('program_id', $program['id']);
-                                                                                                if($request->kegiatan_filter_kegiatan)
-                                                                                                {
-                                                                                                    $get_kegiatans = $get_kegiatans->where('id', $request->kegiatan_filter_kegiatan);
+                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
+                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                            if($cek_kegiatan_tw_realisasi)
+                                                                                            {
+                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                $kegiatan_realisasi = [];
+                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                                                                 }
-                                                                                                $get_kegiatans = $get_kegiatans->get();
-                                                                                                    $kegiatans = [];
-                                                                                                    foreach ($get_kegiatans as $get_kegiatan) {
-                                                                                                        $kegiatans[] = [
-                                                                                                            'id' => $get_kegiatan->id,
-                                                                                                            'program_id' => $get_kegiatan->program_id,
-                                                                                                            'kode' => $get_kegiatan->kode,
-                                                                                                            'deskripsi' => $get_kegiatan->deskripsi,
-                                                                                                            'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
-                                                                                                            'status_aturan' => $get_kegiatan->status_aturan
-                                                                                                        ];
+                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            }
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        } else {
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</>';
+                                                                                        }
+                                                                                    } else {
+                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                        {
+                                                                                            $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                            $html .= '<td>Rp.'.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                            if($cek_kegiatan_tw_realisasi)
+                                                                                            {
+                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                $kegiatan_realisasi = [];
+                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
+                                                                                                }
+                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            }
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        } else {
+                                                                                            $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        }
+                                                                                    }
+                                                                                    $b++;
+                                                                                }
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
+                                                                                    $b = 1;
+                                                                                    foreach ($tahuns as $tahun) {
+                                                                                        if($b == 1)
+                                                                                        {
+                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                                if($cek_kegiatan_tw_realisasi)
+                                                                                                {
+                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                    $kegiatan_realisasi = [];
+                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                                                                     }
-                                                                                                    foreach ($kegiatans as $kegiatan) {
-                                                                                                        $html .= '<tr>
-                                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
-                                                                                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
-                                                                                                                        '.$kegiatan['deskripsi'].'
-                                                                                                                        <br>
-                                                                                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
-                                                                                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
-                                                                                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
-                                                                                                                    </td>';
-                                                                                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
-                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
-                                                                                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
-                                                                                                                                if($opd_kegiatan_indikator_kinerja)
-                                                                                                                                {
-                                                                                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
-                                                                                                                                }
-                                                                                                                        $html .= '</li>';
-                                                                                                                    }
-                                                                                                                    $html .='</ul></td>
-                                                                                                                    <td width="20%">
-                                                                                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
-                                                                                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
-                                                                                                                    </td>
-                                                                                                                </tr>
-                                                                                                                <tr>
-                                                                                                                    <td colspan="4" class="hiddenRow">
-                                                                                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
-                                                                                                                            <table class="table table-striped table-condesed">
-                                                                                                                                <thead>
-                                                                                                                                    <tr>
-                                                                                                                                        <th>No</th>
-                                                                                                                                        <th>Indikator</th>
-                                                                                                                                        <th>Target Kinerja Awal</th>
-                                                                                                                                        <th>Target Anggaran Awal</th>
-                                                                                                                                        <th>OPD</th>
-                                                                                                                                        <th>Target</th>
-                                                                                                                                        <th>Satuan</th>
-                                                                                                                                        <th>Target Anggaran</th>
-                                                                                                                                        <th>Realisasi</th>
-                                                                                                                                        <th>Realisasi Anggaran</th>
-                                                                                                                                        <th>Tahun</th>
-                                                                                                                                    </tr>
-                                                                                                                                </thead>
-                                                                                                                                <tbody>';
-                                                                                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
-                                                                                                                                $no_kegiatan_indikator_kinerja = 1;
-                                                                                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
-                                                                                                                                    $html .= '<tr>';
-                                                                                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                        $html .= '<td>Rp.'.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
-                                                                                                                                        $a = 1;
-                                                                                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
-                                                                                                                                                                            ->get();
-                                                                                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
-                                                                                                                                            if($a == 1)
-                                                                                                                                            {
-                                                                                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                $b = 1;
-                                                                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                                                                    if($b == 1)
-                                                                                                                                                    {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</>';
-                                                                                                                                                        }
-                                                                                                                                                    } else {
-                                                                                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                        {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                            if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                $kegiatan_realisasi = [];
-                                                                                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                            }
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        } else {
-                                                                                                                                                            $html .= '<tr>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td></td>';
-                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                            $html .='</tr>';
-                                                                                                                                                        }
-                                                                                                                                                    }
-                                                                                                                                                    $b++;
-                                                                                                                                                }
-                                                                                                                                            } else {
-                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
-                                                                                                                                                    $b = 1;
-                                                                                                                                                    foreach ($tahuns as $tahun) {
-                                                                                                                                                        if($b == 1)
-                                                                                                                                                        {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        } else {
-                                                                                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
-                                                                                                                                                                                                    ->where('tahun', $tahun)
-                                                                                                                                                                                                    ->first();
-                                                                                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
-                                                                                                                                                            {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
-                                                                                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
-                                                                                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
-                                                                                                                                                                if($cek_kegiatan_tw_realisasi)
-                                                                                                                                                                {
-                                                                                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
-                                                                                                                                                                    $kegiatan_realisasi = [];
-                                                                                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
-                                                                                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
-                                                                                                                                                                    }
-                                                                                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                } else {
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                    $html .= '<td></td>';
-                                                                                                                                                                }
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            } else {
-                                                                                                                                                                $html .= '<tr>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td></td>';
-                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                                                                $html .='</tr>';
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                        $b++;
-                                                                                                                                                    }
-                                                                                                                                            }
-                                                                                                                                            $a++;
-                                                                                                                                        }
-                                                                                                                                }
-                                                                                                                                $html .= '</tbody>
-                                                                                                                            </table>
-                                                                                                                        </div>
-                                                                                                                    </td>
-                                                                                                                </tr>';
+                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                } else {
+                                                                                                    $html .= '<td></td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                }
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            }
+                                                                                        } else {
+                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                            {
+                                                                                                $html .= '<tr>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                                if($cek_kegiatan_tw_realisasi)
+                                                                                                {
+                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                    $kegiatan_realisasi = [];
+                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
                                                                                                     }
-                                                                                                $html .= '</tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>';
-                                                                    }
-                                                                $html .='</tbody>
+                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                } else {
+                                                                                                    $html .= '<td></td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                }
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            } else {
+                                                                                                $html .= '<tr>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            }
+                                                                                        }
+                                                                                        $b++;
+                                                                                    }
+                                                                            }
+                                                                            $a++;
+                                                                        }
+                                                                }
+                                                                $html .= '</tbody>
                                                             </table>
                                                         </div>
                                                     </td>
@@ -3231,9 +1847,312 @@ class KegiatanController extends Controller
                                 $html .= '</tbody>
                             </table>
                         </div>
-                    </div>';
+            </td>';
 
-            return response()->json(['success' => 'Berhasil menghapus kegiatan','html' => $html]);
+            return response()->json(['success' => 'Berhasil menghapus kegiatan','html' => $html, 'program_id' => $idProgram]);
+        } else {
+            $getProgram = Program::find($idProgram);
+            $program = [
+                'id' => $getProgram->id,
+                'kode' => $getProgram->kode,
+                'deskripsi' => $getProgram->deskripsi,
+            ];
+
+            $getUrusan = Urusan::find($getProgram->urusan_id);
+            $urusan = [
+                'id' => $getUrusan->id,
+                'kode' => $getUrusan->kode,
+                'deskripsi' => $getProgram->deskripsi
+            ];
+
+            $html = '<td colspan="12" class="hiddenRow">
+                        <div class="collapse show" id="kegiatan_program'.$program['id'].'">
+                            <table class="table table-striped table-condesed">
+                                <tbody>';
+                                    $get_kegiatans = Kegiatan::where('program_id', $program['id'])->orderBy('kode', 'asc')->get();
+                                    $kegiatans = [];
+                                    foreach ($get_kegiatans as $get_kegiatan) {
+                                        $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
+                                                                    ->orderBy('id', 'desc')->first();
+                                        if($cek_perubahan_kegiatan)
+                                        {
+                                            $kegiatans[] = [
+                                                'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                'program_id' => $cek_perubahan_kegiatan->program_id,
+                                                'kode' => $cek_perubahan_kegiatan->kode,
+                                                'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                                                'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan,
+                                                'status_aturan' => $cek_perubahan_kegiatan->status_aturan
+                                            ];
+                                        } else {
+                                            $kegiatans[] = [
+                                                'id' => $get_kegiatan->id,
+                                                'program_id' => $get_kegiatan->program_id,
+                                                'kode' => $get_kegiatan->kode,
+                                                'deskripsi' => $get_kegiatan->deskripsi,
+                                                'tahun_perubahan' => $get_kegiatan->tahun_perubahan,
+                                                'status_aturan' => $get_kegiatan->status_aturan
+                                            ];
+                                        }
+                                    }
+                                    foreach ($kegiatans as $kegiatan) {
+                                        $html .= '<tr id="trKegiatan'.$kegiatan['id'].'">
+                                                    <td data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" width="15%">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].'</td>
+                                                    <td width="40%" data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >
+                                                        '.$kegiatan['deskripsi'].'
+                                                        <br>
+                                                        <span class="badge bg-primary text-uppercase kegiatan-tagging">'.$urusan['kode'].' Urusan</span>
+                                                        <span class="badge bg-warning text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].' Program</span>
+                                                        <span class="badge bg-danger text-uppercase kegiatan-tagging">'.$urusan['kode'].'.'.$program['kode'].'.'.$kegiatan['kode'].' Kegiatan</span>
+                                                    </td>';
+                                                    $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                    $html .= '<td width="25%"><ul data-bs-toggle="collapse" data-bs-target="#kegiatan_kegiatan_'.$kegiatan['id'].'" >';
+                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                        $html .= '<li class="mb-2">'.$kegiatan_indikator_kinerja->deskripsi.'<br>';
+                                                                $opd_kegiatan_indikator_kinerja = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)->first();
+                                                                if($opd_kegiatan_indikator_kinerja)
+                                                                {
+                                                                    $html .= '<span class="badge bg-muted text-uppercase kegiatan-tagging">'.$opd_kegiatan_indikator_kinerja->opd->nama.'</span>';
+                                                                }
+                                                        $html .= '</li>';
+                                                    }
+                                                    $html .='</ul></td>
+                                                    <td width="20%">
+                                                        <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Detail Kegiatan"><i class="fas fa-eye"></i></button>
+                                                        <button class="btn btn-icon btn-danger waves-effect waves-light edit-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-program-id="'.$program['id'].'" data-tahun="semua" type="button" title="Edit Kegiatan"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-icon btn-danger waves-effect waves-light hapus-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" data-tahun="semua" type="button" title="Hapus Kegiatan"><i class="fas fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="kegiatan_kegiatan_'.$kegiatan['id'].'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>No</th>
+                                                                        <th>Indikator</th>
+                                                                        <th>Kondisi Kinerja Awal</th>
+                                                                        <th>Target Anggaran Awal</th>
+                                                                        <th>OPD</th>
+                                                                        <th>Target</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Target Anggaran</th>
+                                                                        <th>Realisasi</th>
+                                                                        <th>Realisasi Anggaran</th>
+                                                                        <th>Tahun</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>';
+                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
+                                                                $no_kegiatan_indikator_kinerja = 1;
+                                                                foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
+                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
+                                                                        $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                                                        $html .= '<td>Rp.'.number_format((int)$kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                        $a = 1;
+                                                                        $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
+                                                                                                            ->get();
+                                                                        foreach ($opd_kegiatan_indikator_kinerjas as $opd_kegiatan_indikator_kinerja) {
+                                                                            if($a == 1)
+                                                                            {
+                                                                                $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
+                                                                                $b = 1;
+                                                                                foreach ($tahuns as $tahun) {
+                                                                                    if($b == 1)
+                                                                                    {
+                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                        {
+                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
+                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                            if($cek_kegiatan_tw_realisasi)
+                                                                                            {
+                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                $kegiatan_realisasi = [];
+                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
+                                                                                                }
+                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            }
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        } else {
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</>';
+                                                                                        }
+                                                                                    } else {
+                                                                                        $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                        if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                        {
+                                                                                            $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                            $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                            $html .= '<td>Rp.'.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                            $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                            if($cek_kegiatan_tw_realisasi)
+                                                                                            {
+                                                                                                $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                $kegiatan_realisasi = [];
+                                                                                                foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                    $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
+                                                                                                }
+                                                                                                $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                            }
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        } else {
+                                                                                            $html .= '<tr>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td></td>';
+                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                            $html .='</tr>';
+                                                                                        }
+                                                                                    }
+                                                                                    $b++;
+                                                                                }
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$opd_kegiatan_indikator_kinerja->opd->nama.'</td>';
+                                                                                    $b = 1;
+                                                                                    foreach ($tahuns as $tahun) {
+                                                                                        if($b == 1)
+                                                                                        {
+                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                            {
+                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                                if($cek_kegiatan_tw_realisasi)
+                                                                                                {
+                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                    $kegiatan_realisasi = [];
+                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
+                                                                                                    }
+                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                } else {
+                                                                                                    $html .= '<td></td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                }
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            } else {
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            }
+                                                                                        } else {
+                                                                                            $cek_kegiatan_target_satuan_rp_realisasi = KegiatanTargetSatuanRpRealisasi::where('opd_kegiatan_indikator_kinerja_id', $opd_kegiatan_indikator_kinerja->id)
+                                                                                                                                    ->where('tahun', $tahun)
+                                                                                                                                    ->first();
+                                                                                            if($cek_kegiatan_target_satuan_rp_realisasi)
+                                                                                            {
+                                                                                                $html .= '<tr>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
+                                                                                                if($cek_kegiatan_tw_realisasi)
+                                                                                                {
+                                                                                                    $kegiatan_tw_realisasies = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->get();
+                                                                                                    $kegiatan_realisasi = [];
+                                                                                                    foreach ($kegiatan_tw_realisasies as $kegiatan_tw_realisasi) {
+                                                                                                        $kegiatan_realisasi[] = $kegiatan_tw_realisasi->realisasi;
+                                                                                                    }
+                                                                                                    $html .= '<td>'.array_sum($kegiatan_realisasi).'</td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                } else {
+                                                                                                    $html .= '<td></td>';
+                                                                                                    $html .= '<td></td>';
+                                                                                                }
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            } else {
+                                                                                                $html .= '<tr>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td></td>';
+                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                $html .='</tr>';
+                                                                                            }
+                                                                                        }
+                                                                                        $b++;
+                                                                                    }
+                                                                            }
+                                                                            $a++;
+                                                                        }
+                                                                }
+                                                                $html .= '</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                    }
+                                $html .= '</tbody>
+                            </table>
+                        </div>
+            </td>';
+
+            return response()->json(['success' => 'Berhasil menghapus kegiatan','html' => $html, 'program_id' => $idProgram]);
         }
     }
 }

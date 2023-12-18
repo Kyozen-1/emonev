@@ -360,7 +360,7 @@
                                 <a class="dropdown-item" href="{{ route('opd.laporan.e-80.ekspor.excel') }}">Excel</a>
                             </div>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive mb-3">
                             <div class="text-center">
                                 <h1>Tabel E.80</h1>
                                 <h3>Evaluasi Terhadap Hasil Renstra Perangkat Daerah Lingkup {{ Auth::user()->opd->kabupaten->nama }} </h3>
@@ -458,6 +458,101 @@
                                 </thead>
                                 <tbody id="tBodyE80"></tbody>
                             </table>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-12 col-md-6">
+                                <table class="table table-striped table-bordered text-center">
+                                    <tr>
+                                        <th>Rata - Rata Capaian Kinerja RENSTRA (%)</th>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Predikat Kinerja</th>
+                                        <td colspan="2" class="text-center">Sangat Rendah</td>
+                                        <td colspan="2" class="text-center">Sangat Rendah</td>
+                                        <td colspan="2" class="text-center">Sangat Rendah</td>
+                                        <td colspan="2" class="text-center">Sangat Rendah</td>
+                                        <td colspan="2" class="text-center">Sangat Rendah</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="row">
+                                    <div class="col-12 mb-3" style="text-align: right;">
+                                        <button class="btn btn-outline-primary waves-effect waves-light" id="editFaktorTindakLanjut" type="button">Ubah</button>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="row">
+                                            <div class="col-12 mb-3">
+                                                <div class="row" id="divFaktorTindakLanjut">
+                                                    <div class="col-12 mb-3">
+                                                        <div class="card bg-primary shadow-lg">
+                                                            <div class="card-body">
+                                                                <h4 class="text-white">Faktor Pendorong Keberhasilan Pencapaian: </h4>
+                                                                <hr class="text-white">
+                                                                <p class="text-white">
+                                                                    Toffee croissant icing toffee. Sweet roll chupa chups marshmallow muffin liquorice chupa chups soufflé bonbon. Liquorice gummi bears
+                                                                    cake donut chocolate lollipop gummi bears. Cotton candy cupcake ice cream gummies dessert muffin chocolate jelly. Danish brownie
+                                                                    chocolate bar lollipop cookie tootsie roll candy canes. Jujubes lollipop cheesecake gummi bears cheesecake. Cake jujubes soufflé.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="card bg-primary shadow-lg">
+                                                            <div class="card-body">
+                                                                <h4 class="text-white">Faktor penghambat pencapaian kinerja :</h4>
+                                                                <hr class="text-white">
+                                                                <p class="text-white">
+                                                                    Toffee croissant icing toffee. Sweet roll chupa chups marshmallow muffin liquorice chupa chups soufflé bonbon. Liquorice gummi bears
+                                                                    cake donut chocolate lollipop gummi bears. Cotton candy cupcake ice cream gummies dessert muffin chocolate jelly. Danish brownie
+                                                                    chocolate bar lollipop cookie tootsie roll candy canes. Jujubes lollipop cheesecake gummi bears cheesecake. Cake jujubes soufflé.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <div class="card bg-primary shadow-lg">
+                                                    <div class="card-body">
+                                                        <h4 class="text-white">Tindak lanjut yang diperlukan dalam Renja Perangkat Daerah Kabupaten Madiun berikutnya :</h4>
+                                                        <hr class="text-white">
+                                                        <p class="text-white">
+                                                            Toffee croissant icing toffee. Sweet roll chupa chups marshmallow muffin liquorice chupa chups soufflé bonbon. Liquorice gummi bears
+                                                            cake donut chocolate lollipop gummi bears. Cotton candy cupcake ice cream gummies dessert muffin chocolate jelly. Danish brownie
+                                                            chocolate bar lollipop cookie tootsie roll candy canes. Jujubes lollipop cheesecake gummi bears cheesecake. Cake jujubes soufflé.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="card bg-primary shadow-lg">
+                                                    <div class="card-body">
+                                                        <h4 class="text-white">Tindak lanjut yang diperlukan dalam Renstra Perangkat Daerah Kabupaten Madiun berikutnya :</h4>
+                                                        <hr class="text-white">
+                                                        <p class="text-white">
+                                                            Toffee croissant icing toffee. Sweet roll chupa chups marshmallow muffin liquorice chupa chups soufflé bonbon. Liquorice gummi bears
+                                                            cake donut chocolate lollipop gummi bears. Cotton candy cupcake ice cream gummies dessert muffin chocolate jelly. Danish brownie
+                                                            chocolate bar lollipop cookie tootsie roll candy canes. Jujubes lollipop cheesecake gummi bears cheesecake. Cake jujubes soufflé.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     {{-- E 80 End --}}

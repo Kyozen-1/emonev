@@ -285,7 +285,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
-                                                                                                                            <tbody>';
+                                                                                                                            <tbody id="tbodyTujuanTujuanPd'.$tujuan_pd->id.'">';
                                                                                                                             $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
                                                                                                                             foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
                                                                                                                             {
@@ -400,7 +400,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
-                                                                                                                            <tbody>';
+                                                                                                                            <tbody id="tbodyTujuanTujuanPd'.$tujuan_pd->id.'">';
                                                                                                                             $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
                                                                                                                             foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
                                                                                                                             {
@@ -728,7 +728,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
-                                                                                                                            <tbody>';
+                                                                                                                            <tbody id="tbodyTujuanTujuanPd'.$tujuan_pd->id.'">';
                                                                                                                             $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
                                                                                                                             foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
                                                                                                                             {
@@ -843,7 +843,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
-                                                                                                                            <tbody>';
+                                                                                                                            <tbody id="tbodyTujuanTujuanPd'.$tujuan_pd->id.'">';
                                                                                                                             $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
                                                                                                                             foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
                                                                                                                             {
@@ -1185,7 +1185,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
-                                                                                                                            <tbody>';
+                                                                                                                            <tbody id="tbodyTujuanTujuanPd'.$tujuan_pd->id.'">';
                                                                                                                             $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
                                                                                                                             foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
                                                                                                                             {
@@ -1300,7 +1300,7 @@ class RenstraController extends Controller
                                                                                                                                     <th>Aksi</th>
                                                                                                                                 </tr>
                                                                                                                             </thead>
-                                                                                                                            <tbody>';
+                                                                                                                            <tbody id="tbodyTujuanTujuanPd'.$tujuan_pd->id.'">';
                                                                                                                             $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd->id)->get();
                                                                                                                             foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
                                                                                                                             {
@@ -1680,7 +1680,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
-                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                <tbody id="tbodySasaranSasaranPd'.$sasaran_pd->id.'">';
                                                                                                                                                                                 $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
                                                                                                                                                                                 foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
                                                                                                                                                                                 {
@@ -1795,7 +1795,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
-                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                <tbody id="tbodySasaranSasaranPd'.$sasaran_pd->id.'">';
                                                                                                                                                                                 $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
                                                                                                                                                                                 foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
                                                                                                                                                                                 {
@@ -2182,7 +2182,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
-                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                <tbody id="tbodySasaranSasaranPd'.$sasaran_pd->id.'">';
                                                                                                                                                                                 $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
                                                                                                                                                                                 foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
                                                                                                                                                                                 {
@@ -2297,7 +2297,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
-                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                <tbody id="tbodySasaranSasaranPd'.$sasaran_pd->id.'">';
                                                                                                                                                                                 $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
                                                                                                                                                                                 foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
                                                                                                                                                                                 {
@@ -2687,7 +2687,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
-                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                <tbody id="tbodySasaranSasaranPd'.$sasaran_pd->id.'">';
                                                                                                                                                                                 $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
                                                                                                                                                                                 foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
                                                                                                                                                                                 {
@@ -2802,7 +2802,7 @@ class RenstraController extends Controller
                                                                                                                                                                                         <th>Aksi</th>
                                                                                                                                                                                     </tr>
                                                                                                                                                                                 </thead>
-                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                <tbody id="tbodySasaranSasaranPd'.$sasaran_pd->id.'">';
                                                                                                                                                                                 $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd->id)->get();
                                                                                                                                                                                 foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
                                                                                                                                                                                 {
@@ -6148,7 +6148,89 @@ class RenstraController extends Controller
             }
             $tujuan_pd_indikator_kinerja->save();
 
-            return response()->json(['success' => 'Berhasil '.$request->label.' akses']);
+            $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+            $tahun_awal = $get_periode->tahun_awal;
+            $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+            $tahuns = [];
+            for ($i=0; $i < $jarak_tahun + 1; $i++) {
+                $tahuns[] = $tahun_awal + $i;
+            }
+
+            $html = '';
+            $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd_indikator_kinerja->tujuan_pd_id)->get();
+            foreach($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja)
+            {
+                $html .= '<tr>';
+                    $html .= '<td>'.$tujuan_pd_indikator_kinerja->deskripsi.'</td>';
+                    $html .= '<td>'.$tujuan_pd_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                    $c = 1;
+                    foreach($tahuns as $tahun)
+                    {
+                        if($c == 1)
+                        {
+                                $cek_tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                if($cek_tujuan_pd_target_satuan_rp_realisasi)
+                                {
+                                    $html .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                } else {
+                                    $html .= '<td></td>';
+                                }
+
+                                $cek_tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                if($cek_tujuan_pd_target_satuan_rp_realisasi)
+                                {
+                                    $cek_tujuan_pd_realisasi_renja = TujuanPdRealisasiRenja::where('tujuan_pd_target_satuan_rp_realisasi_id', $cek_tujuan_pd_target_satuan_rp_realisasi->id)->first();
+                                    if($cek_tujuan_pd_realisasi_renja)
+                                    {
+                                        $html .= '<td>'.$cek_tujuan_pd_realisasi_renja->realisasi.'</td>';
+                                    } else {
+                                        $html .= '<td></td>';
+                                    }
+                                } else {
+                                    $html .= '<td></td>';
+                                }
+                                $html .= '<td>'.$tahun.'</td>';
+                                if($tujuan_pd_indikator_kinerja->status_lock == 1)
+                                {
+                                    $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                } else {
+                                    $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_tujuan_pd_indikator_kinerja" data-id="'.$tujuan_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                }
+                            $html .='</tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $cek_tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                if($cek_tujuan_pd_target_satuan_rp_realisasi)
+                                {
+                                    $html .= '<td>'.$cek_tujuan_pd_target_satuan_rp_realisasi->target.'</td>';
+                                } else {
+                                    $html .= '<td></td>';
+                                }
+
+                                $cek_tujuan_pd_target_satuan_rp_realisasi = TujuanPdTargetSatuanRpRealisasi::where('tujuan_pd_indikator_kinerja_id', $tujuan_pd_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                if($cek_tujuan_pd_target_satuan_rp_realisasi)
+                                {
+                                    $cek_tujuan_pd_realisasi_renja = TujuanPdRealisasiRenja::where('tujuan_pd_target_satuan_rp_realisasi_id', $cek_tujuan_pd_target_satuan_rp_realisasi->id)->first();
+                                    if($cek_tujuan_pd_realisasi_renja)
+                                    {
+                                        $html .= '<td>'.$cek_tujuan_pd_realisasi_renja->realisasi.'</td>';
+                                    } else {
+                                        $html .= '<td></td>';
+                                    }
+                                } else {
+                                    $html .= '<td></td>';
+                                }
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td></td>';
+                            $html .='</tr>';
+                        }
+                        $c++;
+                    }
+            }
+
+            return response()->json(['success' => 'Berhasil '.$request->label.' akses', 'html' => $html, 'tujuan_pd_id' => $tujuan_pd_indikator_kinerja->tujuan_pd_id]);
         } catch (\Throwable $th) {
             return response()->json(['errors' => $th->getMessage()]);
         }
@@ -6168,7 +6250,89 @@ class RenstraController extends Controller
             }
             $sasaran_pd_indikator_kinerja->save();
 
-            return response()->json(['success' => 'Berhasil '.$request->label.' akses']);
+            $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+            $tahun_awal = $get_periode->tahun_awal;
+            $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+            $tahuns = [];
+            for ($i=0; $i < $jarak_tahun + 1; $i++) {
+                $tahuns[] = $tahun_awal + $i;
+            }
+
+            $html = '';
+            $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd_indikator_kinerja->sasaran_pd_id)->get();
+            foreach($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja)
+            {
+                $html .= '<tr>';
+                    $html .= '<td>'.$sasaran_pd_indikator_kinerja->deskripsi.'</td>';
+                    $html .= '<td>'.$sasaran_pd_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                    $c = 1;
+                    foreach($tahuns as $tahun)
+                    {
+                        if($c == 1)
+                        {
+                                $cek_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                {
+                                    $html .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                } else {
+                                    $html .= '<td></td>';
+                                }
+
+                                $cek_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                {
+                                    $cek_sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id', $cek_sasaran_pd_target_satuan_rp_realisasi->id)->first();
+                                    if($cek_sasaran_pd_realisasi_renja)
+                                    {
+                                        $html .= '<td>'.$cek_sasaran_pd_realisasi_renja->realisasi.'</td>';
+                                    } else {
+                                        $html .= '<td></td>';
+                                    }
+                                } else {
+                                    $html .= '<td></td>';
+                                }
+                                $html .= '<td>'.$tahun.'</td>';
+                                if($sasaran_pd_indikator_kinerja->status_lock == 1)
+                                {
+                                    $html .= '<td><button class="btn btn-danger btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="buka" type="button" title="buka akses ubah data"><i class="fas fa-lock-open"></i></button></td>';
+                                } else {
+                                    $html .= '<td><button class="btn btn-warning btn-icon waves-effect waves-light btn_lock_sasaran_pd_indikator_kinerja" data-id="'.$sasaran_pd_indikator_kinerja->id.'" data-label="tutup" type="button" title="tutup akses ubah data"><i class="fas fa-lock"></i></button></td>';
+                                }
+                            $html .='</tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $cek_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                {
+                                    $html .= '<td>'.$cek_sasaran_pd_target_satuan_rp_realisasi->target.'</td>';
+                                } else {
+                                    $html .= '<td></td>';
+                                }
+
+                                $cek_sasaran_pd_target_satuan_rp_realisasi = SasaranPdTargetSatuanRpRealisasi::where('sasaran_pd_indikator_kinerja_id', $sasaran_pd_indikator_kinerja->id)->where('tahun', $tahun)->first();
+                                if($cek_sasaran_pd_target_satuan_rp_realisasi)
+                                {
+                                    $cek_sasaran_pd_realisasi_renja = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id', $cek_sasaran_pd_target_satuan_rp_realisasi->id)->first();
+                                    if($cek_sasaran_pd_realisasi_renja)
+                                    {
+                                        $html .= '<td>'.$cek_sasaran_pd_realisasi_renja->realisasi.'</td>';
+                                    } else {
+                                        $html .= '<td></td>';
+                                    }
+                                } else {
+                                    $html .= '<td></td>';
+                                }
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td></td>';
+                            $html .='</tr>';
+                        }
+                        $c++;
+                    }
+            }
+
+            return response()->json(['success' => 'Berhasil '.$request->label.' akses', 'html' => $html, 'sasaran_pd_id' => $sasaran_pd_indikator_kinerja->sasaran_pd_id]);
         } catch (\Throwable $th) {
             return response()->json(['errors' => $th->getMessage()]);
         }

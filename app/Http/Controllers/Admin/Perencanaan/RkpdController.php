@@ -29,6 +29,7 @@ use App\Models\PivotPerubahanUrusan;
 use App\Models\MasterOpd;
 use App\Models\PivotSasaranIndikatorProgramRpjmd;
 use App\Models\Program;
+use App\Models\ProgramIndikatorKinerja;
 use App\Models\PivotPerubahanProgram;
 use App\Models\PivotProgramKegiatanRenstra;
 use App\Models\TargetRpPertahunProgram;
@@ -2763,5 +2764,137 @@ class RkpdController extends Controller
                 </div>';
 
         return response()->json(['success' => 'Berhasil menghapus opd pada tema pembangunan tahun '.$tahun,'html' => $html]);
+    }
+
+    public function get_data()
+    {
+        $masterOpds = MasterOpd::all();
+        $html = '<tr>';
+        $i = 1;
+        foreach ($masterOpds as $masterOpd) {
+            $html .= '<td>'.$i++.'</td>';
+            $html .= '<td>'.$masterOpd->nama.'</td>';
+
+            $getUrusans = Urusan::whereHas('program', function($q) use ($masterOpd){
+                        $q->whereHas('program_indikator_kinerja', function($q) use ($masterOpd){
+                            $q->whereHas('opd_program_indikator_kinerja', function($q) use ($masterOpd){
+                                $q->where('opd_id', $masterOpd->id);
+                            });
+                        });
+                    })->get();
+            $urusans = [];
+            foreach ($getUrusans as $getUrusan) {
+                $cek_perubahan_urusan = PivotPerubahanUrusan::where('urusan_id', $getUrusan->id)
+                                        ->orderBy('tahun_perubahan', 'desc')
+                                        ->latest()
+                                        ->first();
+                if($cek_perubahan_urusan)
+                {
+                    $urusans[] = [
+                        'id' => $cek_perubahan_urusan->urusan_id,
+                        'kode' => $cek_perubahan_urusan->kode,
+                        'deskripsi' => $cek_perubahan_urusan->deskripsi
+                    ];
+                } else {
+                    $urusans[] = [
+                        'id' => $getUrusan->id,
+                        'kode' => $getUrusan->kode,
+                        'deskripsi' => $getUrusan->deskripsi
+                    ];
+                }
+            }
+            $a = 1;
+
+            foreach ($urusans as $urusan) {
+                if($a == 1)
+                {
+                        $html .= '<td>'.$urusan['deskripsi'].'</td>';
+                        // Step 1
+                        $getPrograms = Program::where('urusan_id', $urusan['id'])
+                                                        ->whereHas('program_rpjmd')
+                                                        ->whereHas('program_indikator_kinerja', function($q) use ($masterOpd){
+                                                            $q->whereHas('opd_program_indikator_kinerja', function($q) use ($masterOpd){
+                                                                $q->where('opd_id', $masterOpd->id);
+                                                            });
+                                                        })->get();
+                        $programs = [];
+                        foreach ($getPrograms as $getProgram) {
+                            $cekPerubahanProgram = PivotPerubahanProgram::where('program_id', $getProgram->id)
+                                                    ->orderBy('tahun_perubahan', 'desc')
+                                                    ->latest()
+                                                    ->first();
+                            if($cekPerubahanProgram)
+                            {
+                                $programs[] = [
+                                    'id' => $cekPerubahanProgram->urusan_id,
+                                    'kode' => $cekPerubahanProgram->kode,
+                                    'deskripsi' => $cekPerubahanProgram->deskripsi
+                                ];
+                            } else {
+                                $programs[] = [
+                                    'id' => $getProgram->id,
+                                    'kode' => $getProgram->kode,
+                                    'deskripsi' => $getProgram->deskripsi
+                                ];
+                            }
+                        }
+                        $b = 1;
+                        foreach ($programs as $program) {
+                            if($b == 1)
+                            {
+                                    $html .= '<td>'.$program['deskripsi'].'</td>';
+                                    // Step 2
+                                    $getProgramIndikatorKinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
+                                                                    ->whereHas('opd_program_indikator_kinerja', function($q) use ($masterOpd){
+                                                                        $q->where('opd_id', $masterOpd->id);
+                                                                    })->get();
+                                    $c = 1;
+                                    foreach ($getProgramIndikatorKinerjas as $getProgramIndikatorKinerja) {
+                                        if($c == 1)
+                                        {
+                                                $html .= '<td>'.$getProgramIndikatorKinerja->deskripsi.'</td>';
+                                                $html .= '<td>'.$getProgramIndikatorKinerja->satuan.'</td>';
+                                                $html .= '<td>'.$getProgramIndikatorKinerja->kondisi_target_kinerja_awal.'</td>';
+                                                $html .= '<td>'.$getProgramIndikatorKinerja->kondisi_target_anggaran_awal.'</td>';
+                                            $html .= '</tr>';
+                                        } else {
+                                            $html .= '<tr>';
+                                                $html .= '<td></td>';
+                                                $html .= '<td></td>';
+                                                $html .= '<td></td>';
+                                                $html .= '<td></td>';
+                                                $html .= '<td>'.$getProgramIndikatorKinerja->deskripsi.'</td>';
+                                                $html .= '<td>'.$getProgramIndikatorKinerja->satuan.'</td>';
+                                                $html .= '<td>'.$getProgramIndikatorKinerja->kondisi_target_kinerja_awal.'</td>';
+                                                $html .= '<td>'.$getProgramIndikatorKinerja->kondisi_target_anggaran_awal.'</td>';
+                                            $html .= '</tr>';
+                                        }
+                                        $c++;
+                                    }
+                            } else {
+                                $html .= '<tr>';
+                                    $html .= '<td></td>';
+                                    $html .= '<td></td>';
+                                    $html .= '<td></td>';
+                                    $html .= '<td>'.$program['deskripsi'].'</td>';
+                                    // Step 2
+                                $html .= '</tr>';
+                            }
+                            $b++;
+                        }
+                } else {
+                    $html .= '<tr>';
+                        $html .= '<td></td>';
+                        $html .= '<td></td>';
+                        $html .= '<td>'.$urusan['deskripsi'].'</td>';
+                        // Step 1
+                    $html .= '</tr>';
+                }
+                $a++;
+            }
+        }
+
+
+        return response()->json(['rkpd' => $html]);
     }
 }

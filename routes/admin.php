@@ -3,9 +3,19 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::get('/admin/dashboard', 'Admin\DashboardController@index')->name('admin.dashboard.index');
     Route::post('/admin/dashboard/change', 'Admin\DashboardController@change')->name('admin.dashboard.change');
     Route::get('/normalisasi-opd', 'Admin\DashboardController@normalisasi_opd');
+    Route::get('/normalisasi-sasaran-program-realisasi/{opd_id}', 'Admin\DashboardController@normalisasi_sasaran_program_realisasi');
+    Route::get('/normalisasi-sasaran-kegiatan-realisasi/{opd_id}', 'Admin\DashboardController@normalisasi_sasaran_kegiatan_realisasi');
+    Route::get('/normalisasi-sasaran-subkegiatan-realisasi/{opd_id}', 'Admin\DashboardController@normalisasi_sasaran_subkegiatan_realisasi');
     Route::prefix('grafik')->group(function(){
         Route::get('/tujuan-pd', 'Admin\DashboardController@grafik_tujuan_pd')->name('admin.dashboard.tujuan-pd');
         Route::get('/sasaran-pd', 'Admin\DashboardController@grafik_sasaran_pd')->name('admin.dashboard.sasaran-pd');
+
+        Route::get('/tujuan-pd-bar', 'Admin\DashboardController@grafik_tujuan_pd_bar')->name('admin.dashboard.tujuan-pd-bar');
+        Route::get('/sasaran-pd-bar', 'Admin\DashboardController@grafik_sasaran_pd_bar')->name('admin.dashboard.sasaran-pd-bar');
+
+        Route::get('/grafik-program', 'Admin\DashboardController@grafik_program')->name('admin.dashboard.grafik-program');
+        Route::get('/grafik-kegiatan', 'Admin\DashboardController@grafik_kegiatan')->name('admin.dashboard.grafik-kegiatan');
+        Route::get('/grafik-sub-kegiatan', 'Admin\DashboardController@grafik_sub_kegiatan')->name('admin.dashboard.grafik-sub-kegiatan');
     });
 
     //Kecamatan
@@ -163,6 +173,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/filter', 'Admin\Perencanaan\RkpdController@data_per_opd_filter')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.filter');
     Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/reset', 'Admin\Perencanaan\RkpdController@data_per_opd_reset')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.reset');
     Route::post('/admin/perencanaan/rkpd/get-tahun-pembangunan/data-per-opd/destroy', 'Admin\Perencanaan\RkpdController@data_per_opd_destroy')->name('admin.perencanaan.rkpd.get-tahun-pembangunan.data-per-opd.destroy');
+    Route::get('/admin/perencanaan/rkpd/get-data', 'Admin\Perencanaan\RkpdController@get_data')->name('admin.perencanaan.rkpd.get-data');
 
     // RPJMD Tujuan
     Route::prefix('admin')->group(function(){
@@ -427,4 +438,12 @@ Route::group(['middleware' => 'auth:admin'], function(){
             Route::get('/memberikan-opd-id-program-rpjmd', 'Admin\NormalisasiController@memberikan_opd_id_program_rpjmd');
         });
     });
+
+    //Master Skala Nilai Perangkat Kinerja
+    Route::get('/admin/master-skala-nilai-perangkat-kinerja', 'Admin\MasterSkalaNilaiPerangkatKinerjaController@index')->name('admin.master-skala-nilai-perangkat-kinerja.index');
+    Route::get('/admin/master-skala-nilai-perangkat-kinerja/detail/{id}', 'Admin\MasterSkalaNilaiPerangkatKinerjaController@show');
+    Route::post('/admin/master-skala-nilai-perangkat-kinerja','Admin\MasterSkalaNilaiPerangkatKinerjaController@store')->name('admin.master-skala-nilai-perangkat-kinerja.store');
+    Route::get('/admin/master-skala-nilai-perangkat-kinerja/edit/{id}','Admin\MasterSkalaNilaiPerangkatKinerjaController@edit');
+    Route::post('/admin/master-skala-nilai-perangkat-kinerja/update','Admin\MasterSkalaNilaiPerangkatKinerjaController@update')->name('admin.master-skala-nilai-perangkat-kinerja.update');
+    Route::get('/admin/master-skala-nilai-perangkat-kinerja/destroy/{id}','Admin\MasterSkalaNilaiPerangkatKinerjaController@destroy');
 });

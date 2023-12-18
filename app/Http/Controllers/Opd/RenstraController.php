@@ -56,10 +56,15 @@ use App\Models\KegiatanTargetSatuanRpRealisasi;
 use App\Models\MasterTw;
 use App\Models\ProgramTwRealisasi;
 use App\Models\KegiatanTwRealisasi;
-use App\Models\SubKegiatanTwRealisasi;
 use App\Models\TujuanPdRealisasiRenja;
 use App\Models\SasaranPdRealisasiRenja;
 use App\Models\SasaranPdProgramRpjmd;
+use App\Models\SubKegiatan;
+use App\Models\PivotPerubahanSubKegiatan;
+use App\Models\SubKegiatanIndikatorKinerja;
+use App\Models\OpdSubKegiatanIndikatorKinerja;
+use App\Models\SubKegiatanTargetSatuanRpRealisasi;
+use App\Models\SubKegiatanTwRealisasi;
 
 class RenstraController extends Controller
 {
@@ -209,7 +214,7 @@ class RenstraController extends Controller
             if($cek_perubahan_sasaran)
             {
                 $sasaran[] = [
-                    'id' => $cek_perubahan_sasaran->sasaran_id,
+                    'id' => $get_sasaran->id,
                     'deskripsi' => $cek_perubahan_sasaran->deskripsi,
                     'kode' => $cek_perubahan_sasaran->kode
                 ];
@@ -228,18 +233,16 @@ class RenstraController extends Controller
     {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $get_programs = Program::whereHas('program_rpjmd', function($q) use ($request){
-            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($request) {
-                $q->whereHas('sasaran_indikator_kinerja', function($q) use ($request){
-                    $q->whereHas('sasaran', function($q) use ($request) {
-                        $q->where('id', $request->id);
-                    });
-                });
-            });
-        })->whereHas('program_indikator_kinerja', function($q){
-            $q->whereHas('opd_program_indikator_kinerja', function($q){
-                $q->where('opd_id', Auth::user()->opd->opd_id);
-            });
-        })->where('tahun_periode_id', $get_periode->id)->get();
+                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($request) {
+                                $q->whereHas('sasaran_indikator_kinerja', function($q) use ($request){
+                                    $q->where('sasaran_id', $request->id);
+                                });
+                            });
+                        })->whereHas('program_indikator_kinerja', function($q){
+                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                            });
+                        })->where('tahun_periode_id', $get_periode->id)->get();
 
         $programs = [];
         foreach ($get_programs as $get_program) {
@@ -265,6 +268,33 @@ class RenstraController extends Controller
     }
 
     public function filter_get_kegiatan(Request $request)
+    {
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $get_renstra_kegiatans = RenstraKegiatan::where('program_rpjmd_id', $request->id)->get();
+        $kegiatans = [];
+        foreach ($get_renstra_kegiatans as $get_renstra_kegiatan) {
+            $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_renstra_kegiatan->kegiatan_id)
+                                        ->orderBy('tahun_perubahan', 'desc')->latest()->first();
+            if($cek_perubahan_kegiatan)
+            {
+                $kegiatans[] = [
+                    'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                    'kode' => $cek_perubahan_kegiatan->kode,
+                    'deskripsi' =>$cek_perubahan_kegiatan->deskripsi
+                ];
+            } else {
+                $kegiatans[] = [
+                    'id' => $get_renstra_kegiatan->kegiatan_id,
+                    'kode' => $get_renstra_kegiatan->kegiatan->kode,
+                    'deskripsi' =>$get_renstra_kegiatan->kegiatan->deskripsi
+                ];
+            }
+        }
+
+        return response()->json($kegiatans);
+    }
+
+    public function filter_get_sub_kegiatan(Request $request)
     {
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $get_renstra_kegiatans = RenstraKegiatan::where('program_rpjmd_id', $request->id)->get();
@@ -835,7 +865,7 @@ class RenstraController extends Controller
                                                                                                 <th width="20%">Aksi</th>
                                                                                             </tr>
                                                                                         </thead>
-                                                                                        <tbody>';
+                                                                                        <tbody id="tbodyTujuanTujuanPd'.$tujuan['id'].'">';
                                                                                         $get_tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])->where('opd_id', Auth::user()->opd->opd_id)->get();
                                                                                         $tujuan_pds = [];
                                                                                         foreach ($get_tujuan_pds as $get_tujuan_pd) {
@@ -926,7 +956,7 @@ class RenstraController extends Controller
                                                                                                                     <th width="5%">Aksi</th>
                                                                                                                 </tr>
                                                                                                             </thead>
-                                                                                                            <tbody>';
+                                                                                                            <tbody id="tbodyTujuanTujuanPdIndikatorKinerja'.$tujuan_pd['id'].'">';
                                                                                                             $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd['id'])->get();
                                                                                                             $no_tujuan_pd_indikator_kinerja = 1;
                                                                                                             foreach ($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja) {
@@ -1315,7 +1345,7 @@ class RenstraController extends Controller
                                                                                                 <th width="20%">Aksi</th>
                                                                                             </tr>
                                                                                         </thead>
-                                                                                        <tbody>';
+                                                                                        <tbody id="tbodyTujuanTujuanPd'.$tujuan['id'].'">';
                                                                                         $get_tujuan_pds = TujuanPd::where('tujuan_id', $tujuan['id'])->where('opd_id', Auth::user()->opd->opd_id)->get();
                                                                                         $tujuan_pds = [];
                                                                                         foreach ($get_tujuan_pds as $get_tujuan_pd) {
@@ -1406,7 +1436,7 @@ class RenstraController extends Controller
                                                                                                                     <th width="5%">Aksi</th>
                                                                                                                 </tr>
                                                                                                             </thead>
-                                                                                                            <tbody>';
+                                                                                                            <tbody id="tbodyTujuanTujuanPdIndikatorKinerja'.$tujuan_pd['id'].'">';
                                                                                                             $tujuan_pd_indikator_kinerjas = TujuanPdIndikatorKinerja::where('tujuan_pd_id', $tujuan_pd['id'])->get();
                                                                                                             $no_tujuan_pd_indikator_kinerja = 1;
                                                                                                             foreach ($tujuan_pd_indikator_kinerjas as $tujuan_pd_indikator_kinerja) {
@@ -1868,7 +1898,7 @@ class RenstraController extends Controller
                                                                                                                                                         <th width="20%">Aksi</th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
-                                                                                                                                                <tbody>';
+                                                                                                                                                <tbody id="tbodySasaranSasaranPd'.$sasaran['id'].'">';
                                                                                                                                                 $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->where('opd_id', Auth::user()->opd->opd_id)->get();
                                                                                                                                                 $sasaran_pds = [];
                                                                                                                                                 foreach ($get_sasaran_pds as $get_sasaran_pd) {
@@ -1977,7 +2007,7 @@ class RenstraController extends Controller
                                                                                                                                                                             <th width="5%">Aksi</th>
                                                                                                                                                                         </tr>
                                                                                                                                                                     </thead>
-                                                                                                                                                                    <tbody>';
+                                                                                                                                                                    <tbody id="tbodySasaranSasaranPdIndikatorKinerja'.$sasaran_pd['id'].'">';
                                                                                                                                                                     $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd['id'])->get();
                                                                                                                                                                     $no_sasaran_pd_indikator_kinerja = 1;
                                                                                                                                                                     foreach ($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja) {
@@ -2432,7 +2462,7 @@ class RenstraController extends Controller
                                                                                                                                                         <th width="20%">Aksi</th>
                                                                                                                                                     </tr>
                                                                                                                                                 </thead>
-                                                                                                                                                <tbody>';
+                                                                                                                                                <tbody id="tbodySasaranSasaranPd'.$sasaran['id'].'">';
                                                                                                                                                 $get_sasaran_pds = SasaranPd::where('sasaran_id', $sasaran['id'])->where('opd_id', Auth::user()->opd->opd_id)->get();
                                                                                                                                                 $sasaran_pds = [];
                                                                                                                                                 foreach ($get_sasaran_pds as $get_sasaran_pd) {
@@ -2541,7 +2571,7 @@ class RenstraController extends Controller
                                                                                                                                                                             <th width="5%">Aksi</th>
                                                                                                                                                                         </tr>
                                                                                                                                                                     </thead>
-                                                                                                                                                                    <tbody>';
+                                                                                                                                                                    <tbody id="tbodySasaranSasaranPdIndikatorKinerja'.$sasaran_pd['id'].'">';
                                                                                                                                                                     $sasaran_pd_indikator_kinerjas = SasaranPdIndikatorKinerja::where('sasaran_pd_id', $sasaran_pd['id'])->get();
                                                                                                                                                                     $no_sasaran_pd_indikator_kinerja = 1;
                                                                                                                                                                     foreach ($sasaran_pd_indikator_kinerjas as $sasaran_pd_indikator_kinerja) {
@@ -3112,7 +3142,7 @@ class RenstraController extends Controller
                                                                                                                                                                                             {
                                                                                                                                                                                                 $html .= '<td> '.$cek_program_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                                                                 $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                $html .= '<td> Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                                                                                                                                                $html .= '<td> Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
@@ -3139,7 +3169,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td> '.$cek_program_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                                                                 $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                $html .= '<td> Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                                                                                                                                                $html .= '<td> Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
@@ -3177,7 +3207,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                 {
                                                                                                                                                                                                     $html .= '<td> '.$cek_program_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                                                                     $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                    $html .= '<td> Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                                                                                                                                                    $html .= '<td> Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -3204,7 +3234,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td> '.$cek_program_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                                                                     $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                    $html .= '<td> Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                                                                                                                                                    $html .= '<td> Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -3730,7 +3760,7 @@ class RenstraController extends Controller
                                                                                                                                                                                             {
                                                                                                                                                                                                 $html .= '<td> '.$cek_program_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                                                                 $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                $html .= '<td> Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                                                                                                                                                $html .= '<td> Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
@@ -3757,7 +3787,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td> '.$cek_program_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                                                                 $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                $html .= '<td> Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                                                                                                                                                $html .= '<td> Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td></td>';
                                                                                                                                                                                                 $html .= '<td>'.$tahun.'</td>';
@@ -3795,7 +3825,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                 {
                                                                                                                                                                                                     $html .= '<td> '.$cek_program_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                                                                     $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                    $html .= '<td> Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                                                                                                                                                    $html .= '<td> Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -3822,7 +3852,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td> '.$cek_program_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                                                                     $html .= '<td>'.$program_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                                                                    $html .= '<td> Rp.'.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2).'</td>';
+                                                                                                                                                                                                    $html .= '<td> Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td></td>';
                                                                                                                                                                                                     $html .= '<td>'.$tahun.'</td>';
@@ -4271,7 +4301,7 @@ class RenstraController extends Controller
                                                                                                                                                         <td colspan="4" class="hiddenRow">
                                                                                                                                                             <div class="collapse show" id="program_program_'.$program['id'].'">
                                                                                                                                                                 <table class="table table-condensed table-striped">
-                                                                                                                                                                    <tbody>';
+                                                                                                                                                                    <tbody id="tbodyKegiatanProgramProgram'.$program['id'].'">';
                                                                                                                                                                     $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
                                                                                                                                                                     $kegiatans = [];
                                                                                                                                                                     foreach ($get_kegiatans as $get_kegiatan) {
@@ -4374,7 +4404,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                 <th>Aksi</th>
                                                                                                                                                                                             </tr>
                                                                                                                                                                                         </thead>
-                                                                                                                                                                                        <tbody>';
+                                                                                                                                                                                        <tbody id="tbodyProgramKegiatan'.$kegiatan['id'].'">';
                                                                                                                                                                                         $kegiatan_indikator_kinerja = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
                                                                                                                                                                                         $no_kegiatan_indikator_kinerja = 1;
                                                                                                                                                                                         foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
@@ -4921,7 +4951,7 @@ class RenstraController extends Controller
                                                                                                                                                         <td colspan="4" class="hiddenRow">
                                                                                                                                                             <div class="collapse show" id="program_program_'.$program['id'].'">
                                                                                                                                                                 <table class="table table-condensed table-striped">
-                                                                                                                                                                    <tbody>';
+                                                                                                                                                                    <tbody id="tbodyKegiatanProgramProgram'.$program['id'].'">';
                                                                                                                                                                     $get_kegiatans = Kegiatan::where('program_id', $program['id'])->get();
                                                                                                                                                                     $kegiatans = [];
                                                                                                                                                                     foreach ($get_kegiatans as $get_kegiatan) {
@@ -5024,7 +5054,7 @@ class RenstraController extends Controller
                                                                                                                                                                                                 <th>Aksi</th>
                                                                                                                                                                                             </tr>
                                                                                                                                                                                         </thead>
-                                                                                                                                                                                        <tbody>';
+                                                                                                                                                                                        <tbody id="tbodyProgramKegiatan'.$kegiatan['id'].'">';
                                                                                                                                                                                         $kegiatan_indikator_kinerja = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])->get();
                                                                                                                                                                                         $no_kegiatan_indikator_kinerja = 1;
                                                                                                                                                                                         foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
@@ -5150,6 +5180,868 @@ class RenstraController extends Controller
                         </table>
                     </div>
                 </div>';
+        return response()->json(['html' => $html]);
+    }
+
+    public function get_sub_kegiatan(Request $request)
+    {
+
+        $tws = MasterTw::all();
+
+        $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
+        $tahun_awal = $get_periode->tahun_awal;
+        $jarak_tahun = $get_periode->tahun_akhir - $tahun_awal;
+        $tahuns = [];
+        for ($i=0; $i < $jarak_tahun + 1; $i++) {
+            $tahuns[] = $tahun_awal + $i;
+        }
+
+        $get_visis = Visi::whereHas('misi', function($q){
+            $q->whereHas('tujuan', function($q){
+                $q->whereHas('sasaran', function($q){
+                    $q->whereHas('sasaran_indikator_kinerja', function($q){
+                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                            $q->whereHas('program_rpjmd', function($q){
+                                $q->whereHas('program', function($q){
+                                    $q->whereHas('program_indikator_kinerja', function($q){
+                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        })->where('tahun_periode_id', $get_periode->id)->get();
+
+        $visis = [];
+        $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
+        foreach ($get_visis as $get_visi) {
+            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $tahun_sekarang)
+                                    ->latest()->first();
+            if($cek_perubahan_visi)
+            {
+                $visis[] = [
+                    'id' => $cek_perubahan_visi->visi_id,
+                    'deskripsi' => $cek_perubahan_visi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                ];
+            } else {
+                $visis[] = [
+                    'id' => $get_visi->id,
+                    'deskripsi' => $get_visi->deskripsi,
+                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                ];
+            }
+        }
+
+        $html = '<div class="data-table-rows slim" id="program_div_table">
+                    <div class="data-table-responsive-wrapper">
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Kode</th>
+                                    <th width="55%">Deskripsi</th>
+                                    <th width="40%">Indikator Kinerja</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                            foreach ($visis as $visi)
+                            {
+                                $html .= '<tr style="background: #bbbbbb;">
+                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_visi'.$visi['id'].'" class="accordion-toggle text-white">
+                                                '.strtoupper($visi['deskripsi']).'
+                                                <br>
+                                                <span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi</span>
+                                            </td>
+                                            <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_visi'.$visi['id'].'" class="accordion-toggle"></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="hiddenRow">
+                                                <div class="collapse show" id="sub_kegiatan_visi'.$visi['id'].'">
+                                                    <table class="table table-condensed table-striped">
+                                                        <tbody>';
+                                                        $get_misis = Misi::where('visi_id', $visi['id'])->whereHas('tujuan', function($q){
+                                                            $q->whereHas('sasaran', function($q){
+                                                                $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                    $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                        $q->whereHas('program_rpjmd', function($q){
+                                                                            $q->whereHas('program', function($q){
+                                                                                $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                    $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                        $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                    });
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                        })->get();
+                                                        $misis = [];
+                                                        foreach ($get_misis as $get_misi) {
+                                                            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)->where('tahun_perubahan', $tahun_sekarang)
+                                                                                    ->latest()->first();
+                                                            if($cek_perubahan_misi)
+                                                            {
+                                                                $misis[] = [
+                                                                    'id' => $cek_perubahan_misi->misi_id,
+                                                                    'kode' => $cek_perubahan_misi->kode,
+                                                                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                                                                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan,
+                                                                ];
+                                                            } else {
+                                                                $misis[] = [
+                                                                    'id' => $get_misi->id,
+                                                                    'kode' => $get_misi->kode,
+                                                                    'deskripsi' => $get_misi->deskripsi,
+                                                                    'tahun_perubahan' => $get_misi->tahun_perubahan,
+                                                                ];
+                                                            }
+                                                        }
+                                                        $a = 1;
+                                                        foreach ($misis as $misi)
+                                                        {
+                                                            $html .= '<tr style="background: #c04141;">
+                                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
+                                                                        <td width="55%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_misi'.$misi['id'].'" class="accordion-toggle text-white">
+                                                                            '.strtoupper($misi['deskripsi']).'
+                                                                            <br>';
+                                                                            if($a == 1 || $a == 2)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
+                                                                            }
+                                                                            if($a == 3)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
+                                                                            }
+                                                                            if($a == 4)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
+                                                                            }
+                                                                            if($a == 5)
+                                                                            {
+                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
+                                                                            }
+                                                                            $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                        </td>
+                                                                        <td width="40%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_misi'.$misi['id'].'" class="accordion-toggle text-white"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="4" class="hiddenRow">
+                                                                            <div class="collapse show" id="sub_kegiatan_misi'.$misi['id'].'">
+                                                                                <table class="table table-condensed table-striped">
+                                                                                    <tbody>';
+                                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id'])->whereHas('sasaran', function($q){
+                                                                                        $q->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                                            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                $q->whereHas('program_rpjmd', function($q){
+                                                                                                    $q->whereHas('program', function($q){
+                                                                                                        $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                            $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                            });
+                                                                                                        });
+                                                                                                    });
+                                                                                                });
+                                                                                            });
+                                                                                        });
+                                                                                    })->get();
+                                                                                    $tujuans = [];
+                                                                                    foreach ($get_tujuans as $get_tujuan) {
+                                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)->where('tahun_perubahan', $tahun_sekarang)
+                                                                                                                ->latest()
+                                                                                                                ->first();
+                                                                                        if($cek_perubahan_tujuan)
+                                                                                        {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
+                                                                                                'kode' => $cek_perubahan_tujuan->kode,
+                                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        } else {
+                                                                                            $tujuans[] = [
+                                                                                                'id' => $get_tujuan->id,
+                                                                                                'kode' => $get_tujuan->kode,
+                                                                                                'deskripsi' => $get_tujuan->deskripsi,
+                                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                                                                                            ];
+                                                                                        }
+                                                                                    }
+                                                                                    foreach ($tujuans as $tujuan)
+                                                                                    {
+                                                                                        $html .= '<tr style="background: #41c0c0">
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                                                                                                    <td width="55%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_tujuan'.$tujuan['id'].'" class="accordion-toggle text-white">
+                                                                                                        '.strtoupper($tujuan['deskripsi']).'
+                                                                                                        <br>';
+                                                                                                        if($a == 1 || $a == 2)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
+                                                                                                        }
+                                                                                                        if($a == 3)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
+                                                                                                        }
+                                                                                                        if($a == 4)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
+                                                                                                        }
+                                                                                                        if($a == 5)
+                                                                                                        {
+                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
+                                                                                                        }
+                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                        <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                    </td>
+                                                                                                    <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_tujuan'.$tujuan['id'].'" class="accordion-toggle" width="40%"></td>
+                                                                                                </tr>
+                                                                                                <tr>
+                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                        <div class="collapse show" id="sub_kegiatan_tujuan'.$tujuan['id'].'">
+                                                                                                            <table class="table table-condensed table-striped">
+                                                                                                                <tbody>';
+                                                                                                                $get_sasarans = Sasaran::where('tujuan_id', $tujuan['id'])->whereHas('sasaran_indikator_kinerja', function($q){
+                                                                                                                    $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                                        $q->whereHas('program_rpjmd', function($q){
+                                                                                                                            $q->whereHas('program', function($q){
+                                                                                                                                $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                                                    $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                                        $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                    });
+                                                                                                                                });
+                                                                                                                            });
+                                                                                                                        });
+                                                                                                                    });
+                                                                                                                })->get();
+                                                                                                                $sasarans = [];
+                                                                                                                foreach ($get_sasarans as $get_sasaran) {
+                                                                                                                    $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
+                                                                                                                                                ->latest()->first();
+                                                                                                                    if($cek_perubahan_sasaran)
+                                                                                                                    {
+                                                                                                                        $sasarans[] = [
+                                                                                                                            'id' => $cek_perubahan_sasaran->sasaran_id,
+                                                                                                                            'kode' => $cek_perubahan_sasaran->kode,
+                                                                                                                            'deskripsi' => $cek_perubahan_sasaran->deskripsi,
+                                                                                                                            'tahun_perubahan' => $cek_perubahan_sasaran->tahun_perubahan,
+                                                                                                                        ];
+                                                                                                                    } else {
+                                                                                                                        $sasarans[] = [
+                                                                                                                            'id' => $get_sasaran->id,
+                                                                                                                            'kode' => $get_sasaran->kode,
+                                                                                                                            'deskripsi' => $get_sasaran->deskripsi,
+                                                                                                                            'tahun_perubahan' => $get_sasaran->tahun_perubahan,
+                                                                                                                        ];
+                                                                                                                    }
+                                                                                                                }
+                                                                                                                foreach ($sasarans as $sasaran)
+                                                                                                                {
+                                                                                                                    $html .= '<tr style="background:#41c081">
+                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_sasaran_'.$sasaran['id'].'" class="accordion-toggle text-white" width="5%">'.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</td>
+                                                                                                                                <td data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_sasaran_'.$sasaran['id'].'" class="accordion-toggle text-white" width="55%">
+                                                                                                                                        '.strtoupper($sasaran['deskripsi']).'
+                                                                                                                                        <br>';
+                                                                                                                                        if($a == 1 || $a == 2)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 3)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 4)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                        }
+                                                                                                                                        if($a == 5)
+                                                                                                                                        {
+                                                                                                                                            $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
+                                                                                                                                        }
+                                                                                                                                        $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                        <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                        <span class="badge bg-danger text-uppercase renstra-kegiatan-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                </td>';
+                                                                                                                                $sasaran_indikator_kinerjas = SasaranIndikatorKinerja::where('sasaran_id', $sasaran['id'])->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
+                                                                                                                                    $q->whereHas('program_rpjmd', function($q){
+                                                                                                                                        $q->whereHas('program', function($q){
+                                                                                                                                            $q->whereHas('program_indikator_kinerja', function($q){
+                                                                                                                                                $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                });
+                                                                                                                                            });
+                                                                                                                                        });
+                                                                                                                                    });
+                                                                                                                                })->get();
+                                                                                                                                $html .= '<td width="40%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_sasaran_'.$sasaran['id'].'" class="accordion-toggle"><ul>';
+                                                                                                                                    foreach($sasaran_indikator_kinerjas as $sasaran_indikator_kinerja)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<li class="mb-2 text-white">'.strtoupper($sasaran_indikator_kinerja->deskripsi).'</li>';
+                                                                                                                                    }
+                                                                                                                                $html .= '</ul></td>';
+                                                                                                                    $html .= '</tr>
+                                                                                                                    <tr>
+                                                                                                                        <td colspan="4" class="hiddenRow">
+                                                                                                                            <div class="collapse show" id="sub_kegiatan_sasaran_'.$sasaran['id'].'">
+                                                                                                                                <table class="table table-condensed table-striped">
+                                                                                                                                    <tbody>';
+                                                                                                                                    $get_programs = Program::whereHas('program_rpjmd', function($q) use ($sasaran){
+                                                                                                                                        $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaran) {
+                                                                                                                                            $q->whereHas('sasaran_indikator_kinerja', function($q) use ($sasaran){
+                                                                                                                                                $q->whereHas('sasaran', function($q) use ($sasaran) {
+                                                                                                                                                    $q->where('id', $sasaran['id']);
+                                                                                                                                                });
+                                                                                                                                            });
+                                                                                                                                        });
+                                                                                                                                    })->whereHas('program_indikator_kinerja', function($q){
+                                                                                                                                        $q->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                                            $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                        });
+                                                                                                                                    })->get();
+                                                                                                                                    $programs = [];
+                                                                                                                                    foreach($get_programs as $get_program)
+                                                                                                                                    {
+                                                                                                                                        $cek_perubahan_program = PivotPerubahanProgram::where('program_id', $get_program->id)->latest()->first();
+                                                                                                                                        if($cek_perubahan_program)
+                                                                                                                                        {
+                                                                                                                                            $programs[] = [
+                                                                                                                                                'id' => $cek_perubahan_program->program_id,
+                                                                                                                                                'kode' => $cek_perubahan_program->kode,
+                                                                                                                                                'deskripsi' => $cek_perubahan_program->deskripsi,
+                                                                                                                                                'tahun_perubahan' => $cek_perubahan_program->tahun_perubahan
+                                                                                                                                            ];
+                                                                                                                                        } else {
+                                                                                                                                            $programs[] = [
+                                                                                                                                                'id' => $get_program->id,
+                                                                                                                                                'kode' => $get_program->kode,
+                                                                                                                                                'deskripsi' => $get_program->deskripsi,
+                                                                                                                                                'tahun_perubahan' => $get_program->tahun_perubahan
+                                                                                                                                            ];
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                    foreach($programs as $program)
+                                                                                                                                    {
+                                                                                                                                        $html .= '<tr style="background:#bbae7f;">';
+                                                                                                                                            $html .= '<td width="5%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program_'.$program['id'].'" class="accordion-toggle text-white">'.$program['kode'].'</td>';
+                                                                                                                                            $html .= '<td width="55%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program_'.$program['id'].'" class="accordion-toggle text-white">'.strtoupper($program['deskripsi']);
+                                                                                                                                            $cek_program_rjmd = ProgramRpjmd::where('program_id', $program['id'])->where('status_program', 'Prioritas')->first();
+                                                                                                                                            if($cek_program_rjmd)
+                                                                                                                                            {
+                                                                                                                                                $html .= '<i class="fas fa-star text-primary" title="Program Prioritas"> </i>';
+                                                                                                                                            }
+                                                                                                                                            $html .= '<br>';
+                                                                                                                                            if($a == 1 || $a == 2)
+                                                                                                                                            {
+                                                                                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
+                                                                                                                                            }
+                                                                                                                                            if($a == 3)
+                                                                                                                                            {
+                                                                                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
+                                                                                                                                            }
+                                                                                                                                            if($a == 4)
+                                                                                                                                            {
+                                                                                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                            }
+                                                                                                                                            if($a == 5)
+                                                                                                                                            {
+                                                                                                                                                $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
+                                                                                                                                            }
+                                                                                                                                            $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                            <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                            <span class="badge bg-danger text-uppercase renstra-kegiatan-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                            <span class="badge bg-dark text-uppercase renstra-kegiatan-tagging">Program '.$program['kode'].'</span></td>';
+                                                                                                                                            $html .= '<td width="40%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_program_'.$program['id'].'" class="accordion-toggle"><ul>';
+                                                                                                                                                $program_indikator_kinerjas = ProgramIndikatorKinerja::where('program_id', $program['id'])
+                                                                                                                                                                                ->whereHas('opd_program_indikator_kinerja', function($q){
+                                                                                                                                                                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                                                })->get();
+                                                                                                                                                foreach($program_indikator_kinerjas as $program_indikator_kinerja)
+                                                                                                                                                {
+                                                                                                                                                    $html .= '<li class="text-white">'.strtoupper($program_indikator_kinerja->deskripsi).'</li>';
+                                                                                                                                                }
+                                                                                                                                            $html .= '</ul></td>';
+                                                                                                                                        $html .= '</tr>
+                                                                                                                                        <tr>
+                                                                                                                                            <td colspan="4" class="hiddenRow">
+                                                                                                                                                <div class="collapse show" id="sub_kegiatan_program_'.$program['id'].'">
+                                                                                                                                                    <table class="table table-condensed table-striped">
+                                                                                                                                                        <tbody>';
+                                                                                                                                                        $get_kegiatans = Kegiatan::where('program_id', $program['id'])->whereHas('kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                            $q->whereHas('opd_kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                            });
+                                                                                                                                                        })->get();
+                                                                                                                                                        $kegiatans = [];
+                                                                                                                                                        foreach ($get_kegiatans as $get_kegiatan) {
+                                                                                                                                                            $cek_perubahan_kegiatan = PivotPerubahanKegiatan::where('kegiatan_id', $get_kegiatan->id)
+                                                                                                                                                                                        ->latest()->first();
+                                                                                                                                                            if($cek_perubahan_kegiatan)
+                                                                                                                                                            {
+                                                                                                                                                                $kegiatans[] = [
+                                                                                                                                                                    'id' => $cek_perubahan_kegiatan->kegiatan_id,
+                                                                                                                                                                    'kode' => $cek_perubahan_kegiatan->kode,
+                                                                                                                                                                    'deskripsi' => $cek_perubahan_kegiatan->deskripsi,
+                                                                                                                                                                    'tahun_perubahan' => $cek_perubahan_kegiatan->tahun_perubahan
+                                                                                                                                                                ];
+                                                                                                                                                            } else {
+                                                                                                                                                                $kegiatans[] = [
+                                                                                                                                                                    'id' => $get_kegiatan->id,
+                                                                                                                                                                    'kode' => $get_kegiatan->kode,
+                                                                                                                                                                    'deskripsi' => $get_kegiatan->deskripsi,
+                                                                                                                                                                    'tahun_perubahan' => $get_kegiatan->tahun_perubahan
+                                                                                                                                                                ];
+                                                                                                                                                            }
+                                                                                                                                                        }
+                                                                                                                                                        foreach($kegiatans as $kegiatan)
+                                                                                                                                                        {
+                                                                                                                                                            $html .= '<tr style="background: #41c0c0">';
+                                                                                                                                                                $html .= '<td width="5%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan_'.$kegiatan['id'].'" class="accordion-toggle text-white">'.$program['kode'].'.'.$kegiatan['kode'].'</td>';
+                                                                                                                                                                $html .= '<td width="50%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_kegiatan_'.$kegiatan['id'].'" class="accordion-toggle text-white">'.strtoupper($kegiatan['deskripsi']);
+                                                                                                                                                                $html .= '<br>';
+                                                                                                                                                                if($a == 1 || $a == 2)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
+                                                                                                                                                                }
+                                                                                                                                                                if($a == 3)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                }
+                                                                                                                                                                if($a == 4)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                }
+                                                                                                                                                                if($a == 5)
+                                                                                                                                                                {
+                                                                                                                                                                    $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                }
+                                                                                                                                                                $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                <span class="badge bg-danger text-uppercase renstra-kegiatan-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                                                <span class="badge bg-dark text-uppercase renstra-kegiatan-tagging">Program '.$program['kode'].'</span>
+                                                                                                                                                                <span class="badge bg-success text-uppercase renstra-kegiatan-tagging">Kegiatan '.$program['kode'].'.'.$kegiatan['kode'].'</span></td>';
+                                                                                                                                                                $kegiatan_indikator_kinerjas = KegiatanIndikatorKinerja::where('kegiatan_id', $kegiatan['id'])
+                                                                                                                                                                                                ->whereHas('opd_kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                                                                })->get();
+                                                                                                                                                                $html .= '<td width="35%"><ul>';
+                                                                                                                                                                    foreach ($kegiatan_indikator_kinerjas as $kegiatan_indikator_kinerja) {
+                                                                                                                                                                        if($kegiatan_indikator_kinerja->status_indikator == 'Target NSPK')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<li class="text-white">'.$kegiatan_indikator_kinerja->deskripsi.' (<i class="fas fa-n text-white ml-1" title="Target NSPK"></i>)'.'</li>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($kegiatan_indikator_kinerja->status_indikator == 'Target IKK')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<li class="text-white">'.$kegiatan_indikator_kinerja->deskripsi.' (<i class="fas fa-i text-white ml-1" title="Target IKK"></i>)'.'</li>';
+                                                                                                                                                                        }
+                                                                                                                                                                        if($kegiatan_indikator_kinerja->status_indikator == 'Target Indikator Lainnya')
+                                                                                                                                                                        {
+                                                                                                                                                                            $html .= '<li class="text-white">'.$kegiatan_indikator_kinerja->deskripsi.' (<i class="fas fa-t text-white ml-1" title="Target Indikator Lainnya"></i>)'.'</li>';
+                                                                                                                                                                        }
+                                                                                                                                                                    }
+                                                                                                                                                                $html .='</ul></td>';
+                                                                                                                                                                $html .= '<td class="text-center"><button type="button" class="btn btn-warning waves-effect waves-light btn-tambah-opd-renstra-sub-kegiatan" data-kegiatan-id="'.$kegiatan['id'].'" title="Tambah Sub Kegiatan"><i class="fas fa-plus"></i></button></td>';
+                                                                                                                                                            $html .= '</tr>
+                                                                                                                                                            <tr>
+                                                                                                                                                                <td colspan="4" class="hiddenRow">
+                                                                                                                                                                    <div class="collapse show" id="sub_kegiatan_kegiatan_'.$kegiatan['id'].'">
+                                                                                                                                                                        <table class="table table-condensed table-striped">
+                                                                                                                                                                            <tbody id="tbodySubKegiatanKegiatan'.$kegiatan['id'].'">';
+                                                                                                                                                                            $get_sub_kegiatans = SubKegiatan::whereHas('sub_kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                                $q->whereHas('opd_sub_kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                                                });
+                                                                                                                                                                            })->where('kegiatan_id', $kegiatan['id'])->orderBy('kode', 'asc')->get();
+                                                                                                                                                                            $sub_kegiatans = [];
+                                                                                                                                                                            foreach ($get_sub_kegiatans as $get_sub_kegiatan) {
+                                                                                                                                                                                $cek_perubahan_sub_kegiatan = PivotPerubahanSubKegiatan::where('sub_kegiatan_id', $get_sub_kegiatan->id)->orderBy('tahun_perubahan', 'asc')->latest()->first();
+                                                                                                                                                                                if($cek_perubahan_sub_kegiatan)
+                                                                                                                                                                                {
+                                                                                                                                                                                    $sub_kegiatans[] = [
+                                                                                                                                                                                        'id' => $cek_perubahan_sub_kegiatan->sub_kegiatan_id,
+                                                                                                                                                                                        'kegiatan_id' => $cek_perubahan_sub_kegiatan->kegiatan_id,
+                                                                                                                                                                                        'kode' => $cek_perubahan_sub_kegiatan->kode,
+                                                                                                                                                                                        'deskripsi' => $cek_perubahan_sub_kegiatan->deskripsi,
+                                                                                                                                                                                        'tahun_perubahan' => $cek_perubahan_sub_kegiatan->tahun_perubahan,
+                                                                                                                                                                                    ];
+                                                                                                                                                                                } else {
+                                                                                                                                                                                    $sub_kegiatans[] = [
+                                                                                                                                                                                        'id' => $get_sub_kegiatan->id,
+                                                                                                                                                                                        'kegiatan_id' => $get_sub_kegiatan->kegiatan_id,
+                                                                                                                                                                                        'kode' => $get_sub_kegiatan->kode,
+                                                                                                                                                                                        'deskripsi' => $get_sub_kegiatan->deskripsi,
+                                                                                                                                                                                        'tahun_perubahan' => $get_sub_kegiatan->tahun_perubahan,
+                                                                                                                                                                                    ];
+                                                                                                                                                                                }
+                                                                                                                                                                            }
+                                                                                                                                                                            foreach ($sub_kegiatans as $sub_kegiatan)
+                                                                                                                                                                            {
+                                                                                                                                                                                $html .= '<tr>';
+                                                                                                                                                                                    $html .= '<td width="5%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_sub_kegiatan_'.$sub_kegiatan['id'].'" class="accordion-toggle">'.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</td>';
+                                                                                                                                                                                    $html .= '<td width="55%" data-bs-toggle="collapse" data-bs-target="#sub_kegiatan_sub_kegiatan_'.$sub_kegiatan['id'].'" class="accordion-toggle">'.$sub_kegiatan['deskripsi'];
+                                                                                                                                                                                    $html .= '<br>';
+                                                                                                                                                                                    if($a == 1 || $a == 2)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Aman]</span>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    if($a == 3)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Mandiri]</span>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    if($a == 4)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Sejahtera]</span>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    if($a == 5)
+                                                                                                                                                                                    {
+                                                                                                                                                                                        $html .= '<span class="badge bg-primary text-uppercase renstra-kegiatan-tagging">Visi [Berahlak]</span>';
+                                                                                                                                                                                    }
+                                                                                                                                                                                    $html .= ' <span class="badge bg-warning text-uppercase renstra-kegiatan-tagging">Misi '.$misi['kode'].'</span>
+                                                                                                                                                                                    <span class="badge bg-secondary text-uppercase renstra-kegiatan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                                                                                                                                                                                    <span class="badge bg-danger text-uppercase renstra-kegiatan-tagging">Sasaran '.$misi['kode'].'.'.$tujuan['kode'].'.'.$sasaran['kode'].'</span>
+                                                                                                                                                                                    <span class="badge bg-dark text-uppercase renstra-kegiatan-tagging">Program '.$program['kode'].'</span>
+                                                                                                                                                                                    <span class="badge bg-success text-uppercase renstra-kegiatan-tagging">Kegiatan '.$program['kode'].'.'.$kegiatan['kode'].'</span>
+                                                                                                                                                                                    <span class="badge bg-quaternary text-uppercase renstra-kegiatan-tagging">Sub Kegiatan '.$program['kode'].'.'.$kegiatan['kode'].'.'.$sub_kegiatan['kode'].'</span></td>';
+                                                                                                                                                                                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                                        $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                                                    })->where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
+                                                                                                                                                                                    $html .= '<td width="30%"><table class="table table-bordered">
+                                                                                                                                                                                                <tbody>';
+                                                                                                                                                                                                foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                                                                                                                                                                                                    $html .= '<tr>';
+                                                                                                                                                                                                        $html .= '<td width="75%">'.$sub_kegiatan_indikator_kinerja->deskripsi;
+                                                                                                                                                                                                        if($sub_kegiatan_indikator_kinerja->status_indikator == 'Target NSPK')
+                                                                                                                                                                                                        {
+                                                                                                                                                                                                            $html .= '<i class="fas fa-n text-white ml-1" title="Target NSPK">';
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                        if($sub_kegiatan_indikator_kinerja->status_indikator == 'Target IKK')
+                                                                                                                                                                                                        {
+                                                                                                                                                                                                            $html .= '<i class="fas fa-i text-white ml-1" title="Target IKK">';
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                        if($sub_kegiatan_indikator_kinerja->status_indikator == 'Target Indikator Lainnya')
+                                                                                                                                                                                                        {
+                                                                                                                                                                                                            $html .= '<i class="fas fa-t text-white ml-1" title="Target Indikator Lainnya">';
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                        $html .= '</td>';
+                                                                                                                                                                                                        $html .= '<td width="25%">
+                                                                                                                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-sub-kegiatan-indikator-kinerja mr-1" data-id="'.$sub_kegiatan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Sub Kegiatan"><i class="fas fa-edit"></i></button>
+                                                                                                                                                                                                            <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-sub-kegiatan-indikator-kinerja" type="button" title="Hapus Indikator" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                                                                                                                                                                                        </td>';
+                                                                                                                                                                                                    $html .= '</tr>';
+                                                                                                                                                                                                }
+                                                                                                                                                                                                $html .= '</tbody>
+                                                                                                                                                                                            </table></td>';
+                                                                                                                                                                                    $html .= '<td width="10%">
+                                                                                                                                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-sub-kegiatan-indikator-kinerja" data-sub-kegiatan-id="'.$sub_kegiatan['id'].'" type="button" title="Tambah Indikator Kinerja Sub Kegiatan"><i class="fas fa-lock"></i></button>
+                                                                                                                                                                                            </td>';
+                                                                                                                                                                                $html .= '</tr>
+                                                                                                                                                                                <tr>
+                                                                                                                                                                                    <td colspan="4" class="hiddenRow">
+                                                                                                                                                                                        <div class="collapse accordion-body" id="sub_kegiatan_sub_kegiatan_'.$sub_kegiatan['id'].'">
+                                                                                                                                                                                            <table class="table table-striped table-condesed">
+                                                                                                                                                                                                <thead>
+                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                        <th>No</th>
+                                                                                                                                                                                                        <th>Indikator</th>
+                                                                                                                                                                                                        <th>Target Kinerja</th>
+                                                                                                                                                                                                        <th>Satuan</th>
+                                                                                                                                                                                                        <th>Target Anggaran Awal</th>
+                                                                                                                                                                                                        <th>Target Anggaran Perubahan</th>
+                                                                                                                                                                                                        <th>Tahun</th>
+                                                                                                                                                                                                        <th>Aksi</th>
+                                                                                                                                                                                                    </tr>
+                                                                                                                                                                                                </thead>
+                                                                                                                                                                                                <tbody id="tbodySubKegiatanSubKegiatan'.$sub_kegiatan['id'].'">';
+                                                                                                                                                                                                    $sub_kegiatan_indikator_kinerjas = SubKegiatanIndikatorKinerja::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q){
+                                                                                                                                                                                                        $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                                                                    })->where('sub_kegiatan_id', $sub_kegiatan['id'])->get();
+                                                                                                                                                                                                    $no_sub_kegiatan_indikator_kinerja = 1;
+                                                                                                                                                                                                    foreach ($sub_kegiatan_indikator_kinerjas as $sub_kegiatan_indikator_kinerja) {
+                                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                                            $html .= '<td>'.$no_sub_kegiatan_indikator_kinerja++.'</td>';
+                                                                                                                                                                                                            $html .= '<td>'.$sub_kegiatan_indikator_kinerja->deskripsi.'</td>';
+                                                                                                                                                                                                            $b = 1;
+                                                                                                                                                                                                            foreach($tahuns as $tahun)
+                                                                                                                                                                                                            {
+                                                                                                                                                                                                                $cek_sub_kegiatan_target_satuan_rp_realisasi = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($sub_kegiatan_indikator_kinerja){
+                                                                                                                                                                                                                    $q->where('opd_id', Auth::user()->opd->opd_id);
+                                                                                                                                                                                                                    $q->where('sub_kegiatan_indikator_kinerja_id', $sub_kegiatan_indikator_kinerja->id);
+                                                                                                                                                                                                                })->where('tahun', $tahun)->first();
+
+                                                                                                                                                                                                                if($cek_sub_kegiatan_target_satuan_rp_realisasi)
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    if($b == 1)
+                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                            $html .= '<td><span class="span-sub-kegiatan-indikator-kinerja-target data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.' data-sub-kegiatan-target-satuan-rp-realisasi-'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'">'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                                                                                            $html .= '<td>'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                                                                                                                                            $html .= '<td><span class="span-sub-kegiatan-indikator-kinerja-target-anggaran-renja-awal data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.' data-sub-kegiatan-target-satuan-rp-realisasi-'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'" data-target-anggaran-renja-awal="'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal.'">Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal,2).'</span></td>';
+                                                                                                                                                                                                                            $html .= '<td><span class="span-sub-kegiatan-indikator-kinerja-target-anggaran-renja-perubahan data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.' data-sub-kegiatan-target-satuan-rp-realisasi-'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'" data-target-anggaran-renja-perubahan="'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan.'">Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan,2).'</span></td>';
+                                                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                                            $html .= '<td>
+                                                                                                                                                                                                                                        <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mr-2 button-sub-kegiatan-edit-target-satuan-rp-realisasi"
+                                                                                                                                                                                                                                                type="button"
+                                                                                                                                                                                                                                                data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"
+                                                                                                                                                                                                                                                data-tahun="'.$tahun.'"
+                                                                                                                                                                                                                                                data-sub-kegiatan-target-satuan-rp-realisasi-id="'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'">
+                                                                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                        <button type="button"
+                                                                                                                                                                                                                                            class="btn btn-icon btn-primary waves-effect waves-light btn-open-sub-kegiatan-tw-realisasi '.$tahun.' data-sub-kegiatan-target-satuan-rp-realisasi-'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'"
+                                                                                                                                                                                                                                            data-tahun="'.$tahun.'"
+                                                                                                                                                                                                                                            data-sub-kegiatan-target-satuan-rp-realisasi-id="'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'"
+                                                                                                                                                                                                                                            value="close"
+                                                                                                                                                                                                                                            data-bs-toggle="collapse"
+                                                                                                                                                                                                                                            data-bs-target="#sub_kegiatan_indikator_'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'"
+                                                                                                                                                                                                                                            class="accordion-toggle">
+                                                                                                                                                                                                                                                <i class="fas fa-chevron-right"></i>
+                                                                                                                                                                                                                                            </button>
+                                                                                                                                                                                                                                    </td>';
+                                                                                                                                                                                                                        $html .='</tr>
+                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                            <td colspan="10" class="hiddenRow">
+                                                                                                                                                                                                                                <div class="collapse accordion-body" id="sub_kegiatan_indikator_'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'">
+                                                                                                                                                                                                                                    <table class="table table-striped table-condesed">
+                                                                                                                                                                                                                                        <thead>
+                                                                                                                                                                                                                                            <tr>
+                                                                                                                                                                                                                                                <th width="15%">Target Kinerja</th>
+                                                                                                                                                                                                                                                <th width="15%">Satuan</th>
+                                                                                                                                                                                                                                                <th width="15%">Tahun</th>
+                                                                                                                                                                                                                                                <th width="15%">TW</th>
+                                                                                                                                                                                                                                                <th width="20%">Realisasi Kinerja</th>
+                                                                                                                                                                                                                                                <th width="20%">Realisasi Anggaran</th>
+                                                                                                                                                                                                                                            </tr>
+                                                                                                                                                                                                                                        </thead>
+                                                                                                                                                                                                                                        <tbody>';
+                                                                                                                                                                                                                                            $html .= '<tr>';
+                                                                                                                                                                                                                                                $html .= '<td>'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                                                                $html .= '<td>'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                                                                                foreach($tws as $tw)
+                                                                                                                                                                                                                                                {
+                                                                                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                                                                                                                                                                                            $cek_sub_kegiatan_tw_realisasi_renja = SubKegiatanTwRealisasi::where('sub_kegiatan_target_satuan_rp_realisasi_id', $cek_sub_kegiatan_target_satuan_rp_realisasi->id)
+                                                                                                                                                                                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                                                                                                                                                                                            if($cek_sub_kegiatan_tw_realisasi_renja)
+                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                $html .= '<td><span>'.$cek_sub_kegiatan_tw_realisasi_renja->realisasi.'</span></td>';
+                                                                                                                                                                                                                                                                $html .= '<td><span>Rp. '.number_format($cek_sub_kegiatan_tw_realisasi_renja->realisasi_rp, 2).'</span></td>';
+                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                $html .= '<td><span></span></td>';
+                                                                                                                                                                                                                                                                $html .= '<td><span></span></td>';
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                                                                                                                                                                                            $cek_sub_kegiatan_tw_realisasi_renja = SubKegiatanTwRealisasi::where('sub_kegiatan_target_satuan_rp_realisasi_id', $cek_sub_kegiatan_target_satuan_rp_realisasi->id)
+                                                                                                                                                                                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                                                                                                                                                                                            if($cek_sub_kegiatan_tw_realisasi_renja)
+                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                $html .= '<td><span>'.$cek_sub_kegiatan_tw_realisasi_renja->realisasi.'</span></td>';
+                                                                                                                                                                                                                                                                $html .= '<td><span>Rp. '.number_format($cek_sub_kegiatan_tw_realisasi_renja->realisasi_rp, 2).'</span></td>';
+                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                $html .= '<td><span></span></td>';
+                                                                                                                                                                                                                                                                $html .= '<td><span></span></td>';
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                    $c++;
+                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                            $html .= '</tr>';
+                                                                                                                                                                                                                                        $html .= '</tbody>
+                                                                                                                                                                                                                                    </table>
+                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                            </td>
+                                                                                                                                                                                                                        </tr>';
+                                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                            $html .= '<td><span class="span-sub-kegiatan-indikator-kinerja-target data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.' data-sub-kegiatan-target-satuan-rp-realisasi-'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'">'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                                                                                                                                                                                            $html .= '<td>'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                                                                                                                                            $html .= '<td><span class="span-sub-kegiatan-indikator-kinerja-target-anggaran-renja-awal data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.' data-sub-kegiatan-target-satuan-rp-realisasi-'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'" data-target-anggaran-renja-awal="'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal.'">Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_awal,2).'</span></td>';
+                                                                                                                                                                                                                            $html .= '<td><span class="span-sub-kegiatan-indikator-kinerja-target-anggaran-renja-perubahan data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.' data-sub-kegiatan-target-satuan-rp-realisasi-'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'" data-target-anggaran-renja-perubahan="'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan.'">Rp. '.number_format($cek_sub_kegiatan_target_satuan_rp_realisasi->target_anggaran_perubahan,2).'</span></td>';
+                                                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                                            $html .= '<td>
+                                                                                                                                                                                                                                        <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mr-2 button-sub-kegiatan-edit-target-satuan-rp-realisasi"
+                                                                                                                                                                                                                                                type="button"
+                                                                                                                                                                                                                                                data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"
+                                                                                                                                                                                                                                                data-tahun="'.$tahun.'"
+                                                                                                                                                                                                                                                data-sub-kegiatan-target-satuan-rp-realisasi-id="'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'">
+                                                                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                        <button type="button"
+                                                                                                                                                                                                                                            class="btn btn-icon btn-primary waves-effect waves-light btn-open-sub-kegiatan-tw-realisasi '.$tahun.' data-sub-kegiatan-target-satuan-rp-realisasi-'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'"
+                                                                                                                                                                                                                                            data-tahun="'.$tahun.'"
+                                                                                                                                                                                                                                            data-sub-kegiatan-target-satuan-rp-realisasi-id="'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'"
+                                                                                                                                                                                                                                            value="close"
+                                                                                                                                                                                                                                            data-bs-toggle="collapse"
+                                                                                                                                                                                                                                            data-bs-target="#sub_kegiatan_indikator_'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'"
+                                                                                                                                                                                                                                            class="accordion-toggle">
+                                                                                                                                                                                                                                                <i class="fas fa-chevron-right"></i>
+                                                                                                                                                                                                                                            </button>
+                                                                                                                                                                                                                                    </td>';
+                                                                                                                                                                                                                        $html .='</tr>
+                                                                                                                                                                                                                        <tr>
+                                                                                                                                                                                                                            <td colspan="10" class="hiddenRow">
+                                                                                                                                                                                                                                <div class="collapse accordion-body" id="sub_kegiatan_indikator_'.$cek_sub_kegiatan_target_satuan_rp_realisasi->id.'">
+                                                                                                                                                                                                                                    <table class="table table-striped table-condesed">
+                                                                                                                                                                                                                                        <thead>
+                                                                                                                                                                                                                                            <tr>
+                                                                                                                                                                                                                                                <th width="15%">Target Kinerja</th>
+                                                                                                                                                                                                                                                <th width="15%">Satuan</th>
+                                                                                                                                                                                                                                                <th width="15%">Tahun</th>
+                                                                                                                                                                                                                                                <th width="15%">TW</th>
+                                                                                                                                                                                                                                                <th width="20%">Realisasi Kinerja</th>
+                                                                                                                                                                                                                                                <th width="20%">Realisasi Anggaran</th>
+                                                                                                                                                                                                                                            </tr>
+                                                                                                                                                                                                                                        </thead>
+                                                                                                                                                                                                                                        <tbody>';
+                                                                                                                                                                                                                                            $html .= '<tr>';
+                                                                                                                                                                                                                                                $html .= '<td>'.$cek_sub_kegiatan_target_satuan_rp_realisasi->target.'</td>';
+                                                                                                                                                                                                                                                $html .= '<td>'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                                                                                                                                                                $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                                                                $c = 1;
+                                                                                                                                                                                                                                                foreach($tws as $tw)
+                                                                                                                                                                                                                                                {
+                                                                                                                                                                                                                                                    if($c == 1)
+                                                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                                                                                                                                                                                            $cek_sub_kegiatan_tw_realisasi_renja = SubKegiatanTwRealisasi::where('sub_kegiatan_target_satuan_rp_realisasi_id', $cek_sub_kegiatan_target_satuan_rp_realisasi->id)
+                                                                                                                                                                                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                                                                                                                                                                                            if($cek_sub_kegiatan_tw_realisasi_renja)
+                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                $html .= '<td><span>'.$cek_sub_kegiatan_tw_realisasi_renja->realisasi.'</span></td>';
+                                                                                                                                                                                                                                                                $html .= '<td><span>Rp. '.number_format($cek_sub_kegiatan_tw_realisasi_renja->realisasi_rp, 2).'</span></td>';
+                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                $html .= '<td><span></span></td>';
+                                                                                                                                                                                                                                                                $html .= '<td><span></span></td>';
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                                                            $html .= '<td>'.$tw->nama.'</td>';
+                                                                                                                                                                                                                                                            $cek_sub_kegiatan_tw_realisasi_renja = SubKegiatanTwRealisasi::where('sub_kegiatan_target_satuan_rp_realisasi_id', $cek_sub_kegiatan_target_satuan_rp_realisasi->id)
+                                                                                                                                                                                                                                                                                                ->where('tw_id', $tw->id)->first();
+                                                                                                                                                                                                                                                            if($cek_sub_kegiatan_tw_realisasi_renja)
+                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                $html .= '<td><span>'.$cek_sub_kegiatan_tw_realisasi_renja->realisasi.'</span></td>';
+                                                                                                                                                                                                                                                                $html .= '<td><span>Rp. '.number_format($cek_sub_kegiatan_tw_realisasi_renja->realisasi_rp, 2).'</span></td>';
+                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                $html .= '<td><span></span></td>';
+                                                                                                                                                                                                                                                                $html .= '<td><span></span></td>';
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                        $html .= '</tr>';
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                    $c++;
+                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                            $html .= '</tr>';
+                                                                                                                                                                                                                                        $html .= '</tbody>
+                                                                                                                                                                                                                                    </table>
+                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                            </td>
+                                                                                                                                                                                                                        </tr>';
+                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                    $b++;
+                                                                                                                                                                                                                } else {
+                                                                                                                                                                                                                    if($b == 1)
+                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                            $html .= '<td><input type="number" class="form-control sub-kegiatan-add-target data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.'"></td>';
+                                                                                                                                                                                                                            $html .= '<td>'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                                                                                                                                            $html .= '<td><input type="number" class="form-control sub-kegiatan-add-target-anggaran-renja-awal data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.'"></td>';
+                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mr-2 button-add-sub-kegiatan-target-satuan-rp-realisasi"
+                                                                                                                                                                                                                                            type="button"
+                                                                                                                                                                                                                                            data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"
+                                                                                                                                                                                                                                            data-tahun="'.$tahun.'">
+                                                                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                        <button class="btn btn-danger btn-icon waves-effect waves-light" type="button"><i class="fas fa-xmark"></i></button>
+                                                                                                                                                                                                                                    </td>';
+                                                                                                                                                                                                                        $html .='</tr>';
+                                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                                        $html .= '<tr>';
+                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                            $html .= '<td><input type="number" class="form-control sub-kegiatan-add-target data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.'"></td>';
+                                                                                                                                                                                                                            $html .= '<td>'.$sub_kegiatan_indikator_kinerja->satuan.'</td>';
+                                                                                                                                                                                                                            $html .= '<td><input type="number" class="form-control sub-kegiatan-add-target-anggaran-renja-awal data-sub-kegiatan-indikator-kinerja-'.$sub_kegiatan_indikator_kinerja->id.' '.$tahun.'"></td>';
+                                                                                                                                                                                                                            $html .= '<td></td>';
+                                                                                                                                                                                                                            $html .= '<td>'.$tahun.'</td>';
+                                                                                                                                                                                                                            $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mr-2 button-add-sub-kegiatan-target-satuan-rp-realisasi"
+                                                                                                                                                                                                                                            type="button"
+                                                                                                                                                                                                                                            data-sub-kegiatan-indikator-kinerja-id="'.$sub_kegiatan_indikator_kinerja->id.'"
+                                                                                                                                                                                                                                            data-tahun="'.$tahun.'">
+                                                                                                                                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                        <button class="btn btn-danger btn-icon waves-effect waves-light" type="button"><i class="fas fa-xmark"></i></button>
+                                                                                                                                                                                                                                    </td>';
+                                                                                                                                                                                                                        $html .='</tr>';
+                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                    $b++;
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                $html .= '</tbody>
+                                                                                                                                                                                            </table>
+                                                                                                                                                                                        </div>
+                                                                                                                                                                                    </td>
+                                                                                                                                                                                </tr>';
+                                                                                                                                                                            }
+                                                                                                                                                                            $html .= '</tbody>
+                                                                                                                                                                        </table>
+                                                                                                                                                                    </div>
+                                                                                                                                                                </td>
+                                                                                                                                                            </tr>';
+                                                                                                                                                        }
+                                                                                                                                                        $html .= '</tbody>
+                                                                                                                                                    </table>
+                                                                                                                                                </div>
+                                                                                                                                            </td>
+                                                                                                                                        </tr>';
+                                                                                                                                    }
+                                                                                                                                    $html .= '</tbody>
+                                                                                                                                </table>
+                                                                                                                            </div>
+                                                                                                                        </td>
+                                                                                                                    </tr>';
+                                                                                                                }
+                                                                                                                $html .= '</tbody>
+                                                                                                            </table>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>';
+                                                                                    }
+                                                                                    $html .= '</tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>';
+                                                        }
+                                                        $html .= '</tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>';
+                            }
+                            $html .= '</tbody>
+                        </table>
+                    </div>
+                </div>';
+
         return response()->json(['html' => $html]);
     }
 }

@@ -67,6 +67,7 @@ use App\Models\SubKegiatanTwRealisasi;
 use App\Models\TujuanIndikatorKinerja;
 use App\Models\TujuanTargetSatuanRpRealisasi;
 use App\Models\SasaranTargetSatuanRpRealisasi;
+use App\Models\TujuanTwRealisasi;
 
 class TujuanController extends Controller
 {
@@ -206,6 +207,7 @@ class TujuanController extends Controller
             $pivot->kabupaten_id = 62;
             $pivot->tahun_perubahan = $request->tujuan_tahun_perubahan;
             $pivot->save();
+            $idTujuan = $pivot->tujuan_id;
         } else {
             $tujuan = new Tujuan;
             $tujuan->misi_id = $request->tujuan_misi_id;
@@ -214,6 +216,7 @@ class TujuanController extends Controller
             $tujuan->kabupaten_id = 62;
             $tujuan->tahun_perubahan = $request->tujuan_tahun_perubahan;
             $tujuan->save();
+            $idTujuan = $tujuan->id;
         }
 
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
@@ -227,307 +230,352 @@ class TujuanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        // Table Of Content
+        $html = '';
+        $tws = MasterTw::all();
+        $getTujuan = Tujuan::find($idTujuan);
+
+        $get_misis = Misi::where('id', $getTujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
+        $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+        $tujuans = [];
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                        ->latest()
+                                        ->first();
+            if($cek_perubahan_tujuan)
+            {
+                $tujuans[] = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                ];
+            } else {
+                $tujuans[] = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                ];
+            }
+        }
+        foreach ($tujuans as $tujuan) {
+            $html .= '<tr>
+                <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                    '.$tujuan['deskripsi'].'
+                    <br>';
+                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>';
+                    $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
+                    <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                </td>';
+                $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                $html .= '<td width="28%"><table>
+                    <tbody>';
+                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                            $html .= '<tr>';
+                                $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                $html .= '<td width="25%">
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                </td>';
+                            $html .= '</tr>';
+                        }
+                    $html .= '</tbody>
+                </table></td>';
+                $html .= '<td width="22%">
+                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>';
+            $html .= '<tr>
+                <td colspan="4" class="hiddenRow">
+                    <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                        <table class="table table-striped table-condesed">
                             <thead>
                                 <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
+                                    <th width="5%">No</th>
+                                    <th width="30%">Indikator</th>
+                                    <th width="17%">Kondisi Kinerja Awal</th>
+                                    <th width="12%">Target</th>
+                                    <th width="12%">Satuan</th>
+                                    <th width="12%">Tahun</th>
+                                    <th width="12%">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>';
-                        foreach ($visis as $visi) {
-                            $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condesed">
-                                                <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                                if($request->tujuan_filter_visi == 'aman')
-                                                {
-                                                    $get_misis = $get_misis->where(function($q){
-                                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                                    });
-                                                }
-                                                if($request->tujuan_filter_visi == 'mandiri')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 3);
-                                                }
-                                                if($request->tujuan_filter_visi == 'sejahtera')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 4);
-                                                }
-                                                if($request->tujuan_filter_visi == 'berahlak')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 5);
-                                                }
-                                                if($request->tujuan_filter_misi)
-                                                {
-                                                    $get_misis = $get_misis->where('id', $request->tujuan_filter_misi);
-                                                }
-                                                $get_misis = $get_misis->get();
-                                                $misis = [];
-                                                foreach ($get_misis as $get_misi) {
-                                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->where('tahun_perubahan', $request->tahun)
-                                                                            ->latest()
-                                                                            ->first();
-                                                    if($cek_perubahan_misi)
-                                                    {
-                                                        $misis[] = [
-                                                            'id' => $cek_perubahan_misi->misi_id,
-                                                            'kode' => $cek_perubahan_misi->kode,
-                                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
-                                                        ];
-                                                    } else {
-                                                        $misis[] = [
-                                                            'id' => $get_misi->id,
-                                                            'kode' => $get_misi->kode,
-                                                            'deskripsi' => $get_misi->deskripsi,
-                                                            'tahun_perubahan' => $get_misi->tahun_perubahan
-                                                        ];
-                                                    }
-                                                }
-                                                $a = 1;
-                                                foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background: #c04141;">
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                        <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                            '.strtoupper($misi['deskripsi']).'
-                                                            <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
-                                                        </td>
-                                                        <td width="30%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                        <td width="20%">
-                                                            <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped table-condesed">
-                                                                    <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                    if($request->tujuan_filter_tujuan)
-                                                                    {
-                                                                        $get_tujuans = $get_tujuans->where('id', $request->tujuan_filter_tujuan);
-                                                                    }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
-                                                                    $tujuans = [];
-                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                        if($request->nav_rpjmd_tujuan_tahun != 'semua')
-                                                                        {
-                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
-                                                                        }
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
-                                                                        if($cek_perubahan_tujuan)
-                                                                        {
-                                                                            $tujuans[] = [
-                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        } else {
-                                                                            $tujuans[] = [
-                                                                                'id' => $get_tujuan->id,
-                                                                                'kode' => $get_tujuan->kode,
-                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        }
-                                                                    }
-                                                                    foreach ($tujuans as $tujuan) {
-                                                                        $html .= '<tr>
-                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                '.$tujuan['deskripsi'].'
-                                                                                <br>';
-                                                                                if($a == 1 || $a == 2)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
-                                                                                }
-                                                                                if($a == 3)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
-                                                                                }
-                                                                                if($a == 4)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
-                                                                                }
-                                                                                if($a == 5)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
-                                                                                }
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                            </td>';
-                                                                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="28%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .= '</tr>';
+                            <tbody id="tbodyTujuanTujuan'.$tujuan['id'].'">';
+                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                            $no_tujuan_indikator_kinerja = 1;
+                            foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                                $html .= '<tr id="trTujuanIndikatorKinerja'.$tujuan_indikator_kinerja->id.'">';
+                                    $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                    $c = 1;
+                                    foreach ($tahuns as $tahun) {
+                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                            ->where('tahun', $tahun)->first();
+                                        if($cek_tujuan_target_satuan_rp_realisasi)
+                                        {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                </button>
+                                                                <button type="button"
+                                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    data-tahun="'.$tahun.'"
+                                                                    data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    value="close"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    class="accordion-toggle">
+                                                                        <i class="fas fa-chevron-right"></i>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
                                                                                     }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-                                                                            $html .= '<td width="22%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>';
-                                                                        $html .= '<tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th width="5%">No</th>
-                                                                                                <th width="30%">Indikator</th>
-                                                                                                <th width="17%">Target Kinerja Awal</th>
-                                                                                                <th width="12%">Target</th>
-                                                                                                <th width="12%">Satuan</th>
-                                                                                                <th width="12%">Tahun</th>
-                                                                                                <th width="12%">Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                                        $no_tujuan_indikator_kinerja = 1;
-                                                                                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $c = 1;
-                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                    {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                            </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    } else {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    }
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                                    }
-                                                                    $html .= '</tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>';
-                                                    $a++;
-                                                }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                        }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                        class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        data-tahun="'.$tahun.'"
+                                                                        data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        value="close"
+                                                                        data-bs-toggle="collapse"
+                                                                        data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        class="accordion-toggle">
+                                                                            <i class="fas fa-chevron-right"></i>
+                                                                    </button>
+                                                                </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            }
+                                            $c++;
+                                        } else {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            }
+                                            $c++;
+                                        }
+                                    }
+                            }
                             $html .= '</tbody>
                         </table>
                     </div>
-                </div>';
+                </td>
+            </tr>';
+        }
+
         return response()->json(['success' => 'Berhasil menambahkan tujuan', 'html' => $html]);
     }
 
@@ -724,307 +772,352 @@ class TujuanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+        $getTujuan = Tujuan::find($request->tujuan_hidden_id);
+
+        $get_misis = Misi::where('id', $getTujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
+        $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+        $tujuans = [];
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                        ->latest()
+                                        ->first();
+            if($cek_perubahan_tujuan)
+            {
+                $tujuans[] = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                ];
+            } else {
+                $tujuans[] = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                ];
+            }
+        }
+        foreach ($tujuans as $tujuan) {
+            $html .= '<tr>
+                <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                    '.$tujuan['deskripsi'].'
+                    <br>';
+                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>';
+                    $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
+                    <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                </td>';
+                $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                $html .= '<td width="28%"><table>
+                    <tbody>';
+                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                            $html .= '<tr>';
+                                $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                $html .= '<td width="25%">
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                </td>';
+                            $html .= '</tr>';
+                        }
+                    $html .= '</tbody>
+                </table></td>';
+                $html .= '<td width="22%">
+                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>';
+            $html .= '<tr>
+                <td colspan="4" class="hiddenRow">
+                    <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                        <table class="table table-striped table-condesed">
                             <thead>
                                 <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
+                                    <th width="5%">No</th>
+                                    <th width="30%">Indikator</th>
+                                    <th width="17%">Kondisi Kinerja Awal</th>
+                                    <th width="12%">Target</th>
+                                    <th width="12%">Satuan</th>
+                                    <th width="12%">Tahun</th>
+                                    <th width="12%">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>';
-                        foreach ($visis as $visi) {
-                            $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condesed">
-                                                <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                                if($request->tujuan_filter_visi == 'aman')
-                                                {
-                                                    $get_misis = $get_misis->where(function($q){
-                                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                                    });
-                                                }
-                                                if($request->tujuan_filter_visi == 'mandiri')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 3);
-                                                }
-                                                if($request->tujuan_filter_visi == 'sejahtera')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 4);
-                                                }
-                                                if($request->tujuan_filter_visi == 'berahlak')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 5);
-                                                }
-                                                if($request->tujuan_filter_misi)
-                                                {
-                                                    $get_misis = $get_misis->where('id', $request->tujuan_filter_misi);
-                                                }
-                                                $get_misis = $get_misis->get();
-                                                $misis = [];
-                                                foreach ($get_misis as $get_misi) {
-                                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->where('tahun_perubahan', $request->tahun)
-                                                                            ->latest()
-                                                                            ->first();
-                                                    if($cek_perubahan_misi)
-                                                    {
-                                                        $misis[] = [
-                                                            'id' => $cek_perubahan_misi->misi_id,
-                                                            'kode' => $cek_perubahan_misi->kode,
-                                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
-                                                        ];
-                                                    } else {
-                                                        $misis[] = [
-                                                            'id' => $get_misi->id,
-                                                            'kode' => $get_misi->kode,
-                                                            'deskripsi' => $get_misi->deskripsi,
-                                                            'tahun_perubahan' => $get_misi->tahun_perubahan
-                                                        ];
-                                                    }
-                                                }
-                                                $a = 1;
-                                                foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background: #c04141;">
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                        <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                            '.strtoupper($misi['deskripsi']).'
-                                                            <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
-                                                        </td>
-                                                        <td width="30%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                        <td width="20%">
-                                                            <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped table-condesed">
-                                                                    <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                    if($request->tujuan_filter_tujuan)
-                                                                    {
-                                                                        $get_tujuans = $get_tujuans->where('id', $request->tujuan_filter_tujuan);
-                                                                    }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
-                                                                    $tujuans = [];
-                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                        if($request->nav_rpjmd_tujuan_tahun != 'semua')
-                                                                        {
-                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
-                                                                        }
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
-                                                                        if($cek_perubahan_tujuan)
-                                                                        {
-                                                                            $tujuans[] = [
-                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        } else {
-                                                                            $tujuans[] = [
-                                                                                'id' => $get_tujuan->id,
-                                                                                'kode' => $get_tujuan->kode,
-                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        }
-                                                                    }
-                                                                    foreach ($tujuans as $tujuan) {
-                                                                        $html .= '<tr>
-                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                '.$tujuan['deskripsi'].'
-                                                                                <br>';
-                                                                                if($a == 1 || $a == 2)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
-                                                                                }
-                                                                                if($a == 3)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
-                                                                                }
-                                                                                if($a == 4)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
-                                                                                }
-                                                                                if($a == 5)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
-                                                                                }
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                            </td>';
-                                                                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="28%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .= '</tr>';
+                            <tbody id="tbodyTujuanTujuan'.$tujuan['id'].'">';
+                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                            $no_tujuan_indikator_kinerja = 1;
+                            foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                                $html .= '<tr id="trTujuanIndikatorKinerja'.$tujuan_indikator_kinerja->id.'">';
+                                    $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                    $c = 1;
+                                    foreach ($tahuns as $tahun) {
+                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                            ->where('tahun', $tahun)->first();
+                                        if($cek_tujuan_target_satuan_rp_realisasi)
+                                        {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                </button>
+                                                                <button type="button"
+                                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    data-tahun="'.$tahun.'"
+                                                                    data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    value="close"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    class="accordion-toggle">
+                                                                        <i class="fas fa-chevron-right"></i>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
                                                                                     }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-                                                                            $html .= '<td width="22%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>';
-                                                                        $html .= '<tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th width="5%">No</th>
-                                                                                                <th width="30%">Indikator</th>
-                                                                                                <th width="17%">Target Kinerja Awal</th>
-                                                                                                <th width="12%">Target</th>
-                                                                                                <th width="12%">Satuan</th>
-                                                                                                <th width="12%">Tahun</th>
-                                                                                                <th width="12%">Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                                        $no_tujuan_indikator_kinerja = 1;
-                                                                                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $c = 1;
-                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                    {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                            </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    } else {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    }
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                                    }
-                                                                    $html .= '</tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>';
-                                                    $a++;
-                                                }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                        }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                        class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        data-tahun="'.$tahun.'"
+                                                                        data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        value="close"
+                                                                        data-bs-toggle="collapse"
+                                                                        data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        class="accordion-toggle">
+                                                                            <i class="fas fa-chevron-right"></i>
+                                                                    </button>
+                                                                </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            }
+                                            $c++;
+                                        } else {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            }
+                                            $c++;
+                                        }
+                                    }
+                            }
                             $html .= '</tbody>
                         </table>
                     </div>
-                </div>';
+                </td>
+            </tr>';
+        }
+
         return response()->json(['success' => 'Berhasil merubah tujuan', 'html' => $html]);
     }
 
@@ -1074,308 +1167,354 @@ class TujuanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        // Table Of Content
+
+        $html = '';
+        $tws = MasterTw::all();
+        $getTujuan = Tujuan::find($request->indikator_kinerja_tujuan_tujuan_id);
+
+        $get_misis = Misi::where('id', $getTujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
+        $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+        $tujuans = [];
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                        ->latest()
+                                        ->first();
+            if($cek_perubahan_tujuan)
+            {
+                $tujuans[] = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                ];
+            } else {
+                $tujuans[] = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                ];
+            }
+        }
+        foreach ($tujuans as $tujuan) {
+            $html .= '<tr>
+                <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                    '.$tujuan['deskripsi'].'
+                    <br>';
+                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>';
+                    $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
+                    <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                </td>';
+                $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                $html .= '<td width="28%"><table>
+                    <tbody>';
+                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                            $html .= '<tr>';
+                                $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                $html .= '<td width="25%">
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                </td>';
+                            $html .= '</tr>';
+                        }
+                    $html .= '</tbody>
+                </table></td>';
+                $html .= '<td width="22%">
+                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>';
+            $html .= '<tr>
+                <td colspan="4" class="hiddenRow">
+                    <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                        <table class="table table-striped table-condesed">
                             <thead>
                                 <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
+                                    <th width="5%">No</th>
+                                    <th width="30%">Indikator</th>
+                                    <th width="17%">Kondisi Kinerja Awal</th>
+                                    <th width="12%">Target</th>
+                                    <th width="12%">Satuan</th>
+                                    <th width="12%">Tahun</th>
+                                    <th width="12%">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>';
-                        foreach ($visis as $visi) {
-                            $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condesed">
-                                                <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                                if($request->tujuan_filter_visi == 'aman')
-                                                {
-                                                    $get_misis = $get_misis->where(function($q){
-                                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                                    });
-                                                }
-                                                if($request->tujuan_filter_visi == 'mandiri')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 3);
-                                                }
-                                                if($request->tujuan_filter_visi == 'sejahtera')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 4);
-                                                }
-                                                if($request->tujuan_filter_visi == 'berahlak')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 5);
-                                                }
-                                                if($request->tujuan_filter_misi)
-                                                {
-                                                    $get_misis = $get_misis->where('id', $request->tujuan_filter_misi);
-                                                }
-                                                $get_misis = $get_misis->get();
-                                                $misis = [];
-                                                foreach ($get_misis as $get_misi) {
-                                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->where('tahun_perubahan', $request->tahun)
-                                                                            ->latest()
-                                                                            ->first();
-                                                    if($cek_perubahan_misi)
-                                                    {
-                                                        $misis[] = [
-                                                            'id' => $cek_perubahan_misi->misi_id,
-                                                            'kode' => $cek_perubahan_misi->kode,
-                                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
-                                                        ];
-                                                    } else {
-                                                        $misis[] = [
-                                                            'id' => $get_misi->id,
-                                                            'kode' => $get_misi->kode,
-                                                            'deskripsi' => $get_misi->deskripsi,
-                                                            'tahun_perubahan' => $get_misi->tahun_perubahan
-                                                        ];
-                                                    }
-                                                }
-                                                $a = 1;
-                                                foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background: #c04141;">
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                        <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                            '.strtoupper($misi['deskripsi']).'
-                                                            <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
-                                                        </td>
-                                                        <td width="30%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                        <td width="20%">
-                                                            <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped table-condesed">
-                                                                    <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                    if($request->tujuan_filter_tujuan)
-                                                                    {
-                                                                        $get_tujuans = $get_tujuans->where('id', $request->tujuan_filter_tujuan);
-                                                                    }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
-                                                                    $tujuans = [];
-                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                        if($request->nav_rpjmd_tujuan_tahun != 'semua')
-                                                                        {
-                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
-                                                                        }
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
-                                                                        if($cek_perubahan_tujuan)
-                                                                        {
-                                                                            $tujuans[] = [
-                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        } else {
-                                                                            $tujuans[] = [
-                                                                                'id' => $get_tujuan->id,
-                                                                                'kode' => $get_tujuan->kode,
-                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        }
-                                                                    }
-                                                                    foreach ($tujuans as $tujuan) {
-                                                                        $html .= '<tr>
-                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                '.$tujuan['deskripsi'].'
-                                                                                <br>';
-                                                                                if($a == 1 || $a == 2)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
-                                                                                }
-                                                                                if($a == 3)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
-                                                                                }
-                                                                                if($a == 4)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
-                                                                                }
-                                                                                if($a == 5)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
-                                                                                }
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                            </td>';
-                                                                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="28%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .= '</tr>';
+                            <tbody id="tbodyTujuanTujuan'.$tujuan['id'].'">';
+                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                            $no_tujuan_indikator_kinerja = 1;
+                            foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                                $html .= '<tr id="trTujuanIndikatorKinerja'.$tujuan_indikator_kinerja->id.'">';
+                                    $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                    $c = 1;
+                                    foreach ($tahuns as $tahun) {
+                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                            ->where('tahun', $tahun)->first();
+                                        if($cek_tujuan_target_satuan_rp_realisasi)
+                                        {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                </button>
+                                                                <button type="button"
+                                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    data-tahun="'.$tahun.'"
+                                                                    data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    value="close"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    class="accordion-toggle">
+                                                                        <i class="fas fa-chevron-right"></i>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
                                                                                     }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-                                                                            $html .= '<td width="22%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>';
-                                                                        $html .= '<tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th width="5%">No</th>
-                                                                                                <th width="30%">Indikator</th>
-                                                                                                <th width="17%">Target Kinerja Awal</th>
-                                                                                                <th width="12%">Target</th>
-                                                                                                <th width="12%">Satuan</th>
-                                                                                                <th width="12%">Tahun</th>
-                                                                                                <th width="12%">Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                                        $no_tujuan_indikator_kinerja = 1;
-                                                                                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $c = 1;
-                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                    {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                            </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    } else {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    }
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                                    }
-                                                                    $html .= '</tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>';
-                                                    $a++;
-                                                }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                        }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                        class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        data-tahun="'.$tahun.'"
+                                                                        data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        value="close"
+                                                                        data-bs-toggle="collapse"
+                                                                        data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        class="accordion-toggle">
+                                                                            <i class="fas fa-chevron-right"></i>
+                                                                    </button>
+                                                                </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            }
+                                            $c++;
+                                        } else {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            }
+                                            $c++;
+                                        }
+                                    }
+                            }
                             $html .= '</tbody>
                         </table>
                     </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil menambahkan indikator tujuan', 'html' => $html]);
+                </td>
+            </tr>';
+        }
+
+        return response()->json(['success' => 'Berhasil menambahkan indikator tujuan', 'html' => $html, 'misi_id' => $misi['id']]);
     }
 
     public function indikator_kinerja_edit($id)
@@ -1415,313 +1554,358 @@ class TujuanController extends Controller
         for ($i=0; $i < $jarak_tahun + 1; $i++) {
             $tahuns[] = $tahun_awal + $i;
         }
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+        $getTujuan = Tujuan::find($indikator_kinerja->tujuan_id);
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        $get_misis = Misi::where('id', $getTujuan->misi_id)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
+        $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+        $tujuans = [];
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                        ->latest()
+                                        ->first();
+            if($cek_perubahan_tujuan)
+            {
+                $tujuans[] = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                ];
+            } else {
+                $tujuans[] = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                ];
+            }
+        }
+        foreach ($tujuans as $tujuan) {
+            $html .= '<tr>
+                <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                    '.$tujuan['deskripsi'].'
+                    <br>';
+                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>';
+                    $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
+                    <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                </td>';
+                $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                $html .= '<td width="28%"><table>
+                    <tbody>';
+                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                            $html .= '<tr>';
+                                $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                $html .= '<td width="25%">
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                </td>';
+                            $html .= '</tr>';
+                        }
+                    $html .= '</tbody>
+                </table></td>';
+                $html .= '<td width="22%">
+                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>';
+            $html .= '<tr>
+                <td colspan="4" class="hiddenRow">
+                    <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                        <table class="table table-striped table-condesed">
                             <thead>
                                 <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
+                                    <th width="5%">No</th>
+                                    <th width="30%">Indikator</th>
+                                    <th width="17%">Kondisi Kinerja Awal</th>
+                                    <th width="12%">Target</th>
+                                    <th width="12%">Satuan</th>
+                                    <th width="12%">Tahun</th>
+                                    <th width="12%">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>';
-                        foreach ($visis as $visi) {
-                            $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condesed">
-                                                <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                                if($request->tujuan_filter_visi == 'aman')
-                                                {
-                                                    $get_misis = $get_misis->where(function($q){
-                                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                                    });
-                                                }
-                                                if($request->tujuan_filter_visi == 'mandiri')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 3);
-                                                }
-                                                if($request->tujuan_filter_visi == 'sejahtera')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 4);
-                                                }
-                                                if($request->tujuan_filter_visi == 'berahlak')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 5);
-                                                }
-                                                if($request->tujuan_filter_misi)
-                                                {
-                                                    $get_misis = $get_misis->where('id', $request->tujuan_filter_misi);
-                                                }
-                                                $get_misis = $get_misis->get();
-                                                $misis = [];
-                                                foreach ($get_misis as $get_misi) {
-                                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->where('tahun_perubahan', $request->tahun)
-                                                                            ->latest()
-                                                                            ->first();
-                                                    if($cek_perubahan_misi)
-                                                    {
-                                                        $misis[] = [
-                                                            'id' => $cek_perubahan_misi->misi_id,
-                                                            'kode' => $cek_perubahan_misi->kode,
-                                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
-                                                        ];
-                                                    } else {
-                                                        $misis[] = [
-                                                            'id' => $get_misi->id,
-                                                            'kode' => $get_misi->kode,
-                                                            'deskripsi' => $get_misi->deskripsi,
-                                                            'tahun_perubahan' => $get_misi->tahun_perubahan
-                                                        ];
-                                                    }
-                                                }
-                                                $a = 1;
-                                                foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background: #c04141;">
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                        <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                            '.strtoupper($misi['deskripsi']).'
-                                                            <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
-                                                        </td>
-                                                        <td width="30%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                        <td width="20%">
-                                                            <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped table-condesed">
-                                                                    <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                    if($request->tujuan_filter_tujuan)
-                                                                    {
-                                                                        $get_tujuans = $get_tujuans->where('id', $request->tujuan_filter_tujuan);
-                                                                    }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
-                                                                    $tujuans = [];
-                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                        if($request->nav_rpjmd_tujuan_tahun != 'semua')
-                                                                        {
-                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
-                                                                        }
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
-                                                                        if($cek_perubahan_tujuan)
-                                                                        {
-                                                                            $tujuans[] = [
-                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        } else {
-                                                                            $tujuans[] = [
-                                                                                'id' => $get_tujuan->id,
-                                                                                'kode' => $get_tujuan->kode,
-                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        }
-                                                                    }
-                                                                    foreach ($tujuans as $tujuan) {
-                                                                        $html .= '<tr>
-                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                '.$tujuan['deskripsi'].'
-                                                                                <br>';
-                                                                                if($a == 1 || $a == 2)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
-                                                                                }
-                                                                                if($a == 3)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
-                                                                                }
-                                                                                if($a == 4)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
-                                                                                }
-                                                                                if($a == 5)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
-                                                                                }
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                            </td>';
-                                                                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="28%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .= '</tr>';
+                            <tbody id="tbodyTujuanTujuan'.$tujuan['id'].'">';
+                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                            $no_tujuan_indikator_kinerja = 1;
+                            foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                                $html .= '<tr id="trTujuanIndikatorKinerja'.$tujuan_indikator_kinerja->id.'">';
+                                    $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                    $c = 1;
+                                    foreach ($tahuns as $tahun) {
+                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                            ->where('tahun', $tahun)->first();
+                                        if($cek_tujuan_target_satuan_rp_realisasi)
+                                        {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                </button>
+                                                                <button type="button"
+                                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    data-tahun="'.$tahun.'"
+                                                                    data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    value="close"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    class="accordion-toggle">
+                                                                        <i class="fas fa-chevron-right"></i>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
                                                                                     }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-                                                                            $html .= '<td width="22%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>';
-                                                                        $html .= '<tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th width="5%">No</th>
-                                                                                                <th width="30%">Indikator</th>
-                                                                                                <th width="17%">Target Kinerja Awal</th>
-                                                                                                <th width="12%">Target</th>
-                                                                                                <th width="12%">Satuan</th>
-                                                                                                <th width="12%">Tahun</th>
-                                                                                                <th width="12%">Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                                        $no_tujuan_indikator_kinerja = 1;
-                                                                                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $c = 1;
-                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                    {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                            </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    } else {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    }
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                                    }
-                                                                    $html .= '</tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>';
-                                                    $a++;
-                                                }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                        }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                        class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        data-tahun="'.$tahun.'"
+                                                                        data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        value="close"
+                                                                        data-bs-toggle="collapse"
+                                                                        data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        class="accordion-toggle">
+                                                                            <i class="fas fa-chevron-right"></i>
+                                                                    </button>
+                                                                </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            }
+                                            $c++;
+                                        } else {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            }
+                                            $c++;
+                                        }
+                                    }
+                            }
                             $html .= '</tbody>
                         </table>
                     </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil merubah indikator tujuan', 'html' => $html]);
+                </td>
+            </tr>';
+        }
+
+        return response()->json(['success' => 'Berhasil merubah indikator tujuan', 'html' => $html, 'misi_id' => $misi['id']]);
     }
 
     public function indikator_kinerja_hapus(Request $request)
     {
+        $idMisi = Tujuan::find($request->tujuan_id)->misi_id;
         $tujuan_target_satuan_rp_realisasies = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $request->tujuan_indikator_kinerja_id)->get();
         foreach ($tujuan_target_satuan_rp_realisasies as $tujuan_target_satuan_rp_realisasi) {
             TujuanTargetSatuanRpRealisasi::find($tujuan_target_satuan_rp_realisasi->id)->delete();
@@ -1739,308 +1923,356 @@ class TujuanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+
+        $get_misis = Misi::where('id', $idMisi)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
+        $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+
+        $tujuans = [];
+
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                        ->latest()
+                                        ->first();
+            if($cek_perubahan_tujuan)
+            {
+                $tujuans[] = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                ];
+            } else {
+                $tujuans[] = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                ];
+            }
+        }
+
+        foreach ($tujuans as $tujuan)
+        {
+            $html .= '<tr>
+                <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                    '.$tujuan['deskripsi'].'
+                    <br>';
+                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>';
+                    $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
+                    <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                </td>';
+                $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                $html .= '<td width="28%"><table>
+                    <tbody>';
+                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                            $html .= '<tr>';
+                                $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                $html .= '<td width="25%">
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                </td>';
+                            $html .= '</tr>';
+                        }
+                    $html .= '</tbody>
+                </table></td>';
+                $html .= '<td width="22%">
+                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>';
+            $html .= '<tr>
+                <td colspan="4" class="hiddenRow">
+                    <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                        <table class="table table-striped table-condesed">
                             <thead>
                                 <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
+                                    <th width="5%">No</th>
+                                    <th width="30%">Indikator</th>
+                                    <th width="17%">Kondisi Kinerja Awal</th>
+                                    <th width="12%">Target</th>
+                                    <th width="12%">Satuan</th>
+                                    <th width="12%">Tahun</th>
+                                    <th width="12%">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>';
-                        foreach ($visis as $visi) {
-                            $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condesed">
-                                                <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                                if($request->tujuan_filter_visi == 'aman')
-                                                {
-                                                    $get_misis = $get_misis->where(function($q){
-                                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                                    });
-                                                }
-                                                if($request->tujuan_filter_visi == 'mandiri')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 3);
-                                                }
-                                                if($request->tujuan_filter_visi == 'sejahtera')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 4);
-                                                }
-                                                if($request->tujuan_filter_visi == 'berahlak')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 5);
-                                                }
-                                                if($request->tujuan_filter_misi)
-                                                {
-                                                    $get_misis = $get_misis->where('id', $request->tujuan_filter_misi);
-                                                }
-                                                $get_misis = $get_misis->get();
-                                                $misis = [];
-                                                foreach ($get_misis as $get_misi) {
-                                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->where('tahun_perubahan', $request->tahun)
-                                                                            ->latest()
-                                                                            ->first();
-                                                    if($cek_perubahan_misi)
-                                                    {
-                                                        $misis[] = [
-                                                            'id' => $cek_perubahan_misi->misi_id,
-                                                            'kode' => $cek_perubahan_misi->kode,
-                                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
-                                                        ];
-                                                    } else {
-                                                        $misis[] = [
-                                                            'id' => $get_misi->id,
-                                                            'kode' => $get_misi->kode,
-                                                            'deskripsi' => $get_misi->deskripsi,
-                                                            'tahun_perubahan' => $get_misi->tahun_perubahan
-                                                        ];
-                                                    }
-                                                }
-                                                $a = 1;
-                                                foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background: #c04141;">
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                        <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                            '.strtoupper($misi['deskripsi']).'
-                                                            <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
-                                                        </td>
-                                                        <td width="30%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                        <td width="20%">
-                                                            <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped table-condesed">
-                                                                    <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                    if($request->tujuan_filter_tujuan)
-                                                                    {
-                                                                        $get_tujuans = $get_tujuans->where('id', $request->tujuan_filter_tujuan);
-                                                                    }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
-                                                                    $tujuans = [];
-                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                        if($request->nav_rpjmd_tujuan_tahun != 'semua')
-                                                                        {
-                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
-                                                                        }
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
-                                                                        if($cek_perubahan_tujuan)
-                                                                        {
-                                                                            $tujuans[] = [
-                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        } else {
-                                                                            $tujuans[] = [
-                                                                                'id' => $get_tujuan->id,
-                                                                                'kode' => $get_tujuan->kode,
-                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        }
-                                                                    }
-                                                                    foreach ($tujuans as $tujuan) {
-                                                                        $html .= '<tr>
-                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                '.$tujuan['deskripsi'].'
-                                                                                <br>';
-                                                                                if($a == 1 || $a == 2)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
-                                                                                }
-                                                                                if($a == 3)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
-                                                                                }
-                                                                                if($a == 4)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
-                                                                                }
-                                                                                if($a == 5)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
-                                                                                }
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                            </td>';
-                                                                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="28%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .= '</tr>';
+                            <tbody id="tbodyTujuanTujuan'.$tujuan['id'].'">';
+                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                            $no_tujuan_indikator_kinerja = 1;
+                            foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                                $html .= '<tr id="trTujuanIndikatorKinerja'.$tujuan_indikator_kinerja->id.'">';
+                                    $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                    $c = 1;
+                                    foreach ($tahuns as $tahun) {
+                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                            ->where('tahun', $tahun)->first();
+                                        if($cek_tujuan_target_satuan_rp_realisasi)
+                                        {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                </button>
+                                                                <button type="button"
+                                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    data-tahun="'.$tahun.'"
+                                                                    data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    value="close"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    class="accordion-toggle">
+                                                                        <i class="fas fa-chevron-right"></i>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
                                                                                     }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-                                                                            $html .= '<td width="22%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>';
-                                                                        $html .= '<tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th width="5%">No</th>
-                                                                                                <th width="30%">Indikator</th>
-                                                                                                <th width="17%">Target Kinerja Awal</th>
-                                                                                                <th width="12%">Target</th>
-                                                                                                <th width="12%">Satuan</th>
-                                                                                                <th width="12%">Tahun</th>
-                                                                                                <th width="12%">Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                                        $no_tujuan_indikator_kinerja = 1;
-                                                                                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $c = 1;
-                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                    {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                            </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    } else {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    }
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                                    }
-                                                                    $html .= '</tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>';
-                                                    $a++;
-                                                }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                        }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                        class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        data-tahun="'.$tahun.'"
+                                                                        data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        value="close"
+                                                                        data-bs-toggle="collapse"
+                                                                        data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        class="accordion-toggle">
+                                                                            <i class="fas fa-chevron-right"></i>
+                                                                    </button>
+                                                                </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            }
+                                            $c++;
+                                        } else {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            }
+                                            $c++;
+                                        }
+                                    }
+                            }
                             $html .= '</tbody>
                         </table>
                     </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil menghapus indikator tujuan', 'html' => $html]);
+                </td>
+            </tr>';
+        }
+
+        return response()->json(['success' => 'Berhasil menghapus indikator tujuan', 'html' => $html, 'misi_id' => $misi['id']]);
     }
 
     public function store_tujuan_target_satuan_rp_realisasi(Request $request)
@@ -2073,308 +2305,282 @@ class TujuanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        // Table Of Content
+        $tws = MasterTw::all();
+
+        $getTujuanIndikatorKinerja = TujuanIndikatorKinerja::find($request->tujuan_indikator_kinerja_id);
+        $get_tujuans = Tujuan::where('id', $getTujuanIndikatorKinerja->tujuan_id);
+        $get_tujuans = $get_tujuans->get();
+
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
+            if($request->nav_rpjmd_tujuan_tahun != 'semua')
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
+            }
+            $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
+            $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
+            if($cek_perubahan_tujuan)
+            {
+                $tujuan = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan,
                 ];
             }
         }
-
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                        foreach ($visis as $visi) {
-                            $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condesed">
-                                                <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                                if($request->tujuan_filter_visi == 'aman')
-                                                {
-                                                    $get_misis = $get_misis->where(function($q){
-                                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                                    });
-                                                }
-                                                if($request->tujuan_filter_visi == 'mandiri')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 3);
-                                                }
-                                                if($request->tujuan_filter_visi == 'sejahtera')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 4);
-                                                }
-                                                if($request->tujuan_filter_visi == 'berahlak')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 5);
-                                                }
-                                                if($request->tujuan_filter_misi)
-                                                {
-                                                    $get_misis = $get_misis->where('id', $request->tujuan_filter_misi);
-                                                }
-                                                $get_misis = $get_misis->get();
-                                                $misis = [];
-                                                foreach ($get_misis as $get_misi) {
-                                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->where('tahun_perubahan', $request->tahun)
-                                                                            ->latest()
-                                                                            ->first();
-                                                    if($cek_perubahan_misi)
-                                                    {
-                                                        $misis[] = [
-                                                            'id' => $cek_perubahan_misi->misi_id,
-                                                            'kode' => $cek_perubahan_misi->kode,
-                                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
-                                                        ];
-                                                    } else {
-                                                        $misis[] = [
-                                                            'id' => $get_misi->id,
-                                                            'kode' => $get_misi->kode,
-                                                            'deskripsi' => $get_misi->deskripsi,
-                                                            'tahun_perubahan' => $get_misi->tahun_perubahan
-                                                        ];
-                                                    }
-                                                }
-                                                $a = 1;
-                                                foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background: #c04141;">
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                        <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                            '.strtoupper($misi['deskripsi']).'
-                                                            <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
-                                                        </td>
-                                                        <td width="30%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                        <td width="20%">
-                                                            <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped table-condesed">
-                                                                    <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                    if($request->tujuan_filter_tujuan)
-                                                                    {
-                                                                        $get_tujuans = $get_tujuans->where('id', $request->tujuan_filter_tujuan);
-                                                                    }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
-                                                                    $tujuans = [];
-                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                        if($request->nav_rpjmd_tujuan_tahun != 'semua')
-                                                                        {
-                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
-                                                                        }
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
-                                                                        if($cek_perubahan_tujuan)
-                                                                        {
-                                                                            $tujuans[] = [
-                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        } else {
-                                                                            $tujuans[] = [
-                                                                                'id' => $get_tujuan->id,
-                                                                                'kode' => $get_tujuan->kode,
-                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        }
-                                                                    }
-                                                                    foreach ($tujuans as $tujuan) {
-                                                                        $html .= '<tr>
-                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                '.$tujuan['deskripsi'].'
-                                                                                <br>';
-                                                                                if($a == 1 || $a == 2)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
-                                                                                }
-                                                                                if($a == 3)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
-                                                                                }
-                                                                                if($a == 4)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
-                                                                                }
-                                                                                if($a == 5)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
-                                                                                }
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+        $html = '';
+        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+        $no_tujuan_indikator_kinerja = 1;
+        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+            $html .= '<tr id="trTujuanIndikatorKinerja'.$tujuan_indikator_kinerja->id.'">';
+                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
+                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                $c = 1;
+                foreach ($tahuns as $tahun) {
+                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                        ->where('tahun', $tahun)->first();
+                    if($cek_tujuan_target_satuan_rp_realisasi)
+                    {
+                        if($c == 1)
+                        {
+                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                data-tahun="'.$tahun.'"
+                                                data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                value="close"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                class="accordion-toggle">
+                                                    <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>
+                            <tr>
+                                <td colspan="10" class="hiddenRow">
+                                    <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                        <table class="table table-striped table-condesed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Target Kinerja</th>
+                                                    <th>Satuan</th>
+                                                    <th>Tahun</th>
+                                                    <th>TW</th>
+                                                    <th>Realisasi Kinerja</th>
+                                                    <th width="10%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                $html .= '<tr>';
+                                                    $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $d = 1;
+                                                    foreach ($tws as $tw) {
+                                                        if($d == 1)
+                                                        {
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_tujuan_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
                                                                             </td>';
-                                                                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="28%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .= '</tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-                                                                            $html .= '<td width="22%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>';
-                                                                        $html .= '<tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th width="5%">No</th>
-                                                                                                <th width="30%">Indikator</th>
-                                                                                                <th width="17%">Target Kinerja Awal</th>
-                                                                                                <th width="12%">Target</th>
-                                                                                                <th width="12%">Satuan</th>
-                                                                                                <th width="12%">Tahun</th>
-                                                                                                <th width="12%">Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                                        $no_tujuan_indikator_kinerja = 1;
-                                                                                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $c = 1;
-                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                    {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                            </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    } else {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    }
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                                    }
-                                                                    $html .= '</tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>';
-                                                    $a++;
-                                                }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        } else {
+                                                            $html .= '<tr>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_tujuan_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        }
+                                                        $d++;
+                                                    }
+                                                $html .= '</tr>';
+                                            $html .='</tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                </button>
+                                                <button type="button"
+                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                    data-tahun="'.$tahun.'"
+                                                    data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                    value="close"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                    class="accordion-toggle">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </td>';
+                            $html .='</tr>
+                            <tr>
+                                <td colspan="10" class="hiddenRow">
+                                    <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                        <table class="table table-striped table-condesed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Target Kinerja</th>
+                                                    <th>Satuan</th>
+                                                    <th>Tahun</th>
+                                                    <th>TW</th>
+                                                    <th>Realisasi Kinerja</th>
+                                                    <th width="10%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                $html .= '<tr>';
+                                                    $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $d = 1;
+                                                    foreach ($tws as $tw) {
+                                                        if($d == 1)
+                                                        {
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_tujuan_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        } else {
+                                                            $html .= '<tr>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_tujuan_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        }
+                                                        $d++;
+                                                    }
+                                                $html .= '</tr>';
+                                            $html .='</tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>';
                         }
-                            $html .= '</tbody>
-                        </table>
-                    </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil menambahkan target', 'html' => $html]);
+                        $c++;
+                    } else {
+                        if($c == 1)
+                        {
+                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>';
+                        }
+                        $c++;
+                    }
+                }
+        }
+
+        return response()->json(['success' => 'Berhasil menambahkan target', 'html' => $html, 'tujuan_id' => $tujuan['id']]);
     }
 
     public function update_tujuan_target_satuan_rp_realisasi(Request $request)
@@ -2404,312 +2610,287 @@ class TujuanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        $tws = MasterTw::all();
+
+        // Table of Content
+        $getTujuanIndikatorKinerja = TujuanIndikatorKinerja::find($request->tujuan_indikator_kinerja_id);
+        $get_tujuans = Tujuan::where('id', $getTujuanIndikatorKinerja->tujuan_id);
+        $get_tujuans = $get_tujuans->get();
+
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
+            if($request->nav_rpjmd_tujuan_tahun != 'semua')
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
+            }
+            $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
+            $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
+            if($cek_perubahan_tujuan)
+            {
+                $tujuan = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $tujuan = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan,
                 ];
             }
         }
-
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                        foreach ($visis as $visi) {
-                            $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condesed">
-                                                <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                                if($request->tujuan_filter_visi == 'aman')
-                                                {
-                                                    $get_misis = $get_misis->where(function($q){
-                                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                                    });
-                                                }
-                                                if($request->tujuan_filter_visi == 'mandiri')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 3);
-                                                }
-                                                if($request->tujuan_filter_visi == 'sejahtera')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 4);
-                                                }
-                                                if($request->tujuan_filter_visi == 'berahlak')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 5);
-                                                }
-                                                if($request->tujuan_filter_misi)
-                                                {
-                                                    $get_misis = $get_misis->where('id', $request->tujuan_filter_misi);
-                                                }
-                                                $get_misis = $get_misis->get();
-                                                $misis = [];
-                                                foreach ($get_misis as $get_misi) {
-                                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->where('tahun_perubahan', $request->tahun)
-                                                                            ->latest()
-                                                                            ->first();
-                                                    if($cek_perubahan_misi)
-                                                    {
-                                                        $misis[] = [
-                                                            'id' => $cek_perubahan_misi->misi_id,
-                                                            'kode' => $cek_perubahan_misi->kode,
-                                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
-                                                        ];
-                                                    } else {
-                                                        $misis[] = [
-                                                            'id' => $get_misi->id,
-                                                            'kode' => $get_misi->kode,
-                                                            'deskripsi' => $get_misi->deskripsi,
-                                                            'tahun_perubahan' => $get_misi->tahun_perubahan
-                                                        ];
-                                                    }
-                                                }
-                                                $a = 1;
-                                                foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background: #c04141;">
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                        <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                            '.strtoupper($misi['deskripsi']).'
-                                                            <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
-                                                        </td>
-                                                        <td width="30%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                        <td width="20%">
-                                                            <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped table-condesed">
-                                                                    <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                    if($request->tujuan_filter_tujuan)
-                                                                    {
-                                                                        $get_tujuans = $get_tujuans->where('id', $request->tujuan_filter_tujuan);
-                                                                    }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
-                                                                    $tujuans = [];
-                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                        if($request->nav_rpjmd_tujuan_tahun != 'semua')
-                                                                        {
-                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
-                                                                        }
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
-                                                                        if($cek_perubahan_tujuan)
-                                                                        {
-                                                                            $tujuans[] = [
-                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        } else {
-                                                                            $tujuans[] = [
-                                                                                'id' => $get_tujuan->id,
-                                                                                'kode' => $get_tujuan->kode,
-                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        }
-                                                                    }
-                                                                    foreach ($tujuans as $tujuan) {
-                                                                        $html .= '<tr>
-                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                '.$tujuan['deskripsi'].'
-                                                                                <br>';
-                                                                                if($a == 1 || $a == 2)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
-                                                                                }
-                                                                                if($a == 3)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
-                                                                                }
-                                                                                if($a == 4)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
-                                                                                }
-                                                                                if($a == 5)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
-                                                                                }
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+        $html = '';
+        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+        $no_tujuan_indikator_kinerja = 1;
+        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+            $html .= '<tr id="trTujuanIndikatorKinerja'.$tujuan_indikator_kinerja->id.'">';
+                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
+                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                $c = 1;
+                foreach ($tahuns as $tahun) {
+                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                        ->where('tahun', $tahun)->first();
+                    if($cek_tujuan_target_satuan_rp_realisasi)
+                    {
+                        if($c == 1)
+                        {
+                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                data-tahun="'.$tahun.'"
+                                                data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                value="close"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                class="accordion-toggle">
+                                                    <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>
+                            <tr>
+                                <td colspan="10" class="hiddenRow">
+                                    <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                        <table class="table table-striped table-condesed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Target Kinerja</th>
+                                                    <th>Satuan</th>
+                                                    <th>Tahun</th>
+                                                    <th>TW</th>
+                                                    <th>Realisasi Kinerja</th>
+                                                    <th width="10%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                $html .= '<tr>';
+                                                    $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $d = 1;
+                                                    foreach ($tws as $tw) {
+                                                        if($d == 1)
+                                                        {
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_tujuan_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
                                                                             </td>';
-                                                                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="28%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .= '</tr>';
-                                                                                    }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-                                                                            $html .= '<td width="22%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>';
-                                                                        $html .= '<tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th width="5%">No</th>
-                                                                                                <th width="30%">Indikator</th>
-                                                                                                <th width="17%">Target Kinerja Awal</th>
-                                                                                                <th width="12%">Target</th>
-                                                                                                <th width="12%">Satuan</th>
-                                                                                                <th width="12%">Tahun</th>
-                                                                                                <th width="12%">Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                                        $no_tujuan_indikator_kinerja = 1;
-                                                                                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $c = 1;
-                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                    {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                            </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    } else {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    }
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                                    }
-                                                                    $html .= '</tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>';
-                                                    $a++;
-                                                }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        } else {
+                                                            $html .= '<tr>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_tujuan_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        }
+                                                        $d++;
+                                                    }
+                                                $html .= '</tr>';
+                                            $html .='</tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                </button>
+                                                <button type="button"
+                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                    data-tahun="'.$tahun.'"
+                                                    data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                    value="close"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                    class="accordion-toggle">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </td>';
+                            $html .='</tr>
+                            <tr>
+                                <td colspan="10" class="hiddenRow">
+                                    <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                        <table class="table table-striped table-condesed">
+                                            <thead>
+                                                <tr>
+                                                    <th>Target Kinerja</th>
+                                                    <th>Satuan</th>
+                                                    <th>Tahun</th>
+                                                    <th>TW</th>
+                                                    <th>Realisasi Kinerja</th>
+                                                    <th width="10%">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                $html .= '<tr>';
+                                                    $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $d = 1;
+                                                    foreach ($tws as $tw) {
+                                                        if($d == 1)
+                                                        {
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_tujuan_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        } else {
+                                                            $html .= '<tr>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td></td>';
+                                                                $html .= '<td>'.$tw->nama.'</td>';
+                                                                $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                    ->where('tw_id', $tw->id)->first();
+                                                                if($cek_tujuan_tw_realisasi)
+                                                                {
+                                                                    $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                } else {
+                                                                    $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                    $html .= '<td>
+                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                </button>
+                                                                            </td>';
+                                                                }
+                                                            $html .= '</tr>';
+                                                        }
+                                                        $d++;
+                                                    }
+                                                $html .= '</tr>';
+                                            $html .='</tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>';
                         }
-                            $html .= '</tbody>
-                        </table>
-                    </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil merubah nilai target', 'html' => $html]);
+                        $c++;
+                    } else {
+                        if($c == 1)
+                        {
+                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>';
+                        } else {
+                            $html .= '<tr>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td></td>';
+                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                $html .= '<td>'.$tahun.'</td>';
+                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                            </button>
+                                        </td>';
+                            $html .='</tr>';
+                        }
+                        $c++;
+                    }
+                }
+        }
+
+        return response()->json(['success' => 'Berhasil merubah nilai target', 'html' => $html, 'tujuan_id' => $tujuan['id']]);
     }
 
     public function hapus(Request $request)
     {
+        $idMisi = Tujuan::find($request->hapus_tujuan_id)->misi_id;
         if($request->hapus_tujuan_tahun == 'semua')
         {
             // Hapus Pivot Perubahan Tujuan
@@ -2954,307 +3135,351 @@ class TujuanController extends Controller
             $tahuns[] = $tahun_awal + $i;
         }
 
-        $get_visis = Visi::all();
-        $tahun_sekarang = Carbon::now()->year;
-        $visis = [];
-        foreach ($get_visis as $get_visi) {
-            $cek_perubahan_visi = PivotPerubahanVisi::where('visi_id', $get_visi->id)->where('tahun_perubahan', $request->tahun)
-                                    ->latest()->first();
-            if($cek_perubahan_visi)
+        // Table of Content
+        $html = '';
+        $tws = MasterTw::all();
+
+        $get_misis = Misi::where('id', $idMisi)->get();
+        foreach ($get_misis as $get_misi) {
+            $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
+                                    ->latest()
+                                    ->first();
+            if($cek_perubahan_misi)
             {
-                $visis[] = [
-                    'id' => $cek_perubahan_visi->visi_id,
-                    'deskripsi' => $cek_perubahan_visi->deskripsi,
-                    'tahun_perubahan' => $cek_perubahan_visi->tahun_perubahan
+                $misi = [
+                    'id' => $cek_perubahan_misi->misi_id,
+                    'kode' => $cek_perubahan_misi->kode,
+                    'deskripsi' => $cek_perubahan_misi->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
                 ];
             } else {
-                $visis[] = [
-                    'id' => $get_visi->id,
-                    'deskripsi' => $get_visi->deskripsi,
-                    'tahun_perubahan' => $get_visi->tahun_perubahan
+                $misi = [
+                    'id' => $get_misi->id,
+                    'kode' => $get_misi->kode,
+                    'deskripsi' => $get_misi->deskripsi,
+                    'tahun_perubahan' => $get_misi->tahun_perubahan
                 ];
             }
         }
 
-        $html = '<div class="data-table-rows slim" id="tujuan_div_table">
-                    <div class="data-table-responsive-wrapper">
-                        <table class="table table-condensed table-striped">
+        $get_tujuans = Tujuan::where('misi_id', $misi['id'])->orderBy('kode', 'asc')->get();
+        $tujuans = [];
+        foreach ($get_tujuans as $get_tujuan) {
+            $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id)
+                                        ->latest()
+                                        ->first();
+            if($cek_perubahan_tujuan)
+            {
+                $tujuans[] = [
+                    'id' => $cek_perubahan_tujuan->tujuan_id,
+                    'kode' => $cek_perubahan_tujuan->kode,
+                    'deskripsi' => $cek_perubahan_tujuan->deskripsi,
+                    'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
+                ];
+            } else {
+                $tujuans[] = [
+                    'id' => $get_tujuan->id,
+                    'kode' => $get_tujuan->kode,
+                    'deskripsi' => $get_tujuan->deskripsi,
+                    'tahun_perubahan' => $get_tujuan->tahun_perubahan,
+                ];
+            }
+        }
+        foreach ($tujuans as $tujuan) {
+            $html .= '<tr>
+                <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
+                <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
+                    '.$tujuan['deskripsi'].'
+                    <br>';
+                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>';
+                    $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
+                    <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
+                </td>';
+                $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                $html .= '<td width="28%"><table>
+                    <tbody>';
+                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                            $html .= '<tr>';
+                                $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                $html .= '<td width="25%">
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
+                                </td>';
+                            $html .= '</tr>';
+                        }
+                    $html .= '</tbody>
+                </table></td>';
+                $html .= '<td width="22%">
+                    <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
+                    <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>';
+            $html .= '<tr>
+                <td colspan="4" class="hiddenRow">
+                    <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
+                        <table class="table table-striped table-condesed">
                             <thead>
                                 <tr>
-                                    <th width="5%">Kode</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="30%">Indikator Kinerja</th>
-                                    <th width="20%">Aksi</th>
+                                    <th width="5%">No</th>
+                                    <th width="30%">Indikator</th>
+                                    <th width="17%">Kondisi Kinerja Awal</th>
+                                    <th width="12%">Target</th>
+                                    <th width="12%">Satuan</th>
+                                    <th width="12%">Tahun</th>
+                                    <th width="12%">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>';
-                        foreach ($visis as $visi) {
-                            $html .= '<tr style="background: #bbbbbb;">
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle text-white">
-                                        '.strtoupper($visi['deskripsi']).'
-                                        <br>
-                                        <span class="badge bg-primary text-uppercase tujuan-tagging">Visi</span>
-                                    </td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                    <td data-bs-toggle="collapse" data-bs-target="#tujuan_visi'.$visi['id'].'" class="accordion-toggle"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="hiddenRow">
-                                        <div class="collapse show" id="tujuan_visi'.$visi['id'].'">
-                                            <table class="table table-striped table-condesed">
-                                                <tbody>';
-                                                $get_misis = Misi::where('visi_id', $visi['id']);
-                                                if($request->tujuan_filter_visi == 'aman')
-                                                {
-                                                    $get_misis = $get_misis->where(function($q){
-                                                        $q->where('kode', 1)->orWhere('kode', 2);
-                                                    });
-                                                }
-                                                if($request->tujuan_filter_visi == 'mandiri')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 3);
-                                                }
-                                                if($request->tujuan_filter_visi == 'sejahtera')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 4);
-                                                }
-                                                if($request->tujuan_filter_visi == 'berahlak')
-                                                {
-                                                    $get_misis = $get_misis->where('kode', 5);
-                                                }
-                                                if($request->tujuan_filter_misi)
-                                                {
-                                                    $get_misis = $get_misis->where('id', $request->tujuan_filter_misi);
-                                                }
-                                                $get_misis = $get_misis->get();
-                                                $misis = [];
-                                                foreach ($get_misis as $get_misi) {
-                                                    $cek_perubahan_misi = PivotPerubahanMisi::where('misi_id', $get_misi->id)
-                                                                            ->where('tahun_perubahan', $request->tahun)
-                                                                            ->latest()
-                                                                            ->first();
-                                                    if($cek_perubahan_misi)
-                                                    {
-                                                        $misis[] = [
-                                                            'id' => $cek_perubahan_misi->misi_id,
-                                                            'kode' => $cek_perubahan_misi->kode,
-                                                            'deskripsi' => $cek_perubahan_misi->deskripsi,
-                                                            'tahun_perubahan' => $cek_perubahan_misi->tahun_perubahan
-                                                        ];
-                                                    } else {
-                                                        $misis[] = [
-                                                            'id' => $get_misi->id,
-                                                            'kode' => $get_misi->kode,
-                                                            'deskripsi' => $get_misi->deskripsi,
-                                                            'tahun_perubahan' => $get_misi->tahun_perubahan
-                                                        ];
-                                                    }
-                                                }
-                                                $a = 1;
-                                                foreach ($misis as $misi) {
-                                                    $html .= '<tr style="background: #c04141;">
-                                                        <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">'.$misi['kode'].'</td>
-                                                        <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle text-white">
-                                                            '.strtoupper($misi['deskripsi']).'
-                                                            <br>';
-                                                            $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi '.$request->visi.'</span>';
-                                                            $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].' </span>
-                                                        </td>
-                                                        <td width="30%" data-bs-toggle="collapse" data-bs-target="#tujuan_misi'.$misi['id'].'" class="accordion-toggle"></td>
-                                                        <td width="20%">
-                                                            <button class="btn btn-primary waves-effect waves-light mr-2 tujuan_create" type="button" data-bs-toggle="modal" data-bs-target="#addEditTujuanModal" title="Tambah Data Misi" data-misi-id="'.$misi['id'].'"><i class="fas fa-plus"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="4" class="hiddenRow">
-                                                            <div class="collapse show" id="tujuan_misi'.$misi['id'].'">
-                                                                <table class="table table-striped table-condesed">
-                                                                    <tbody>';
-                                                                    $get_tujuans = Tujuan::where('misi_id', $misi['id']);
-                                                                    if($request->tujuan_filter_tujuan)
-                                                                    {
-                                                                        $get_tujuans = $get_tujuans->where('id', $request->tujuan_filter_tujuan);
-                                                                    }
-                                                                    $get_tujuans = $get_tujuans->orderBy('kode', 'asc')->get();
-                                                                    $tujuans = [];
-                                                                    foreach ($get_tujuans as $get_tujuan) {
-                                                                        $cek_perubahan_tujuan = PivotPerubahanTujuan::where('tujuan_id', $get_tujuan->id);
-                                                                        if($request->nav_rpjmd_tujuan_tahun != 'semua')
-                                                                        {
-                                                                            $cek_perubahan_tujuan = $cek_perubahan_tujuan->where('tahun_perubahan', $request->nav_rpjmd_tujuan_tahun);
-                                                                        }
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->orderBy('created_at', 'desc');
-                                                                        $cek_perubahan_tujuan = $cek_perubahan_tujuan->first();
-                                                                        if($cek_perubahan_tujuan)
-                                                                        {
-                                                                            $tujuans[] = [
-                                                                                'id' => $cek_perubahan_tujuan->tujuan_id,
-                                                                                'kode' => $cek_perubahan_tujuan->kode,
-                                                                                'deskripsi' => $cek_perubahan_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $cek_perubahan_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        } else {
-                                                                            $tujuans[] = [
-                                                                                'id' => $get_tujuan->id,
-                                                                                'kode' => $get_tujuan->kode,
-                                                                                'deskripsi' => $get_tujuan->deskripsi,
-                                                                                'tahun_perubahan' => $get_tujuan->tahun_perubahan,
-                                                                            ];
-                                                                        }
-                                                                    }
-                                                                    foreach ($tujuans as $tujuan) {
-                                                                        $html .= '<tr>
-                                                                            <td width="5%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">'.$misi['kode'].'.'.$tujuan['kode'].'</td>
-                                                                            <td width="45%" data-bs-toggle="collapse" data-bs-target="#tujuan_tujuan'.$tujuan['id'].'" class="accordion-toggle">
-                                                                                '.$tujuan['deskripsi'].'
-                                                                                <br>';
-                                                                                if($a == 1 || $a == 2)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Aman]</span>';
-                                                                                }
-                                                                                if($a == 3)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Mandiri]</span>';
-                                                                                }
-                                                                                if($a == 4)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Sejahtera]</span>';
-                                                                                }
-                                                                                if($a == 5)
-                                                                                {
-                                                                                    $html .= '<span class="badge bg-primary text-uppercase tujuan-tagging">Visi [Berahlak]</span>';
-                                                                                }
-                                                                                $html .= ' <span class="badge bg-warning text-uppercase tujuan-tagging">Misi '.$misi['kode'].'</span>
-                                                                                <span class="badge bg-secondary text-uppercase tujuan-tagging">Tujuan '.$misi['kode'].'.'.$tujuan['kode'].'</span>
-                                                                            </td>';
-                                                                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                            $html .= '<td width="28%"><table>
-                                                                                <tbody>';
-                                                                                    foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                        $html .= '<tr>';
-                                                                                            $html .= '<td width="75%">'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                            $html .= '<td width="25%">
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-warning btn-edit-tujuan-indikator-kinerja mr-1" data-id="'.$tujuan_indikator_kinerja->id.'" title="Edit Indikator Kinerja Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                                <button class="btn btn-sm btn-icon btn-icon-only btn-outline-danger btn-hapus-tujuan-indikator-kinerja" type="button" title="Hapus Indikator" data-tujuan-id="'.$tujuan['id'].'" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'"><i class="fas fa-trash"></i></button>
-                                                                                            </td>';
-                                                                                        $html .= '</tr>';
+                            <tbody id="tbodyTujuanTujuan'.$tujuan['id'].'">';
+                            $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
+                            $no_tujuan_indikator_kinerja = 1;
+                            foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
+                                $html .= '<tr id="trTujuanIndikatorKinerja'.$tujuan_indikator_kinerja->id.'">';
+                                    $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
+                                    $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
+                                    $c = 1;
+                                    foreach ($tahuns as $tahun) {
+                                        $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
+                                                                                            ->where('tahun', $tahun)->first();
+                                        if($cek_tujuan_target_satuan_rp_realisasi)
+                                        {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                </button>
+                                                                <button type="button"
+                                                                    class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    data-tahun="'.$tahun.'"
+                                                                    data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    value="close"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                    class="accordion-toggle">
+                                                                        <i class="fas fa-chevron-right"></i>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
                                                                                     }
-                                                                                $html .= '</tbody>
-                                                                            </table></td>';
-                                                                            $html .= '<td width="22%">
-                                                                                <button class="btn btn-icon btn-info waves-effect waves-light mr-1 detail-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Detail Tujuan"><i class="fas fa-eye"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light edit-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-misi-id="'.$misi['id'].'" data-tahun="semua" type="button" title="Edit Tujuan"><i class="fas fa-edit"></i></button>
-                                                                                <button class="btn btn-icon btn-warning waves-effect waves-light tambah-tujuan-indikator-kinerja" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Tambah Tujuan Indikator Kinerja"><i class="fas fa-lock"></i></button>
-                                                                                <button class="btn btn-icon btn-danger waves-effect waves-light hapus-tujuan" data-tujuan-id="'.$tujuan['id'].'" data-tahun="semua" type="button" title="Hapus Tujuan "><i class="fas fa-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>';
-                                                                        $html .= '<tr>
-                                                                            <td colspan="4" class="hiddenRow">
-                                                                                <div class="collapse accordion-body" id="tujuan_tujuan'.$tujuan['id'].'">
-                                                                                    <table class="table table-striped table-condesed">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th width="5%">No</th>
-                                                                                                <th width="30%">Indikator</th>
-                                                                                                <th width="17%">Target Kinerja Awal</th>
-                                                                                                <th width="12%">Target</th>
-                                                                                                <th width="12%">Satuan</th>
-                                                                                                <th width="12%">Tahun</th>
-                                                                                                <th width="12%">Aksi</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>';
-                                                                                        $tujuan_indikator_kinerjas = TujuanIndikatorKinerja::where('tujuan_id', $tujuan['id'])->get();
-                                                                                        $no_tujuan_indikator_kinerja = 1;
-                                                                                        foreach ($tujuan_indikator_kinerjas as $tujuan_indikator_kinerja) {
-                                                                                            $html .= '<tr>';
-                                                                                                $html .= '<td>'.$no_tujuan_indikator_kinerja++.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->deskripsi.'</td>';
-                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                $c = 1;
-                                                                                                foreach ($tahuns as $tahun) {
-                                                                                                    $cek_tujuan_target_satuan_rp_realisasi = TujuanTargetSatuanRpRealisasi::where('tujuan_indikator_kinerja_id', $tujuan_indikator_kinerja->id)
-                                                                                                                                                        ->where('tahun', $tahun)->first();
-                                                                                                    if($cek_tujuan_target_satuan_rp_realisasi)
-                                                                                                    {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
-                                                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
-                                                                                                                                </button>
-                                                                                                                            </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    } else {
-                                                                                                        if($c == 1)
-                                                                                                        {
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        } else {
-                                                                                                            $html .= '<tr>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td></td>';
-                                                                                                                $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
-                                                                                                                $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
-                                                                                                                $html .= '<td>'.$tahun.'</td>';
-                                                                                                                $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
-                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
-                                                                                                                            </button>
-                                                                                                                        </td>';
-                                                                                                            $html .='</tr>';
-                                                                                                        }
-                                                                                                        $c++;
-                                                                                                    }
-                                                                                                }
-                                                                                        }
-                                                                                        $html .= '</tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>';
-                                                                    }
-                                                                    $html .= '</tbody>
-                                                                </table>
-                                                            </div>
-                                                        </td>
-                                                    </tr>';
-                                                    $a++;
-                                                }
-                                                $html .= '</tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>';
-                        }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><span class="tujuan-span-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'">'.$cek_tujuan_target_satuan_rp_realisasi->target.'</span></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-tujuan-edit-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'" data-tujuan-target-satuan-rp-realisasi="'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                    </button>
+                                                                    <button type="button"
+                                                                        class="btn btn-icon btn-primary waves-effect waves-light btn-open-tujuan-tw-realisasi '.$tahun.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        data-tahun="'.$tahun.'"
+                                                                        data-tujuan-target-satuan-rp-realisasi-id="'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        value="close"
+                                                                        data-bs-toggle="collapse"
+                                                                        data-bs-target="#tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'"
+                                                                        class="accordion-toggle">
+                                                                            <i class="fas fa-chevron-right"></i>
+                                                                    </button>
+                                                                </td>';
+                                                $html .='</tr>
+                                                <tr>
+                                                    <td colspan="10" class="hiddenRow">
+                                                        <div class="collapse accordion-body" id="tujuan_indikator_'.$cek_tujuan_target_satuan_rp_realisasi->id.'">
+                                                            <table class="table table-striped table-condesed">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Target Kinerja</th>
+                                                                        <th>Satuan</th>
+                                                                        <th>Tahun</th>
+                                                                        <th>TW</th>
+                                                                        <th>Realisasi Kinerja</th>
+                                                                        <th width="10%">Aksi</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="tbodyTujuanTwRealisasi'.$cek_tujuan_target_satuan_rp_realisasi->id.''.$tahun.'">';
+                                                                    $html .= '<tr>';
+                                                                        $html .= '<td>'.$cek_tujuan_target_satuan_rp_realisasi->target.'</td>';
+                                                                        $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                                        $html .= '<td>'.$tahun.'</td>';
+                                                                        $d = 1;
+                                                                        foreach ($tws as $tw) {
+                                                                            if($d == 1)
+                                                                            {
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            } else {
+                                                                                $html .= '<tr>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td></td>';
+                                                                                    $html .= '<td>'.$tw->nama.'</td>';
+                                                                                    $cek_tujuan_tw_realisasi = TujuanTwRealisasi::where('tujuan_target_satuan_rp_realisasi_id', $cek_tujuan_target_satuan_rp_realisasi->id)
+                                                                                                                        ->where('tw_id', $tw->id)->first();
+                                                                                    if($cek_tujuan_tw_realisasi)
+                                                                                    {
+                                                                                        $html .= '<td><span class="span-tujuan-tw-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.' data-tujuan-tw-realisasi-'.$cek_tujuan_tw_realisasi->id.'">'.$cek_tujuan_tw_realisasi->realisasi.'</span></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-tertiary mb-1 button-edit-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tujuan-tw-realisasi-id="'.$cek_tujuan_tw_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-gear undefined"><path d="M8.32233 3.75427C8.52487 1.45662 11.776 1.3967 11.898 3.68836C11.9675 4.99415 13.2898 5.76859 14.4394 5.17678C16.4568 4.13815 18.0312 7.02423 16.1709 8.35098C15.111 9.10697 15.0829 10.7051 16.1171 11.4225C17.932 12.6815 16.2552 15.6275 14.273 14.6626C13.1434 14.1128 11.7931 14.9365 11.6777 16.2457C11.4751 18.5434 8.22404 18.6033 8.10202 16.3116C8.03249 15.0059 6.71017 14.2314 5.56062 14.8232C3.54318 15.8619 1.96879 12.9758 3.82906 11.649C4.88905 10.893 4.91709 9.29487 3.88295 8.57749C2.06805 7.31848 3.74476 4.37247 5.72705 5.33737C6.85656 5.88718 8.20692 5.06347 8.32233 3.75427Z"></path><path d="M10 8C11.1046 8 12 8.89543 12 10V10C12 11.1046 11.1046 12 10 12V12C8.89543 12 8 11.1046 8 10V10C8 8.89543 8.89543 8 10 8V8Z"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    } else {
+                                                                                        $html .= '<td><input type="number" class="form-control input-tujuan-tw-realisasi-realisasi '.$tw->id.' data-tujuan-target-satuan-rp-realisasi-'.$cek_tujuan_target_satuan_rp_realisasi->id.'"></td>';
+                                                                                        $html .= '<td>
+                                                                                                    <button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-add-tujuan-target-satuan-rp-realisasi" type="button" data-tw-id = "'.$tw->id.'" data-tujuan-target-satuan-rp-realisasi-id = "'.$cek_tujuan_target_satuan_rp_realisasi->id.'" data-tahun="'.$tahun.'">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                                                    </button>
+                                                                                                </td>';
+                                                                                    }
+                                                                                $html .= '</tr>';
+                                                                            }
+                                                                            $d++;
+                                                                        }
+                                                                    $html .= '</tr>';
+                                                                $html .='</tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>';
+                                            }
+                                            $c++;
+                                        } else {
+                                            if($c == 1)
+                                            {
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            } else {
+                                                $html .= '<tr>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td></td>';
+                                                    $html .= '<td><input type="number" class="form-control tujuan-add-target '.$tahun.' data-tujuan-indikator-kinerja-'.$tujuan_indikator_kinerja->id.'"></td>';
+                                                    $html .= '<td>'.$tujuan_indikator_kinerja->satuan.'</td>';
+                                                    $html .= '<td>'.$tahun.'</td>';
+                                                    $html .= '<td><button class="btn btn-sm btn-icon btn-icon-only btn-outline-secondary mb-1 button-tujuan-target-satuan-rp-realisasi" type="button" data-tujuan-indikator-kinerja-id="'.$tujuan_indikator_kinerja->id.'" data-tahun="'.$tahun.'">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="acorn-icons acorn-icons-plus undefined"><path d="M10 17 10 3M3 10 17 10"></path></svg>
+                                                                </button>
+                                                            </td>';
+                                                $html .='</tr>';
+                                            }
+                                            $c++;
+                                        }
+                                    }
+                            }
                             $html .= '</tbody>
                         </table>
                     </div>
-                </div>';
-        return response()->json(['success' => 'Berhasil menghapus tujuan', 'html' => $html]);
+                </td>
+            </tr>';
+        }
+
+        return response()->json(['success' => 'Berhasil menghapus tujuan', 'html' => $html, 'misi_id' => $misi['id']]);
     }
 }

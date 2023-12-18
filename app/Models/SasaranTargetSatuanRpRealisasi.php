@@ -16,6 +16,6 @@ class SasaranTargetSatuanRpRealisasi extends Model
 
     public function sasaran_tw_realisasi()
     {
-        return $this->hasMany('App\Models\SasaranTwRealisasi', 'sasaran_tw_realisasi_renja_id');
+        return $this->hasMany('App\Models\SasaranTwRealisasi', 'sasaran_target_satuan_rp_realisasi_id');
     }
 }

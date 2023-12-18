@@ -774,7 +774,12 @@ class E80Controller extends Controller
                                                             if($kegiatan_target_satuan_rp_realisasi->target)
                                                             {
                                                                 $kegiatan_target_rasio = ((array_sum($kegiatan_tw_target_realisasi)) / $kegiatan_target_satuan_rp_realisasi->target) * 100;
-                                                                $kegiatan_target_rp_rasio = ((array_sum($kegiatan_tw_target_realisasi_rp)) / $kegiatan_target_satuan_rp_realisasi->target_rp) * 100;
+                                                                if($kegiatan_target_satuan_rp_realisasi->target_rp)
+                                                                {
+                                                                    $kegiatan_target_rp_rasio = ((array_sum($kegiatan_tw_target_realisasi_rp)) / $kegiatan_target_satuan_rp_realisasi->target_rp) * 100;
+                                                                } else {
+                                                                    $kegiatan_target_rp_rasio = 0;
+                                                                }
                                                             } else {
                                                                 $kegiatan_target_rasio = 0;
                                                                 $kegiatan_target_rp_rasio = 0;
