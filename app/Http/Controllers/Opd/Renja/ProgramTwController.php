@@ -155,7 +155,7 @@ class ProgramTwController extends Controller
                     });
                 });
             });
-        })->where('sasaran_id', $sasaranId)->get();
+        })->where('id', $sasaranId)->get();
         $sasaran = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
