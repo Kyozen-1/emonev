@@ -96,6 +96,7 @@ class ProgramTwController extends Controller
         $tws = MasterTw::all();
         $idProgram = $program_tw_realisasi->program_target_satuan_rp_realisasi->opd_program_indikator_kinerja->program_indikator_kinerja->program_id;
         $getProgramTargetSatuanRpRealisasi = ProgramTargetSatuanRpRealisasi::where('id', $program_tw_realisasi->program_target_satuan_rp_realisasi_id)->where('tahun', $tahun)->first();
+        $sasaranId = $program_tw_realisasi->sasaran_id;
 
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
@@ -106,10 +107,12 @@ class ProgramTwController extends Controller
         }
         $tahun_sekarang = Carbon::parse(Carbon::now())->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('Y');
 
-        $get_programs = Program::where('id', $idProgram)->whereHas('program_rpjmd', function($q){
-            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) {
-                $q->whereHas('sasaran_indikator_kinerja', function($q){
-                    $q->whereHas('sasaran');
+        $get_programs = Program::where('id', $idProgram)->whereHas('program_rpjmd', function($q) use ($sasaranId){
+            $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q) use ($sasaranId){
+                $q->whereHas('sasaran_indikator_kinerja', function($q) use ($sasaranId){
+                    $q->whereHas('sasaran', function($q) use ($sasaranId){
+                        $q->where('sasaran_id', $sasaranId);
+                    });
                 });
             });
         })->whereHas('program_indikator_kinerja', function($q){
@@ -152,7 +155,7 @@ class ProgramTwController extends Controller
                     });
                 });
             });
-        })->get();
+        })->where('sasaran_id', $sasaranId)->get();
         $sasaran = [];
         foreach ($get_sasarans as $get_sasaran) {
             $cek_perubahan_sasaran = PivotPerubahanSasaran::where('sasaran_id', $get_sasaran->id)->where('tahun_perubahan', $tahun_sekarang)
