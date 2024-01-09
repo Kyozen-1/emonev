@@ -13,6 +13,10 @@ class TujuanPd extends Model
     {
         return $this->belongsTo('App\Models\Tujuan', 'tujuan_id');
     }
+    public function opd()
+    {
+        return $this->belongsTo('App\Models\MasterOpd', 'opd_id');
+    }
 
     public function pivot_perubahan_tujuan_pd()
     {
@@ -22,10 +26,5 @@ class TujuanPd extends Model
     public function tujuan_pd_indikator_kinerja()
     {
         return $this->hasMany('App\Models\TujuanPdIndikatorKinerja', 'tujuan_pd_id');
-    }
-
-    public function opd()
-    {
-        return $this->belongsTo('App\Models\MasterOpd', 'opd_id');
     }
 }

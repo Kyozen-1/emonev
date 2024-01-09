@@ -17,6 +17,12 @@ Route::group(['middleware' => 'auth:admin'], function(){
         Route::get('/grafik-kegiatan', 'Admin\DashboardController@grafik_kegiatan')->name('admin.dashboard.grafik-kegiatan');
         Route::get('/grafik-sub-kegiatan', 'Admin\DashboardController@grafik_sub_kegiatan')->name('admin.dashboard.grafik-sub-kegiatan');
     });
+    Route::prefix('dashboard')->group(function(){
+        Route::prefix('monitoring-opd')->group(function(){
+            Route::get('/{opd_id}/get-data', 'Admin\DashboardController@opd_get_data')->name('admin.dashboard.opd.get-data');
+            Route::get('/{opd_id}/get-data/{tahun}', 'Admin\DashboardController@opd_get_data_tahun')->name('admin.dashboard.opd.get-data.tahun');
+        });
+    });
 
     //Kecamatan
     Route::get('/admin/kecamatan', 'Admin\KecamatanController@index')->name('admin.kecamatan.index');

@@ -33,6 +33,10 @@
         use App\Models\Kegiatan;
         use App\Models\PivotOpdRentraKegiatan;
         use App\Models\TargetRpPertahunRenstraKegiatan;
+        use App\Models\TujuanPd;
+        use App\Models\TujuanPdIndikatorKinerja;
+        use App\Models\TujuanPdTargetSatuanRpRealisasi;
+        use App\Models\TujuanPdRealisasiRenja;
 
         $get_periode = TahunPeriode::where('status', 'Aktif')->latest()->first();
         $tahun_awal = $get_periode->tahun_awal;
@@ -779,7 +783,72 @@
                 </div>
             </div> --}}
 
-            <div class="mb-5">
+            <div class="card mb-5">
+                <div class="card-body text-center">
+                    <div class="mb-3 cta-3 text-primary">Monitoring OPD</div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-12 table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                    <tr class="align-middle">
+                                        <th scope="col" rowspan="2">Nama OPD</th>
+                                        <th scope="col" colspan="3">Tujuan PD</th>
+                                        <th scope="col" colspan="3">Sasaran PD</th>
+                                        <th scope="col" colspan="3">Program</th>
+                                        <th scope="col" colspan="3">Kegiatan</th>
+                                        <th scope="col" colspan="3">Sub Kegiatan</th>
+                                    </tr>
+                                    <tr class="align-middle">
+                                        <th>Jumlah Indikator</th>
+                                        <th>Target</th>
+                                        <th>Realisasi</th>
+                                        <th>Jumlah Indikator</th>
+                                        <th>Target</th>
+                                        <th>Realisasi</th>
+                                        <th>Jumlah Indikator</th>
+                                        <th>Target</th>
+                                        <th>Realisasi</th>
+                                        <th>Jumlah Indikator</th>
+                                        <th>Target</th>
+                                        <th>Realisasi</th>
+                                        <th>Jumlah Indikator</th>
+                                        <th>Target</th>
+                                        <th>Realisasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($opds as $opd)
+                                        <tr>
+                                            <td><a href="{{ route('admin.dashboard.opd.get-data', ['opd_id'=>$opd['id']]) }}" target="blank">{{$opd['nama']}}</a></td>
+                                            <td>{{$opd['jumlah_indikator_tujuan_pd']}}</td>
+                                            <td class="@if($opd['target_tujuan_pd'] == 100) bg-success @elseif ($opd['target_tujuan_pd'] >= '75' && $opd['target_tujuan_pd'] < 100) bg-warning @elseif ($opd['target_tujuan_pd'] >= 50 && $opd['target_tujuan_pd'] < 75) bg-danger @elseif ($opd['target_tujuan_pd'] < 50) bg-dark @endif"><span class="text-white">{{$opd['target_tujuan_pd']}} %</span></td>
+                                            <td class="@if($opd['realisasi_tujuan_pd'] == 100) bg-success @elseif ($opd['realisasi_tujuan_pd'] >= '75' && $opd['realisasi_tujuan_pd'] < 100) bg-warning @elseif ($opd['realisasi_tujuan_pd'] >= 50 && $opd['realisasi_tujuan_pd'] < 75) bg-danger @elseif ($opd['realisasi_tujuan_pd'] < 50) bg-dark @endif"><span class="text-white">{{$opd['realisasi_tujuan_pd']}} %</span></td>
+                                            <td>{{$opd['jumlah_indikator_sasaran_pd']}}</td>
+                                            <td class="@if($opd['target_sasaran_pd'] == 100) bg-success @elseif ($opd['target_sasaran_pd'] >= '75' && $opd['target_sasaran_pd'] < 100) bg-warning @elseif ($opd['target_sasaran_pd'] >= 50 && $opd['target_sasaran_pd'] < 75) bg-danger @elseif ($opd['target_sasaran_pd'] < 50) bg-dark @endif"><span class="text-white">{{$opd['target_sasaran_pd']}} %</span></td>
+                                            <td class="@if($opd['realisasi_sasaran_pd'] == 100) bg-success @elseif ($opd['realisasi_sasaran_pd'] >= '75' && $opd['realisasi_sasaran_pd'] < 100) bg-warning @elseif ($opd['realisasi_sasaran_pd'] >= 50 && $opd['realisasi_sasaran_pd'] < 75) bg-danger @elseif ($opd['realisasi_sasaran_pd'] < 50) bg-dark @endif"><span class="text-white">{{$opd['realisasi_sasaran_pd']}} %</span></td>
+                                            <td>{{$opd['jumlah_indikator_program']}}</td>
+                                            <td class="@if($opd['target_program'] == 100) bg-success @elseif ($opd['target_program'] >= '75' && $opd['target_program'] < 100) bg-warning @elseif ($opd['target_program'] >= 50 && $opd['target_program'] < 75) bg-danger @elseif ($opd['target_program'] < 50) bg-dark @endif"><span class="text-white">{{$opd['target_program']}} %</span></td>
+                                            <td class="@if($opd['realisasi_program'] == 100) bg-success @elseif ($opd['realisasi_program'] >= '75' && $opd['realisasi_program'] < 100) bg-warning @elseif ($opd['realisasi_program'] >= 50 && $opd['realisasi_program'] < 75) bg-danger @elseif ($opd['realisasi_program'] < 50) bg-dark @endif"><span class="text-white">{{$opd['realisasi_program']}} %</span></td>
+                                            <td>{{$opd['jumlah_indikator_kegiatan']}}</td>
+                                            <td class="@if($opd['target_kegiatan'] == 100) bg-success @elseif ($opd['target_kegiatan'] >= '75' && $opd['target_kegiatan'] < 100) bg-warning @elseif ($opd['target_kegiatan'] >= 50 && $opd['target_kegiatan'] < 75) bg-danger @elseif ($opd['target_kegiatan'] < 50) bg-dark @endif"><span class="text-white">{{$opd['target_kegiatan']}} %</span></td>
+                                            <td class="@if($opd['realisasi_kegiatan'] == 100) bg-success @elseif ($opd['realisasi_kegiatan'] >= '75' && $opd['realisasi_kegiatan'] < 100) bg-warning @elseif ($opd['realisasi_kegiatan'] >= 50 && $opd['realisasi_kegiatan'] < 75) bg-danger @elseif ($opd['realisasi_kegiatan'] < 50) bg-dark @endif"><span class="text-white">{{$opd['realisasi_kegiatan']}} %</span></td>
+                                            <td>{{$opd['jumlah_indikator_sub_kegiatan']}}</td>
+                                            <td class="@if($opd['target_sub_kegiatan'] == 100) bg-success @elseif ($opd['target_sub_kegiatan'] >= '75' && $opd['target_sub_kegiatan'] < 100) bg-warning @elseif ($opd['target_sub_kegiatan'] >= 50 && $opd['target_sub_kegiatan'] < 75) bg-danger @elseif ($opd['target_sub_kegiatan'] < 50) bg-dark @endif"><span class="text-white">{{$opd['target_sub_kegiatan']}} %</span></td>
+                                            <td class="@if($opd['realisasi_sub_kegiatan'] == 100) bg-success @elseif ($opd['realisasi_sub_kegiatan'] >= '75' && $opd['realisasi_sub_kegiatan'] < 100) bg-warning @elseif ($opd['realisasi_sub_kegiatan'] >= 50 && $opd['realisasi_sub_kegiatan'] < 75) bg-danger @elseif ($opd['realisasi_sub_kegiatan'] < 50) bg-dark @endif"><span class="text-white">{{$opd['realisasi_sub_kegiatan']}} %</span></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12">
+                            {{ $opds->links() }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- <div class="mb-5">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -841,7 +910,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
         <!-- Content End -->
     </div>
@@ -850,7 +919,7 @@
 @section('js')
     <script src="{{ asset('js/apexcharts.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js"></script>
-    <script>
+    {{-- <script>
         $(document).ready(function(){
             $('.input-daterange').datepicker({
                 todayBtn:'linked',
@@ -2278,5 +2347,5 @@
             var chart_grafik_rencana_realisasi_pendapatan_belanja_daerah = new ApexCharts(document.querySelector("#grafik_rencana_realisasi_pendapatan_belanja_daerah"), grafik_rencana_realisasi_pendapatan_belanja_daerah);
             chart_grafik_rencana_realisasi_pendapatan_belanja_daerah.render();
         });
-    </script>
+    </script> --}}
 @endsection
