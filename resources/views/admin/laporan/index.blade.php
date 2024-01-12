@@ -1208,6 +1208,58 @@
             </div>
         </div>
     </div>
+
+    <div id="editTindakLanjutTriwulanModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTindakLanjutTriwulanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditTindakLanjutTriwulan" action="{{ route('opd.laporan.e-81.edit.tindak-lanjut-triwulan') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_tindak_lanjut_triwulan_tahun" id="edit_tindak_lanjut_triwulan_tahun">
+                        <input type="hidden" name="edit_tindak_lanjut_triwulan_opd_id" id="edit_tindak_lanjut_triwulan_opd_id">
+                        <input type="hidden" name="edit_tindak_lanjut_triwulan_tahun_periode_id" id="edit_tindak_lanjut_triwulan_tahun_periode_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_tindak_lanjut_triwulan_text" class="form-label">Tindak lanjut yang diperlukan dalam Triwulan berikutnya:</label>
+                            <textarea name="edit_tindak_lanjut_triwulan_text" id="edit_tindak_lanjut_triwulan_text" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTindakLanjutRenjaModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editTindakLanjutRenjaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditTindakLanjutRenja" action="{{ route('opd.laporan.e-81.edit.tindak-lanjut-renja') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_tindak_lanjut_renja_tahun" id="edit_tindak_lanjut_renja_tahun">
+                        <input type="hidden" name="edit_tindak_lanjut_renja_opd_id" id="edit_tindak_lanjut_renja_opd_id">
+                        <input type="hidden" name="edit_tindak_lanjut_renja_tahun_periode_id" id="edit_tindak_lanjut_renja_tahun_periode_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_tindak_lanjut_renja_text" class="form-label">Tindak lanjut yang diperlukan dalam Renja Perangkat Daerah Kabupaten Madiun Berikutnya:</label>
+                            <textarea name="edit_tindak_lanjut_renja_text" id="edit_tindak_lanjut_renja_text" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
@@ -1614,6 +1666,30 @@
         a.href = "{{ url('/admin/laporan/e-81/perubahan/ekspor/excel') }}"+'/'+opd_id+'/'+tahun;
         document.body.appendChild(a);
         a.click();
+    });
+
+    $(document).on('click', '.edit-tindak-lanjut-triwulan', function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $(this).attr('data-opd-id');
+        var tahun_periode_id = $(this).attr('data-tahun-periode-id');
+
+        $('#edit_tindak_lanjut_triwulan_tahun').val(tahun);
+        $('#edit_tindak_lanjut_triwulan_opd_id').val(opd_id);
+        $('#edit_tindak_lanjut_triwulan_tahun_periode_id').val(tahun_periode_id);
+
+        $('#editTindakLanjutTriwulanModal').modal('show');
+    });
+
+    $(document).on('click', '.edit-tindak-lanjut-renja', function(){
+        var tahun = $(this).attr('data-tahun');
+        var opd_id = $(this).attr('data-opd-id');
+        var tahun_periode_id = $(this).attr('data-tahun-periode-id');
+
+        $('#edit_tindak_lanjut_renja_tahun').val(tahun);
+        $('#edit_tindak_lanjut_renja_opd_id').val(opd_id);
+        $('#edit_tindak_lanjut_renja_tahun_periode_id').val(tahun_periode_id);
+
+        $('#editTindakLanjutRenjaModal').modal('show');
     });
 </script>
 @endsection

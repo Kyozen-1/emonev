@@ -57,6 +57,8 @@ use App\Models\SubKegiatanIndikatorKinerja;
 use App\Models\SubKegiatanTargetSatuanRpRealisasi;
 use App\Models\SubKegiatanTwRealisasi;
 use App\Models\SasaranPdRealisasiRenja;
+use App\Models\FaktorTindakLanjutE81;
+use App\Models\MasterSkalaNilaiPerangkatKinerja;
 
 class OpdE81Ekspor implements FromView
 {
@@ -82,6 +84,20 @@ class OpdE81Ekspor implements FromView
         $a = 1;
         $e_81 = '';
         $tws = MasterTw::all();
+
+        $kolom7ProgramRp = [];
+        $kolom8ProgramRp = [];
+        $kolom9ProgramRp = [];
+        $kolom10ProgramRp = [];
+        $kolom11ProgramRp = [];
+        $kolom12ProgramRp = [];
+        $kolom14ProgramK = [];
+        $kolom14ProgramRp = [];
+
+        $getSkalas = MasterSkalaNilaiPerangkatKinerja::whereHas('pivot_tahun_master_skala_nilai_peringkat_kinerja', function($q) use ($tahun) {
+            $q->where('tahun', $tahun);
+        })->get();
+
         $get_tujuans = Tujuan::whereHas('sasaran', function($q){
             $q->whereHas('sasaran_indikator_kinerja', function($q){
                 $q->whereHas('pivot_sasaran_indikator_program_rpjmd', function($q){
@@ -544,6 +560,7 @@ class OpdE81Ekspor implements FromView
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                            $kolom7ProgramRp[] = $cek_program_target_satuan_rp_realisasi->target_rp_renja;
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -561,16 +578,34 @@ class OpdE81Ekspor implements FromView
 
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
+                                            $i_tw = 1;
                                             foreach ($tws as $tw) {
                                                 $cek_program_tw_realisasi = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id',$cek_program_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
                                                 if($cek_program_tw_realisasi)
                                                 {
                                                     $e_81 .= '<td>'.$cek_program_tw_realisasi->realisasi.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $e_81 .= '<td>Rp. '.number_format($cek_program_tw_realisasi->realisasi_rp, 2, ',', '.').'</td>';
+                                                    if($i_tw == 1)
+                                                    {
+                                                        $kolom8ProgramRp[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                    }
+                                                    if($i_tw == 2)
+                                                    {
+                                                        $kolom9ProgramRp[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                    }
+                                                    if($i_tw == 3)
+                                                    {
+                                                        $kolom10ProgramRp[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                    }
+                                                    if($i_tw == 4)
+                                                    {
+                                                        $kolom11ProgramRp[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                    }
                                                 } else {
                                                     $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $e_81 .= '<td>Rp. 0,00</td>';
                                                 }
+                                                $i_tw++;
                                             }
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
@@ -596,6 +631,7 @@ class OpdE81Ekspor implements FromView
                                             }
                                             $e_81 .= '<td>'.array_sum($program_tw_realisasi_realisasi).'/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. '.number_format(array_sum($program_tw_realisasi_realisasi_rp), 2, ',', '.').'</td>';
+                                            $kolom12ProgramRp[] = array_sum($program_tw_realisasi_realisasi_rp);
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -690,6 +726,8 @@ class OpdE81Ekspor implements FromView
 
                                         $e_81 .= '<td>'.number_format($target_kolom_14, 2).'</td>';
                                         $e_81 .= '<td>'.number_format($target_rp_kolom_14, 2, ',', '.').'</td>';
+                                        $kolom14ProgramK[] = $target_kolom_14;
+                                        $kolom14ProgramRp[] = $target_rp_kolom_14;
                                         // Kolom 14 End
                                         $e_81 .= '<td>'.Auth::user()->opd->master_opd->nama.'</td>';
                                     $e_81 .= '</tr>';
@@ -769,6 +807,7 @@ class OpdE81Ekspor implements FromView
                                         {
                                             $e_81 .= '<td>'.$cek_program_target_satuan_rp_realisasi->target.'/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. '.number_format($cek_program_target_satuan_rp_realisasi->target_rp_renja, 2, ',', '.').'</td>';
+                                            $kolom7ProgramRp[] = $cek_program_target_satuan_rp_realisasi->target_rp_renja;
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -786,12 +825,30 @@ class OpdE81Ekspor implements FromView
 
                                         if($cek_program_target_satuan_rp_realisasi)
                                         {
+                                            $i_tw = 1;
                                             foreach ($tws as $tw) {
                                                 $cek_program_tw_realisasi = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id',$cek_program_target_satuan_rp_realisasi->id)->where('tw_id', $tw->id)->first();
                                                 if($cek_program_tw_realisasi)
                                                 {
                                                     $e_81 .= '<td>'.$cek_program_tw_realisasi->realisasi.'/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $e_81 .= '<td>Rp. '.number_format($cek_program_tw_realisasi->realisasi_rp, 2, ',', '.').'</td>';
+                                                    if($i_tw == 1)
+                                                    {
+                                                        $kolom8ProgramRp[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                    }
+                                                    if($i_tw == 2)
+                                                    {
+                                                        $kolom9ProgramRp[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                    }
+                                                    if($i_tw == 3)
+                                                    {
+                                                        $kolom10ProgramRp[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                    }
+                                                    if($i_tw == 4)
+                                                    {
+                                                        $kolom11ProgramRp[] = $cek_program_tw_realisasi->realisasi_rp;
+                                                    }
+                                                    $i_tw++;
                                                 } else {
                                                     $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                                     $e_81 .= '<td>Rp. 0,00</td>';
@@ -821,6 +878,7 @@ class OpdE81Ekspor implements FromView
                                             }
                                             $e_81 .= '<td>'.array_sum($program_tw_realisasi_realisasi).'/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. '.number_format(array_sum($program_tw_realisasi_realisasi_rp), 2, ',', '.').'</td>';
+                                            $kolom12ProgramRp[] = array_sum($program_tw_realisasi_realisasi_rp);
                                         } else {
                                             $e_81 .= '<td>0/'.$program_indikator_kinerja->satuan.'</td>';
                                             $e_81 .= '<td>Rp. 0,00</td>';
@@ -915,6 +973,8 @@ class OpdE81Ekspor implements FromView
 
                                         $e_81 .= '<td>'.number_format($target_kolom_14, 2).'</td>';
                                         $e_81 .= '<td>'.number_format($target_rp_kolom_14, 2, ',', '.').'</td>';
+                                        $kolom14ProgramK[] = $target_kolom_14;
+                                        $kolom14ProgramRp[] = $target_rp_kolom_14;
                                         // Kolom 14 End
                                         $e_81 .= '<td>'.Auth::user()->opd->master_opd->nama.'</td>';
                                     $e_81 .= '</tr>';
@@ -1925,6 +1985,141 @@ class OpdE81Ekspor implements FromView
                 }
             }
         }
+
+        $e_81 .= '<tr><td colspan="25"></td></tr>';
+        $e_81 .= '<tr>';
+            $e_81 .= '<td class="font-weight-bold" align="left" colspan="5">Jumlah Anggaran dan Realisasi dari Seluruh Program</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td>Rp. '.number_format(array_sum($kolom7ProgramRp), 2, ',', '.').'</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td>Rp. '.number_format(array_sum($kolom8ProgramRp), 2, ',', '.').'</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td>Rp. '.number_format(array_sum($kolom9ProgramRp), 2, ',', '.').'</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td>Rp. '.number_format(array_sum($kolom10ProgramRp), 2, ',', '.').'</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td>Rp. '.number_format(array_sum($kolom11ProgramRp), 2, ',', '.').'</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td>Rp. '.number_format(array_sum($kolom12ProgramRp), 2, ',', '.').'</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+        $e_81 .= '</tr>';
+        $e_81 .= '<tr>';
+            $e_81 .= '<td class="font-weight-bold" align="left" colspan="5">Rata - rata capaian kinerja (%)</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td>'.number_format(array_sum($kolom14ProgramK)/count($kolom14ProgramK), 2).'</td>';
+            $e_81 .= '<td>'.number_format(array_sum($kolom14ProgramRp)/count($kolom14ProgramRp), 2).'</td>';
+            $e_81 .= '<td></td>';
+        $e_81 .= '</tr>';
+        $e_81 .= '<tr>';
+            $e_81 .= '<td class="font-weight-bold" align="left" colspan="5">Predikat Kinerja</td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $e_81 .= '<td></td>';
+            $averageCapaianKinerjaKolom14K = array_sum($kolom14ProgramK)/count($kolom14ProgramK);
+            $averageCapaianKinerjaKolom14Rp = array_sum($kolom14ProgramRp)/count($kolom14ProgramRp);
+            $kriteriaKolom14K = '';
+            $kriteriaKolom14Rp = '';
+            foreach ($getSkalas as $getSkala) {
+                if($averageCapaianKinerjaKolom14K >= $getSkala->terkecil &&  $averageCapaianKinerjaKolom14K <= $getSkala->terbesar)
+                {
+                    $kriteriaKolom14K = $getSkala->kriteria;
+                }
+
+                if($averageCapaianKinerjaKolom14K > 100)
+                {
+                    $kriteriaKolom14K = 'Sangat Tinggi';
+                }
+            }
+            foreach ($getSkalas as $getSkala) {
+                if($averageCapaianKinerjaKolom14Rp >= $getSkala->terkecil && $averageCapaianKinerjaKolom14Rp <= $getSkala->terbesar)
+                {
+                    $kriteriaKolom14Rp = $getSkala->kriteria;
+                }
+
+                if($averageCapaianKinerjaKolom14Rp > 100)
+                {
+                    $kriteriaKolom14Rp = 'Sangat Tinggi';
+                }
+            }
+            $e_81 .= '<td>'.$kriteriaKolom14K.'</td>';
+            $e_81 .= '<td>'.$kriteriaKolom14Rp.'</td>';
+            $e_81 .= '<td></td>';
+        $e_81 .= '</tr>';
+
+        $e_81 .= '<tr><td colspan="25"></td></tr>';
+        $e_81 .= '<tr><td colspan="25"></td></tr>';
+        $e_81 .= '<tr><td colspan="25"></td></tr>';
+
+        $faktorTindakLanjutE81 = FaktorTindakLanjutE81::where('tahun', $tahun)->where('tahun_periode_id', $get_periode->id)->where('opd_id', Auth::user()->opd->opd_id)->first();
+        $e_81 .= '<tr>';
+            $e_81 .= '<td align="left" colspan="5">Faktor pendorong keberhasilan pencapaian:</td>';
+            $e_81 .= '<td align="left" colspan="20">';
+                if($faktorTindakLanjutE81){
+                    $e_81 .= $faktorTindakLanjutE81->faktor_pendorong;
+                }
+            $e_81 .='</td>';
+        $e_81 .= '</tr>';
+        $e_81 .= '<tr>';
+            $e_81 .= '<td align="left" colspan="5">Faktor penghambat pencapaian kinerja:</td>';
+            $e_81 .= '<td align="left" colspan="20">';
+                if($faktorTindakLanjutE81){
+                    $e_81 .= $faktorTindakLanjutE81->faktor_penghambat;
+                }
+            $e_81 .='</td>';
+        $e_81 .= '</tr>';
+        $e_81 .= '<tr>';
+            $e_81 .= '<td align="left" colspan="5">Tindak lanjut yang diperlukan dalam Triwulan berikutnya:</td>';
+            $e_81 .= '<td align="left" colspan="20">';
+                if($faktorTindakLanjutE81){
+                    $e_81 .= $faktorTindakLanjutE81->tindak_lanjut_triwulan;
+                }
+            $e_81 .='</td>';
+        $e_81 .= '</tr>';
+        $e_81 .= '<tr>';
+            $e_81 .= '<td align="left" colspan="5">Tindak lanjut yang diperlukan dalam Renja Perangkat Daerah Kabupaten Madiun Berikutnya:</td>';
+            $e_81 .= '<td align="left" colspan="20">';
+                if($faktorTindakLanjutE81){
+                    $e_81 .= $faktorTindakLanjutE81->tindak_lanjut_renja;
+                }
+            $e_81 .='</td>';
+        $e_81 .= '</tr>';
 
         return view('opd.laporan.e-81', [
             'e_81' => $e_81,

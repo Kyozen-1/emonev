@@ -134,4 +134,12 @@ Route::group(['middleware' => 'auth:opd'], function(){
     Route::post('/opd/laporan/e-81/perubahan', 'Opd\Laporan\E81PerubahanController@e_81_perubahan')->name('opd.laporan.e-81.perubahan');
     Route::get('/opd/laporan/e-81/perubahan/ekspor/pdf/{tahun}', 'Opd\Laporan\E81PerubahanController@e_81_ekspor_pdf_perubahan')->name('opd.laporan.e-81.ekspor.pdf.perubahan');
     Route::get('/opd/laporan/e-81/perubahan/ekspor/excel/{tahun}', 'Opd\Laporan\E81PerubahanController@e_81_ekspor_excel_perubahan')->name('opd.laporan.e-81.ekspor.excel.perubahan');
+    Route::prefix('opd')->group(function(){
+        Route::prefix('laporan')->group(function(){
+            Route::prefix('e-81')->group(function(){
+                Route::post('/edit/faktor-pendorong', 'Opd\Laporan\E81Controller@edit_faktor_pendorong')->name('opd.laporan.e-81.edit.faktor-pendorong');
+                Route::post('/edit/faktor-penghambat', 'Opd\Laporan\E81Controller@edit_faktor_penghambat')->name('opd.laporan.e-81.edit.faktor-penghambat');
+            });
+        });
+    });
 });

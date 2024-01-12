@@ -786,6 +786,58 @@
             </div>
         </div>
     </div>
+
+    <div id="editFaktorPendorongModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editFaktorPendorongModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditFaktorPendorong" action="{{ route('opd.laporan.e-81.edit.faktor-pendorong') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_faktor_pendorong_tahun" id="edit_faktor_pendorong_tahun">
+                        <input type="hidden" name="edit_faktor_pendorong_opd_id" id="edit_faktor_pendorong_opd_id">
+                        <input type="hidden" name="edit_faktor_pendorong_tahun_periode_id" id="edit_faktor_pendorong_tahun_periode_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_faktor_pendorong_text" class="form-label">Faktor pendorong keberhasilan pencapaian:</label>
+                            <textarea name="edit_faktor_pendorong_text" id="edit_faktor_pendorong_text" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editFaktorPenghambatModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editFaktorPenghambatModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detail-title">Edit Data Target Satuan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditFaktorPenghambat" action="{{ route('opd.laporan.e-81.edit.faktor-penghambat') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="edit_faktor_penghambat_tahun" id="edit_faktor_penghambat_tahun">
+                        <input type="hidden" name="edit_faktor_penghambat_opd_id" id="edit_faktor_penghambat_opd_id">
+                        <input type="hidden" name="edit_faktor_penghambat_tahun_periode_id" id="edit_faktor_penghambat_tahun_periode_id">
+                        <div class="form-group position-relative mb-3">
+                            <label for="edit_faktor_penghambat_text" class="form-label">Faktor penghambat pencapaian kinerja:</label>
+                            <textarea name="edit_faktor_penghambat_text" id="edit_faktor_penghambat_text" rows="5" class="form-control" required></textarea>
+                        </div>
+                        <div class="position-relative form-group" style="text-align: right">
+                            <button class="btn btn-success waves-effect waves-light">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
@@ -921,6 +973,30 @@
                     $('#tbodyE81Perubahan'+tahun).html(data.e_81);
                 }
             });
+        });
+
+        $(document).on('click', '.edit-faktor-pendorong', function(){
+            var tahun = $(this).attr('data-tahun');
+            var opd_id = $(this).attr('data-opd-id');
+            var tahun_periode_id = $(this).attr('data-tahun-periode-id');
+
+            $('#edit_faktor_pendorong_tahun').val(tahun);
+            $('#edit_faktor_pendorong_opd_id').val(opd_id);
+            $('#edit_faktor_pendorong_tahun_periode_id').val(tahun_periode_id);
+
+            $('#editFaktorPendorongModal').modal('show');
+        });
+
+        $(document).on('click', '.edit-faktor-penghambat', function(){
+            var tahun = $(this).attr('data-tahun');
+            var opd_id = $(this).attr('data-opd-id');
+            var tahun_periode_id = $(this).attr('data-tahun-periode-id');
+
+            $('#edit_faktor_penghambat_tahun').val(tahun);
+            $('#edit_faktor_penghambat_opd_id').val(opd_id);
+            $('#edit_faktor_penghambat_tahun_periode_id').val(tahun_periode_id);
+
+            $('#editFaktorPenghambatModal').modal('show');
         });
     </script>
 @endsection

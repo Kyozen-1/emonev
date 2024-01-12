@@ -242,6 +242,14 @@ Route::group(['middleware' => 'auth:admin'], function(){
     Route::post('/admin/laporan/e-81', 'Admin\Laporan\E81Controller@laporan_e_81')->name('admin.laporan.e-81');
     Route::get('/admin/laporan/e-81/ekspor/pdf/{opd_id}/{tahun}', 'Admin\Laporan\E81Controller@e_81_ekspor_pdf');
     Route::get('/admin/laporan/e-81/ekspor/excel/{opd_id}/{tahun}', 'Admin\Laporan\E81Controller@e_81_ekspor_excel');
+    Route::prefix('admin')->group(function(){
+        Route::prefix('laporan')->group(function(){
+            Route::prefix('e-81')->group(function(){
+                Route::post('/edit/tindak-lanjut-triwulan', 'Admin\Laporan\E81Controller@edit_tindak_lanjut_triwulan')->name('opd.laporan.e-81.edit.tindak-lanjut-triwulan');
+                Route::post('/edit/tindak-lanjut-renja', 'Admin\Laporan\E81Controller@edit_tindak_lanjut_renja')->name('opd.laporan.e-81.edit.tindak-lanjut-renja');
+            });
+        });
+    });
 
     Route::post('/admin/laporan/e-81-perubahan', 'Admin\Laporan\E81ControllerPerubahan@laporan_e_81_perubahan')->name('admin.laporan.e-81-perubahan');
     Route::get('/admin/laporan/e-81/perubahan/ekspor/pdf/{opd_id}/{tahun}', 'Admin\Laporan\E81ControllerPerubahan@e_81_perubahan_ekspor_pdf');

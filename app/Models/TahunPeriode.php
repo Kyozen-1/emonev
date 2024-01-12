@@ -13,4 +13,9 @@ class TahunPeriode extends Model
     {
         return $this->hasMany('App\Models\Urusan', 'tahun_periode_id');
     }
+
+    public function faktor_tindak_lanjut_e81()
+    {
+        return $this->hasMany('App\Models\FaktorTindakLanjutE81', 'tahun_periode_id');
+    }
 }
