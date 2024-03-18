@@ -19,6 +19,7 @@ Route::group(['middleware' => 'auth:admin'], function(){
     });
     Route::prefix('dashboard')->group(function(){
         Route::prefix('monitoring-opd')->group(function(){
+            Route::post('/search', 'Admin\DashboardController@opd_get_data_search')->name('admin.dashboard.opd.search');
             Route::get('/{opd_id}/get-data', 'Admin\DashboardController@opd_get_data')->name('admin.dashboard.opd.get-data');
             Route::get('/{opd_id}/get-data/{tahun}', 'Admin\DashboardController@opd_get_data_tahun')->name('admin.dashboard.opd.get-data.tahun');
         });

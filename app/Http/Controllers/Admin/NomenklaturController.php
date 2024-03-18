@@ -1283,7 +1283,7 @@ class NomenklaturController extends Controller
                                                                                                                                                     {
                                                                                                                                                         $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                         $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                        $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
+                                                                                                                                                        $html .= '<td>Rp.'.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2,',', '.').'</td>';
                                                                                                                                                         $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
                                                                                                                                                         if($cek_kegiatan_tw_realisasi)
                                                                                                                                                         {
@@ -4305,7 +4305,7 @@ class NomenklaturController extends Controller
                                                     <td></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="3" class="hiddenRow">
+                                                    <td colspan="4" class="hiddenRow">
                                                         <div class=" collapse show" id="sub_kegiatan_urusan'.$urusan['id'].'">
                                                             <table class="table table-striped table-condesed">
                                                                 <tbody>';
@@ -5278,7 +5278,7 @@ class NomenklaturController extends Controller
                                                                                                                                         $html .= '<td>'.$no_kegiatan_indikator_kinerja++.'</td>';
                                                                                                                                         $html .= '<td>'.$kegiatan_indikator_kinerja->deskripsi.'</td>';
                                                                                                                                         $html .= '<td>'.$kegiatan_indikator_kinerja->kondisi_target_kinerja_awal.'</td>';
-                                                                                                                                        $html .= '<td>Rp.'.number_format($kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
+                                                                                                                                        $html .= '<td>Rp.'.number_format((int)$kegiatan_indikator_kinerja->kondisi_target_anggaran_awal,2,',','.').'</td>';
                                                                                                                                         $a = 1;
                                                                                                                                         $opd_kegiatan_indikator_kinerjas = OpdKegiatanIndikatorKinerja::where('kegiatan_indikator_kinerja_id', $kegiatan_indikator_kinerja->id)
                                                                                                                                                                             ->get();
@@ -5337,7 +5337,7 @@ class NomenklaturController extends Controller
                                                                                                                                                             $html .= '<td></td>';
                                                                                                                                                             $html .= '<td>'.$cek_kegiatan_target_satuan_rp_realisasi->target.'</td>';
                                                                                                                                                             $html .= '<td>'.$kegiatan_indikator_kinerja->satuan.'</td>';
-                                                                                                                                                            $html .= '<td>Rp.'.number_format($cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
+                                                                                                                                                            $html .= '<td>Rp.'.number_format((int)$cek_kegiatan_target_satuan_rp_realisasi->target_rp, 2, ',', '.').'</td>';
                                                                                                                                                             $cek_kegiatan_tw_realisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cek_kegiatan_target_satuan_rp_realisasi->id)->first();
                                                                                                                                                             if($cek_kegiatan_tw_realisasi)
                                                                                                                                                             {

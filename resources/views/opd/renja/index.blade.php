@@ -405,8 +405,19 @@
             $.ajax({
                 url: "{{ route('opd.renja.get_tujuan') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renjaTujuanNavDiv').html(data.html);
                 }
             });
@@ -422,8 +433,19 @@
             $.ajax({
                 url: "{{ route('opd.renja.get_tujuan') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renjaTujuanNavDiv').html(data.html);
                 }
             });
@@ -552,8 +574,19 @@
             $.ajax({
                 url: "{{ route('opd.renja.get_sasaran') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renjaSasaranNavDiv').html(data.html);
                 }
             });
@@ -682,8 +715,19 @@
             $.ajax({
                 url: "{{ route('opd.renja.get_program') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renjaProgramNavDiv').html(data.html);
                 }
             });
@@ -898,8 +942,19 @@
             $.ajax({
                 url: "{{ route('opd.renja.get_kegiatan') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renjaKegiatanNavDiv').html(data.html);
                 }
             });
@@ -1117,8 +1172,19 @@
             $.ajax({
                 url: "{{ route('opd.renja.get-sub-kegiatan') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renjaSubKegiatanNavDiv').html(data.html);
                 }
             });

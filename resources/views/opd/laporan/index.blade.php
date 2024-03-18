@@ -868,8 +868,19 @@
                     "_token": "{{ csrf_token() }}",
                     tahun:tahun_awal
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#tbodyE81'+tahun_awal).html(data.e_81);
                 }
             });
@@ -906,8 +917,19 @@
                     "_token": "{{ csrf_token() }}",
                     tahun:tahun
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#tbodyE81'+tahun).html(data.e_81);
                 }
             });
@@ -919,8 +941,19 @@
             $.ajax({
                 url: "{{ route('opd.laporan.tc-23') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#tBodyTc23').html(data.tc_23);
                 }
             });
@@ -930,8 +963,19 @@
             $.ajax({
                 url: "{{ route('opd.laporan.tc-24') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#tBodyTc24').html(data.tc_24);
                 }
             });
@@ -941,8 +985,19 @@
             $.ajax({
                 url: "{{ route('opd.laporan.tc-27') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#tbodyTc27').html(data.tc_27);
                 }
             });
@@ -952,8 +1007,19 @@
             $.ajax({
                 url: "{{ route('opd.laporan.e-80') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#tBodyE80').html(data.e_80);
                 }
             });
@@ -968,8 +1034,19 @@
                     "_token": "{{ csrf_token() }}",
                     tahun:tahun
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#tbodyE81Perubahan'+tahun).html(data.e_81);
                 }
             });

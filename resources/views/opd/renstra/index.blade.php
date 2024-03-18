@@ -1263,8 +1263,19 @@
             $.ajax({
                 url: "{{ route('opd.renstra.get-misi') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraMisiNavDiv').html(data.html);
                 }
             });
@@ -1282,8 +1293,19 @@
             $.ajax({
                 url: "{{ route('opd.renstra.get-misi') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraMisiNavDiv').html(data.html);
                 }
             });
@@ -1303,8 +1325,19 @@
             $.ajax({
                 url: "{{ route('opd.renstra.get-tujuan') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraTujuanNavDiv').html(data.html);
                 }
             });
@@ -1767,8 +1800,19 @@
             $.ajax({
                 url: "{{ route('opd.renstra.get-sasaran') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraSasaranNavDiv').html(data.html);
                 }
             });
@@ -2350,8 +2394,19 @@
             $.ajax({
                 url: "{{ route('opd.renstra.get-program') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraProgramNavDiv').html(data.html);
                 }
             });
@@ -2710,8 +2765,19 @@
                     visi: visi,
                     misi: misi
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraMisiNavDiv').html(data.html);
                 }
             });
@@ -2727,8 +2793,19 @@
                 data: {
                     "_token": "{{ csrf_token() }}"
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraMisiNavDiv').html(data.html);
                 }
             });
@@ -2802,8 +2879,19 @@
                     misi: misi,
                     tujuan: tujuan
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraTujuanNavDiv').html(data.html);
                 }
             });
@@ -2821,8 +2909,19 @@
                 data: {
                     "_token": "{{ csrf_token() }}"
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraTujuanNavDiv').html(data.html);
                 }
             });
@@ -2929,8 +3028,19 @@
                     tujuan: tujuan,
                     sasaran: sasaran
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraSasaranNavDiv').html(data.html);
                 }
             });
@@ -2950,8 +3060,19 @@
                 data: {
                     "_token": "{{ csrf_token() }}"
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraSasaranNavDiv').html(data.html);
                 }
             });
@@ -3094,8 +3215,19 @@
                     sasaran: sasaran,
                     program: program
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraProgramNavDiv').html(data.html);
                 }
             });
@@ -3117,8 +3249,19 @@
                 data: {
                     "_token": "{{ csrf_token() }}"
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraProgramNavDiv').html(data.html);
                 }
             });
@@ -3129,8 +3272,19 @@
             $.ajax({
                 url: "{{ route('opd.renstra.get-kegiatan') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraKegiatanNavDiv').html(data.html);
                 }
             });
@@ -3321,8 +3475,19 @@
                     program: program,
                     kegiatan: kegiatan
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraKegiatanNavDiv').html(data.html);
                 }
             });
@@ -3346,8 +3511,19 @@
                 data: {
                     "_token": "{{ csrf_token() }}"
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraKegiatanNavDiv').html(data.html);
                 }
             });
@@ -3358,8 +3534,19 @@
             $.ajax({
                 url: "{{ route('opd.renstra.get-sub-kegiatan') }}",
                 dataType: "json",
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraSubKegiatanNavDiv').html(data.html);
                 }
             });
@@ -3801,8 +3988,19 @@
                     program: program,
                     kegiatan: kegiatan
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraKegiatanNavDiv').html(data.html);
                 }
             });
@@ -3826,8 +4024,19 @@
                 data: {
                     "_token": "{{ csrf_token() }}"
                 },
+                beforeSend: function()
+                {
+                    Swal.fire({
+                        title: "Loading...",
+                        text: "Harap Menunggu",
+                        imageUrl: "{{ asset('/images/preloader.gif') }}",
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                },
                 success: function(data)
                 {
+                    Swal.close();
                     $('#renstraKegiatanNavDiv').html(data.html);
                 }
             });

@@ -487,6 +487,445 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function opd_get_data_search(Request $request)
+    {
+        $getTahunPeriode = TahunPeriode::where('status', 'Aktif')->first();
+        $countUrusan = Urusan::where('tahun_periode_id', $getTahunPeriode->id)->count();
+        $countProgram = Program::where('tahun_periode_id', $getTahunPeriode->id)->count();
+        $countKegiatan = Kegiatan::where('tahun_periode_id', $getTahunPeriode->id)->count();
+        $countSubKegiatan = SubKegiatan::where('tahun_periode_id', $getTahunPeriode->id)->count();
+        $countOpd = MasterOpd::count();
+        $countTujuan = Tujuan::count();
+        $countSasaran = Sasaran::count();
+        $targetAnggaran = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($getTahunPeriode){
+            $q->whereHas('sub_kegiatan_indikator_kinerja', function($q) use ($getTahunPeriode){
+                $q->whereHas('sub_kegiatan', function($q) use ($getTahunPeriode){
+                    $q->where('tahun_periode_id', $getTahunPeriode->id);
+                });
+            });
+        })->sum('target_anggaran_awal');
+
+        $targetAnggaranPerubahan = SubKegiatanTargetSatuanRpRealisasi::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($getTahunPeriode){
+            $q->whereHas('sub_kegiatan_indikator_kinerja', function($q) use ($getTahunPeriode){
+                $q->whereHas('sub_kegiatan', function($q) use ($getTahunPeriode){
+                    $q->where('tahun_periode_id', $getTahunPeriode->id);
+                });
+            });
+        })->sum('target_anggaran_perubahan');
+
+
+        $targetRealisasi = SubKegiatanTwRealisasi::whereHas('sub_kegiatan_target_satuan_rp_realisasi', function($q) use ($getTahunPeriode){
+            $q->whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($getTahunPeriode){
+                $q->whereHas('sub_kegiatan_indikator_kinerja', function($q) use ($getTahunPeriode){
+                    $q->whereHas('sub_kegiatan', function($q) use ($getTahunPeriode){
+                        $q->where('tahun_periode_id', $getTahunPeriode->id);
+                    });
+                });
+            });
+        })->sum('realisasi_rp');
+
+        $opds = new MasterOpd;
+        if($request->q)
+        {
+            $opds = $opds->where('nama', 'like', '%'.$request->q.'%');
+        }
+        $opds = $opds->paginate(10);
+        $tws = MasterTw::select('id')->get();
+
+        $opdsTransform = $opds
+            ->getCollection()
+            ->map(function($data) use ($getTahunPeriode, $tws){
+
+                $tahun_awal = $getTahunPeriode->tahun_awal;
+                $jarak_tahun = $getTahunPeriode->tahun_akhir - $tahun_awal;
+                $tahuns = [];
+                for ($i=0; $i < $jarak_tahun + 1; $i++) {
+                    $tahuns[] = $tahun_awal + $i;
+                }
+                // Tujuan Pd Start
+                    $getIndikatorTujuanPds = TujuanPdIndikatorKinerja::whereHas('tujuan_pd', function($q) use($data){
+                        $q->where('opd_id', $data->id);
+                    })->get();
+                    $jumlah_indikator_tujuan_pd = TujuanPdIndikatorKinerja::whereHas('tujuan_pd', function($q) use($data){
+                        $q->where('opd_id', $data->id);
+                    })->count();
+
+                    $countTargetTujuanPd = 0;
+                    foreach ($getIndikatorTujuanPds as $getIndikatorTujuanPd) {
+                        foreach ($tahuns as $tahun) {
+                            $cekTujuanPdTarget = TujuanPdTargetSatuanRpRealisasi::where('tahun', $tahun)->whereHas('tujuan_pd_indikator_kinerja', function($q) use ($data, $getIndikatorTujuanPd){
+                                $q->where('id', $getIndikatorTujuanPd->id);
+                                $q->whereHas('tujuan_pd', function($q) use ($data){
+                                    $q->where('opd_id', $data->id);
+                                });
+                            })->first();
+                            if($cekTujuanPdTarget)
+                            {
+                                $countTargetTujuanPd++;
+                            }
+                        }
+                    }
+
+                    $countRealisasiTujuanPd = 0;
+                    foreach ($getIndikatorTujuanPds as $getIndikatorTujuanPd) {
+                        foreach ($tahuns as $tahun) {
+                            $cekTujuanPdTarget = TujuanPdTargetSatuanRpRealisasi::where('tahun', $tahun)->whereHas('tujuan_pd_indikator_kinerja', function($q) use ($data, $getIndikatorTujuanPd){
+                                $q->where('id', $getIndikatorTujuanPd->id);
+                                $q->whereHas('tujuan_pd', function($q) use ($data){
+                                    $q->where('opd_id', $data->id);
+                                });
+                            })->first();
+                            if($cekTujuanPdTarget)
+                            {
+                                $cekRealisasiTujuanPd = TujuanPdRealisasiRenja::where('tujuan_pd_target_satuan_rp_realisasi_id', $cekTujuanPdTarget->id)->first();
+                                if($cekRealisasiTujuanPd)
+                                {
+                                    $countRealisasiTujuanPd++;
+                                }
+                            }
+                        }
+                    }
+
+                    if($jumlah_indikator_tujuan_pd)
+                    {
+                        $target_tujuan_pd = ($countTargetTujuanPd / ($jumlah_indikator_tujuan_pd * count($tahuns))) * 100;
+                        $realisasi_tujuan_pd = ($countRealisasiTujuanPd / ($jumlah_indikator_tujuan_pd * count($tahuns))) * 100;
+                    } else {
+                        $target_tujuan_pd = 0;
+                        $realisasi_tujuan_pd = 0;
+                    }
+                // Tujuan Pd End
+
+                // Sasaran Pd Start
+                    $getIndikatorSasaranPds = SasaranPdIndikatorKinerja::whereHas('sasaran_pd', function($q) use($data){
+                        $q->where('opd_id', $data->id);
+                    })->get();
+                    $jumlah_indikator_sasaran_pd = SasaranPdIndikatorKinerja::whereHas('sasaran_pd', function($q) use($data){
+                        $q->where('opd_id', $data->id);
+                    })->count();
+
+                    $countTargetSasaranPd = 0;
+                    foreach ($getIndikatorSasaranPds as $getIndikatorSasaranPd) {
+                        foreach ($tahuns as $tahun) {
+                            $cekSasaranPdTarget = SasaranPdTargetSatuanRpRealisasi::where('tahun', $tahun)->whereHas('sasaran_pd_indikator_kinerja', function($q) use ($data, $getIndikatorSasaranPd){
+                                $q->where('id', $getIndikatorSasaranPd->id);
+                                $q->whereHas('sasaran_pd', function($q) use ($data){
+                                    $q->where('opd_id', $data->id);
+                                });
+                            })->first();
+                            if($cekSasaranPdTarget)
+                            {
+                                $countTargetSasaranPd++;
+                            }
+                        }
+                    }
+
+                    $countRealisasiSasaranPd = 0;
+                    foreach ($getIndikatorSasaranPds as $getIndikatorSasaranPd) {
+                        foreach ($tahuns as $tahun) {
+                            $cekSasaranPdTarget = SasaranPdTargetSatuanRpRealisasi::where('tahun', $tahun)->whereHas('sasaran_pd_indikator_kinerja', function($q) use ($data, $getIndikatorSasaranPd){
+                                $q->where('id', $getIndikatorSasaranPd->id);
+                                $q->whereHas('sasaran_pd', function($q) use ($data){
+                                    $q->where('opd_id', $data->id);
+                                });
+                            })->first();
+                            if($cekSasaranPdTarget)
+                            {
+                                $cekRealisasiSasaranPd = SasaranPdRealisasiRenja::where('sasaran_pd_target_satuan_rp_realisasi_id', $cekSasaranPdTarget->id)->first();
+                                if($cekRealisasiSasaranPd)
+                                {
+                                    $countRealisasiSasaranPd++;
+                                }
+                            }
+                        }
+                    }
+
+                    if($jumlah_indikator_sasaran_pd)
+                    {
+                        $target_sasaran_pd = ($countTargetSasaranPd / ($jumlah_indikator_sasaran_pd * count($tahuns))) * 100;
+                        $realisasi_sasaran_pd = ($countRealisasiSasaranPd / ($jumlah_indikator_sasaran_pd * count($tahuns))) * 100;
+                    } else {
+                        $target_sasaran_pd = 0;
+                        $realisasi_sasaran_pd = 0;
+                    }
+                // Sasaran Pd End
+
+                // Program Start
+                    $getIndikatorPrograms = ProgramIndikatorKinerja::whereHas('opd_program_indikator_kinerja',function($q) use ($data){
+                                                $q->where('opd_id', $data->id);
+                                            })->whereHas('program', function($q) use ($data) {
+                                                $q->whereHas('program_rpjmd', function($q) use ($data){
+                                                    $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($data){
+                                                        $q->whereHas('sasaran_pd', function($q) use ($data){
+                                                            $q->where('opd_id', $data->id);
+                                                        });
+                                                    });
+                                                });
+                                            })->get();
+                    $jumlah_indikator_program = ProgramIndikatorKinerja::whereHas('opd_program_indikator_kinerja',function($q) use ($data){
+                                                        $q->where('opd_id', $data->id);
+                                                    })->whereHas('program', function($q) use ($data) {
+                                                        $q->whereHas('program_rpjmd', function($q) use ($data){
+                                                            $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($data){
+                                                                $q->whereHas('sasaran_pd', function($q) use ($data){
+                                                                    $q->where('opd_id', $data->id);
+                                                                });
+                                                            });
+                                                        });
+                                                    })->count();
+
+                    $countTargetProgram = 0;
+                    foreach ($getIndikatorPrograms as $getIndikatorProgram) {
+                        $cekOpdProgramIndikatorKinerja = OpdProgramIndikatorKinerja::where('opd_id', $data->id)->where('program_indikator_kinerja_id', $getIndikatorProgram->id)->first();
+                        if($cekOpdProgramIndikatorKinerja)
+                        {
+                            foreach ($tahuns as $tahun) {
+                                $cekProgramTarget = ProgramTargetSatuanRpRealisasi::where('tahun', $tahun)->where('opd_program_indikator_kinerja_id', $cekOpdProgramIndikatorKinerja->id)->first();
+                                if($cekProgramTarget)
+                                {
+                                    $countTargetProgram++;
+                                }
+                            }
+                        }
+                    }
+
+                    $countRealisasiProgram = 0;
+                    foreach ($getIndikatorPrograms as $getIndikatorProgram) {
+                        $cekOpdProgramIndikatorKinerja = OpdProgramIndikatorKinerja::where('opd_id', $data->id)->where('program_indikator_kinerja_id', $getIndikatorProgram->id)->first();
+                        if($cekOpdProgramIndikatorKinerja)
+                        {
+                            foreach ($tahuns as $tahun) {
+                                $cekProgramTarget = ProgramTargetSatuanRpRealisasi::where('tahun', $tahun)->where('opd_program_indikator_kinerja_id', $cekOpdProgramIndikatorKinerja->id)->first();
+                                if($cekProgramTarget)
+                                {
+                                    foreach ($tws as $tw) {
+                                        $cekProgramRealisasi = ProgramTwRealisasi::where('program_target_satuan_rp_realisasi_id', $cekProgramTarget->id)
+                                                                ->where('tw_id', $tw->id)
+                                                                ->first();
+                                        if($cekProgramRealisasi)
+                                        {
+                                            $countRealisasiProgram++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if($jumlah_indikator_program)
+                    {
+                        $target_program = ($countTargetProgram / ($jumlah_indikator_program * count($tahuns))) * 100;
+                        $realisasi_program = (($countRealisasiProgram/4) / ($jumlah_indikator_program * count($tahuns))) * 100;
+                    } else {
+                        $target_program = 0;
+                        $realisasi_program = 0;
+                    }
+                // Program End
+
+                // Kegiatan Start
+                    $getIndikatorKegiatans = KegiatanIndikatorKinerja::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($data){
+                        $q->where('opd_id', $data->id);
+                    })->whereHas('kegiatan', function($q) use ($data){
+                        $q->whereHas('program', function($q) use ($data){
+                            $q->whereHas('program_rpjmd', function($q) use ($data){
+                                $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($data){
+                                    $q->whereHas('sasaran_pd', function($q) use ($data){
+                                        $q->where('opd_id', $data->id);
+                                    });
+                                });
+                            });
+                        });
+                    })->get();
+
+                    $jumlah_indikator_kegiatan = KegiatanIndikatorKinerja::whereHas('opd_kegiatan_indikator_kinerja', function($q) use ($data){
+                                                    $q->where('opd_id', $data->id);
+                                                })->whereHas('kegiatan', function($q) use ($data){
+                                                    $q->whereHas('program', function($q) use ($data){
+                                                        $q->whereHas('program_rpjmd', function($q) use ($data){
+                                                            $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($data){
+                                                                $q->whereHas('sasaran_pd', function($q) use ($data){
+                                                                    $q->where('opd_id', $data->id);
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+                                                })->count();
+                    $countTargetKegiatan = 0;
+                    foreach ($getIndikatorKegiatans as $getIndikatorKegiatan) {
+                        $cekOpdKegiatanIndikatorKinerja = OpdKegiatanIndikatorKinerja::where('opd_id', $data->id)->where('kegiatan_indikator_kinerja_id', $getIndikatorKegiatan->id)->first();
+                        if($cekOpdKegiatanIndikatorKinerja)
+                        {
+                            foreach ($tahuns as $tahun) {
+                                $cekKegiatanTarget = KegiatanTargetSatuanRpRealisasi::where('tahun', $tahun)->where('opd_kegiatan_indikator_kinerja_id', $cekOpdKegiatanIndikatorKinerja->id)->first();
+                                if($cekKegiatanTarget)
+                                {
+                                    $countTargetKegiatan++;
+                                }
+                            }
+                        }
+                    }
+
+                    $countRealisasiKegiatan = 0;
+                    foreach ($getIndikatorKegiatans as $getIndikatorKegiatan) {
+                        $cekOpdKegiatanIndikatorKinerja = OpdKegiatanIndikatorKinerja::where('opd_id', $data->id)->where('kegiatan_indikator_kinerja_id', $getIndikatorKegiatan->id)->first();
+                        if($cekOpdKegiatanIndikatorKinerja)
+                        {
+                            foreach ($tahuns as $tahun) {
+                                $cekKegiatanTarget = KegiatanTargetSatuanRpRealisasi::where('tahun', $tahun)->where('opd_kegiatan_indikator_kinerja_id', $cekOpdKegiatanIndikatorKinerja->id)->first();
+                                if($cekKegiatanTarget)
+                                {
+                                    foreach ($tws as $tw) {
+                                        $cekKegiatanRealisasi = KegiatanTwRealisasi::where('kegiatan_target_satuan_rp_realisasi_id', $cekKegiatanTarget->id)
+                                                                ->where('tw_id', $tw->id)
+                                                                ->first();
+                                        if($cekKegiatanRealisasi)
+                                        {
+                                            $countRealisasiKegiatan++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if($jumlah_indikator_kegiatan)
+                    {
+                        $target_kegiatan = ($countTargetKegiatan / ($jumlah_indikator_kegiatan * count($tahuns))) * 100;
+                        $realisasi_kegiatan = (($countRealisasiKegiatan/4) / ($jumlah_indikator_kegiatan * count($tahuns))) * 100;
+                    } else {
+                        $target_kegiatan = 0;
+                        $realisasi_kegiatan = 0;
+                    }
+                // Kegiatan End
+
+                // Sub Kegiatan Start
+                    $getIndikatorSubKegiatans = SubKegiatanIndikatorKinerja::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($data){
+                                                    $q->where('opd_id', $data->id);
+                                                })->whereHas('sub_kegiatan', function($q) use ($data){
+                                                    $q->whereHas('kegiatan', function($q) use ($data){
+                                                        $q->whereHas('program', function($q) use ($data){
+                                                            $q->whereHas('program_rpjmd', function($q) use ($data){
+                                                                $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($data){
+                                                                    $q->whereHas('sasaran_pd', function($q) use ($data){
+                                                                        $q->where('opd_id', $data->id);
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+                                                })->get();
+
+                    $jumlah_indikator_sub_kegiatan = SubKegiatanIndikatorKinerja::whereHas('opd_sub_kegiatan_indikator_kinerja', function($q) use ($data){
+                                                    $q->where('opd_id', $data->id);
+                                                })->whereHas('sub_kegiatan', function($q) use ($data){
+                                                    $q->whereHas('kegiatan', function($q) use ($data){
+                                                        $q->whereHas('program', function($q) use ($data){
+                                                            $q->whereHas('program_rpjmd', function($q) use ($data){
+                                                                $q->whereHas('sasaran_pd_program_rpjmd', function($q) use ($data){
+                                                                    $q->whereHas('sasaran_pd', function($q) use ($data){
+                                                                        $q->where('opd_id', $data->id);
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+                                                })->count();
+                    $countTargetSubKegiatan = 0;
+                    foreach ($getIndikatorSubKegiatans as $getIndikatorSubKegiatan) {
+                        $cekOpdSubKegiatanIndikatorKinerja = OpdSubKegiatanIndikatorKinerja::where('opd_id', $data->id)->where('sub_kegiatan_indikator_kinerja_id', $getIndikatorSubKegiatan->id)->first();
+                        if($cekOpdSubKegiatanIndikatorKinerja)
+                        {
+                            foreach ($tahuns as $tahun) {
+                                $cekSubKegiatanTarget = SubKegiatanTargetSatuanRpRealisasi::where('tahun', $tahun)->where('opd_sub_kegiatan_indikator_kinerja_id', $cekOpdSubKegiatanIndikatorKinerja->id)->first();
+                                if($cekSubKegiatanTarget)
+                                {
+                                    $countTargetSubKegiatan++;
+                                }
+                            }
+                        }
+                    }
+
+                    $countRealisasiSubKegiatan = 0;
+                    foreach ($getIndikatorSubKegiatans as $getIndikatorSubKegiatan) {
+                        $cekOpdSubKegiatanIndikatorKinerja = OpdSubKegiatanIndikatorKinerja::where('opd_id', $data->id)->where('sub_kegiatan_indikator_kinerja_id', $getIndikatorSubKegiatan->id)->first();
+                        if($cekOpdSubKegiatanIndikatorKinerja)
+                        {
+                            foreach ($tahuns as $tahun) {
+                                $cekSubKegiatanTarget = SubKegiatanTargetSatuanRpRealisasi::where('tahun', $tahun)->where('opd_sub_kegiatan_indikator_kinerja_id', $cekOpdSubKegiatanIndikatorKinerja->id)->first();
+                                if($cekSubKegiatanTarget)
+                                {
+                                    foreach ($tws as $tw) {
+                                        $cekSubKegiatanRealisasi = SubKegiatanTwRealisasi::where('sub_kegiatan_target_satuan_rp_realisasi_id', $cekSubKegiatanTarget->id)
+                                                                ->where('tw_id', $tw->id)
+                                                                ->first();
+                                        if($cekSubKegiatanRealisasi)
+                                        {
+                                            $countRealisasiSubKegiatan++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if($jumlah_indikator_sub_kegiatan)
+                    {
+                        $target_sub_kegiatan = ($countTargetSubKegiatan / ($jumlah_indikator_sub_kegiatan * count($tahuns))) * 100;
+                        $realisasi_sub_kegiatan = (($countRealisasiSubKegiatan/4) / ($jumlah_indikator_sub_kegiatan * count($tahuns))) * 100;
+                    } else {
+                        $target_sub_kegiatan = 0;
+                        $realisasi_sub_kegiatan = 0;
+                    }
+                // Sub Kegiatan End
+
+                return[
+                    'id' => Crypt::encryptString($data->id),
+                    'nama' => $data->nama,
+                    'jumlah_indikator_tujuan_pd' => $jumlah_indikator_tujuan_pd,
+                    'target_tujuan_pd' => number_format($target_tujuan_pd, 2),
+                    'realisasi_tujuan_pd' => number_format($realisasi_tujuan_pd, 2),
+                    'jumlah_indikator_sasaran_pd' => $jumlah_indikator_sasaran_pd,
+                    'target_sasaran_pd' => number_format($target_sasaran_pd, 2),
+                    'realisasi_sasaran_pd' => number_format($realisasi_sasaran_pd, 2),
+                    'jumlah_indikator_program' => $jumlah_indikator_program,
+                    'target_program' => number_format($target_program, 2),
+                    'realisasi_program' => number_format($realisasi_program, 2),
+                    'jumlah_indikator_kegiatan' => $jumlah_indikator_kegiatan,
+                    'target_kegiatan' => number_format($target_kegiatan, 2),
+                    'realisasi_kegiatan' => number_format($realisasi_kegiatan, 2),
+                    'jumlah_indikator_sub_kegiatan' => $jumlah_indikator_sub_kegiatan,
+                    'target_sub_kegiatan' => number_format($target_sub_kegiatan, 2),
+                    'realisasi_sub_kegiatan' => number_format($realisasi_sub_kegiatan, 2),
+                ];
+            });
+        $opdsTransformAndPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $opdsTransform,
+            $opds->total(),
+            $opds->perPage(),
+            $opds->currentPage(), [
+                'path' => \Request::url(),
+                'query' => [
+                    'page' => $opds->currentPage()
+                ]
+            ]
+        );
+
+        return view('admin.dashboard.index', [
+            'getTahunPeriode' => $getTahunPeriode,
+            'countUrusan' => $countUrusan,
+            'countProgram' => $countProgram,
+            'countKegiatan' => $countKegiatan,
+            'countSubKegiatan' => $countSubKegiatan,
+            'countOpd' => $countOpd,
+            'countTujuan' => $countTujuan,
+            'countSasaran' => $countSasaran,
+            'targetAnggaran' => $targetAnggaran,
+            'targetAnggaranPerubahan' => $targetAnggaranPerubahan,
+            'targetRealisasi' => $targetRealisasi,
+            'opds' => $opdsTransformAndPaginated
+        ]);
+    }
+
     public function change(Request $request)
     {
         $user = User::find(Auth::user()->id);

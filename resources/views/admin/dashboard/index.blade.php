@@ -784,10 +784,28 @@
             </div> --}}
 
             <div class="card mb-5">
-                <div class="card-body text-center">
-                    <div class="mb-3 cta-3 text-primary">Monitoring OPD</div>
-                    <hr>
+                <div class="card-body">
                     <div class="row">
+                        <div class="col-6 text-left">
+                            <div class="mb-3 cta-3 text-primary">Monitoring OPD</div>
+                        </div>
+                        <div class="col-6 text-right">
+                            <form action="{{ route('admin.dashboard.opd.search') }}" method="POST" role="search">
+                                @csrf
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="q"
+                                        placeholder="Search users"> <span class="input-group-btn">
+
+                                    </span>
+                                    <button type="submit" class="btn btn-primary">
+                                        Cari
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row text-center">
                         <div class="col-12 table-responsive">
                             <table class="table table-striped table-bordered">
                                 <thead>
